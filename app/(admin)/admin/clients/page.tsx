@@ -2,8 +2,9 @@ import { db } from "@/lib/db"
 import { users } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { PageHeader } from "@/components/ui/page-header"
 import Link from "next/link"
-import { formatDate } from "@/lib/utils"
+import { formatDate, formatEnumValue } from "@/lib/utils"
 
 export default async function ClientsPage() {
   const clients = await db.query.users.findMany({
@@ -14,10 +15,7 @@ export default async function ClientsPage() {
 
   return (
     <div className="max-w-5xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-900">Clients</h1>
-        <p className="text-slate-500 mt-1">{clients.length} registered clients</p>
-      </div>
+      <PageHeader title="Clients" description={`${clients.length} registered clients`} />
 
       <Card>
         <CardHeader><CardTitle>All clients</CardTitle></CardHeader>
@@ -37,8 +35,8 @@ export default async function ClientsPage() {
                 <tr key={client.id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
                   <td className="py-3 font-medium text-slate-800">{client.name ?? "—"}</td>
                   <td className="py-3 text-slate-600">{client.email}</td>
-                  <td className="py-3 text-slate-500 capitalize">
-                    {client.profile?.mainConcern?.replace("_", " ") ?? "—"}
+                  <td className="py-3 text-slate-500">
+                    {client.profile?.mainConcern ? formatEnumValue(client.profile.mainConcern) : "—"}
                   </td>
                   <td className="py-3 text-slate-400">{formatDate(client.createdAt)}</td>
                   <td className="py-3 text-right">

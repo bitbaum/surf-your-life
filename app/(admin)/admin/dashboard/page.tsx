@@ -2,8 +2,10 @@ import { db } from "@/lib/db"
 import { users, checkIns } from "@/lib/db/schema"
 import { eq, desc, gte, count } from "drizzle-orm"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { StatCard } from "@/components/ui/stat-card"
+import { PageHeader } from "@/components/ui/page-header"
 import Link from "next/link"
-import { formatDate } from "@/lib/utils"
+import { formatDate, formatEnumValue } from "@/lib/utils"
 import { Users, ClipboardList, TrendingUp } from "lucide-react"
 
 export default async function AdminDashboardPage() {
@@ -23,58 +25,18 @@ export default async function AdminDashboardPage() {
 
   const clientCount = clientCountResult[0]?.count ?? 0
   const recentCheckInsCount = recentCheckInsCountResult[0]?.count ?? 0
+  const avgCheckIns = clientCount > 0
+    ? Math.round((recentCheckInsCount / clientCount) * 10) / 10
+    : 0
 
   return (
     <div className="max-w-5xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-900">Admin Dashboard</h1>
-        <p className="text-slate-500 mt-1">Overview of the Surf Your Life portal</p>
-      </div>
+      <PageHeader title="Admin Dashboard" description="Overview of the Surf Your Life portal" />
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-teal-50 flex items-center justify-center">
-                <Users className="w-5 h-5 text-teal-600" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-slate-900">{clientCount}</p>
-                <p className="text-xs text-slate-500">Total clients</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
-                <ClipboardList className="w-5 h-5 text-blue-600" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-slate-900">{recentCheckInsCount}</p>
-                <p className="text-xs text-slate-500">Check-ins (30 days)</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-violet-50 flex items-center justify-center">
-                <TrendingUp className="w-5 h-5 text-violet-600" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-slate-900">
-                  {clientCount > 0 ? Math.round(recentCheckInsCount / clientCount * 10) / 10 : 0}
-                </p>
-                <p className="text-xs text-slate-500">Avg check-ins / client</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <StatCard label="Total clients" value={clientCount} icon={Users} color="teal" />
+        <StatCard label="Check-ins (30 days)" value={recentCheckInsCount} icon={ClipboardList} color="blue" />
+        <StatCard label="Avg check-ins / client" value={avgCheckIns} icon={TrendingUp} color="violet" />
       </div>
 
       <Card>
@@ -99,8 +61,8 @@ export default async function AdminDashboardPage() {
                   <p className="text-xs text-slate-400">{client.email}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-xs text-slate-500 capitalize">
-                    {client.profile?.mainConcern?.replace("_", " ") ?? "No profile yet"}
+                  <p className="text-xs text-slate-500">
+                    {client.profile?.mainConcern ? formatEnumValue(client.profile.mainConcern) : "No profile yet"}
                   </p>
                   <p className="text-xs text-slate-400">{formatDate(client.createdAt)}</p>
                 </div>

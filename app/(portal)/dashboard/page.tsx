@@ -3,10 +3,13 @@ import { db } from "@/lib/db"
 import { checkIns, profiles } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { StatCard } from "@/components/ui/stat-card"
+import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { formatDate } from "@/lib/utils"
+import { formatDate, formatEnumValue } from "@/lib/utils"
 import { ClipboardList, User, TrendingUp } from "lucide-react"
+import { ONBOARDING_REQUIRED_FIELDS } from "@/lib/constants"
 
 export default async function DashboardPage() {
   const session = await auth()
@@ -21,16 +24,16 @@ export default async function DashboardPage() {
     }),
   ])
 
-  const isOnboarded = profile?.mainConcern && profile?.goals
+  const isOnboarded = ONBOARDING_REQUIRED_FIELDS.every(
+    (f) => profile?.[f as keyof typeof profile]
+  )
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-900">
-          Welcome back, {session.user.name?.split(" ")[0]} 👋
-        </h1>
-        <p className="text-slate-500 mt-1">Here's how your journey is going</p>
-      </div>
+      <PageHeader
+        title={`Welcome back, ${session.user.name?.split(" ")[0]}`}
+        description="Here's how your journey is going"
+      />
 
       {!isOnboarded && (
         <div className="mb-6 p-4 rounded-xl bg-teal-50 border border-teal-200 flex items-start gap-3">
@@ -50,48 +53,22 @@ export default async function DashboardPage() {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-teal-50 flex items-center justify-center">
-                <ClipboardList className="w-5 h-5 text-teal-600" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-slate-900">{recentCheckIns.length}</p>
-                <p className="text-xs text-slate-500">Recent check-ins</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
-                <TrendingUp className="w-5 h-5 text-blue-600" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-slate-900">
-                  {recentCheckIns[0]?.energyLevel ?? "—"}
-                  {recentCheckIns[0] && <span className="text-sm font-normal text-slate-400">/10</span>}
-                </p>
-                <p className="text-xs text-slate-500">Last energy level</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6 flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-slate-700">Ready for today?</p>
-              <p className="text-xs text-slate-400 mt-0.5">Track your day</p>
-            </div>
-            <Link href="/check-in">
-              <Button size="sm">Check in</Button>
-            </Link>
-          </CardContent>
-        </Card>
+        <StatCard label="Recent check-ins" value={recentCheckIns.length} icon={ClipboardList} color="teal" />
+        <StatCard
+          label="Last energy level"
+          value={recentCheckIns[0] ? `${recentCheckIns[0].energyLevel}/10` : "—"}
+          icon={TrendingUp}
+          color="blue"
+        />
+        <div className="rounded-xl border border-slate-200 bg-white shadow-sm p-6 flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium text-slate-700">Ready for today?</p>
+            <p className="text-xs text-slate-400 mt-0.5">Track your day</p>
+          </div>
+          <Link href="/check-in">
+            <Button size="sm">Check in</Button>
+          </Link>
+        </div>
       </div>
 
       {recentCheckIns.length > 0 && (
@@ -104,9 +81,7 @@ export default async function DashboardPage() {
               {recentCheckIns.map((ci) => (
                 <div key={ci.id} className="py-3 flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-slate-800 capitalize">
-                      {ci.mood.replace("_", " ")}
-                    </p>
+                    <p className="text-sm font-medium text-slate-800">{formatEnumValue(ci.mood)}</p>
                     <p className="text-xs text-slate-400">{formatDate(ci.createdAt)}</p>
                   </div>
                   <div className="flex items-center gap-2">

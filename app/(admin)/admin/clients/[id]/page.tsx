@@ -3,7 +3,7 @@ import { db } from "@/lib/db"
 import { users, checkIns } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { formatDate } from "@/lib/utils"
+import { formatDate, formatEnumValue } from "@/lib/utils"
 import Link from "next/link"
 
 export default async function ClientDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -44,7 +44,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
           <CardContent className="flex flex-col gap-3 text-sm">
             {profile ? (
               <>
-                <Row label="Main concern" value={profile.mainConcern?.replace("_", " ")} />
+                <Row label="Main concern" value={profile.mainConcern ? formatEnumValue(profile.mainConcern) : undefined} />
                 <Row label="Occupation" value={profile.occupation} />
                 <Row label="Date of birth" value={profile.dateOfBirth} />
                 <Row label="Exercise" value={profile.exerciseFrequency} />
@@ -80,8 +80,8 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
                 {clientCheckIns.map((ci) => (
                   <div key={ci.id} className="py-3">
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-medium text-slate-700 capitalize">
-                        {ci.mood.replace("_", " ")}
+                      <span className="text-sm font-medium text-slate-700">
+                        {formatEnumValue(ci.mood)}
                       </span>
                       <span className="text-xs text-slate-400">{formatDate(ci.createdAt)}</span>
                     </div>

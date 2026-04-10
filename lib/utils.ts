@@ -12,3 +12,9 @@ export function formatDate(date: Date | string): string {
     day: "numeric",
   })
 }
+
+// Converts snake_case enum values to human-readable display strings.
+// e.g. "very_low" → "Very low", "long_covid" → "Long covid"
+export function formatEnumValue(value: string): string {
+  return value.replace(/_/g, " ").replace(/^\w/, (c) => c.toUpperCase())
+}

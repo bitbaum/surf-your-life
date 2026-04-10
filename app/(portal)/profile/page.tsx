@@ -4,14 +4,8 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-
-const mainConcernOptions = [
-  { value: "burnout", label: "Burnout" },
-  { value: "long_covid", label: "Long COVID" },
-  { value: "midlife_reinvention", label: "Midlife reinvention" },
-  { value: "general_wellbeing", label: "General wellbeing" },
-  { value: "other", label: "Other" },
-]
+import { PageHeader } from "@/components/ui/page-header"
+import { MAIN_CONCERNS, QUALITY_SCALE } from "@/lib/constants"
 
 export default function ProfilePage() {
   const [loading, setLoading] = useState(false)
@@ -54,10 +48,7 @@ export default function ProfilePage() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-900">My Profile</h1>
-        <p className="text-slate-500 mt-1">Help us understand your situation so we can support you better</p>
-      </div>
+      <PageHeader title="My Profile" description="Help us understand your situation so we can support you better" />
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
         <Card>
@@ -72,7 +63,7 @@ export default function ProfilePage() {
           <CardHeader><CardTitle>Your main concern</CardTitle></CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-              {mainConcernOptions.map((opt) => (
+              {MAIN_CONCERNS.map((opt) => (
                 <button
                   key={opt.value}
                   type="button"

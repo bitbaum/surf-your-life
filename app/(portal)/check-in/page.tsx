@@ -4,14 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-
-const moods = [
-  { value: "very_low", label: "Very low", emoji: "😔" },
-  { value: "low", label: "Low", emoji: "😕" },
-  { value: "neutral", label: "Neutral", emoji: "😐" },
-  { value: "good", label: "Good", emoji: "🙂" },
-  { value: "excellent", label: "Excellent", emoji: "😄" },
-]
+import { MOODS, ENERGY_SCALE, SLEEP_HOURS } from "@/lib/constants"
 
 export default function CheckInPage() {
   const router = useRouter()
@@ -60,7 +53,7 @@ export default function CheckInPage() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-5 gap-2">
-              {moods.map((m) => (
+              {MOODS.map((m) => (
                 <button
                   key={m.value}
                   type="button"
@@ -86,16 +79,16 @@ export default function CheckInPage() {
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-4">
-              <span className="text-sm text-slate-400 w-4">1</span>
+              <span className="text-sm text-slate-400 w-4">{ENERGY_SCALE.min}</span>
               <input
                 type="range"
-                min={1}
-                max={10}
+                min={ENERGY_SCALE.min}
+                max={ENERGY_SCALE.max}
                 value={energy}
                 onChange={(e) => setEnergy(parseInt(e.target.value))}
                 className="flex-1 accent-teal-600"
               />
-              <span className="text-sm text-slate-400 w-4">10</span>
+              <span className="text-sm text-slate-400 w-4">{ENERGY_SCALE.max}</span>
               <span className="text-xl font-bold text-teal-700 w-8 text-center">{energy}</span>
             </div>
           </CardContent>
@@ -110,8 +103,8 @@ export default function CheckInPage() {
               </label>
               <input
                 type="number"
-                min={0}
-                max={24}
+                min={SLEEP_HOURS.min}
+                max={SLEEP_HOURS.max}
                 value={sleep}
                 onChange={(e) => setSleep(e.target.value)}
                 placeholder="e.g. 7"
