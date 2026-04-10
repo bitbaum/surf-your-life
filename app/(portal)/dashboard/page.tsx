@@ -1,0 +1,124 @@
+import { auth } from "@/lib/auth"
+import { db } from "@/lib/db"
+import { checkIns, profiles } from "@/lib/db/schema"
+import { eq, desc } from "drizzle-orm"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import Link from "next/link"
+import { formatDate } from "@/lib/utils"
+import { ClipboardList, User, TrendingUp } from "lucide-react"
+
+export default async function DashboardPage() {
+  const session = await auth()
+  if (!session) return null
+
+  const [profile, recentCheckIns] = await Promise.all([
+    db.query.profiles.findFirst({ where: eq(profiles.userId, session.user.id) }),
+    db.query.checkIns.findMany({
+      where: eq(checkIns.userId, session.user.id),
+      orderBy: [desc(checkIns.createdAt)],
+      limit: 5,
+    }),
+  ])
+
+  const isOnboarded = profile?.mainConcern && profile?.goals
+
+  return (
+    <div className="max-w-4xl mx-auto">
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-slate-900">
+          Welcome back, {session.user.name?.split(" ")[0]} 👋
+        </h1>
+        <p className="text-slate-500 mt-1">Here's how your journey is going</p>
+      </div>
+
+      {!isOnboarded && (
+        <div className="mb-6 p-4 rounded-xl bg-teal-50 border border-teal-200 flex items-start gap-3">
+          <div className="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+            <User className="w-4 h-4 text-teal-700" />
+          </div>
+          <div className="flex-1">
+            <p className="font-medium text-teal-900">Complete your profile</p>
+            <p className="text-sm text-teal-700 mt-0.5">
+              Tell us about your situation so we can tailor your experience.
+            </p>
+          </div>
+          <Link href="/profile">
+            <Button size="sm">Complete profile</Button>
+          </Link>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-teal-50 flex items-center justify-center">
+                <ClipboardList className="w-5 h-5 text-teal-600" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-slate-900">{recentCheckIns.length}</p>
+                <p className="text-xs text-slate-500">Recent check-ins</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
+                <TrendingUp className="w-5 h-5 text-blue-600" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-slate-900">
+                  {recentCheckIns[0]?.energyLevel ?? "—"}
+                  {recentCheckIns[0] && <span className="text-sm font-normal text-slate-400">/10</span>}
+                </p>
+                <p className="text-xs text-slate-500">Last energy level</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="pt-6 flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-slate-700">Ready for today?</p>
+              <p className="text-xs text-slate-400 mt-0.5">Track your day</p>
+            </div>
+            <Link href="/check-in">
+              <Button size="sm">Check in</Button>
+            </Link>
+          </CardContent>
+        </Card>
+      </div>
+
+      {recentCheckIns.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent check-ins</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col divide-y divide-slate-100">
+              {recentCheckIns.map((ci) => (
+                <div key={ci.id} className="py-3 flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-slate-800 capitalize">
+                      {ci.mood.replace("_", " ")}
+                    </p>
+                    <p className="text-xs text-slate-400">{formatDate(ci.createdAt)}</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-slate-500">Energy</span>
+                    <span className="text-sm font-semibold text-teal-700">{ci.energyLevel}/10</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  )
+}

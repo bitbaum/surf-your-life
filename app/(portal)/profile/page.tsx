@@ -1,0 +1,172 @@
+"use client"
+
+import { useState, useEffect } from "react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+
+const mainConcernOptions = [
+  { value: "burnout", label: "Burnout" },
+  { value: "long_covid", label: "Long COVID" },
+  { value: "midlife_reinvention", label: "Midlife reinvention" },
+  { value: "general_wellbeing", label: "General wellbeing" },
+  { value: "other", label: "Other" },
+]
+
+export default function ProfilePage() {
+  const [loading, setLoading] = useState(false)
+  const [saved, setSaved] = useState(false)
+  const [form, setForm] = useState({
+    occupation: "",
+    dateOfBirth: "",
+    mainConcern: "",
+    currentSituation: "",
+    goals: "",
+    previousTherapy: false,
+    medications: "",
+    sleepQuality: 5,
+    stressLevel: 5,
+    exerciseFrequency: "",
+  })
+
+  useEffect(() => {
+    fetch("/api/profile").then((r) => r.json()).then((d) => {
+      if (d.profile) setForm((prev) => ({ ...prev, ...d.profile }))
+    })
+  }, [])
+
+  function set(key: string, value: string | number | boolean) {
+    setForm((prev) => ({ ...prev, [key]: value }))
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setLoading(true)
+    setSaved(false)
+    await fetch("/api/profile", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form),
+    })
+    setSaved(true)
+    setLoading(false)
+  }
+
+  return (
+    <div className="max-w-2xl mx-auto">
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-slate-900">My Profile</h1>
+        <p className="text-slate-500 mt-1">Help us understand your situation so we can support you better</p>
+      </div>
+
+      <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+        <Card>
+          <CardHeader><CardTitle>About you</CardTitle></CardHeader>
+          <CardContent className="flex flex-col gap-4">
+            <Input label="Occupation" value={form.occupation} onChange={(e) => set("occupation", e.target.value)} placeholder="Your current or last role" />
+            <Input label="Date of birth" type="date" value={form.dateOfBirth} onChange={(e) => set("dateOfBirth", e.target.value)} />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader><CardTitle>Your main concern</CardTitle></CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+              {mainConcernOptions.map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => set("mainConcern", opt.value)}
+                  className={`p-3 rounded-xl border-2 text-sm font-medium transition-all text-left ${
+                    form.mainConcern === opt.value
+                      ? "border-teal-500 bg-teal-50 text-teal-700"
+                      : "border-slate-200 text-slate-600 hover:border-slate-300"
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader><CardTitle>Your situation & goals</CardTitle></CardHeader>
+          <CardContent className="flex flex-col gap-4">
+            <div>
+              <label className="text-sm font-medium text-slate-700 block mb-1.5">Current situation</label>
+              <textarea
+                value={form.currentSituation}
+                onChange={(e) => set("currentSituation", e.target.value)}
+                rows={3}
+                placeholder="Describe where you are right now — what's going on in your life?"
+                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-slate-700 block mb-1.5">Goals</label>
+              <textarea
+                value={form.goals}
+                onChange={(e) => set("goals", e.target.value)}
+                rows={3}
+                placeholder="What do you want to achieve? What does success look like for you?"
+                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader><CardTitle>Health context</CardTitle></CardHeader>
+          <CardContent className="flex flex-col gap-4">
+            <div className="flex items-center gap-3">
+              <input
+                id="prev-therapy"
+                type="checkbox"
+                checked={form.previousTherapy}
+                onChange={(e) => set("previousTherapy", e.target.checked)}
+                className="w-4 h-4 accent-teal-600"
+              />
+              <label htmlFor="prev-therapy" className="text-sm text-slate-700">
+                I have been in therapy or psychiatric treatment before
+              </label>
+            </div>
+            <Input
+              label="Current medications (optional)"
+              value={form.medications}
+              onChange={(e) => set("medications", e.target.value)}
+              placeholder="Leave blank if none"
+            />
+            <Input
+              label="Exercise frequency"
+              value={form.exerciseFrequency}
+              onChange={(e) => set("exerciseFrequency", e.target.value)}
+              placeholder="e.g. 3x per week, daily walks, none"
+            />
+            <div>
+              <label className="text-sm font-medium text-slate-700 block mb-2">Sleep quality (1–10)</label>
+              <div className="flex items-center gap-4">
+                <input type="range" min={1} max={10} value={form.sleepQuality} onChange={(e) => set("sleepQuality", parseInt(e.target.value))} className="flex-1 accent-teal-600" />
+                <span className="text-lg font-bold text-teal-700 w-6 text-center">{form.sleepQuality}</span>
+              </div>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-slate-700 block mb-2">Stress level (1–10)</label>
+              <div className="flex items-center gap-4">
+                <input type="range" min={1} max={10} value={form.stressLevel} onChange={(e) => set("stressLevel", parseInt(e.target.value))} className="flex-1 accent-teal-600" />
+                <span className="text-lg font-bold text-teal-700 w-6 text-center">{form.stressLevel}</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="flex items-center gap-3">
+          <Button type="submit" disabled={loading} size="lg">
+            {loading ? "Saving…" : "Save profile"}
+          </Button>
+          {saved && <span className="text-sm text-teal-600 font-medium">Saved ✓</span>}
+        </div>
+      </form>
+    </div>
+  )
+}
