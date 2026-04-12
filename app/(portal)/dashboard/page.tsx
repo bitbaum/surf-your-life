@@ -8,8 +8,8 @@ import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { formatDate, formatEnumValue } from "@/lib/utils"
-import { ClipboardList, User, TrendingUp } from "lucide-react"
-import { ONBOARDING_REQUIRED_FIELDS, ENERGY_SCALE } from "@/lib/constants"
+import { ClipboardList, TrendingUp } from "lucide-react"
+import { ONBOARDING_REQUIRED_FIELDS, PROFILE_COMPLETION_FIELDS, ENERGY_SCALE } from "@/lib/constants"
 
 export default async function DashboardPage() {
   const session = await auth()
@@ -28,7 +28,12 @@ export default async function DashboardPage() {
     (f) => profile?.[f as keyof typeof profile]
   )
 
-  // Trend: last 7 check-ins in chronological order for the sparkline
+  const completedFields = PROFILE_COMPLETION_FIELDS.filter(
+    (f) => profile?.[f as keyof typeof profile]
+  ).length
+  const completionPct = Math.round((completedFields / PROFILE_COMPLETION_FIELDS.length) * 100)
+
+  // Chronological order for sparkline
   const trend = [...recentCheckIns].reverse()
 
   return (
@@ -39,19 +44,24 @@ export default async function DashboardPage() {
       />
 
       {!isOnboarded && (
-        <div className="mb-6 p-4 rounded-xl bg-teal-50 border border-teal-200 flex items-start gap-3">
-          <div className="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-            <User className="w-4 h-4 text-teal-700" />
+        <div className="mb-6 rounded-xl bg-teal-50 border border-teal-200 p-4">
+          <div className="flex items-center justify-between gap-4 mb-3">
+            <div>
+              <p className="font-medium text-teal-900 text-sm">Complete your profile</p>
+              <p className="text-xs text-teal-700 mt-0.5">
+                {completionPct}% done — add your situation and goals so we can tailor your programme
+              </p>
+            </div>
+            <Link href="/profile">
+              <Button size="sm">Complete profile</Button>
+            </Link>
           </div>
-          <div className="flex-1">
-            <p className="font-medium text-teal-900">Complete your profile</p>
-            <p className="text-sm text-teal-700 mt-0.5">
-              Tell us about your situation so we can tailor your experience.
-            </p>
+          <div className="h-1.5 rounded-full bg-teal-100 overflow-hidden">
+            <div
+              className="h-full rounded-full bg-teal-500 transition-all"
+              style={{ width: `${completionPct}%` }}
+            />
           </div>
-          <Link href="/profile">
-            <Button size="sm">Complete profile</Button>
-          </Link>
         </div>
       )}
 
@@ -77,14 +87,23 @@ export default async function DashboardPage() {
       {trend.length >= 2 && (
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle>Energy trend</CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle>Energy trend</CardTitle>
+              <Link href="/check-ins" className="text-sm text-teal-600 hover:underline">
+                View all →
+              </Link>
+            </div>
           </CardHeader>
           <CardContent>
             <div className="flex items-end gap-1.5 h-16">
               {trend.map((ci) => {
                 const pct = ((ci.energyLevel - ENERGY_SCALE.min) / (ENERGY_SCALE.max - ENERGY_SCALE.min)) * 100
                 return (
-                  <div key={ci.id} className="flex flex-col items-center gap-1 flex-1" title={`Energy ${ci.energyLevel}/10 — ${formatDate(ci.createdAt)}`}>
+                  <div
+                    key={ci.id}
+                    className="flex-1"
+                    title={`Energy ${ci.energyLevel}/10 — ${formatDate(ci.createdAt)}`}
+                  >
                     <div
                       className="w-full rounded-t bg-teal-500 transition-all"
                       style={{ height: `${Math.max(pct, 8)}%` }}
@@ -104,12 +123,7 @@ export default async function DashboardPage() {
       {recentCheckIns.length > 0 && (
         <Card>
           <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle>Recent check-ins</CardTitle>
-              <Link href="/check-ins" className="text-sm text-teal-600 hover:underline">
-                View all →
-              </Link>
-            </div>
+            <CardTitle>Recent check-ins</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex flex-col divide-y divide-slate-100">

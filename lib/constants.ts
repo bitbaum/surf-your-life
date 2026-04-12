@@ -21,7 +21,18 @@ export const ENERGY_SCALE = { min: 1, max: 10, default: 5 } as const
 export const SLEEP_HOURS = { min: 0, max: 24 } as const
 export const QUALITY_SCALE = { min: 1, max: 10, default: 5 } as const
 
-// Fields required for onboarding completion
+// Fields required for onboarding completion check
 export const ONBOARDING_REQUIRED_FIELDS = ["mainConcern", "goals"] as const
+
+// Fields that count toward profile completeness (for progress indicator)
+export const PROFILE_COMPLETION_FIELDS = [
+  "mainConcern",
+  "goals",
+  "currentSituation",
+  "occupation",
+  "exerciseFrequency",
+  "sleepQuality",
+  "stressLevel",
+] as const
 
 export const PAGINATION_DEFAULT = 20

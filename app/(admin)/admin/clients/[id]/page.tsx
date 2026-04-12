@@ -5,6 +5,10 @@ import { eq, desc } from "drizzle-orm"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { formatDate, formatEnumValue } from "@/lib/utils"
 import Link from "next/link"
+import { MOODS } from "@/lib/constants"
+import { ResetLinkButton } from "./reset-link-button"
+
+const moodEmoji = Object.fromEntries(MOODS.map((m) => [m.value, m.emoji]))
 
 export default async function ClientDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -27,15 +31,18 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="mb-6 flex items-center gap-2">
+      <div className="mb-6">
         <Link href="/admin/clients" className="text-sm text-slate-400 hover:text-slate-600">
           ← Clients
         </Link>
       </div>
 
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-900">{client.name ?? "Unnamed"}</h1>
-        <p className="text-slate-500">{client.email} · Joined {formatDate(client.createdAt)}</p>
+      <div className="mb-8 flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">{client.name ?? "Unnamed"}</h1>
+          <p className="text-slate-500">{client.email} · Joined {formatDate(client.createdAt)}</p>
+        </div>
+        <ResetLinkButton userId={id} />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -51,16 +58,17 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
                 <Row label="Previous therapy" value={profile.previousTherapy ? "Yes" : "No"} />
                 <Row label="Sleep quality" value={profile.sleepQuality ? `${profile.sleepQuality}/10` : undefined} />
                 <Row label="Stress level" value={profile.stressLevel ? `${profile.stressLevel}/10` : undefined} />
+                <Row label="Medications" value={profile.medications} />
                 {profile.currentSituation && (
                   <div>
                     <p className="text-slate-400 text-xs mb-1">Current situation</p>
-                    <p className="text-slate-700">{profile.currentSituation}</p>
+                    <p className="text-slate-700 leading-relaxed">{profile.currentSituation}</p>
                   </div>
                 )}
                 {profile.goals && (
                   <div>
                     <p className="text-slate-400 text-xs mb-1">Goals</p>
-                    <p className="text-slate-700">{profile.goals}</p>
+                    <p className="text-slate-700 leading-relaxed">{profile.goals}</p>
                   </div>
                 )}
               </>
@@ -80,16 +88,19 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
                 {clientCheckIns.map((ci) => (
                   <div key={ci.id} className="py-3">
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-medium text-slate-700">
+                      <span className="text-sm font-medium text-slate-700 flex items-center gap-1.5">
+                        <span>{moodEmoji[ci.mood] ?? "😐"}</span>
                         {formatEnumValue(ci.mood)}
                       </span>
                       <span className="text-xs text-slate-400">{formatDate(ci.createdAt)}</span>
                     </div>
-                    <div className="flex gap-3 text-xs text-slate-500">
-                      <span>Energy: <strong>{ci.energyLevel}/10</strong></span>
-                      {ci.sleepHours && <span>Sleep: <strong>{ci.sleepHours}h</strong></span>}
+                    <div className="flex gap-4 text-xs text-slate-500">
+                      <span>Energy: <strong className="text-slate-700">{ci.energyLevel}/10</strong></span>
+                      {ci.sleepHours != null && <span>Sleep: <strong className="text-slate-700">{ci.sleepHours}h</strong></span>}
                     </div>
-                    {ci.notes && <p className="text-xs text-slate-500 mt-1 italic">{ci.notes}</p>}
+                    {ci.wins && <p className="text-xs text-teal-700 mt-1">✓ {ci.wins}</p>}
+                    {ci.challenges && <p className="text-xs text-slate-500 mt-1 italic">{ci.challenges}</p>}
+                    {ci.notes && <p className="text-xs text-slate-400 mt-1">{ci.notes}</p>}
                   </div>
                 ))}
               </div>
@@ -107,7 +118,7 @@ function Row({ label, value }: { label: string; value?: string | null }) {
   if (!value) return null
   return (
     <div className="flex items-start justify-between gap-2">
-      <span className="text-slate-400">{label}</span>
+      <span className="text-slate-400 flex-shrink-0">{label}</span>
       <span className="text-slate-700 capitalize text-right">{value}</span>
     </div>
   )
