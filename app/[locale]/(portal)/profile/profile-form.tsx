@@ -169,8 +169,8 @@ export function ProfileForm({ profile, initialName }: { profile: Profile | null;
       familyHistory: form.familyHistory || undefined,
       previousTherapy: form.previousTherapy,
       medications: form.medications || undefined,
-      heightCm: form.heightCm ? parseInt(form.heightCm) : null,
-      weightKg: form.weightKg ? parseInt(form.weightKg) : null,
+      heightCm: form.heightCm ? Math.round(parseFloat(form.heightCm)) : null,
+      weightKg: form.weightKg ? Math.round(parseFloat(form.weightKg)) : null,
       sleepQuality: form.sleepQuality,
       sleepSchedule: form.sleepSchedule || undefined,
       exerciseFrequency: form.exerciseFrequency || undefined,
@@ -178,12 +178,12 @@ export function ProfileForm({ profile, initialName }: { profile: Profile | null;
       socialSupport: form.socialSupport,
       stressLevel: form.stressLevel,
     }
-    await fetch("/api/profile", {
+    const res = await fetch("/api/profile", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     })
-    setSaved(true)
+    if (res.ok) setSaved(true)
     setLoading(false)
   }
 
