@@ -19,7 +19,7 @@ export default async function ProfilePage() {
   return (
     <div className="max-w-2xl mx-auto">
       <PageHeader title={t("title")} description={t("subtitle")} />
-      <ProfileForm profile={profile ?? null} />
+      <ProfileForm profile={profile ?? null} initialName={session.user.name ?? ""} />
     </div>
   )
 }

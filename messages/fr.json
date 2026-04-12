@@ -193,7 +193,13 @@
       "alreadyDoneBody": "Vous avez déjà complété votre check-in pour aujourd'hui. Revenez demain!",
       "successTitle": "Check-in enregistré",
       "successBody": "Excellent travail. Redirection vers votre tableau de bord…",
-      "error": "Une erreur s'est produite. Veuillez réessayer."
+      "error": "Une erreur s'est produite. Veuillez réessayer.",
+      "energyDescription": "1 = épuisé · 10 = complètement rechargé",
+      "moodVeryLow": "Très bas",
+      "moodLow": "Bas",
+      "moodNeutral": "Neutre",
+      "moodGood": "Bien",
+      "moodExcellent": "Excellent"
     },
     "checkIns": {
       "title": "Historique des check-ins",
@@ -209,7 +215,27 @@
       "saveSuccess": "Profil enregistré",
       "saveError": "Une erreur s'est produite. Veuillez réessayer.",
       "optionalSection": "Détails optionnels",
-      "optionalSubtitle": "Ajoutez plus de contexte pour personnaliser votre programme"
+      "optionalSubtitle": "Ajoutez plus de contexte pour personnaliser votre programme",
+      "occupation": "Profession",
+      "dateOfBirth": "Date de naissance",
+      "nameLabel": "Votre nom",
+      "namePlaceholder": "Prénom et nom de famille",
+      "aboutCard": "À votre sujet",
+      "concernCard": "Préoccupation principale",
+      "situationCard": "Votre situation & objectifs",
+      "situationLabel": "Situation actuelle",
+      "situationPlaceholder": "Décrivez où vous en êtes — qu'est-ce qui se passe dans votre vie?",
+      "goalsLabel": "Objectifs",
+      "goalsPlaceholder": "Que voulez-vous accomplir? À quoi ressemble le succès pour vous?",
+      "healthCard": "Contexte de santé",
+      "prevTherapyLabel": "J'ai déjà suivi une thérapie ou un traitement psychiatrique",
+      "medicationsLabel": "Médicaments actuels",
+      "medicationsOptional": "(optionnel)",
+      "medicationsPlaceholder": "Laisser vide si aucun",
+      "exerciseLabel": "Fréquence d'exercice",
+      "exercisePlaceholder": "ex. 3x par semaine, promenades quotidiennes, aucun",
+      "sleepQualityLabel": "Qualité du sommeil (1–10)",
+      "stressLevelLabel": "Niveau de stress (1–10)"
     }
   },
   "sidebar": {

@@ -44,6 +44,14 @@ export default function CheckInPage() {
     router.refresh()
   }
 
+  const moodLabels: Record<string, string> = {
+    very_low: t("moodVeryLow"),
+    low: t("moodLow"),
+    neutral: t("moodNeutral"),
+    good: t("moodGood"),
+    excellent: t("moodExcellent"),
+  }
+
   return (
     <div className="max-w-2xl mx-auto">
       <div className="mb-8">
@@ -70,7 +78,7 @@ export default function CheckInPage() {
                   }`}
                 >
                   <span className="text-2xl">{m.emoji}</span>
-                  <span className="text-xs text-slate-600">{m.label}</span>
+                  <span className="text-xs text-slate-600">{moodLabels[m.value]}</span>
                 </button>
               ))}
             </div>
@@ -80,7 +88,7 @@ export default function CheckInPage() {
         <Card>
           <CardHeader>
             <CardTitle>{t("energy")}</CardTitle>
-            <CardDescription>1 = exhausted, 10 = fully charged</CardDescription>
+            <CardDescription>{t("energyDescription")}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-4">

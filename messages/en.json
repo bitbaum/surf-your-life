@@ -193,7 +193,13 @@
       "alreadyDoneBody": "You've already completed your check-in for today. Come back tomorrow!",
       "successTitle": "Check-in saved",
       "successBody": "Great work. Redirecting to your dashboard…",
-      "error": "Something went wrong. Please try again."
+      "error": "Something went wrong. Please try again.",
+      "energyDescription": "1 = exhausted · 10 = fully charged",
+      "moodVeryLow": "Very low",
+      "moodLow": "Low",
+      "moodNeutral": "Neutral",
+      "moodGood": "Good",
+      "moodExcellent": "Excellent"
     },
     "checkIns": {
       "title": "Check-in history",
@@ -209,7 +215,27 @@
       "saveSuccess": "Profile saved",
       "saveError": "Something went wrong. Please try again.",
       "optionalSection": "Optional details",
-      "optionalSubtitle": "Add more context to help us personalise your programme"
+      "optionalSubtitle": "Add more context to help us personalise your programme",
+      "occupation": "Occupation",
+      "dateOfBirth": "Date of birth",
+      "nameLabel": "Your name",
+      "namePlaceholder": "First and last name",
+      "aboutCard": "About you",
+      "concernCard": "Main concern",
+      "situationCard": "Your situation & goals",
+      "situationLabel": "Current situation",
+      "situationPlaceholder": "Describe where you are right now — what's going on in your life?",
+      "goalsLabel": "Goals",
+      "goalsPlaceholder": "What do you want to achieve? What does success look like for you?",
+      "healthCard": "Health context",
+      "prevTherapyLabel": "I have been in therapy or psychiatric treatment before",
+      "medicationsLabel": "Current medications",
+      "medicationsOptional": "(optional)",
+      "medicationsPlaceholder": "Leave blank if none",
+      "exerciseLabel": "Exercise frequency",
+      "exercisePlaceholder": "e.g. 3x per week, daily walks, none",
+      "sleepQualityLabel": "Sleep quality (1–10)",
+      "stressLevelLabel": "Stress level (1–10)"
     }
   },
   "sidebar": {

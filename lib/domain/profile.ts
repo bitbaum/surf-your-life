@@ -2,6 +2,7 @@ import { z } from "zod"
 import { ENERGY_SCALE, QUALITY_SCALE, SLEEP_HOURS } from "@/lib/constants"
 
 export const profileSchema = z.object({
+  name: z.string().max(200).optional(),
   occupation: z.string().max(200).optional(),
   dateOfBirth: z.string().optional(),
   mainConcern: z.string().max(100).optional(),

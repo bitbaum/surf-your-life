@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import { eq } from "drizzle-orm"
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
-import { profiles } from "@/lib/db/schema"
+import { profiles, users } from "@/lib/db/schema"
 import { profileSchema } from "@/lib/domain/profile"
 
 export async function GET() {
@@ -26,9 +26,16 @@ export async function PUT(req: Request) {
     return NextResponse.json({ error: "Invalid input" }, { status: 400 })
   }
 
+  const { name, ...profileData } = parsed.data
+
+  // Update display name on user record if provided
+  if (name !== undefined && name.trim()) {
+    await db.update(users).set({ name: name.trim() }).where(eq(users.id, session.user.id))
+  }
+
   await db
     .update(profiles)
-    .set({ ...parsed.data, updatedAt: new Date() })
+    .set({ ...profileData, updatedAt: new Date() })
     .where(eq(profiles.userId, session.user.id))
 
   return NextResponse.json({ success: true })
