@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { formatDate, formatEnumValue } from "@/lib/utils"
 import { ClipboardList, User, TrendingUp } from "lucide-react"
-import { ONBOARDING_REQUIRED_FIELDS } from "@/lib/constants"
+import { ONBOARDING_REQUIRED_FIELDS, ENERGY_SCALE } from "@/lib/constants"
 
 export default async function DashboardPage() {
   const session = await auth()
@@ -20,13 +20,16 @@ export default async function DashboardPage() {
     db.query.checkIns.findMany({
       where: eq(checkIns.userId, session.user.id),
       orderBy: [desc(checkIns.createdAt)],
-      limit: 5,
+      limit: 7,
     }),
   ])
 
   const isOnboarded = ONBOARDING_REQUIRED_FIELDS.every(
     (f) => profile?.[f as keyof typeof profile]
   )
+
+  // Trend: last 7 check-ins in chronological order for the sparkline
+  const trend = [...recentCheckIns].reverse()
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -53,7 +56,7 @@ export default async function DashboardPage() {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <StatCard label="Recent check-ins" value={recentCheckIns.length} icon={ClipboardList} color="teal" />
+        <StatCard label="Total check-ins" value={recentCheckIns.length} icon={ClipboardList} color="teal" />
         <StatCard
           label="Last energy level"
           value={recentCheckIns[0] ? `${recentCheckIns[0].energyLevel}/10` : "—"}
@@ -71,14 +74,46 @@ export default async function DashboardPage() {
         </div>
       </div>
 
+      {trend.length >= 2 && (
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>Energy trend</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-end gap-1.5 h-16">
+              {trend.map((ci) => {
+                const pct = ((ci.energyLevel - ENERGY_SCALE.min) / (ENERGY_SCALE.max - ENERGY_SCALE.min)) * 100
+                return (
+                  <div key={ci.id} className="flex flex-col items-center gap-1 flex-1" title={`Energy ${ci.energyLevel}/10 — ${formatDate(ci.createdAt)}`}>
+                    <div
+                      className="w-full rounded-t bg-teal-500 transition-all"
+                      style={{ height: `${Math.max(pct, 8)}%` }}
+                    />
+                  </div>
+                )
+              })}
+            </div>
+            <div className="flex items-center justify-between mt-2 text-xs text-slate-400">
+              <span>{formatDate(trend[0].createdAt)}</span>
+              <span>{formatDate(trend[trend.length - 1].createdAt)}</span>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {recentCheckIns.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>Recent check-ins</CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle>Recent check-ins</CardTitle>
+              <Link href="/check-ins" className="text-sm text-teal-600 hover:underline">
+                View all →
+              </Link>
+            </div>
           </CardHeader>
           <CardContent>
             <div className="flex flex-col divide-y divide-slate-100">
-              {recentCheckIns.map((ci) => (
+              {recentCheckIns.slice(0, 5).map((ci) => (
                 <div key={ci.id} className="py-3 flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-slate-800">{formatEnumValue(ci.mood)}</p>

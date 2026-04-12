@@ -8,6 +8,13 @@
       "when": 1776011694463,
       "tag": "0000_misty_santa_claus",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1776011870989,
+      "tag": "0001_youthful_blue_shield",
+      "breakpoints": true
     }
   ]
 }
