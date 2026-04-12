@@ -16,7 +16,7 @@ export async function POST(req: Request) {
     )
   }
 
-  const { name, email, password } = parsed.data
+  const { email, password } = parsed.data
 
   const existing = await db.query.users.findFirst({ where: eq(users.email, email) })
   if (existing) {
@@ -29,7 +29,7 @@ export async function POST(req: Request) {
   const hashed = await bcrypt.hash(password, 12)
   const [user] = await db
     .insert(users)
-    .values({ name, email, password: hashed, role: "client" })
+    .values({ email, password: hashed, role: "client" })
     .returning({ id: users.id })
 
   // Create empty profile

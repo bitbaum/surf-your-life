@@ -11,7 +11,7 @@ import { GoogleButton } from "@/components/auth/google-button"
 
 export default function RegisterPage() {
   const router = useRouter()
-  const [form, setForm] = useState({ name: "", email: "", password: "" })
+  const [form, setForm] = useState({ email: "", password: "" })
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
 
@@ -73,7 +73,6 @@ export default function RegisterPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-          <Input label="Full name" type="text" value={form.name} onChange={(e) => set("name", e.target.value)} placeholder="Your name" required />
           <Input label="Email" type="email" value={form.email} onChange={(e) => set("email", e.target.value)} placeholder="you@example.com" required />
           <Input label="Password" type="password" value={form.password} onChange={(e) => set("password", e.target.value)} placeholder="At least 8 characters" required minLength={8} />
           {error && <p className="text-sm text-red-600">{error}</p>}
