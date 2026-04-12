@@ -92,18 +92,30 @@ export const profiles = pgTable("profiles", {
     .notNull()
     .unique()
     .references(() => users.id, { onDelete: "cascade" }),
-  // Health context
+  // Identity
+  gender: text("gender"),
   dateOfBirth: text("date_of_birth"),
   occupation: text("occupation"),
-  mainConcern: text("main_concern"), // burnout / Long-COVID / midlife reinvention / other
+  workHoursPerWeek: integer("work_hours_per_week"),
+  insuranceProvider: text("insurance_provider"),
+  // Clinical
+  mainConcern: text("main_concern"),
   currentSituation: text("current_situation"),
   goals: text("goals"),
+  existingDiagnoses: text("existing_diagnoses"),
+  familyHistory: text("family_history"),
   previousTherapy: boolean("previous_therapy").default(false),
   medications: text("medications"),
+  // Physical
+  heightCm: integer("height_cm"),
+  weightKg: integer("weight_kg"),
   // Lifestyle
   sleepQuality: integer("sleep_quality"), // 1-10
-  stressLevel: integer("stress_level"), // 1-10
+  sleepSchedule: text("sleep_schedule"),
   exerciseFrequency: text("exercise_frequency"),
+  alcoholTobacco: text("alcohol_tobacco"),
+  socialSupport: integer("social_support"), // 1-10
+  stressLevel: integer("stress_level"), // 1-10
   // Embedding for semantic search over profile context
   embedding: vector("embedding", { dimensions: 1536 }),
   updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
