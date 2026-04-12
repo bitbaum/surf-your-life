@@ -24,7 +24,7 @@ export const QUALITY_SCALE = { min: 1, max: 10, default: 5 } as const
 // Fields required for onboarding completion check
 export const ONBOARDING_REQUIRED_FIELDS = ["mainConcern", "goals"] as const
 
-// Fields that count toward profile completeness (for progress indicator)
+// Fields that count toward profile completeness (DB column names, for dashboard)
 export const PROFILE_COMPLETION_FIELDS = [
   "mainConcern",
   "goals",
@@ -33,6 +33,36 @@ export const PROFILE_COMPLETION_FIELDS = [
   "exerciseFrequency",
   "sleepQuality",
   "stressLevel",
+  "existingDiagnoses",
+  "familyHistory",
+  "heightCm",
+  "weightKg",
+] as const
+
+// Fields for wizard progress tracking (FormState key names)
+export const WIZARD_COMPLETION_FIELDS = [
+  "name",
+  "gender",
+  "dobDay",
+  "occupation",
+  "mainConcerns",
+  "currentSituation",
+  "goals",
+  "existingDiagnoses",
+  "familyHistory",
+  "medications",
+  "heightCm",
+  "weightKg",
+  "exerciseFrequency",
+] as const
+
+// Wizard step config
+export const PROFILE_WIZARD_STEPS = [
+  { key: "stepYouTitle",        fields: ["name", "gender", "dobDay", "occupation"] },
+  { key: "stepChallengesTitle", fields: ["mainConcerns"] },
+  { key: "stepStoryTitle",      fields: ["currentSituation", "goals"] },
+  { key: "stepHealthTitle",     fields: ["existingDiagnoses", "familyHistory", "medications"] },
+  { key: "stepLifestyleTitle",  fields: ["heightCm", "weightKg", "exerciseFrequency"] },
 ] as const
 
 export const PAGINATION_DEFAULT = 20

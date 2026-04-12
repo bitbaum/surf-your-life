@@ -193,6 +193,43 @@ export const leads = pgTable("leads", {
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
 })
 
+// ─── Services & Bookings ──────────────────────────────────────────────────────
+
+export const serviceCategoryEnum = pgEnum("service_category", ["machine", "space", "consultation"])
+export const bookingStatusEnum = pgEnum("booking_status", ["pending", "confirmed", "cancelled"])
+
+export const services = pgTable("services", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: text("name").notNull(),
+  description: text("description"),
+  category: serviceCategoryEnum("category").notNull(),
+  durationMinutes: integer("duration_minutes"),
+  available: boolean("available").default(true).notNull(),
+  sortOrder: integer("sort_order").default(0).notNull(),
+})
+
+export const bookings = pgTable(
+  "bookings",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    serviceId: uuid("service_id")
+      .notNull()
+      .references(() => services.id, { onDelete: "cascade" }),
+    preferredDate: text("preferred_date"), // ISO: YYYY-MM-DD
+    preferredTime: text("preferred_time"), // "morning" | "afternoon" | "flexible"
+    notes: text("notes"),
+    status: bookingStatusEnum("status").default("pending").notNull(),
+    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+  },
+  (table) => [
+    index("bookings_user_idx").on(table.userId),
+    index("bookings_status_idx").on(table.status),
+  ]
+)
+
 // ─── Password reset tokens ────────────────────────────────────────────────────
 
 export const passwordResetTokens = pgTable("password_reset_tokens", {
@@ -214,6 +251,16 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   documents: many(documents),
   assignmentsAsClient: many(assignments, { relationName: "client" }),
   assignmentsAsPractitioner: many(assignments, { relationName: "practitioner" }),
+  bookings: many(bookings),
+}))
+
+export const servicesRelations = relations(services, ({ many }) => ({
+  bookings: many(bookings),
+}))
+
+export const bookingsRelations = relations(bookings, ({ one }) => ({
+  user: one(users, { fields: [bookings.userId], references: [users.id] }),
+  service: one(services, { fields: [bookings.serviceId], references: [services.id] }),
 }))
 
 export const profilesRelations = relations(profiles, ({ one }) => ({
@@ -237,4 +284,6 @@ export type Profile = typeof profiles.$inferSelect
 export type CheckIn = typeof checkIns.$inferSelect
 export type Document = typeof documents.$inferSelect
 export type Lead = typeof leads.$inferSelect
+export type Service = typeof services.$inferSelect
+export type Booking = typeof bookings.$inferSelect
 export type Role = (typeof roleEnum.enumValues)[number]

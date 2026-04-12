@@ -11,6 +11,7 @@ import {
   User,
   ClipboardList,
   History,
+  CalendarPlus,
   LogOut,
   Waves,
   Menu,
@@ -26,6 +27,7 @@ export function PortalSidebar() {
     { href: "/dashboard", label: t("dashboard"), icon: LayoutDashboard },
     { href: "/check-in", label: t("checkIn"), icon: ClipboardList },
     { href: "/check-ins", label: t("history"), icon: History },
+    { href: "/book", label: t("book"), icon: CalendarPlus },
     { href: "/profile", label: t("profile"), icon: User },
   ]
 

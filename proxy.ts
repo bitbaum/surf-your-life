@@ -5,7 +5,7 @@ import { NextResponse } from "next/server"
 
 const intlMiddleware = createMiddleware(routing)
 
-const publicPaths = ["/", "/login", "/register", "/forgot-password", "/reset-password", "/contact"]
+const publicPaths = ["/", "/login", "/register", "/forgot-password", "/reset-password", "/contact", "/faq", "/blog"]
 const authPaths = ["/login", "/register", "/forgot-password", "/reset-password"]
 
 function stripLocale(pathname: string): string {
@@ -28,7 +28,7 @@ export default auth((req) => {
     ? "/admin/dashboard"
     : "/dashboard"
 
-  if (session && (path === "/" || isAuthPath)) {
+  if (session && isAuthPath) {
     return NextResponse.redirect(new URL(`/${locale}${dest}`, req.url))
   }
   if (!session && !isPublic) {

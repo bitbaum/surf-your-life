@@ -6,6 +6,9 @@
     "contact": "Kontakt",
     "signIn": "Anmelden",
     "getStarted": "Jetzt starten",
+    "faq": "FAQ",
+    "blog": "Blog",
+    "dashboard": "Dashboard",
     "close": "Menü schliessen",
     "open": "Menü öffnen"
   },
@@ -72,15 +75,99 @@
       "title2": "zu starten?",
       "body": "Erstellen Sie Ihr Konto, füllen Sie das Aufnahmeformular aus, und wir melden uns innerhalb von 24 Stunden, um Ihre erste Beurteilung zu planen.",
       "button": "Konto erstellen",
-      "signIn": "Bereits ein Konto vorhanden →"
+      "signIn": "Bereits ein Konto vorhanden →",
+      "goToDashboard": "Zum Dashboard"
+    },
+    "newsletter": {
+      "label": "Bleiben Sie informiert",
+      "title": "Monatliche Einblicke in Ihre Genesung",
+      "body": "Praxistipps zu Burnout, Long COVID und leistungsfähiger Erholung — vom klinischen Team von Surf Your Life.",
+      "placeholder": "Ihre E-Mail-Adresse",
+      "submit": "Abonnieren",
+      "loading": "Wird abonniert…",
+      "success": "Angemeldet. Wir melden uns.",
+      "error": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut."
     },
     "footer": {
       "address": "Surf Your Life · Zollikerstrasse 183, 8008 Zürich",
       "method": "Methode",
       "forWhom": "Für wen",
+      "faq": "FAQ",
+      "blog": "Blog",
       "signIn": "Anmelden",
       "register": "Registrieren"
     }
+  },
+  "faq": {
+    "title": "Häufig gestellte Fragen",
+    "subtitle": "Alles, was Sie wissen müssen, bevor Sie Ihr Programm beginnen.",
+    "backHome": "Zurück zur Startseite",
+    "items": [
+      {
+        "q": "Für wen ist dieses Programm geeignet?",
+        "a": "Surf Your Life richtet sich an hochfunktionale Fachleute, die Burnout, Long COVID oder einen grossen Lebensübergang erlebt haben. Unsere Klienten sind typischerweise Führungskräfte, Ärzte, Gründer und Kreative, die einen medizinisch fundierten Ansatz benötigen – kein generisches Coaching."
+      },
+      {
+        "q": "Was unterscheidet dieses Programm von regulärer Therapie oder Coaching?",
+        "a": "Wir beginnen mit der Biologie. Die meisten Programme springen direkt zur psychologischen Arbeit, bevor das Nervensystem bereit ist. Unser psychiatrisch geführter Ansatz sequenziert zuerst den biologischen Reset – Schlaf, Nervensystem-Regulation, körperliche Erholung – und beginnt erst danach mit kognitiver und Reintegrationsarbeit."
+      },
+      {
+        "q": "Wie lange dauert ein Programm?",
+        "a": "Programme dauern in der Regel 12–24 Wochen, abhängig von Ihrem Ausgangspunkt und Ihren Zielen. Die erste Phase konzentriert sich auf die biologische Stabilisierung (4–8 Wochen), gefolgt von der Reintegrationsarbeit. Das Tempo bestimmen Sie – wir drängen die Biologie nicht."
+      },
+      {
+        "q": "Benötige ich eine formale Diagnose, um teilzunehmen?",
+        "a": "Nein. Viele Klienten kommen ohne formale Diagnose. Unser Psychiater führt zu Beginn eine gründliche Beurteilung durch, erstellt ein klares klinisches Bild und leitet das Programm entsprechend. Wenn eine formale Diagnose relevant ist, findet dieses Gespräch im Kontext statt – nicht als Voraussetzung."
+      },
+      {
+        "q": "Wird das Programm von der Schweizer Krankenkasse übernommen?",
+        "a": "Psychiatrische Konsultationen können je nach Versicherer und Police teilweise von Ihrer Grundversicherung übernommen werden. Unser Team kann Dokumentation zur Unterstützung Ihrer Anfrage bereitstellen. Die Programmgebühr selbst wird derzeit nicht von Standard-Versicherungsplänen gedeckt."
+      },
+      {
+        "q": "Was ist das Vacuul, und wozu wird es eingesetzt?",
+        "a": "Das Vacuul ist ein Unterdruckkammer-Gerät für den Unterkörper, das Kreislauf, Lymphdrainage und Erholung auf zellulärer Ebene unterstützt. Es wird als Teil der biologischen Reset-Phase eingesetzt – eines von mehreren evidenzbasierten Geräten in unserem 230 m² grossen Performance-Raum."
+      },
+      {
+        "q": "Kann ich während des Programms weiterarbeiten?",
+        "a": "Ja – in den meisten Fällen. Eines der expliziten Ziele des Programms ist die strukturierte berufliche Reintegration. Wir kalibrieren die Intensität Ihres Plans rund um Ihre Arbeitskapazität, nicht gegen sie."
+      },
+      {
+        "q": "Wie funktioniert das digitale Portal?",
+        "a": "Nach der Registrierung erhalten Sie Zugang zu Ihrem persönlichen Portal, in dem Sie tägliche Check-ins (Stimmung, Energie, Schlaf) durchführen. Ihr klinisches Team überprüft die Daten in Echtzeit und passt Ihr Programm zwischen den Terminen an. Sie müssen nicht auf Ihren nächsten Termin warten, um eine Rückmeldung zu erhalten."
+      }
+    ]
+  },
+  "blog": {
+    "title": "Einblicke",
+    "subtitle": "Klinische Perspektiven zu Burnout, Long COVID und leistungsfähiger Erholung.",
+    "backHome": "Zurück zur Startseite",
+    "readMore": "Weiterlesen →",
+    "posts": [
+      {
+        "slug": "why-burnout-is-biological",
+        "title": "Warum Burnout ein biologisches Ereignis ist, kein Mindset-Problem",
+        "date": "2026-03-18",
+        "category": "Burnout",
+        "excerpt": "Anhaltende Erschöpfung, kognitive Trübung und emotionale Abstumpfung sind Symptome eines dysregulierten Nervensystems – keine Zeichen von Schwäche. Das Verständnis der Biologie verändert alles daran, wie Sie sich erholen.",
+        "body": "Burnout wird weit verbreitet missverstanden. Es wird häufig als motivationales Versagen gerahmt – ein Problem der Einstellung, der Resilienz oder der Selbstfürsorgegewohnheiten. Das klinische Bild erzählt eine andere Geschichte.\n\nAuf neurobiologischer Ebene beinhaltet Burnout eine anhaltende Aktivierung der HPA-Achse (Hypothalamus-Hypophysen-Nebennierenrinden-Achse) – dem zentralen Stressreaktionssystem des Körpers. Anhaltende Kortisolexposition stört die Schlafarchitektur, unterdrückt das Immunsystem und beeinträchtigt die Funktion des präfrontalen Kortex, der Entscheidungsfindung, emotionale Regulation und Arbeitsgedächtnis steuert.\n\nDeshalb fühlt sich Burnout an, als hätten Sie sich selbst verloren. Die Biologie hat sich verändert. Das «Sie», das früher leistete, sich verband und entschied, läuft auf degradierter Infrastruktur.\n\nDie Implikation ist bedeutend: Wenn Burnout ein biologisches Ereignis ist, erfordert die Genesung zuerst eine biologische Intervention. Coaching, Mindset-Arbeit und Gesprächstherapie haben begrenzte Wirkung, wenn das Nervensystem noch in der Bedrohungsreaktion steckt. Die Hardware muss vor der Software kommen.\n\nBei Surf Your Life sequenzieren wir die Genesung bewusst. Phase eins ist immer der biologische Reset – Schlafregulierung, Nervensystemstabilisierung und körperliche Erholung. Phase zwei ist die psychologische Arbeit und Reintegration. Diese Abfolge ist entscheidend. Sie zu überspringen ist der Grund, warum so viele Genesungsversuche scheitern."
+      },
+      {
+        "slug": "long-covid-recovery-what-we-know",
+        "title": "Long-COVID-Genesung: Was die Evidenz 2026 sagt",
+        "date": "2026-02-05",
+        "category": "Long COVID",
+        "excerpt": "Post-virale Erschöpfung ist real, messbar und behandelbar – aber nur mit Ansätzen, die die zugrunde liegende Physiologie respektieren. Hier ist, was wir derzeit wissen, und was wir damit machen.",
+        "body": "Long COVID betrifft schätzungsweise 10–20 % der Menschen, die sich mit SARS-CoV-2 infizieren. Die schwächendsten Symptome – Erschöpfung, kognitive Beeinträchtigung, post-exertionelle Malaise und autonome Dysfunktion – können Monate oder Jahre nach Auflösung der akuten Infektion anhalten.\n\nDie Mechanismen werden noch erforscht, aber mehrere Wege haben starke Evidenz: Mikrogerinnsel, die die Sauerstoffversorgung beeinträchtigen, mitochondriale Dysfunktion, anhaltende Immunaktivierung und Dysregulation des autonomen Nervensystems (insbesondere POTS-ähnliche Präsentationen).\n\nWas bedeutet das für die Genesung?\n\nErstens ist der Standardansatz «durch die Erschöpfung hindurchdrücken» kontraindiziert. Post-exertionelle Malaise (PEM) bedeutet, dass Überanstrengung – körperlich oder kognitiv – erhebliche Rückschläge verursachen kann, die Tage bis Wochen andauern. Pacing ist keine Metapher; es ist ein klinisches Protokoll.\n\nZweitens ist die Genesung nicht linear. Viele Klienten beschreiben ein Muster scheinbarer Verbesserung gefolgt von Einbrüchen. Dies ist physiologisch vorhersehbar. Der Genesungsplan muss dies berücksichtigen.\n\nDrittens sind die biologischen und psychologischen Symptome untrennbar. Angst und Depression sind bei Long COVID häufig – teils als Reaktion auf die Behinderung und teils als direkte neurologische Auswirkungen des Virus. Beides muss parallel angegangen werden, nicht nacheinander.\n\nBei Surf Your Life arbeiten wir mit Long-COVID-Klienten mit einem strukturierten Pacing-Protokoll, regelmässiger Überwachung über das Portal und psychiatrischer Aufsicht, um sicherzustellen, dass psychologische Symptome angemessene Aufmerksamkeit erhalten."
+      },
+      {
+        "slug": "midlife-reinvention-the-clinical-case",
+        "title": "Neuorientierung in der Lebensmitte: Das klinische Argument für bewusstes Handeln",
+        "date": "2026-01-14",
+        "category": "Neuorientierung",
+        "excerpt": "Übergänge in der Lebensmitte sind keine Krisen. Sie sind vorhersehbare Entwicklungsereignisse mit identifizierbaren Mustern – und sie verlaufen besser mit Struktur.",
+        "body": "Das Framing «Midlife-Krise» tut Menschen einen Bärendienst. Es pathologisiert, was in den meisten Fällen ein vorhersehbarer Entwicklungsübergang ist – eine Neukalibrierung von Identität, Werten und Richtung, die typischerweise zwischen 40 und 55 Jahren auftritt.\n\nDie Forschung zu Übergängen in der Lebensmitte (Levinson, Vaillant, Harvard-Studie zur Erwachsenenentwicklung) ist konsistent: Menschen, die diese Phase gut navigieren, sind nicht jene, die die Unbehaglichkeit vermeiden, sondern jene, die sich ihr bewusst stellen. Der Übergang beinhaltet Trauer (um nicht eingeschlagene Wege), Identitätsrevision und letztlich ein integrierteres Selbstverständnis.\n\nDas Problem ist, dass die meisten hochfunktionalen Menschen kein Rahmenwerk dafür haben. Sie sind geschickt darin, Dinge zu erreichen – klare Ziele mit messbaren Ergebnissen umzusetzen. Die Lebensmitte fordert sie auf, in Ambiguität zu operieren, mit Nicht-Wissen zu sitzen und Entscheidungen zu treffen, die nicht optimiert werden können.\n\nEin gut strukturiertes Programm schafft die Bedingungen, unter denen diese Arbeit sicher voranschreiten kann. Das bedeutet: zuerst körperliche Stabilität (Schlaf, Bewegung, grundlegende Regulation), ein klares klinisches Bild (Unterscheidung von Entwicklungsübergang und Depression oder Burnout) und ein strukturierter Reintegrationsprozess, wenn neue Richtungen entstehen.\n\nWir arbeiten mit vielen Klienten, für die die Frage nicht lautet «Wie komme ich dahin zurück, wo ich war?», sondern «Was möchte ich eigentlich aus meinem Leben machen?» Diese Frage verdient ernsthafte Aufmerksamkeit – und ernsthafte Unterstützung."
+      }
+    ]
   },
   "auth": {
     "panel": {
@@ -265,13 +352,49 @@
       "dobDay": "Tag",
       "dobMonth": "Monat",
       "dobYear": "Jahr",
-      "saveSuccessAt": "Gespeichert"
+      "saveSuccessAt": "Gespeichert",
+      "stepYouTitle": "Sie",
+      "stepChallengesTitle": "Ihre Herausforderungen",
+      "stepStoryTitle": "Ihre Geschichte",
+      "stepHealthTitle": "Ihre Gesundheit",
+      "stepLifestyleTitle": "Ihr Lebensstil",
+      "stepOf": "von",
+      "next": "Weiter",
+      "saveAndFinish": "Speichern & abschliessen"
+    },
+    "book": {
+      "title": "Leistung buchen",
+      "subtitle": "Reservieren Sie Zeit mit unserem Gerät und unseren Räumen. Wir bestätigen innerhalb von 24 Stunden.",
+      "preferredDate": "Gewünschtes Datum",
+      "preferredTime": "Gewünschte Uhrzeit",
+      "morning": "Morgen (8–12)",
+      "afternoon": "Nachmittag (12–18)",
+      "flexible": "Flexibel",
+      "notes": "Notizen",
+      "notesOptional": "(optional)",
+      "notesPlaceholder": "Wünsche oder Kontext…",
+      "submitBooking": "Buchung anfragen",
+      "submitting": "Wird angefragt…",
+      "successTitle": "Buchungsanfrage gesendet",
+      "successBody": "Wir bestätigen Ihre Buchung innerhalb von 24 Stunden. Sie sehen sie unten.",
+      "noBookings": "Noch keine Buchungen",
+      "yourBookings": "Ihre Buchungen",
+      "statusPending": "Ausstehend",
+      "statusConfirmed": "Bestätigt",
+      "statusCancelled": "Abgesagt",
+      "categoryMachine": "Gerät",
+      "categorySpace": "Raum",
+      "categoryConsultation": "Beratung",
+      "durationMin": "{n} Min.",
+      "cancel": "Absagen",
+      "selectService": "Zum Buchen auswählen"
     }
   },
   "sidebar": {
     "dashboard": "Übersicht",
     "checkIn": "Check-in",
     "history": "Verlauf",
+    "book": "Buchen",
     "profile": "Mein Profil",
     "signOut": "Abmelden",
     "language": "Sprache"

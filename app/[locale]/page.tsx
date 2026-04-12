@@ -3,6 +3,8 @@ import { setRequestLocale } from "next-intl/server"
 import { Link } from "@/i18n/navigation"
 import { Button } from "@/components/ui/button"
 import { MarketingNav } from "@/components/marketing/nav"
+import { NewsletterForm } from "@/components/marketing/newsletter-form"
+import { auth } from "@/lib/auth"
 import {
   ArrowRight,
   Brain,
@@ -22,11 +24,12 @@ export default async function HomePage({
 }) {
   const { locale } = await params
   setRequestLocale(locale)
+  const session = await auth()
 
-  return <HomeContent />
+  return <HomeContent isLoggedIn={!!session} />
 }
 
-function HomeContent() {
+function HomeContent({ isLoggedIn }: { isLoggedIn: boolean }) {
   const t = useTranslations("landing")
 
   const gapCards = t.raw("gap.cards") as Array<{ title: string; body: string }>
@@ -39,7 +42,7 @@ function HomeContent() {
 
   return (
     <div className="min-h-screen bg-white">
-      <MarketingNav />
+      <MarketingNav isLoggedIn={isLoggedIn} />
 
       {/* ── Hero ─────────────────────────────────────────────────────── */}
       <section className="relative min-h-screen flex items-center overflow-hidden pt-16">
@@ -256,6 +259,16 @@ function HomeContent() {
         </div>
       </section>
 
+      {/* ── Newsletter ───────────────────────────────────────────────── */}
+      <section className="py-20 px-6 bg-white border-y border-slate-100">
+        <div className="max-w-2xl mx-auto text-center">
+          <p className="text-teal-600 text-sm font-semibold tracking-widest uppercase mb-4">{t("newsletter.label")}</p>
+          <h2 className="text-3xl font-bold text-slate-900 mb-3">{t("newsletter.title")}</h2>
+          <p className="text-slate-500 mb-8">{t("newsletter.body")}</p>
+          <NewsletterForm />
+        </div>
+      </section>
+
       {/* ── CTA ──────────────────────────────────────────────────────── */}
       <section className="py-24 px-6 bg-slate-950">
         <div className="max-w-3xl mx-auto text-center">
@@ -269,18 +282,26 @@ function HomeContent() {
             {t("cta.body")}
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/register">
-              <Button
-                size="lg"
-                className="w-full sm:w-auto text-base px-10 bg-teal-500 hover:bg-teal-400 text-white border-0"
-              >
-                {t("cta.button")}
-                <ArrowRight className="w-4 h-4" />
-              </Button>
-            </Link>
-            <Link href="/login" className="text-sm text-slate-400 hover:text-white transition-colors">
-              {t("cta.signIn")}
-            </Link>
+            {isLoggedIn ? (
+              <Link href="/dashboard">
+                <Button size="lg" className="w-full sm:w-auto text-base px-10 bg-teal-500 hover:bg-teal-400 text-white border-0">
+                  {t("cta.goToDashboard")}
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
+              </Link>
+            ) : (
+              <>
+                <Link href="/register">
+                  <Button size="lg" className="w-full sm:w-auto text-base px-10 bg-teal-500 hover:bg-teal-400 text-white border-0">
+                    {t("cta.button")}
+                    <ArrowRight className="w-4 h-4" />
+                  </Button>
+                </Link>
+                <Link href="/login" className="text-sm text-slate-400 hover:text-white transition-colors">
+                  {t("cta.signIn")}
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </section>
@@ -297,6 +318,8 @@ function HomeContent() {
           <div className="flex items-center gap-6">
             <a href="#method" className="text-xs text-slate-500 hover:text-slate-300 transition-colors">{t("footer.method")}</a>
             <a href="#who" className="text-xs text-slate-500 hover:text-slate-300 transition-colors">{t("footer.forWhom")}</a>
+            <Link href="/faq" className="text-xs text-slate-500 hover:text-slate-300 transition-colors">{t("footer.faq")}</Link>
+            <Link href="/blog" className="text-xs text-slate-500 hover:text-slate-300 transition-colors">{t("footer.blog")}</Link>
             <Link href="/login" className="text-xs text-slate-500 hover:text-slate-300 transition-colors">{t("footer.signIn")}</Link>
             <Link href="/register" className="text-xs text-slate-500 hover:text-slate-300 transition-colors">{t("footer.register")}</Link>
           </div>

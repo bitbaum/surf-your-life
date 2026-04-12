@@ -6,6 +6,9 @@
     "contact": "Contact",
     "signIn": "Se connecter",
     "getStarted": "Commencer",
+    "faq": "FAQ",
+    "blog": "Blog",
+    "dashboard": "Tableau de bord",
     "close": "Fermer le menu",
     "open": "Ouvrir le menu"
   },
@@ -72,15 +75,99 @@
       "title2": "votre programme?",
       "body": "Créez votre compte, complétez le bilan d'admission, et nous vous contacterons dans les 24 heures pour planifier votre évaluation initiale.",
       "button": "Créer votre compte",
-      "signIn": "Vous avez déjà un compte →"
+      "signIn": "Vous avez déjà un compte →",
+      "goToDashboard": "Accéder à votre tableau de bord"
+    },
+    "newsletter": {
+      "label": "Restez informé",
+      "title": "Des insights mensuels sur votre rétablissement",
+      "body": "Conseils pratiques sur le burnout, le Long COVID et la récupération — par l'équipe clinique de Surf Your Life.",
+      "placeholder": "Votre adresse e-mail",
+      "submit": "S'abonner",
+      "loading": "Abonnement en cours…",
+      "success": "C'est fait. À bientôt.",
+      "error": "Une erreur s'est produite. Veuillez réessayer."
     },
     "footer": {
       "address": "Surf Your Life · Zollikerstrasse 183, 8008 Zurich",
       "method": "Méthode",
       "forWhom": "Pour qui",
+      "faq": "FAQ",
+      "blog": "Blog",
       "signIn": "Se connecter",
       "register": "S'inscrire"
     }
+  },
+  "faq": {
+    "title": "Questions fréquentes",
+    "subtitle": "Tout ce que vous devez savoir avant de commencer votre programme.",
+    "backHome": "Retour à l'accueil",
+    "items": [
+      {
+        "q": "À qui ce programme est-il destiné?",
+        "a": "Surf Your Life est conçu pour les professionnels hautement fonctionnels ayant vécu un burnout, un Long COVID ou une grande transition de vie. Nos clients sont typiquement des cadres, des médecins, des fondateurs et des créatifs qui ont besoin d'une approche médicalement fondée — pas d'un coaching générique."
+      },
+      {
+        "q": "En quoi ce programme diffère-t-il d'une thérapie ou d'un coaching ordinaire?",
+        "a": "Nous commençons par la biologie. La plupart des programmes passent directement au travail psychologique avant que le système nerveux soit prêt. Notre approche guidée par la psychiatrie séquence d'abord la remise à zéro biologique — sommeil, régulation du système nerveux, récupération physique — avant d'entamer le travail cognitif et la réintégration."
+      },
+      {
+        "q": "Quelle est la durée d'un programme?",
+        "a": "Les programmes durent généralement 12 à 24 semaines, selon votre point de départ et vos objectifs. La première phase se concentre sur la stabilisation biologique (4 à 8 semaines), suivie du travail de réintégration. Le rythme est le vôtre — nous ne précipitions pas la biologie."
+      },
+      {
+        "q": "Dois-je avoir un diagnostic formel pour rejoindre le programme?",
+        "a": "Non. De nombreux clients arrivent sans diagnostic formel. Notre psychiatre effectue une évaluation approfondie au début, établit un tableau clinique clair et guide le programme en conséquence. Si un diagnostic formel est pertinent, cette conversation a lieu dans le contexte — pas comme prérequis."
+      },
+      {
+        "q": "Ce programme est-il couvert par l'assurance maladie suisse?",
+        "a": "Les consultations psychiatriques peuvent être partiellement couvertes par votre assurance de base (Grundversicherung), selon votre assureur et votre police. Notre équipe peut fournir une documentation pour appuyer votre demande. Les frais de programme eux-mêmes ne sont pas couverts par les plans d'assurance standard."
+      },
+      {
+        "q": "Qu'est-ce que le Vacuul, et pourquoi est-il utilisé?",
+        "a": "Le Vacuul est un dispositif de pression négative pour la partie inférieure du corps qui soutient la circulation, le drainage lymphatique et la récupération au niveau cellulaire. Il est utilisé dans le cadre de la phase de remise à zéro biologique — l'un des nombreux outils fondés sur des preuves dans notre espace performance de 230 m²."
+      },
+      {
+        "q": "Puis-je continuer à travailler pendant le programme?",
+        "a": "Oui — dans la plupart des cas. L'un des objectifs explicites du programme est la réintégration professionnelle structurée. Nous calibrons l'intensité de votre plan autour de votre capacité de travail, pas contre elle."
+      },
+      {
+        "q": "Comment fonctionne le portail numérique?",
+        "a": "Après l'inscription, vous accédez à votre portail personnel où vous effectuez des check-ins quotidiens (humeur, énergie, sommeil). Votre équipe clinique examine les données en temps réel et ajuste votre programme entre les rendez-vous. Vous n'avez pas à attendre votre prochaine séance pour obtenir une réponse."
+      }
+    ]
+  },
+  "blog": {
+    "title": "Perspectives",
+    "subtitle": "Points de vue cliniques sur le burnout, le Long COVID et la récupération.",
+    "backHome": "Retour à l'accueil",
+    "readMore": "Lire la suite →",
+    "posts": [
+      {
+        "slug": "why-burnout-is-biological",
+        "title": "Pourquoi le burnout est un événement biologique, pas un problème d'état d'esprit",
+        "date": "2026-03-18",
+        "category": "Burnout",
+        "excerpt": "La fatigue persistante, le brouillard cognitif et l'émoussement émotionnel sont des symptômes d'un système nerveux dérégulé — pas des signes de faiblesse. Comprendre la biologie change tout à la façon dont on se rétablit.",
+        "body": "Le burnout est largement incompris. Il est souvent présenté comme un échec motivationnel — un problème d'état d'esprit, de résilience ou d'habitudes de soins personnels. Le tableau clinique raconte une autre histoire.\n\nAu niveau neurobiologique, le burnout implique une activation soutenue de l'axe HPA (hypothalamo-hypophyso-surrénalien) — le système central de réponse au stress du corps. L'exposition prolongée au cortisol perturbe l'architecture du sommeil, supprime le système immunitaire et altère la fonction du cortex préfrontal, qui gouverne la prise de décision, la régulation émotionnelle et la mémoire de travail.\n\nC'est pourquoi le burnout donne l'impression d'avoir perdu soi-même. La biologie a changé. Le «vous» qui performait, se connectait et décidait fonctionne sur une infrastructure dégradée.\n\nL'implication est significative: si le burnout est un événement biologique, la récupération nécessite d'abord une intervention biologique. Le coaching, le travail sur l'état d'esprit et la thérapie par la parole ont une efficacité limitée quand le système nerveux est encore en réponse de menace. Le matériel doit venir avant le logiciel.\n\nChez Surf Your Life, nous séquençons délibérément la récupération. La phase un est toujours la remise à zéro biologique — régulation du sommeil, stabilisation du système nerveux et récupération physique. La phase deux est le travail psychologique et la réintégration. Cette séquence est importante. La sauter explique pourquoi tant de tentatives de récupération échouent."
+      },
+      {
+        "slug": "long-covid-recovery-what-we-know",
+        "title": "Récupération du Long COVID: ce que dit la science en 2026",
+        "date": "2026-02-05",
+        "category": "Long COVID",
+        "excerpt": "La fatigue post-virale est réelle, mesurable et traitable — mais seulement avec des approches qui respectent la physiologie sous-jacente. Voici ce que nous savons actuellement, et ce que nous en faisons.",
+        "body": "Le Long COVID touche environ 10 à 20% des personnes qui contractent le SARS-CoV-2. Les symptômes les plus débilitants — fatigue, troubles cognitifs, malaise post-effort et dysfonction autonome — peuvent persister des mois ou des années après la résolution de l'infection aiguë.\n\nLes mécanismes sont encore à l'étude, mais plusieurs voies ont des preuves solides: microthrombus affectant l'apport en oxygène, dysfonction mitochondriale, activation immunitaire persistante et dérégulation du système nerveux autonome (en particulier les présentations de type POTS).\n\nQue signifie cela pour la récupération?\n\nPremièrement, l'approche standard «pousser à travers la fatigue» est contre-indiquée. Le malaise post-effort (MPE) signifie que la surexertion — physique ou cognitive — peut provoquer des rechutes significatives durant des jours à des semaines. Le rythme n'est pas une métaphore; c'est un protocole clinique.\n\nDeuxièmement, la récupération est non linéaire. De nombreux clients décrivent un schéma d'amélioration apparente suivi de rechutes. C'est physiologiquement prévisible. Le plan de récupération doit en tenir compte.\n\nTroisièmement, les symptômes biologiques et psychologiques sont inséparables. L'anxiété et la dépression sont courantes dans le Long COVID — en partie comme réponse au handicap, et en partie comme effets neurologiques directs du virus. Les deux doivent être traités en parallèle, pas séquentiellement.\n\nChez Surf Your Life, nous travaillons avec les clients atteints de Long COVID en utilisant un protocole de rythme structuré, une surveillance régulière via le portail, et une supervision psychiatrique pour s'assurer que les symptômes psychologiques reçoivent l'attention appropriée."
+      },
+      {
+        "slug": "midlife-reinvention-the-clinical-case",
+        "title": "Réinvention à mi-vie: l'argument clinique pour agir délibérément",
+        "date": "2026-01-14",
+        "category": "Réinvention",
+        "excerpt": "Les transitions à mi-vie ne sont pas des crises. Ce sont des événements développementaux prévisibles avec des schémas identifiables — et ils se passent mieux avec une structure.",
+        "body": "Le cadrage de la «crise de la quarantaine» rend un mauvais service aux gens. Il pathologise ce qui est, dans la plupart des cas, une transition développementale prévisible — une recalibration de l'identité, des valeurs et de la direction qui tend à se produire entre 40 et 55 ans.\n\nLa recherche sur les transitions à mi-vie (Levinson, Vaillant, l'Étude Harvard sur le développement adulte) est cohérente: les personnes qui naviguent bien cette période ne sont pas celles qui évitent l'inconfort, mais celles qui s'y engagent délibérément. La transition implique du deuil (pour les chemins non empruntés), une révision de l'identité et, finalement, un sens de soi plus intégré.\n\nLe problème est que la plupart des personnes hautement fonctionnelles n'ont pas de cadre pour cela. Elles sont habiles à accomplir des choses — à exécuter des objectifs clairs avec des résultats mesurables. La mi-vie leur demande d'opérer dans l'ambiguïté, de rester dans le non-savoir et de prendre des décisions qui ne peuvent pas être optimisées.\n\nUn programme bien structuré crée les conditions pour que ce travail se déroule en toute sécurité. Cela signifie: d'abord la stabilité physique (sommeil, exercice, régulation de base), un tableau clinique clair (distinguer la transition développementale de la dépression ou du burnout) et un processus de réintégration structuré à mesure que de nouvelles directions émergent.\n\nNous travaillons avec de nombreux clients pour qui la question n'est pas «comment puis-je retrouver là où j'étais?» mais «à quoi est-ce que je veux vraiment que ma vie ressemble?» Cette question mérite une attention sérieuse — et un soutien sérieux."
+      }
+    ]
   },
   "auth": {
     "panel": {
@@ -265,13 +352,49 @@
       "dobDay": "Jour",
       "dobMonth": "Mois",
       "dobYear": "Année",
-      "saveSuccessAt": "Enregistré"
+      "saveSuccessAt": "Enregistré",
+      "stepYouTitle": "Vous",
+      "stepChallengesTitle": "Vos défis",
+      "stepStoryTitle": "Votre histoire",
+      "stepHealthTitle": "Votre santé",
+      "stepLifestyleTitle": "Votre mode de vie",
+      "stepOf": "sur",
+      "next": "Suivant",
+      "saveAndFinish": "Enregistrer & terminer"
+    },
+    "book": {
+      "title": "Réserver un service",
+      "subtitle": "Réservez du temps avec nos équipements et espaces. Nous confirmerons dans les 24 heures.",
+      "preferredDate": "Date souhaitée",
+      "preferredTime": "Heure souhaitée",
+      "morning": "Matin (8–12)",
+      "afternoon": "Après-midi (12–18)",
+      "flexible": "Flexible",
+      "notes": "Notes",
+      "notesOptional": "(optionnel)",
+      "notesPlaceholder": "Demandes ou contexte…",
+      "submitBooking": "Demander une réservation",
+      "submitting": "Envoi en cours…",
+      "successTitle": "Demande de réservation envoyée",
+      "successBody": "Nous confirmerons votre réservation dans les 24 heures. Vous la verrez ci-dessous.",
+      "noBookings": "Pas encore de réservations",
+      "yourBookings": "Vos réservations",
+      "statusPending": "En attente",
+      "statusConfirmed": "Confirmée",
+      "statusCancelled": "Annulée",
+      "categoryMachine": "Équipement",
+      "categorySpace": "Espace",
+      "categoryConsultation": "Consultation",
+      "durationMin": "{n} min",
+      "cancel": "Annuler",
+      "selectService": "Sélectionner pour réserver"
     }
   },
   "sidebar": {
     "dashboard": "Tableau de bord",
     "checkIn": "Check-in",
     "history": "Historique",
+    "book": "Réserver",
     "profile": "Mon profil",
     "signOut": "Se déconnecter",
     "language": "Langue"

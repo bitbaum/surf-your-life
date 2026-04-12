@@ -4,8 +4,11 @@
     "forWhom": "For whom",
     "howItWorks": "How it works",
     "contact": "Contact",
+    "faq": "FAQ",
+    "blog": "Blog",
     "signIn": "Sign in",
     "getStarted": "Get started",
+    "dashboard": "Dashboard",
     "close": "Close menu",
     "open": "Open menu"
   },
@@ -72,15 +75,99 @@
       "title2": "your programme?",
       "body": "Create your account, complete the intake, and we'll be in touch within 24 hours to schedule your initial assessment.",
       "button": "Create your account",
-      "signIn": "Already have an account →"
+      "signIn": "Already have an account →",
+      "goToDashboard": "Go to your dashboard"
+    },
+    "newsletter": {
+      "label": "Stay informed",
+      "title": "Recovery insights, delivered monthly",
+      "body": "Practical guidance on burnout, Long COVID, and performance recovery — from the clinical team at Surf Your Life.",
+      "placeholder": "Your email address",
+      "submit": "Subscribe",
+      "loading": "Subscribing…",
+      "success": "You're in. We'll be in touch.",
+      "error": "Something went wrong. Please try again."
     },
     "footer": {
       "address": "Surf Your Life · Zollikerstrasse 183, 8008 Zürich",
       "method": "Method",
       "forWhom": "For whom",
+      "faq": "FAQ",
+      "blog": "Blog",
       "signIn": "Sign in",
       "register": "Register"
     }
+  },
+  "faq": {
+    "title": "Frequently asked questions",
+    "subtitle": "Everything you need to know before starting your programme.",
+    "backHome": "Back to home",
+    "items": [
+      {
+        "q": "Who is this programme for?",
+        "a": "Surf Your Life is designed for high-functioning professionals who have experienced burnout, Long COVID, or a major life transition. Our clients are typically executives, doctors, founders, and creatives who need a medically grounded approach — not generic coaching."
+      },
+      {
+        "q": "What makes this different from regular therapy or coaching?",
+        "a": "We start with the biology. Most programmes jump straight to psychological work before the nervous system is ready. Our psychiatrist-led approach sequences the biological reset first — sleep, nervous system regulation, physical recovery — and only then moves to cognitive and reintegration work."
+      },
+      {
+        "q": "How long does a programme last?",
+        "a": "Programmes are typically 12–24 weeks, depending on your starting point and goals. The first phase focuses on biological stabilisation (4–8 weeks), followed by reintegration work. The pace is yours — we don't rush the biology."
+      },
+      {
+        "q": "Do I need a formal diagnosis to join?",
+        "a": "No. Many clients come without a formal diagnosis. Our psychiatrist conducts a thorough assessment at the start, establishes a clear clinical picture, and guides the programme accordingly. If a formal diagnosis is relevant, that conversation happens in context — not as a prerequisite."
+      },
+      {
+        "q": "Is this covered by Swiss health insurance?",
+        "a": "Psychiatric consultations may be partially covered by your Grundversicherung, depending on your insurer and policy. Our team can provide documentation to support your claim. The programme fee itself is not currently covered by standard insurance plans."
+      },
+      {
+        "q": "What is the Vacuul, and why is it used?",
+        "a": "The Vacuul is a lower-body negative pressure device that supports circulation, lymphatic drainage, and recovery at a cellular level. It is used as part of the biological reset phase — one of several evidence-based tools in our 230 m² performance space."
+      },
+      {
+        "q": "Can I continue working during the programme?",
+        "a": "Yes — in most cases. One of the explicit goals of the programme is structured work reintegration. We calibrate the intensity of your plan around your work capacity, not against it."
+      },
+      {
+        "q": "How does the digital portal work?",
+        "a": "After registration, you get access to your personal portal where you complete daily check-ins (mood, energy, sleep). Your clinical team reviews the data in real time and adjusts your programme between appointments. You don't have to wait for your next session to get a response."
+      }
+    ]
+  },
+  "blog": {
+    "title": "Insights",
+    "subtitle": "Clinical perspectives on burnout, Long COVID, and high-performance recovery.",
+    "backHome": "Back to home",
+    "readMore": "Read more →",
+    "posts": [
+      {
+        "slug": "why-burnout-is-biological",
+        "title": "Why burnout is a biological event, not a mindset problem",
+        "date": "2026-03-18",
+        "category": "Burnout",
+        "excerpt": "Persistent fatigue, cognitive fog, and emotional blunting are symptoms of a dysregulated nervous system — not signs of weakness. Understanding the biology changes everything about how you recover.",
+        "body": "Burnout is widely misunderstood. It is commonly framed as a motivational failure — a problem of mindset, resilience, or self-care habits. The clinical picture tells a different story.\n\nAt the neurobiological level, burnout involves sustained activation of the HPA (hypothalamic-pituitary-adrenal) axis — the body's central stress-response system. Prolonged cortisol exposure disrupts sleep architecture, suppresses the immune system, and impairs prefrontal cortex function, which governs decision-making, emotional regulation, and working memory.\n\nThis is why burnout feels like you've lost yourself. The biology has shifted. The \"you\" that used to perform, connect, and decide is running on degraded infrastructure.\n\nThe implication is significant: if burnout is a biological event, recovery requires biological intervention first. Coaching, mindset work, and talk therapy have limited traction when the nervous system is still in threat response. The hardware needs to come before the software.\n\nAt Surf Your Life, we sequence recovery deliberately. Phase one is always the biological reset — sleep regulation, nervous system stabilisation, and physical recovery. Phase two is psychological and reintegration work. This sequence matters. Skipping it is why so many recovery attempts fail."
+      },
+      {
+        "slug": "long-covid-recovery-what-we-know",
+        "title": "Long COVID recovery: what the evidence says in 2026",
+        "date": "2026-02-05",
+        "category": "Long COVID",
+        "excerpt": "Post-viral fatigue is real, measurable, and treatable — but only with approaches that respect the underlying physiology. Here is what we currently know, and what we do with it.",
+        "body": "Long COVID affects an estimated 10–20% of people who contract SARS-CoV-2. The most debilitating symptoms — fatigue, cognitive impairment, post-exertional malaise, and autonomic dysfunction — can persist for months or years after the acute infection resolves.\n\nThe mechanisms are still being studied, but several pathways have strong evidence: microclots affecting oxygen delivery, mitochondrial dysfunction, persistent immune activation, and autonomic nervous system dysregulation (particularly POTS-like presentations).\n\nWhat does this mean for recovery?\n\nFirst, the standard \"push through fatigue\" approach is contraindicated. Post-exertional malaise (PEM) means that overexertion — physical or cognitive — can cause significant setbacks lasting days to weeks. Pacing is not a metaphor; it is a clinical protocol.\n\nSecond, recovery is non-linear. Many clients describe a pattern of apparent improvement followed by crashes. This is physiologically predictable. The recovery plan must account for it.\n\nThird, the biological and psychological symptoms are inseparable. Anxiety and depression are common in Long COVID — partly as a response to disability, and partly as direct neurological effects of the virus. Both need to be addressed in parallel, not sequentially.\n\nAt Surf Your Life, we work with Long COVID clients using a structured pacing protocol, regular monitoring via the portal, and psychiatric oversight to ensure that psychological symptoms receive appropriate attention."
+      },
+      {
+        "slug": "midlife-reinvention-the-clinical-case",
+        "title": "Midlife reinvention: the clinical case for doing it deliberately",
+        "date": "2026-01-14",
+        "category": "Reinvention",
+        "excerpt": "Midlife transitions are not crises. They are predictable developmental events with identifiable patterns — and they go better with structure.",
+        "body": "The \"midlife crisis\" framing does people a disservice. It pathologises what is, in most cases, a predictable developmental transition — a recalibration of identity, values, and direction that tends to occur between 40 and 55.\n\nThe research on midlife transitions (Levinson, Vaillant, the Harvard Study of Adult Development) is consistent: people who navigate this period well are not those who avoid the discomfort, but those who engage with it deliberately. The transition involves grief (for paths not taken), identity revision, and, ultimately, a more integrated sense of self.\n\nThe problem is that most high-functioning people have no framework for this. They are skilled at achievement — at executing against clear goals with measurable outcomes. Midlife asks them to operate in ambiguity, to sit with not-knowing, and to make decisions that cannot be optimised.\n\nA well-structured programme creates the conditions for this work to proceed safely. That means: physical stability first (sleep, exercise, basic regulation), a clear clinical picture (distinguishing developmental transition from depression or burnout), and a structured reintegration process as new directions emerge.\n\nWe work with many clients for whom the question is not 'how do I get back to where I was?' but 'what do I actually want my life to look like?' That question deserves serious attention — and serious support."
+      }
+    ]
   },
   "auth": {
     "panel": {
@@ -265,13 +352,49 @@
       "dobDay": "Day",
       "dobMonth": "Month",
       "dobYear": "Year",
-      "saveSuccessAt": "Saved"
+      "saveSuccessAt": "Saved",
+      "stepYouTitle": "You",
+      "stepChallengesTitle": "Your challenges",
+      "stepStoryTitle": "Your story",
+      "stepHealthTitle": "Your health",
+      "stepLifestyleTitle": "Your lifestyle",
+      "stepOf": "of",
+      "next": "Next",
+      "saveAndFinish": "Save & finish"
+    },
+    "book": {
+      "title": "Book a service",
+      "subtitle": "Reserve time with our equipment and spaces. We'll confirm within 24 hours.",
+      "preferredDate": "Preferred date",
+      "preferredTime": "Preferred time",
+      "morning": "Morning (8–12)",
+      "afternoon": "Afternoon (12–18)",
+      "flexible": "Flexible",
+      "notes": "Notes",
+      "notesOptional": "(optional)",
+      "notesPlaceholder": "Any requests or context…",
+      "submitBooking": "Request booking",
+      "submitting": "Requesting…",
+      "successTitle": "Booking request sent",
+      "successBody": "We'll confirm your booking within 24 hours. You'll see it below.",
+      "noBookings": "No bookings yet",
+      "yourBookings": "Your bookings",
+      "statusPending": "Pending",
+      "statusConfirmed": "Confirmed",
+      "statusCancelled": "Cancelled",
+      "categoryMachine": "Equipment",
+      "categorySpace": "Space",
+      "categoryConsultation": "Consultation",
+      "durationMin": "{n} min",
+      "cancel": "Cancel",
+      "selectService": "Select to book"
     }
   },
   "sidebar": {
     "dashboard": "Dashboard",
     "checkIn": "Check-in",
     "history": "History",
+    "book": "Book",
     "profile": "My Profile",
     "signOut": "Sign out",
     "language": "Language"
