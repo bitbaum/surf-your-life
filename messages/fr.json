@@ -212,6 +212,14 @@
       "optionalSubtitle": "Ajoutez plus de contexte pour personnaliser votre programme"
     }
   },
+  "sidebar": {
+    "dashboard": "Tableau de bord",
+    "checkIn": "Check-in",
+    "history": "Historique",
+    "profile": "Mon profil",
+    "signOut": "Se déconnecter",
+    "language": "Langue"
+  },
   "common": {
     "loading": "Chargement…",
     "error": "Une erreur s'est produite",

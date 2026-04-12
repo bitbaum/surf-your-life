@@ -212,6 +212,14 @@
       "optionalSubtitle": "Fügen Sie mehr Kontext hinzu, um Ihr Programm zu personalisieren"
     }
   },
+  "sidebar": {
+    "dashboard": "Übersicht",
+    "checkIn": "Check-in",
+    "history": "Verlauf",
+    "profile": "Mein Profil",
+    "signOut": "Abmelden",
+    "language": "Sprache"
+  },
   "common": {
     "loading": "Laden…",
     "error": "Etwas ist schiefgelaufen",

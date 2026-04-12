@@ -212,6 +212,14 @@
       "optionalSubtitle": "Add more context to help us personalise your programme"
     }
   },
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "checkIn": "Check-in",
+    "history": "History",
+    "profile": "My Profile",
+    "signOut": "Sign out",
+    "language": "Language"
+  },
   "common": {
     "loading": "Loading…",
     "error": "Something went wrong",

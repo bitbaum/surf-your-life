@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Link, usePathname } from "@/i18n/navigation"
 import { signOut } from "next-auth/react"
 import { cn } from "@/lib/utils"
+import { LocaleSwitcher } from "@/components/ui/locale-switcher"
 import { LayoutDashboard, Users, LogOut, Waves, Menu, X, Inbox } from "lucide-react"
 
 const navItems = [
@@ -15,6 +16,18 @@ const navItems = [
 export function AdminSidebar() {
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
+
+  const logo = (
+    <Link href="/admin/dashboard" className="flex items-center gap-2 px-2 mb-8" onClick={() => setOpen(false)}>
+      <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-teal-500">
+        <Waves className="w-4 h-4 text-white" />
+      </div>
+      <div>
+        <span className="font-semibold text-white text-sm block">Surf Your Life</span>
+        <p className="text-slate-400 text-xs">Admin</p>
+      </div>
+    </Link>
+  )
 
   const nav = (
     <nav className="flex flex-col gap-1 flex-1">
@@ -37,38 +50,32 @@ export function AdminSidebar() {
     </nav>
   )
 
-  const logo = (
-    <div className="flex items-center gap-2 px-2 mb-8">
-      <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-teal-500">
-        <Waves className="w-4 h-4 text-white" />
+  const bottom = (
+    <div className="flex flex-col gap-3 pt-4 border-t border-slate-700">
+      <div className="px-2">
+        <p className="text-xs text-slate-500 mb-1.5">Language</p>
+        <LocaleSwitcher dark />
       </div>
-      <div>
-        <span className="font-semibold text-white text-sm">Surf Your Life</span>
-        <p className="text-slate-400 text-xs">Admin</p>
-      </div>
+      <button
+        onClick={() => signOut({ callbackUrl: "/login" })}
+        className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+      >
+        <LogOut className="w-4 h-4" />
+        Sign out
+      </button>
     </div>
-  )
-
-  const signOutBtn = (
-    <button
-      onClick={() => signOut({ callbackUrl: "/login" })}
-      className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
-    >
-      <LogOut className="w-4 h-4" />
-      Sign out
-    </button>
   )
 
   return (
     <>
       {/* Mobile top bar */}
       <div className="md:hidden fixed top-0 inset-x-0 z-40 h-14 bg-slate-900 flex items-center justify-between px-4">
-        <div className="flex items-center gap-2">
+        <Link href="/admin/dashboard" className="flex items-center gap-2">
           <div className="w-7 h-7 rounded-lg bg-teal-500 flex items-center justify-center">
             <Waves className="w-3.5 h-3.5 text-white" />
           </div>
           <span className="font-semibold text-white text-sm">Surf Your Life</span>
-        </div>
+        </Link>
         <button
           onClick={() => setOpen(true)}
           className="p-2 rounded-lg hover:bg-slate-800 transition-colors"
@@ -78,15 +85,10 @@ export function AdminSidebar() {
         </button>
       </div>
 
-      {/* Mobile overlay */}
       {open && (
-        <div
-          className="md:hidden fixed inset-0 z-50 bg-black/60"
-          onClick={() => setOpen(false)}
-        />
+        <div className="md:hidden fixed inset-0 z-50 bg-black/60" onClick={() => setOpen(false)} />
       )}
 
-      {/* Mobile drawer + desktop sidebar */}
       <aside
         className={cn(
           "flex flex-col w-60 bg-slate-900 py-6 px-4",
@@ -94,7 +96,6 @@ export function AdminSidebar() {
           open && "!flex fixed inset-y-0 left-0 z-50 shadow-xl"
         )}
       >
-        {/* Mobile close button */}
         <div className="md:hidden flex justify-end mb-4">
           <button
             onClick={() => setOpen(false)}
@@ -107,7 +108,7 @@ export function AdminSidebar() {
 
         {logo}
         {nav}
-        {signOutBtn}
+        {bottom}
       </aside>
     </>
   )

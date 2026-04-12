@@ -42,7 +42,7 @@ export default async function DashboardPage() {
   return (
     <div className="max-w-4xl mx-auto">
       <PageHeader
-        title={t("title", { name: session.user.name?.split(" ")[0] ?? "" })}
+        title={t("title", { name: session.user.name?.split(" ")[0] ?? session.user.email?.split("@")[0] ?? "" })}
         description={t("subtitle")}
       />
 
