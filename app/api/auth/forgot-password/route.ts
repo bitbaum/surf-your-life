@@ -39,8 +39,8 @@ export async function POST(req: Request) {
         expiresAt,
       })
 
-      // TODO: send email via Resend when configured
-      // For now, log to console (admin can retrieve from DB or logs)
+      // Email sending requires Resend (RESEND_API_KEY). Until configured,
+      // token is logged so admin can retrieve it from Vercel logs.
       console.log(`[password-reset] token for ${email}: ${token}`)
     }
   }
