@@ -1,13 +1,15 @@
 "use client"
 
 import { useState, Suspense } from "react"
-import { useSearchParams, useRouter } from "next/navigation"
-import Link from "next/link"
+import { useSearchParams } from "next/navigation"
+import { useTranslations } from "next-intl"
+import { useRouter, Link } from "@/i18n/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 
 function ResetForm() {
+  const t = useTranslations("auth.resetPassword")
   const searchParams = useSearchParams()
   const router = useRouter()
   const token = searchParams.get("token") ?? ""
@@ -20,7 +22,7 @@ function ResetForm() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (password !== confirm) {
-      setError("Passwords don't match")
+      setError(t("errorMismatch"))
       return
     }
     setLoading(true)
@@ -32,7 +34,7 @@ function ResetForm() {
     })
     if (!res.ok) {
       const data = await res.json().catch(() => ({}))
-      setError(data.error ?? "Invalid or expired link")
+      setError(data.error ?? t("errorInvalid"))
       setLoading(false)
       return
     }
@@ -44,12 +46,11 @@ function ResetForm() {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Invalid link</CardTitle>
-          <CardDescription>This reset link is missing or invalid.</CardDescription>
+          <CardTitle>{t("errorInvalid")}</CardTitle>
         </CardHeader>
         <CardContent>
           <Link href="/forgot-password">
-            <Button className="w-full">Request a new link</Button>
+            <Button className="w-full">{t("submit")}</Button>
           </Link>
         </CardContent>
       </Card>
@@ -60,8 +61,8 @@ function ResetForm() {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Password updated</CardTitle>
-          <CardDescription>Redirecting you to sign in…</CardDescription>
+          <CardTitle>{t("successTitle")}</CardTitle>
+          <CardDescription>{t("successBody")}</CardDescription>
         </CardHeader>
       </Card>
     )
@@ -70,13 +71,12 @@ function ResetForm() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Set new password</CardTitle>
-        <CardDescription>Choose a password with at least 8 characters</CardDescription>
+        <CardTitle>{t("title")}</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <Input
-            label="New password"
+            label={t("newPassword")}
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -85,7 +85,7 @@ function ResetForm() {
             minLength={8}
           />
           <Input
-            label="Confirm password"
+            label={t("confirmPassword")}
             type="password"
             value={confirm}
             onChange={(e) => setConfirm(e.target.value)}
@@ -94,7 +94,7 @@ function ResetForm() {
           />
           {error && <p className="text-sm text-red-600">{error}</p>}
           <Button type="submit" disabled={loading} className="w-full mt-1">
-            {loading ? "Updating…" : "Update password"}
+            {loading ? t("loading") : t("submit")}
           </Button>
         </form>
       </CardContent>

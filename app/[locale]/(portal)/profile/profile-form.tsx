@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -36,6 +37,7 @@ function toFormState(profile: Profile | null): FormState {
 }
 
 export function ProfileForm({ profile }: { profile: Profile | null }) {
+  const t = useTranslations("portal.profile")
   const [loading, setLoading] = useState(false)
   const [saved, setSaved] = useState(false)
   const [form, setForm] = useState<FormState>(toFormState(profile))
@@ -90,7 +92,7 @@ export function ProfileForm({ profile }: { profile: Profile | null }) {
       </Card>
 
       <Card>
-        <CardHeader><CardTitle>Your situation & goals</CardTitle></CardHeader>
+        <CardHeader><CardTitle>Your situation &amp; goals</CardTitle></CardHeader>
         <CardContent className="flex flex-col gap-4">
           <div>
             <label className="text-sm font-medium text-slate-700 block mb-1.5">Current situation</label>
@@ -161,9 +163,9 @@ export function ProfileForm({ profile }: { profile: Profile | null }) {
 
       <div className="flex items-center gap-3">
         <Button type="submit" disabled={loading} size="lg">
-          {loading ? "Saving…" : "Save profile"}
+          {loading ? t("saving") : t("save")}
         </Button>
-        {saved && <span className="text-sm text-teal-600 font-medium">Saved ✓</span>}
+        {saved && <span className="text-sm text-teal-600 font-medium">{t("saveSuccess")} ✓</span>}
       </div>
     </form>
   )

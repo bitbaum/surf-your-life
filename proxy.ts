@@ -1,33 +1,44 @@
+import createMiddleware from "next-intl/middleware"
 import { auth } from "@/lib/auth"
+import { routing } from "./i18n/routing"
 import { NextResponse } from "next/server"
 
-const publicRoutes = ["/", "/login", "/register", "/forgot-password", "/reset-password", "/contact"]
-const authRoutes = ["/login", "/register", "/forgot-password", "/reset-password"]
+const intlMiddleware = createMiddleware(routing)
+
+const publicPaths = ["/", "/login", "/register", "/forgot-password", "/reset-password", "/contact"]
+const authPaths = ["/login", "/register", "/forgot-password", "/reset-password"]
+
+function stripLocale(pathname: string): string {
+  return pathname.replace(/^\/(de|en|fr)/, "") || "/"
+}
+
+function getLocale(pathname: string): string {
+  return pathname.match(/^\/(de|en|fr)/)?.[1] ?? routing.defaultLocale
+}
 
 export default auth((req) => {
   const { pathname } = req.nextUrl
-  const isPublic = publicRoutes.some((r) => pathname === r || pathname.startsWith(r + "/"))
   const session = req.auth
+  const path = stripLocale(pathname)
+  const locale = getLocale(pathname)
 
+  const isPublic = publicPaths.some((r) => path === r || path.startsWith(r + "/"))
+  const isAuthPath = authPaths.some((r) => path === r || path.startsWith(r))
   const dest = session?.user.role === "admin" || session?.user.role === "practitioner"
     ? "/admin/dashboard"
     : "/dashboard"
 
-  // Logged-in users don't need the marketing or auth pages
-  if (session && (pathname === "/" || authRoutes.some((r) => pathname.startsWith(r)))) {
-    return NextResponse.redirect(new URL(dest, req.url))
+  if (session && (path === "/" || isAuthPath)) {
+    return NextResponse.redirect(new URL(`/${locale}${dest}`, req.url))
   }
-
   if (!session && !isPublic) {
-    return NextResponse.redirect(new URL("/login", req.url))
+    return NextResponse.redirect(new URL(`/${locale}/login`, req.url))
+  }
+  if (session && path.startsWith("/admin") && session.user.role === "client") {
+    return NextResponse.redirect(new URL(`/${locale}/dashboard`, req.url))
   }
 
-  // Admin/practitioner routes — block clients
-  if (session && pathname.startsWith("/admin") && session.user.role === "client") {
-    return NextResponse.redirect(new URL("/dashboard", req.url))
-  }
-
-  return NextResponse.next()
+  return intlMiddleware(req)
 })
 
 export const config = {

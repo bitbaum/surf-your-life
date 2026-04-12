@@ -1,0 +1,223 @@
+{
+  "nav": {
+    "method": "Méthode",
+    "forWhom": "Pour qui",
+    "howItWorks": "Comment ça marche",
+    "contact": "Contact",
+    "signIn": "Se connecter",
+    "getStarted": "Commencer",
+    "close": "Fermer le menu",
+    "open": "Ouvrir le menu"
+  },
+  "landing": {
+    "badge": "Zurich · Medical Performance Space",
+    "hero": {
+      "line1": "Retrouvez",
+      "line2": "vous-même.",
+      "line3": "À vos conditions.",
+      "subtitle": "Un programme guidé par la psychiatrie pour le burnout, le Long COVID et la réinvention à mi-vie. Nous réinitialisons d'abord la biologie — parce que tout le reste en dépend.",
+      "cta": "Démarrer votre programme",
+      "ctaSecondary": "Voir la méthode"
+    },
+    "trust": ["Guidé par la psychiatrie", "Méthodologie biologie d'abord", "Zollikerstrasse 183"],
+    "proof": ["230 m² d'espace performance", "Guidé par la psychiatrie", "Programmes individuels", "Portail de suivi quotidien", "Zurich CBD"],
+    "gap": {
+      "label": "Le manque",
+      "title": "Pourquoi la plupart des rétablissements ne se complètent jamais",
+      "body": "Un système nerveux dérégulé ne peut pas être coaché ou ramené à la santé par la volonté. Les approches standard échouent parce qu'elles sautent la biologie — ou n'abordent jamais l'écart entre la sortie clinique et la vie fonctionnelle.",
+      "cards": [
+        { "title": "Le coaching avant que le corps soit prêt", "body": "La thérapie par la parole et le travail sur l'état d'esprit n'ont aucune prise quand le système nerveux est encore en réponse de menace. La biologie doit venir en premier." },
+        { "title": "L'écart de sortie n'est pas géré", "body": "La plupart des cliniques sortent les patients sans pont structuré vers le fonctionnement. L'espace entre le traitement et la vie est là où le rétablissement s'effondre." },
+        { "title": "Pas d'ancrage médical", "body": "Les programmes de bien-être manquent de profondeur clinique pour distinguer le burnout de la dépression, ou le Long COVID du stress chronique. La précision est importante." }
+      ]
+    },
+    "method": {
+      "label": "La méthode",
+      "title": "Le matériel avant le logiciel",
+      "subtitle": "Chaque programme commence par votre corps — sommeil, système nerveux et résilience physique. Ce n'est qu'une fois ce fondement stable que le travail psychologique commence.",
+      "pillars": [
+        { "title": "Réinitialisation biologique", "body": "Architecture du sommeil, régulation du système nerveux et récupération physique — séquencées et surveillées. Aucun programme psychologique ne fonctionne sans ce fondement." },
+        { "title": "Accompagnement psychiatrique", "body": "Ancré médicalement dès le premier jour. Notre psychiatre établit un tableau clinique clair et maintient votre programme fondé sur des preuves tout au long." },
+        { "title": "Réintégration", "body": "Retourner au travail, réinventer la suite, ou simplement retrouver votre capacité — nous cartographions l'écart et le naviguons avec vous, étape par étape." }
+      ]
+    },
+    "quote": {
+      "text": "L'écart entre la sortie de la clinique et le retour au travail est là où la plupart des gens tombent. Nous existons spécifiquement pour combler cet écart — avec de la médecine, de la structure et de la responsabilité.",
+      "author": "Dr. Manu",
+      "role": "Psychiatre & Fondateur, Vitareba"
+    },
+    "who": {
+      "label": "Pour qui",
+      "title": "Des personnes hautement fonctionnelles qui ont frappé un mur",
+      "body": "Cadres, médecins, fondateurs, créatifs. Des gens qui ont tout fait correctement et qui ont quand même brûlé — ou qui ne se sont jamais complètement remis du Long COVID, d'une crise de santé ou d'une grande transition de vie.",
+      "testimonialsLabel": "Ce que disent nos clients",
+      "testimonials": [
+        { "text": "Je ne réalisais pas à quel point j'étais épuisé jusqu'à ce que je commence à suivre correctement. La structure m'a donné quelque chose à quoi m'accrocher.", "author": "Cadre dirigeant, Zurich" },
+        { "text": "Après 18 mois de Long COVID, c'était le premier programme qui a réellement commencé par comment je me sentais physiquement.", "author": "Médecin, Bâle" }
+      ],
+      "conditions": ["Burnout", "Long COVID", "Réinvention à mi-vie", "Réintégration au travail", "Stress chronique", "Transition post-clinique", "Énergie & performance"]
+    },
+    "process": {
+      "label": "Le processus",
+      "title": "Simple. Structuré. Clair.",
+      "subtitle": "Pas de conjectures. Chaque étape est définie avant que vous commenciez.",
+      "steps": [
+        { "title": "Évaluation approfondie", "body": "Un bilan complet couvrant vos antécédents médicaux, votre état actuel, votre contexte professionnel et vos objectifs — pour que nous comprenions le tableau complet avant que quoi que ce soit ne commence." },
+        { "title": "Votre programme", "body": "Un plan structuré combinant des protocoles biologie d'abord, des check-ins psychiatriques réguliers et des jalons de réintégration. Personnalisé, pas générique." },
+        { "title": "Suivre & évoluer", "body": "Des check-ins quotidiens dans le portail. Nous voyons les données. Votre programme s'adapte au fur et à mesure de votre rétablissement — pas d'attente jusqu'au prochain rendez-vous." }
+      ]
+    },
+    "cta": {
+      "title1": "Prêt à démarrer",
+      "title2": "votre programme?",
+      "body": "Créez votre compte, complétez le bilan d'admission, et nous vous contacterons dans les 24 heures pour planifier votre évaluation initiale.",
+      "button": "Créer votre compte",
+      "signIn": "Vous avez déjà un compte →"
+    },
+    "footer": {
+      "address": "Surf Your Life · Zollikerstrasse 183, 8008 Zurich",
+      "method": "Méthode",
+      "forWhom": "Pour qui",
+      "signIn": "Se connecter",
+      "register": "S'inscrire"
+    }
+  },
+  "auth": {
+    "panel": {
+      "quote": "L'écart entre la sortie et le retour est là où la plupart des gens tombent.",
+      "author": "Dr. Manu · Psychiatre & Fondateur, Vitareba",
+      "bullets": ["Programme guidé par la psychiatrie", "Méthodologie biologie d'abord", "Zollikerstrasse 183, Zurich"]
+    },
+    "login": {
+      "title": "Content de vous revoir",
+      "subtitle": "Connectez-vous à votre compte",
+      "email": "E-mail",
+      "password": "Mot de passe",
+      "forgotPassword": "Mot de passe oublié?",
+      "submit": "Se connecter",
+      "loading": "Connexion…",
+      "noAccount": "Pas encore de compte?",
+      "getStarted": "Commencer",
+      "or": "ou",
+      "errorInvalid": "E-mail ou mot de passe invalide",
+      "errorGeneric": "Une erreur s'est produite"
+    },
+    "register": {
+      "title": "Créer votre compte",
+      "subtitle": "Commencez votre programme — 2 minutes suffisent",
+      "email": "E-mail",
+      "password": "Mot de passe",
+      "passwordPlaceholder": "Au moins 8 caractères",
+      "submit": "Créer un compte",
+      "loading": "Création du compte…",
+      "hasAccount": "Vous avez déjà un compte?",
+      "signIn": "Se connecter",
+      "or": "ou",
+      "errorExists": "Un compte avec cette adresse e-mail existe déjà",
+      "errorGeneric": "Échec de l'inscription"
+    },
+    "forgotPassword": {
+      "title": "Réinitialiser votre mot de passe",
+      "subtitle": "Entrez votre e-mail et nous vous enverrons un lien de réinitialisation.",
+      "email": "E-mail",
+      "submit": "Envoyer le lien",
+      "loading": "Envoi…",
+      "backToSignIn": "Retour à la connexion",
+      "successTitle": "Vérifiez votre e-mail",
+      "successBody": "Si un compte existe pour cette adresse, vous recevrez bientôt un lien de réinitialisation.",
+      "successBack": "Retour à la connexion"
+    },
+    "resetPassword": {
+      "title": "Définir un nouveau mot de passe",
+      "newPassword": "Nouveau mot de passe",
+      "confirmPassword": "Confirmer le mot de passe",
+      "submit": "Mettre à jour le mot de passe",
+      "loading": "Mise à jour…",
+      "successTitle": "Mot de passe mis à jour",
+      "successBody": "Votre mot de passe a été changé. Redirection vers la connexion…",
+      "errorMismatch": "Les mots de passe ne correspondent pas",
+      "errorInvalid": "Ce lien de réinitialisation est invalide ou a expiré",
+      "errorGeneric": "Une erreur s'est produite"
+    }
+  },
+  "contact": {
+    "title": "Prendre contact",
+    "subtitle": "Parlez-nous de votre situation. Nous vous contacterons dans les 24 heures pour discuter si ce programme vous convient.",
+    "name": "Votre nom",
+    "email": "E-mail",
+    "message": "Qu'est-ce qui vous amène ici?",
+    "messageOptional": "(optionnel)",
+    "messagePlaceholder": "Bref aperçu de votre situation — burnout, Long COVID, transition de carrière…",
+    "submit": "Envoyer le message",
+    "loading": "Envoi…",
+    "privacy": "Nous répondons dans les 24 heures. Vos informations restent privées.",
+    "error": "Une erreur s'est produite. Veuillez réessayer.",
+    "successTitle": "Nous avons reçu votre message",
+    "successBody": "Vous aurez de nos nouvelles dans les 24 heures. En attendant, n'hésitez pas à créer votre compte et à compléter votre profil.",
+    "createAccount": "Créer votre compte",
+    "backHome": "Retour à l'accueil"
+  },
+  "portal": {
+    "dashboard": {
+      "title": "Content de vous revoir, {name}",
+      "subtitle": "Voici comment votre parcours se déroule",
+      "completeProfile": "Complétez votre profil",
+      "completeProfileBody": "{pct}% complété — ajoutez votre situation et vos objectifs pour que nous puissions adapter votre programme",
+      "completeProfileCta": "Compléter le profil",
+      "totalCheckIns": "Total des check-ins",
+      "lastEnergy": "Dernier niveau d'énergie",
+      "readyTitle": "Prêt pour aujourd'hui?",
+      "readySubtitle": "Suivez votre journée",
+      "checkIn": "Check-in",
+      "energyTrend": "Tendance énergétique",
+      "viewAll": "Voir tout →",
+      "recentCheckIns": "Check-ins récents",
+      "energy": "Énergie"
+    },
+    "checkIn": {
+      "title": "Comment allez-vous aujourd'hui?",
+      "subtitle": "Check-in quotidien",
+      "mood": "Comment vous sentez-vous?",
+      "energy": "Niveau d'énergie",
+      "sleepHours": "Heures de sommeil",
+      "sleepOptional": "(optionnel)",
+      "wins": "Qu'est-ce qui s'est bien passé?",
+      "winsOptional": "(optionnel)",
+      "challenges": "Qu'est-ce qui était difficile?",
+      "challengesOptional": "(optionnel)",
+      "notes": "Notes",
+      "notesOptional": "(optionnel)",
+      "submit": "Enregistrer le check-in",
+      "loading": "Enregistrement…",
+      "alreadyDone": "Déjà enregistré aujourd'hui",
+      "alreadyDoneBody": "Vous avez déjà complété votre check-in pour aujourd'hui. Revenez demain!",
+      "successTitle": "Check-in enregistré",
+      "successBody": "Excellent travail. Redirection vers votre tableau de bord…",
+      "error": "Une erreur s'est produite. Veuillez réessayer."
+    },
+    "checkIns": {
+      "title": "Historique des check-ins",
+      "noCheckIns": "Pas encore de check-ins",
+      "energy": "Énergie",
+      "sleep": "Sommeil"
+    },
+    "profile": {
+      "title": "Votre profil",
+      "subtitle": "Aidez-nous à comprendre votre situation",
+      "save": "Enregistrer le profil",
+      "saving": "Enregistrement…",
+      "saveSuccess": "Profil enregistré",
+      "saveError": "Une erreur s'est produite. Veuillez réessayer.",
+      "optionalSection": "Détails optionnels",
+      "optionalSubtitle": "Ajoutez plus de contexte pour personnaliser votre programme"
+    }
+  },
+  "common": {
+    "loading": "Chargement…",
+    "error": "Une erreur s'est produite",
+    "tryAgain": "Réessayer",
+    "goHome": "Retour à l'accueil",
+    "or": "ou",
+    "back": "Retour"
+  }
+}

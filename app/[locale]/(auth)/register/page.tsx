@@ -2,14 +2,15 @@
 
 import { useState } from "react"
 import { signIn } from "next-auth/react"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
+import { useTranslations } from "next-intl"
+import { useRouter, Link } from "@/i18n/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { GoogleButton } from "@/components/auth/google-button"
 
 export default function RegisterPage() {
+  const t = useTranslations("auth.register")
   const router = useRouter()
   const [form, setForm] = useState({ email: "", password: "" })
   const [error, setError] = useState("")
@@ -32,7 +33,7 @@ export default function RegisterPage() {
 
     const data = await res.json()
     if (!res.ok) {
-      setError(data.error ?? "Registration failed")
+      setError(data.error ?? t("errorGeneric"))
       setLoading(false)
       return
     }
@@ -44,7 +45,7 @@ export default function RegisterPage() {
     })
 
     if (signInRes?.error) {
-      setError("Account created but sign-in failed — please sign in manually")
+      setError(t("errorGeneric"))
       setLoading(false)
       return
     }
@@ -57,8 +58,8 @@ export default function RegisterPage() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Create your account</CardTitle>
-        <CardDescription>Begin your programme — takes 2 minutes</CardDescription>
+        <CardTitle>{t("title")}</CardTitle>
+        <CardDescription>{t("subtitle")}</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <GoogleButton />
@@ -68,22 +69,22 @@ export default function RegisterPage() {
             <span className="w-full border-t border-slate-200" />
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-white px-2 text-slate-400">or</span>
+            <span className="bg-white px-2 text-slate-400">{t("or")}</span>
           </div>
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-          <Input label="Email" type="email" value={form.email} onChange={(e) => set("email", e.target.value)} placeholder="you@example.com" required />
-          <Input label="Password" type="password" value={form.password} onChange={(e) => set("password", e.target.value)} placeholder="At least 8 characters" required minLength={8} />
+          <Input label={t("email")} type="email" value={form.email} onChange={(e) => set("email", e.target.value)} placeholder="you@example.com" required />
+          <Input label={t("password")} type="password" value={form.password} onChange={(e) => set("password", e.target.value)} placeholder={t("passwordPlaceholder")} required minLength={8} />
           {error && <p className="text-sm text-red-600">{error}</p>}
           <Button type="submit" disabled={loading} className="w-full mt-1">
-            {loading ? "Creating account…" : "Create account"}
+            {loading ? t("loading") : t("submit")}
           </Button>
         </form>
 
         <p className="text-center text-sm text-slate-500">
-          Already have an account?{" "}
-          <Link href="/login" className="text-teal-600 hover:underline font-medium">Sign in</Link>
+          {t("hasAccount")}{" "}
+          <Link href="/login" className="text-teal-600 hover:underline font-medium">{t("signIn")}</Link>
         </p>
       </CardContent>
     </Card>

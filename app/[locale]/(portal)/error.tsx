@@ -2,7 +2,7 @@
 
 import { useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import Link from "next/link"
+import { Link } from "@/i18n/navigation"
 
 export default function PortalError({ error, reset }: { error: Error; reset: () => void }) {
   useEffect(() => {

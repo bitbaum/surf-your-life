@@ -1,7 +1,13 @@
-import Link from "next/link"
+"use client"
+
+import { useTranslations } from "next-intl"
+import { Link } from "@/i18n/navigation"
 import { Waves } from "lucide-react"
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
+  const t = useTranslations("auth.panel")
+  const bullets = t.raw("bullets") as string[]
+
   return (
     <div className="min-h-screen bg-slate-50 flex">
       {/* Left panel — branding (hidden on mobile) */}
@@ -15,24 +21,18 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 
         <div>
           <p className="text-3xl font-bold text-white leading-snug mb-4">
-            &ldquo;The gap between discharge and return is where most people fall through.&rdquo;
+            &ldquo;{t("quote")}&rdquo;
           </p>
-          <p className="text-slate-400 text-sm">Dr. Manu · Psychiatrist & Founder, Vitareba</p>
+          <p className="text-slate-400 text-sm">{t("author")}</p>
         </div>
 
         <div className="flex flex-col gap-3">
-          <div className="flex items-center gap-2 text-sm text-slate-400">
-            <div className="w-1.5 h-1.5 rounded-full bg-teal-400" />
-            Psychiatry-led programme
-          </div>
-          <div className="flex items-center gap-2 text-sm text-slate-400">
-            <div className="w-1.5 h-1.5 rounded-full bg-teal-400" />
-            Body-first methodology
-          </div>
-          <div className="flex items-center gap-2 text-sm text-slate-400">
-            <div className="w-1.5 h-1.5 rounded-full bg-teal-400" />
-            Zollikerstrasse 183, Zürich
-          </div>
+          {bullets.map((bullet) => (
+            <div key={bullet} className="flex items-center gap-2 text-sm text-slate-400">
+              <div className="w-1.5 h-1.5 rounded-full bg-teal-400" />
+              {bullet}
+            </div>
+          ))}
         </div>
       </div>
 

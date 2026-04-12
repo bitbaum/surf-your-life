@@ -2,12 +2,13 @@ import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { checkIns } from "@/lib/db/schema"
 import { eq, desc, count } from "drizzle-orm"
+import { getTranslations } from "next-intl/server"
 import { Card, CardContent } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
 import { formatDate, formatEnumValue } from "@/lib/utils"
 import { PAGINATION_DEFAULT, MOODS } from "@/lib/constants"
-import Link from "next/link"
+import { Link } from "@/i18n/navigation"
 
 const moodEmoji = Object.fromEntries(MOODS.map((m) => [m.value, m.emoji]))
 
@@ -18,6 +19,8 @@ export default async function CheckInsPage({
 }) {
   const session = await auth()
   if (!session) return null
+
+  const t = await getTranslations("portal.checkIns")
 
   const { page: pageParam } = await searchParams
   const page = Math.max(1, parseInt(pageParam ?? "1") || 1)
@@ -39,7 +42,7 @@ export default async function CheckInsPage({
   return (
     <div className="max-w-3xl mx-auto">
       <PageHeader
-        title="Check-in history"
+        title={t("title")}
         description={`${total} check-in${total !== 1 ? "s" : ""} total`}
         action={
           <Link href="/check-in">
@@ -50,7 +53,7 @@ export default async function CheckInsPage({
 
       {items.length === 0 ? (
         <div className="text-center py-16 text-slate-400">
-          <p className="mb-4">No check-ins yet</p>
+          <p className="mb-4">{t("noCheckIns")}</p>
           <Link href="/check-in">
             <Button>Do your first check-in</Button>
           </Link>
@@ -70,9 +73,9 @@ export default async function CheckInsPage({
                       </div>
                     </div>
                     <div className="flex gap-4 text-sm text-slate-500 text-right">
-                      <span>Energy <strong className="text-slate-800">{ci.energyLevel}/10</strong></span>
+                      <span>{t("energy")} <strong className="text-slate-800">{ci.energyLevel}/10</strong></span>
                       {ci.sleepHours != null && (
-                        <span>Sleep <strong className="text-slate-800">{ci.sleepHours}h</strong></span>
+                        <span>{t("sleep")} <strong className="text-slate-800">{ci.sleepHours}h</strong></span>
                       )}
                     </div>
                   </div>

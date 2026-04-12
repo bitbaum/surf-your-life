@@ -1,11 +1,14 @@
 "use client"
 
 import { useState } from "react"
-import Link from "next/link"
+import { useTranslations } from "next-intl"
+import { Link } from "@/i18n/navigation"
 import { Waves, Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { LocaleSwitcher } from "@/components/ui/locale-switcher"
 
 export function MarketingNav() {
+  const t = useTranslations("nav")
   const [open, setOpen] = useState(false)
 
   return (
@@ -20,25 +23,26 @@ export function MarketingNav() {
           </Link>
 
           <nav className="hidden md:flex items-center gap-8">
-            <a href="#method" className="text-sm text-slate-500 hover:text-slate-900 transition-colors">Method</a>
-            <a href="#who" className="text-sm text-slate-500 hover:text-slate-900 transition-colors">For whom</a>
-            <a href="#process" className="text-sm text-slate-500 hover:text-slate-900 transition-colors">How it works</a>
-            <Link href="/contact" className="text-sm text-slate-500 hover:text-slate-900 transition-colors">Contact</Link>
+            <a href="#method" className="text-sm text-slate-500 hover:text-slate-900 transition-colors">{t("method")}</a>
+            <a href="#who" className="text-sm text-slate-500 hover:text-slate-900 transition-colors">{t("forWhom")}</a>
+            <a href="#process" className="text-sm text-slate-500 hover:text-slate-900 transition-colors">{t("howItWorks")}</a>
+            <Link href="/contact" className="text-sm text-slate-500 hover:text-slate-900 transition-colors">{t("contact")}</Link>
           </nav>
 
           <div className="hidden md:flex items-center gap-3">
+            <LocaleSwitcher />
             <Link href="/login" className="text-sm text-slate-500 hover:text-slate-900 transition-colors">
-              Sign in
+              {t("signIn")}
             </Link>
             <Link href="/register">
-              <Button size="sm">Get started</Button>
+              <Button size="sm">{t("getStarted")}</Button>
             </Link>
           </div>
 
           <button
             className="md:hidden p-2 rounded-lg hover:bg-slate-100 transition-colors"
             onClick={() => setOpen(!open)}
-            aria-label={open ? "Close menu" : "Open menu"}
+            aria-label={open ? t("close") : t("open")}
           >
             {open ? <X className="w-5 h-5 text-slate-700" /> : <Menu className="w-5 h-5 text-slate-700" />}
           </button>
@@ -46,16 +50,17 @@ export function MarketingNav() {
 
         {open && (
           <div className="md:hidden border-t border-slate-100 bg-white px-6 py-5 flex flex-col gap-4">
-            <a href="#method" onClick={() => setOpen(false)} className="text-sm text-slate-700 py-1 hover:text-teal-600 transition-colors">Method</a>
-            <a href="#who" onClick={() => setOpen(false)} className="text-sm text-slate-700 py-1 hover:text-teal-600 transition-colors">For whom</a>
-            <a href="#process" onClick={() => setOpen(false)} className="text-sm text-slate-700 py-1 hover:text-teal-600 transition-colors">How it works</a>
-            <Link href="/contact" onClick={() => setOpen(false)} className="text-sm text-slate-700 py-1 hover:text-teal-600 transition-colors">Contact</Link>
+            <a href="#method" onClick={() => setOpen(false)} className="text-sm text-slate-700 py-1 hover:text-teal-600 transition-colors">{t("method")}</a>
+            <a href="#who" onClick={() => setOpen(false)} className="text-sm text-slate-700 py-1 hover:text-teal-600 transition-colors">{t("forWhom")}</a>
+            <a href="#process" onClick={() => setOpen(false)} className="text-sm text-slate-700 py-1 hover:text-teal-600 transition-colors">{t("howItWorks")}</a>
+            <Link href="/contact" onClick={() => setOpen(false)} className="text-sm text-slate-700 py-1 hover:text-teal-600 transition-colors">{t("contact")}</Link>
             <div className="pt-3 border-t border-slate-100 flex flex-col gap-2">
+              <LocaleSwitcher />
               <Link href="/login" onClick={() => setOpen(false)}>
-                <Button variant="outline" className="w-full">Sign in</Button>
+                <Button variant="outline" className="w-full">{t("signIn")}</Button>
               </Link>
               <Link href="/register" onClick={() => setOpen(false)}>
-                <Button className="w-full">Get started</Button>
+                <Button className="w-full">{t("getStarted")}</Button>
               </Link>
             </div>
           </div>

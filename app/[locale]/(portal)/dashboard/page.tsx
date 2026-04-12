@@ -2,11 +2,12 @@ import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { checkIns, profiles } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
+import { getTranslations } from "next-intl/server"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { StatCard } from "@/components/ui/stat-card"
 import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
-import Link from "next/link"
+import { Link } from "@/i18n/navigation"
 import { formatDate, formatEnumValue } from "@/lib/utils"
 import { ClipboardList, TrendingUp } from "lucide-react"
 import { ONBOARDING_REQUIRED_FIELDS, PROFILE_COMPLETION_FIELDS, ENERGY_SCALE } from "@/lib/constants"
@@ -14,6 +15,8 @@ import { ONBOARDING_REQUIRED_FIELDS, PROFILE_COMPLETION_FIELDS, ENERGY_SCALE } f
 export default async function DashboardPage() {
   const session = await auth()
   if (!session) return null
+
+  const t = await getTranslations("portal.dashboard")
 
   const [profile, recentCheckIns] = await Promise.all([
     db.query.profiles.findFirst({ where: eq(profiles.userId, session.user.id) }),
@@ -39,21 +42,21 @@ export default async function DashboardPage() {
   return (
     <div className="max-w-4xl mx-auto">
       <PageHeader
-        title={`Welcome back, ${session.user.name?.split(" ")[0]}`}
-        description="Here's how your journey is going"
+        title={t("title", { name: session.user.name?.split(" ")[0] ?? "" })}
+        description={t("subtitle")}
       />
 
       {!isOnboarded && (
         <div className="mb-6 rounded-xl bg-teal-50 border border-teal-200 p-4">
           <div className="flex items-center justify-between gap-4 mb-3">
             <div>
-              <p className="font-medium text-teal-900 text-sm">Complete your profile</p>
+              <p className="font-medium text-teal-900 text-sm">{t("completeProfile")}</p>
               <p className="text-xs text-teal-700 mt-0.5">
-                {completionPct}% done — add your situation and goals so we can tailor your programme
+                {t("completeProfileBody", { pct: completionPct })}
               </p>
             </div>
             <Link href="/profile">
-              <Button size="sm">Complete profile</Button>
+              <Button size="sm">{t("completeProfileCta")}</Button>
             </Link>
           </div>
           <div className="h-1.5 rounded-full bg-teal-100 overflow-hidden">
@@ -66,20 +69,20 @@ export default async function DashboardPage() {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <StatCard label="Total check-ins" value={recentCheckIns.length} icon={ClipboardList} color="teal" />
+        <StatCard label={t("totalCheckIns")} value={recentCheckIns.length} icon={ClipboardList} color="teal" />
         <StatCard
-          label="Last energy level"
+          label={t("lastEnergy")}
           value={recentCheckIns[0] ? `${recentCheckIns[0].energyLevel}/10` : "—"}
           icon={TrendingUp}
           color="blue"
         />
         <div className="rounded-xl border border-slate-200 bg-white shadow-sm p-6 flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-slate-700">Ready for today?</p>
-            <p className="text-xs text-slate-400 mt-0.5">Track your day</p>
+            <p className="text-sm font-medium text-slate-700">{t("readyTitle")}</p>
+            <p className="text-xs text-slate-400 mt-0.5">{t("readySubtitle")}</p>
           </div>
           <Link href="/check-in">
-            <Button size="sm">Check in</Button>
+            <Button size="sm">{t("checkIn")}</Button>
           </Link>
         </div>
       </div>
@@ -88,9 +91,9 @@ export default async function DashboardPage() {
         <Card className="mb-6">
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle>Energy trend</CardTitle>
+              <CardTitle>{t("energyTrend")}</CardTitle>
               <Link href="/check-ins" className="text-sm text-teal-600 hover:underline">
-                View all →
+                {t("viewAll")}
               </Link>
             </div>
           </CardHeader>
@@ -123,7 +126,7 @@ export default async function DashboardPage() {
       {recentCheckIns.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>Recent check-ins</CardTitle>
+            <CardTitle>{t("recentCheckIns")}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex flex-col divide-y divide-slate-100">
@@ -134,7 +137,7 @@ export default async function DashboardPage() {
                     <p className="text-xs text-slate-400">{formatDate(ci.createdAt)}</p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-slate-500">Energy</span>
+                    <span className="text-xs text-slate-500">{t("energy")}</span>
                     <span className="text-sm font-semibold text-teal-700">{ci.energyLevel}/10</span>
                   </div>
                 </div>

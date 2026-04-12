@@ -1,12 +1,14 @@
 "use client"
 
 import { useState } from "react"
-import Link from "next/link"
+import { useTranslations } from "next-intl"
+import { Link } from "@/i18n/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 
 export default function ForgotPasswordPage() {
+  const t = useTranslations("auth.forgotPassword")
   const [email, setEmail] = useState("")
   const [sent, setSent] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -27,14 +29,14 @@ export default function ForgotPasswordPage() {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Check your email</CardTitle>
+          <CardTitle>{t("successTitle")}</CardTitle>
           <CardDescription>
-            If an account exists for <strong>{email}</strong>, you&apos;ll receive a reset link shortly.
+            {t("successBody")}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Link href="/login">
-            <Button variant="outline" className="w-full">Back to sign in</Button>
+            <Button variant="outline" className="w-full">{t("successBack")}</Button>
           </Link>
         </CardContent>
       </Card>
@@ -44,13 +46,13 @@ export default function ForgotPasswordPage() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Reset your password</CardTitle>
-        <CardDescription>Enter your email and we&apos;ll send a reset link</CardDescription>
+        <CardTitle>{t("title")}</CardTitle>
+        <CardDescription>{t("subtitle")}</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <Input
-            label="Email"
+            label={t("email")}
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -58,10 +60,10 @@ export default function ForgotPasswordPage() {
             required
           />
           <Button type="submit" disabled={loading} className="w-full mt-1">
-            {loading ? "Sending…" : "Send reset link"}
+            {loading ? t("loading") : t("submit")}
           </Button>
           <Link href="/login">
-            <Button variant="ghost" className="w-full">Back to sign in</Button>
+            <Button variant="ghost" className="w-full">{t("backToSignIn")}</Button>
           </Link>
         </form>
       </CardContent>

@@ -1,0 +1,223 @@
+{
+  "nav": {
+    "method": "Method",
+    "forWhom": "For whom",
+    "howItWorks": "How it works",
+    "contact": "Contact",
+    "signIn": "Sign in",
+    "getStarted": "Get started",
+    "close": "Close menu",
+    "open": "Open menu"
+  },
+  "landing": {
+    "badge": "Zürich · Medical Performance Space",
+    "hero": {
+      "line1": "Get back",
+      "line2": "to yourself.",
+      "line3": "On your terms.",
+      "subtitle": "A psychiatry-led programme for burnout, Long COVID, and midlife reinvention. We reset the biology first — because everything else depends on it.",
+      "cta": "Start your programme",
+      "ctaSecondary": "See the method"
+    },
+    "trust": ["Psychiatry-led", "Body-first methodology", "Zollikerstrasse 183"],
+    "proof": ["230 m² performance space", "Psychiatry-led", "Individual programmes", "Daily tracking portal", "Zürich CBD"],
+    "gap": {
+      "label": "The gap",
+      "title": "Why most recovery never completes",
+      "body": "A dysregulated nervous system cannot be coached or willed back to health. Standard approaches fail because they skip the biology — or never address the gap between clinical discharge and functional life.",
+      "cards": [
+        { "title": "Coaching before the body is ready", "body": "Talk therapy and mindset work have no traction when the nervous system is still in threat response. The biology has to come first." },
+        { "title": "The discharge gap is unmanaged", "body": "Most clinics discharge without a structured bridge back to function. The space between treatment and life is where recovery breaks down." },
+        { "title": "No medical anchor", "body": "Wellness programmes lack the clinical depth to distinguish burnout from depression, or Long COVID from chronic stress. Precision matters." }
+      ]
+    },
+    "method": {
+      "label": "The method",
+      "title": "Hardware before software",
+      "subtitle": "Every programme starts with your body — sleep, nervous system, and physical resilience. Only once that foundation is stable does the psychological work begin.",
+      "pillars": [
+        { "title": "Biological reset", "body": "Sleep architecture, nervous system regulation, and physical recovery — sequenced and monitored. No psychological programme lands without this foundation." },
+        { "title": "Psychiatric guidance", "body": "Medically anchored from day one. Our psychiatrist establishes a clear clinical picture and keeps your programme evidence-based throughout." },
+        { "title": "Reintegration", "body": "Returning to work, reinventing what's next, or simply reclaiming your capacity — we map the gap and navigate it with you, step by step." }
+      ]
+    },
+    "quote": {
+      "text": "The gap between clinic discharge and returning to work is where most people fall through. We exist specifically to bridge that gap — with medicine, structure, and accountability.",
+      "author": "Dr. Manu",
+      "role": "Psychiatrist & Founder, Vitareba"
+    },
+    "who": {
+      "label": "For whom",
+      "title": "High-functioning people who hit a wall",
+      "body": "Executives, doctors, founders, creatives. People who did everything right and still burned out — or who never fully recovered from Long COVID, a health crisis, or a major life transition.",
+      "testimonialsLabel": "What our clients say",
+      "testimonials": [
+        { "text": "I didn't realise how burned out I was until I started tracking properly. The structure gave me something to hold onto.", "author": "Executive, Zürich" },
+        { "text": "After 18 months of Long COVID, this was the first programme that actually started with how I felt physically.", "author": "Physician, Basel" }
+      ],
+      "conditions": ["Burnout", "Long COVID", "Midlife reinvention", "Work reintegration", "Chronic stress", "Post-clinic transition", "Energy & performance"]
+    },
+    "process": {
+      "label": "The process",
+      "title": "Simple. Structured. Clear.",
+      "subtitle": "No guesswork. Every step is defined before you start.",
+      "steps": [
+        { "title": "Deep assessment", "body": "A thorough intake covering your medical history, current state, work context, and goals — so we understand the full picture before anything begins." },
+        { "title": "Your programme", "body": "A structured plan combining body-first protocols, regular psychiatric check-ins, and reintegration milestones. Personalised, not generic." },
+        { "title": "Track & evolve", "body": "Daily check-ins in the portal. We see the data. Your programme adapts as you recover — no waiting for the next appointment." }
+      ]
+    },
+    "cta": {
+      "title1": "Ready to start",
+      "title2": "your programme?",
+      "body": "Create your account, complete the intake, and we'll be in touch within 24 hours to schedule your initial assessment.",
+      "button": "Create your account",
+      "signIn": "Already have an account →"
+    },
+    "footer": {
+      "address": "Surf Your Life · Zollikerstrasse 183, 8008 Zürich",
+      "method": "Method",
+      "forWhom": "For whom",
+      "signIn": "Sign in",
+      "register": "Register"
+    }
+  },
+  "auth": {
+    "panel": {
+      "quote": "The gap between discharge and return is where most people fall through.",
+      "author": "Dr. Manu · Psychiatrist & Founder, Vitareba",
+      "bullets": ["Psychiatry-led programme", "Body-first methodology", "Zollikerstrasse 183, Zürich"]
+    },
+    "login": {
+      "title": "Welcome back",
+      "subtitle": "Sign in to your account",
+      "email": "Email",
+      "password": "Password",
+      "forgotPassword": "Forgot password?",
+      "submit": "Sign in",
+      "loading": "Signing in…",
+      "noAccount": "Don't have an account?",
+      "getStarted": "Get started",
+      "or": "or",
+      "errorInvalid": "Invalid email or password",
+      "errorGeneric": "Something went wrong"
+    },
+    "register": {
+      "title": "Create your account",
+      "subtitle": "Begin your programme — takes 2 minutes",
+      "email": "Email",
+      "password": "Password",
+      "passwordPlaceholder": "At least 8 characters",
+      "submit": "Create account",
+      "loading": "Creating account…",
+      "hasAccount": "Already have an account?",
+      "signIn": "Sign in",
+      "or": "or",
+      "errorExists": "An account with this email already exists",
+      "errorGeneric": "Registration failed"
+    },
+    "forgotPassword": {
+      "title": "Reset your password",
+      "subtitle": "Enter your email and we'll send you a reset link.",
+      "email": "Email",
+      "submit": "Send reset link",
+      "loading": "Sending…",
+      "backToSignIn": "Back to sign in",
+      "successTitle": "Check your email",
+      "successBody": "If an account exists for that address, you'll receive a reset link shortly.",
+      "successBack": "Back to sign in"
+    },
+    "resetPassword": {
+      "title": "Set new password",
+      "newPassword": "New password",
+      "confirmPassword": "Confirm password",
+      "submit": "Update password",
+      "loading": "Updating…",
+      "successTitle": "Password updated",
+      "successBody": "Your password has been changed. Redirecting to sign in…",
+      "errorMismatch": "Passwords do not match",
+      "errorInvalid": "This reset link is invalid or has expired",
+      "errorGeneric": "Something went wrong"
+    }
+  },
+  "contact": {
+    "title": "Get in touch",
+    "subtitle": "Tell us about your situation. We'll reach out within 24 hours to discuss whether this programme is a fit.",
+    "name": "Your name",
+    "email": "Email",
+    "message": "What brings you here?",
+    "messageOptional": "(optional)",
+    "messagePlaceholder": "Brief overview of your situation — burnout, Long COVID, career transition...",
+    "submit": "Send message",
+    "loading": "Sending…",
+    "privacy": "We respond within 24 hours. Your information stays private.",
+    "error": "Something went wrong. Please try again.",
+    "successTitle": "We've got your message",
+    "successBody": "You'll hear from us within 24 hours. In the meantime, feel free to create your account and complete your profile.",
+    "createAccount": "Create your account",
+    "backHome": "Back to home"
+  },
+  "portal": {
+    "dashboard": {
+      "title": "Welcome back, {name}",
+      "subtitle": "Here's how your journey is going",
+      "completeProfile": "Complete your profile",
+      "completeProfileBody": "{pct}% done — add your situation and goals so we can tailor your programme",
+      "completeProfileCta": "Complete profile",
+      "totalCheckIns": "Total check-ins",
+      "lastEnergy": "Last energy level",
+      "readyTitle": "Ready for today?",
+      "readySubtitle": "Track your day",
+      "checkIn": "Check in",
+      "energyTrend": "Energy trend",
+      "viewAll": "View all →",
+      "recentCheckIns": "Recent check-ins",
+      "energy": "Energy"
+    },
+    "checkIn": {
+      "title": "How are you today?",
+      "subtitle": "Daily check-in",
+      "mood": "How are you feeling?",
+      "energy": "Energy level",
+      "sleepHours": "Sleep hours",
+      "sleepOptional": "(optional)",
+      "wins": "What went well?",
+      "winsOptional": "(optional)",
+      "challenges": "What was difficult?",
+      "challengesOptional": "(optional)",
+      "notes": "Notes",
+      "notesOptional": "(optional)",
+      "submit": "Save check-in",
+      "loading": "Saving…",
+      "alreadyDone": "Already checked in today",
+      "alreadyDoneBody": "You've already completed your check-in for today. Come back tomorrow!",
+      "successTitle": "Check-in saved",
+      "successBody": "Great work. Redirecting to your dashboard…",
+      "error": "Something went wrong. Please try again."
+    },
+    "checkIns": {
+      "title": "Check-in history",
+      "noCheckIns": "No check-ins yet",
+      "energy": "Energy",
+      "sleep": "Sleep"
+    },
+    "profile": {
+      "title": "Your profile",
+      "subtitle": "Help us understand your situation",
+      "save": "Save profile",
+      "saving": "Saving…",
+      "saveSuccess": "Profile saved",
+      "saveError": "Something went wrong. Please try again.",
+      "optionalSection": "Optional details",
+      "optionalSubtitle": "Add more context to help us personalise your programme"
+    }
+  },
+  "common": {
+    "loading": "Loading…",
+    "error": "Something went wrong",
+    "tryAgain": "Try again",
+    "goHome": "Go home",
+    "or": "or",
+    "back": "Back"
+  }
+}
