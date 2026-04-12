@@ -5,11 +5,12 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { signOut } from "next-auth/react"
 import { cn } from "@/lib/utils"
-import { LayoutDashboard, Users, LogOut, Waves, Menu, X } from "lucide-react"
+import { LayoutDashboard, Users, LogOut, Waves, Menu, X, Inbox } from "lucide-react"
 
 const navItems = [
   { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/clients", label: "Clients", icon: Users },
+  { href: "/admin/leads", label: "Leads", icon: Inbox },
 ]
 
 export function AdminSidebar() {

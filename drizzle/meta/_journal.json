@@ -15,6 +15,13 @@
       "when": 1776011870989,
       "tag": "0001_youthful_blue_shield",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1776013742000,
+      "tag": "0002_right_miek",
+      "breakpoints": true
     }
   ]
 }

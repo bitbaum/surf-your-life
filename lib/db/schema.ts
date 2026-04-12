@@ -170,6 +170,30 @@ export const assignments = pgTable("assignments", {
   active: boolean("active").default(true).notNull(),
 })
 
+// ─── Leads (marketing intake) ─────────────────────────────────────────────────
+
+export const leads = pgTable("leads", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  message: text("message"),
+  source: text("source").default("contact_form"), // where did they come from
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+})
+
+// ─── Password reset tokens ────────────────────────────────────────────────────
+
+export const passwordResetTokens = pgTable("password_reset_tokens", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  token: text("token").notNull().unique(),
+  expiresAt: timestamp("expires_at", { mode: "date" }).notNull(),
+  usedAt: timestamp("used_at", { mode: "date" }),
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+})
+
 // ─── Relations ────────────────────────────────────────────────────────────────
 
 export const usersRelations = relations(users, ({ one, many }) => ({
@@ -200,4 +224,5 @@ export type NewUser = typeof users.$inferInsert
 export type Profile = typeof profiles.$inferSelect
 export type CheckIn = typeof checkIns.$inferSelect
 export type Document = typeof documents.$inferSelect
+export type Lead = typeof leads.$inferSelect
 export type Role = (typeof roleEnum.enumValues)[number]

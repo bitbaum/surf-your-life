@@ -49,7 +49,8 @@ export default function RegisterPage() {
       return
     }
 
-    router.push("/dashboard")
+    // Send new users straight to profile to complete onboarding
+    router.push("/profile")
     router.refresh()
   }
 
@@ -57,7 +58,7 @@ export default function RegisterPage() {
     <Card>
       <CardHeader>
         <CardTitle>Create your account</CardTitle>
-        <CardDescription>Start your longevity journey</CardDescription>
+        <CardDescription>Begin your programme — takes 2 minutes</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <GoogleButton />

@@ -1,15 +1,55 @@
+import Link from "next/link"
+import { Waves } from "lucide-react"
+
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-teal-50 via-white to-slate-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-teal-600 mb-4">
-            <span className="text-white text-xl font-bold">S</span>
+    <div className="min-h-screen bg-slate-50 flex">
+      {/* Left panel — branding (hidden on mobile) */}
+      <div className="hidden lg:flex flex-col w-[420px] flex-shrink-0 bg-slate-950 p-12 justify-between">
+        <Link href="/" className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg bg-teal-600 flex items-center justify-center">
+            <Waves className="w-4 h-4 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-slate-900">Surf Your Life</h1>
-          <p className="text-slate-500 text-sm mt-1">Your longevity & reintegration portal</p>
+          <span className="font-semibold text-white text-sm">Surf Your Life</span>
+        </Link>
+
+        <div>
+          <p className="text-3xl font-bold text-white leading-snug mb-4">
+            &ldquo;The gap between discharge and return is where most people fall through.&rdquo;
+          </p>
+          <p className="text-slate-400 text-sm">Dr. Manu · Psychiatrist & Founder, Vitareba</p>
         </div>
-        {children}
+
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-2 text-sm text-slate-400">
+            <div className="w-1.5 h-1.5 rounded-full bg-teal-400" />
+            Psychiatry-led programme
+          </div>
+          <div className="flex items-center gap-2 text-sm text-slate-400">
+            <div className="w-1.5 h-1.5 rounded-full bg-teal-400" />
+            Body-first methodology
+          </div>
+          <div className="flex items-center gap-2 text-sm text-slate-400">
+            <div className="w-1.5 h-1.5 rounded-full bg-teal-400" />
+            Zollikerstrasse 183, Zürich
+          </div>
+        </div>
+      </div>
+
+      {/* Right panel — form */}
+      <div className="flex-1 flex items-center justify-center p-6">
+        <div className="w-full max-w-md">
+          {/* Mobile logo */}
+          <div className="lg:hidden text-center mb-8">
+            <Link href="/" className="inline-flex items-center gap-2">
+              <div className="w-9 h-9 rounded-xl bg-teal-600 flex items-center justify-center">
+                <Waves className="w-5 h-5 text-white" />
+              </div>
+              <span className="font-semibold text-slate-900">Surf Your Life</span>
+            </Link>
+          </div>
+          {children}
+        </div>
       </div>
     </div>
   )
