@@ -54,9 +54,6 @@ export default function LoginPage() {
           <Input label="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" required />
           <Input label="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required />
           {error && <p className="text-sm text-red-600">{error}</p>}
-          <div className="text-right">
-            <Link href="/forgot-password" className="text-xs text-teal-600 hover:underline">Forgot password?</Link>
-          </div>
           <Button type="submit" disabled={loading} className="w-full">
             {loading ? "Signing in…" : "Sign in"}
           </Button>

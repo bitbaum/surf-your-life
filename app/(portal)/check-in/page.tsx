@@ -30,7 +30,10 @@ export default function CheckInPage() {
     })
 
     if (!res.ok) {
-      setError("Failed to save check-in")
+      setError(res.status === 409 ? "You've already checked in today. See you tomorrow!" : "Failed to save check-in")
+      if (res.status === 409) {
+        setTimeout(() => router.push("/dashboard"), 2000)
+      }
       setLoading(false)
       return
     }
@@ -113,7 +116,7 @@ export default function CheckInPage() {
             </div>
 
             <div>
-              <label className="text-sm font-medium text-slate-700 block mb-1.5">Today's wins</label>
+              <label className="text-sm font-medium text-slate-700 block mb-1.5">Today&apos;s wins</label>
               <textarea
                 value={wins}
                 onChange={(e) => setWins(e.target.value)}

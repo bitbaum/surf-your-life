@@ -21,7 +21,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
     }),
   ])
 
-  if (!client || client.role === "admin") notFound()
+  if (!client || client.role !== "client") notFound()
 
   const profile = client.profile
 

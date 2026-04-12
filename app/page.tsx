@@ -101,7 +101,7 @@ export default function HomePage() {
             <h2 className="text-3xl font-bold text-slate-900">Hardware before software</h2>
             <p className="mt-3 text-slate-500 max-w-lg mx-auto">
               Most programmes start with mindset. We start with your body.
-              A dysregulated nervous system can't be coached out of trouble.
+              A dysregulated nervous system can&apos;t be coached out of trouble.
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -138,8 +138,8 @@ export default function HomePage() {
             </div>
             <div className="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm">
               <blockquote className="text-slate-700 leading-relaxed italic">
-                "The gap between clinic discharge and returning to work is where most people fall through.
-                We exist specifically to bridge that gap — with medicine, structure, and accountability."
+                &ldquo;The gap between clinic discharge and returning to work is where most people fall through.
+                We exist specifically to bridge that gap — with medicine, structure, and accountability.&rdquo;
               </blockquote>
               <div className="mt-6 flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center">
@@ -183,7 +183,7 @@ export default function HomePage() {
         <div className="max-w-2xl mx-auto text-center">
           <h2 className="text-3xl font-bold text-white">Ready to start?</h2>
           <p className="mt-4 text-teal-100 text-lg">
-            Create your account, complete your intake, and we'll be in touch within 24 hours.
+            Create your account, complete your intake, and we&apos;ll be in touch within 24 hours.
           </p>
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link href="/register">

@@ -1,10 +1,11 @@
 "use client"
 
+import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { signOut } from "next-auth/react"
 import { cn } from "@/lib/utils"
-import { LayoutDashboard, Users, LogOut, Waves } from "lucide-react"
+import { LayoutDashboard, Users, LogOut, Waves, Menu, X } from "lucide-react"
 
 const navItems = [
   { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -13,44 +14,101 @@ const navItems = [
 
 export function AdminSidebar() {
   const pathname = usePathname()
+  const [open, setOpen] = useState(false)
+
+  const nav = (
+    <nav className="flex flex-col gap-1 flex-1">
+      {navItems.map(({ href, label, icon: Icon }) => (
+        <Link
+          key={href}
+          href={href}
+          onClick={() => setOpen(false)}
+          className={cn(
+            "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+            pathname.startsWith(href)
+              ? "bg-teal-600 text-white"
+              : "text-slate-400 hover:bg-slate-800 hover:text-white"
+          )}
+        >
+          <Icon className="w-4 h-4" />
+          {label}
+        </Link>
+      ))}
+    </nav>
+  )
+
+  const logo = (
+    <div className="flex items-center gap-2 px-2 mb-8">
+      <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-teal-500">
+        <Waves className="w-4 h-4 text-white" />
+      </div>
+      <div>
+        <span className="font-semibold text-white text-sm">Surf Your Life</span>
+        <p className="text-slate-400 text-xs">Admin</p>
+      </div>
+    </div>
+  )
+
+  const signOutBtn = (
+    <button
+      onClick={() => signOut({ callbackUrl: "/login" })}
+      className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+    >
+      <LogOut className="w-4 h-4" />
+      Sign out
+    </button>
+  )
 
   return (
-    <aside className="flex flex-col w-60 min-h-screen bg-slate-900 py-6 px-4">
-      <div className="flex items-center gap-2 px-2 mb-8">
-        <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-teal-500">
-          <Waves className="w-4 h-4 text-white" />
-        </div>
-        <div>
+    <>
+      {/* Mobile top bar */}
+      <div className="md:hidden fixed top-0 inset-x-0 z-40 h-14 bg-slate-900 flex items-center justify-between px-4">
+        <div className="flex items-center gap-2">
+          <div className="w-7 h-7 rounded-lg bg-teal-500 flex items-center justify-center">
+            <Waves className="w-3.5 h-3.5 text-white" />
+          </div>
           <span className="font-semibold text-white text-sm">Surf Your Life</span>
-          <p className="text-slate-400 text-xs">Admin</p>
         </div>
+        <button
+          onClick={() => setOpen(true)}
+          className="p-2 rounded-lg hover:bg-slate-800 transition-colors"
+          aria-label="Open menu"
+        >
+          <Menu className="w-5 h-5 text-slate-300" />
+        </button>
       </div>
 
-      <nav className="flex flex-col gap-1 flex-1">
-        {navItems.map(({ href, label, icon: Icon }) => (
-          <Link
-            key={href}
-            href={href}
-            className={cn(
-              "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
-              pathname.startsWith(href)
-                ? "bg-teal-600 text-white"
-                : "text-slate-400 hover:bg-slate-800 hover:text-white"
-            )}
-          >
-            <Icon className="w-4 h-4" />
-            {label}
-          </Link>
-        ))}
-      </nav>
+      {/* Mobile overlay */}
+      {open && (
+        <div
+          className="md:hidden fixed inset-0 z-50 bg-black/60"
+          onClick={() => setOpen(false)}
+        />
+      )}
 
-      <button
-        onClick={() => signOut({ callbackUrl: "/login" })}
-        className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+      {/* Mobile drawer + desktop sidebar */}
+      <aside
+        className={cn(
+          "flex flex-col w-60 bg-slate-900 py-6 px-4",
+          "hidden md:flex md:min-h-screen",
+          open && "!flex fixed inset-y-0 left-0 z-50 shadow-xl"
+        )}
       >
-        <LogOut className="w-4 h-4" />
-        Sign out
-      </button>
-    </aside>
+        {/* Mobile close button */}
+        <div className="md:hidden flex justify-end mb-4">
+          <button
+            onClick={() => setOpen(false)}
+            className="p-1.5 rounded-lg hover:bg-slate-800 transition-colors"
+            aria-label="Close menu"
+          >
+            <X className="w-5 h-5 text-slate-400" />
+          </button>
+        </div>
+
+        {logo}
+        {nav}
+        {signOutBtn}
+      </aside>
+    </>
   )
 }
