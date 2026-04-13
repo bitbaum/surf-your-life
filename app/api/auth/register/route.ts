@@ -8,8 +8,17 @@ import { registerSchema, resolveRole } from "@/lib/domain/auth"
 import { sendEmail } from "@/lib/email"
 import { welcomeEmail, newUserAlertEmail, verificationEmail } from "@/lib/email/templates"
 import { SITE_URL } from "@/lib/constants"
+import { checkRateLimit, ipKey } from "@/lib/rate-limit"
 
 export async function POST(req: Request) {
+  const { ok, retryAfterSecs } = checkRateLimit(ipKey(req, "register"), 5)
+  if (!ok) {
+    return NextResponse.json(
+      { success: false, error: "Too many registration attempts. Please try again later." },
+      { status: 429, headers: { "Retry-After": String(retryAfterSecs) } }
+    )
+  }
+
   const body = await req.json()
   const parsed = registerSchema.safeParse(body)
 
