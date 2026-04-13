@@ -342,7 +342,9 @@
       "energyTrend": "Energy trend",
       "viewAll": "View all →",
       "recentCheckIns": "Recent check-ins",
-      "energy": "Energy"
+      "energy": "Energy",
+      "moodTrend": "Mood trend",
+      "sleepTrend": "Sleep trend"
     },
     "checkIn": {
       "title": "How are you today?",
@@ -561,24 +563,41 @@
       "selectClient": "Select Client",
       "noThreads": "No conversations yet"
     },
-    "users": {
-      "title": "Users",
-      "allUsers": "All Users",
-      "name": "Name",
-      "email": "Email",
-      "role": "Role",
-      "joined": "Joined",
-      "changeRole": "Change Role",
-      "roleUpdated": "Role updated",
-      "cannotChangeSelf": "You cannot change your own role",
-      "roles": {
-        "client": "Client",
-        "practitioner": "Practitioner",
-        "admin": "Admin"
-      }
-    },
     "clients": {
       "searchPlaceholder": "Search by name or email...",
+      "title": "Clients",
+      "allClients": "All clients",
+      "columnName": "Name",
+      "columnEmail": "Email",
+      "columnConcern": "Concern",
+      "columnJoined": "Joined",
+      "noResults": "No clients match your search",
+      "noClients": "No clients yet",
+      "atRiskLink": "At-risk clients →",
+      "viewLink": "View →",
+      "detail": {
+        "backLink": "← Clients",
+        "unnamed": "Unnamed",
+        "joinedOn": "Joined {date}",
+        "profileCard": "Profile",
+        "checkInsCard": "Check-ins",
+        "noProfile": "No profile filled in yet",
+        "noCheckIns": "No check-ins yet",
+        "mainConcern": "Main concern",
+        "occupation": "Occupation",
+        "dateOfBirth": "Date of birth",
+        "exercise": "Exercise",
+        "previousTherapy": "Previous therapy",
+        "yes": "Yes",
+        "no": "No",
+        "sleepQuality": "Sleep quality",
+        "stressLevel": "Stress level",
+        "medications": "Medications",
+        "currentSituation": "Current situation",
+        "goals": "Goals",
+        "energy": "Energy",
+        "sleep": "Sleep"
+      },
       "atRisk": {
         "title": "At-Risk Clients",
         "description": "Clients who haven't checked in for 7+ days",
@@ -586,7 +605,8 @@
         "daysSince": "{n} days ago",
         "never": "Never",
         "noAtRisk": "All clients have checked in recently",
-        "viewAtRisk": "At-risk clients"
+        "viewAtRisk": "At-risk clients",
+        "sendMessage": "Send message"
       }
     },
     "leads": {
@@ -594,7 +614,13 @@
       "statusContacted": "Contacted",
       "statusDismissed": "Dismissed",
       "filterAll": "All",
-      "updateStatus": "Update status"
+      "updateStatus": "Update status",
+      "title": "Leads",
+      "columnName": "Name",
+      "columnEmail": "Email",
+      "columnMessage": "Message",
+      "columnDate": "Date",
+      "noLeads": "No leads yet"
     },
     "bookings": {
       "title": "Bookings",
@@ -613,7 +639,26 @@
       "noBookings": "No bookings found",
       "confirming": "Confirming...",
       "cancelling": "Cancelling...",
-      "statusUpdated": "Booking updated"
+      "statusUpdated": "Booking updated",
+      "description": "Manage all client booking requests",
+      "created": "Created"
+    },
+    "users": {
+      "title": "Users",
+      "allUsers": "All Users",
+      "name": "Name",
+      "email": "Email",
+      "role": "Role",
+      "joined": "Joined",
+      "changeRole": "Change Role",
+      "roleUpdated": "Role updated",
+      "cannotChangeSelf": "You cannot change your own role",
+      "noUsers": "No users yet",
+      "roles": {
+        "client": "Client",
+        "practitioner": "Practitioner",
+        "admin": "Admin"
+      }
     }
   },
   "concerns": {
@@ -629,6 +674,8 @@
     "tryAgain": "Try again",
     "goHome": "Go home",
     "or": "or",
-    "back": "Back"
+    "back": "Back",
+    "previous": "← Previous",
+    "next": "Next →"
   }
 }

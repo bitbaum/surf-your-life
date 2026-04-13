@@ -342,7 +342,9 @@
       "energyTrend": "Energieverlauf",
       "viewAll": "Alle anzeigen →",
       "recentCheckIns": "Letzte Check-ins",
-      "energy": "Energie"
+      "energy": "Energie",
+      "moodTrend": "Stimmungsverlauf",
+      "sleepTrend": "Schlafdaten"
     },
     "checkIn": {
       "title": "Wie geht es Ihnen heute?",
@@ -561,24 +563,41 @@
       "selectClient": "Klient auswählen",
       "noThreads": "Noch keine Gespräche"
     },
-    "users": {
-      "title": "Benutzer",
-      "allUsers": "Alle Benutzer",
-      "name": "Name",
-      "email": "E-Mail",
-      "role": "Rolle",
-      "joined": "Beigetreten",
-      "changeRole": "Rolle ändern",
-      "roleUpdated": "Rolle aktualisiert",
-      "cannotChangeSelf": "Sie können Ihre eigene Rolle nicht ändern",
-      "roles": {
-        "client": "Klient",
-        "practitioner": "Therapeut",
-        "admin": "Admin"
-      }
-    },
     "clients": {
       "searchPlaceholder": "Nach Name oder E-Mail suchen...",
+      "title": "Klienten",
+      "allClients": "Alle Klienten",
+      "columnName": "Name",
+      "columnEmail": "E-Mail",
+      "columnConcern": "Anliegen",
+      "columnJoined": "Beigetreten",
+      "noResults": "Keine Klienten entsprechen der Suche",
+      "noClients": "Noch keine Klienten",
+      "atRiskLink": "Gefährdete Klienten →",
+      "viewLink": "Ansehen →",
+      "detail": {
+        "backLink": "← Klienten",
+        "unnamed": "Unbekannt",
+        "joinedOn": "Beigetreten am {date}",
+        "profileCard": "Profil",
+        "checkInsCard": "Check-ins",
+        "noProfile": "Noch kein Profil ausgefüllt",
+        "noCheckIns": "Noch keine Check-ins",
+        "mainConcern": "Hauptanliegen",
+        "occupation": "Beruf",
+        "dateOfBirth": "Geburtsdatum",
+        "exercise": "Bewegung",
+        "previousTherapy": "Frühere Therapie",
+        "yes": "Ja",
+        "no": "Nein",
+        "sleepQuality": "Schlafqualität",
+        "stressLevel": "Stressniveau",
+        "medications": "Medikamente",
+        "currentSituation": "Aktuelle Situation",
+        "goals": "Ziele",
+        "energy": "Energie",
+        "sleep": "Schlaf"
+      },
       "atRisk": {
         "title": "Gefährdete Klienten",
         "description": "Klienten, die sich seit 7+ Tagen nicht eingeloggt haben",
@@ -586,7 +605,8 @@
         "daysSince": "Vor {n} Tagen",
         "never": "Noch nie",
         "noAtRisk": "Alle Klienten haben sich kürzlich eingeloggt",
-        "viewAtRisk": "Gefährdete Klienten"
+        "viewAtRisk": "Gefährdete Klienten",
+        "sendMessage": "Nachricht senden"
       }
     },
     "leads": {
@@ -594,7 +614,13 @@
       "statusContacted": "Kontaktiert",
       "statusDismissed": "Abgelehnt",
       "filterAll": "Alle",
-      "updateStatus": "Status aktualisieren"
+      "updateStatus": "Status aktualisieren",
+      "title": "Leads",
+      "columnName": "Name",
+      "columnEmail": "E-Mail",
+      "columnMessage": "Nachricht",
+      "columnDate": "Datum",
+      "noLeads": "Noch keine Leads"
     },
     "bookings": {
       "title": "Buchungen",
@@ -613,7 +639,26 @@
       "noBookings": "Keine Buchungen gefunden",
       "confirming": "Wird bestätigt…",
       "cancelling": "Wird abgesagt…",
-      "statusUpdated": "Buchung aktualisiert"
+      "statusUpdated": "Buchung aktualisiert",
+      "description": "Alle Buchungsanfragen verwalten",
+      "created": "Erstellt"
+    },
+    "users": {
+      "title": "Benutzer",
+      "allUsers": "Alle Benutzer",
+      "name": "Name",
+      "email": "E-Mail",
+      "role": "Rolle",
+      "joined": "Beigetreten",
+      "changeRole": "Rolle ändern",
+      "roleUpdated": "Rolle aktualisiert",
+      "cannotChangeSelf": "Sie können Ihre eigene Rolle nicht ändern",
+      "noUsers": "Noch keine Benutzer",
+      "roles": {
+        "client": "Klient",
+        "practitioner": "Therapeut",
+        "admin": "Admin"
+      }
     }
   },
   "concerns": {
@@ -629,6 +674,8 @@
     "tryAgain": "Erneut versuchen",
     "goHome": "Zur Startseite",
     "or": "oder",
-    "back": "Zurück"
+    "back": "Zurück",
+    "previous": "← Zurück",
+    "next": "Weiter →"
   }
 }

@@ -1,27 +1,36 @@
 import { db } from "@/lib/db"
 import { leads } from "@/lib/db/schema"
-import { desc, count, eq, and } from "drizzle-orm"
+import { desc, count, eq } from "drizzle-orm"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { formatDate } from "@/lib/utils"
-import Link from "next/link"
 import { PAGINATION_DEFAULT } from "@/lib/constants"
 import { LeadStatus } from "./lead-status"
+import { getTranslations, setRequestLocale } from "next-intl/server"
+import { Pagination } from "@/components/ui/pagination"
+import { FilterTabs } from "@/components/ui/filter-tabs"
 
 type StatusFilter = "all" | "new" | "contacted" | "dismissed"
 
-const STATUS_TABS: { value: StatusFilter; label: string }[] = [
-  { value: "all", label: "All" },
-  { value: "new", label: "New" },
-  { value: "contacted", label: "Contacted" },
-  { value: "dismissed", label: "Dismissed" },
-]
-
 export default async function LeadsPage({
+  params,
   searchParams,
 }: {
+  params: Promise<{ locale: string }>
   searchParams: Promise<{ page?: string; status?: string }>
 }) {
+  const { locale } = await params
+  setRequestLocale(locale)
+  const t = await getTranslations("admin.leads")
+  const tCommon = await getTranslations("common")
+
+  const STATUS_TABS: { value: StatusFilter; label: string }[] = [
+    { value: "all", label: t("filterAll") },
+    { value: "new", label: t("statusNew") },
+    { value: "contacted", label: t("statusContacted") },
+    { value: "dismissed", label: t("statusDismissed") },
+  ]
+
   const { page: pageParam, status: statusParam } = await searchParams
   const page = Math.max(1, parseInt(pageParam ?? "1") || 1)
   const offset = (page - 1) * PAGINATION_DEFAULT
@@ -56,45 +65,34 @@ export default async function LeadsPage({
   const totalPages = Math.ceil(total / PAGINATION_DEFAULT)
 
   function tabLink(s: StatusFilter) {
-    const params = new URLSearchParams()
-    if (s !== "all") params.set("status", s)
-    params.set("page", "1")
-    return `/admin/leads?${params.toString()}`
+    const urlParams = new URLSearchParams()
+    if (s !== "all") urlParams.set("status", s)
+    urlParams.set("page", "1")
+    return `/admin/leads?${urlParams.toString()}`
   }
 
   function pageLink(p: number) {
-    const params = new URLSearchParams()
-    if (statusFilter !== "all") params.set("status", statusFilter)
-    params.set("page", String(p))
-    return `/admin/leads?${params.toString()}`
+    const urlParams = new URLSearchParams()
+    if (statusFilter !== "all") urlParams.set("status", statusFilter)
+    urlParams.set("page", String(p))
+    return `/admin/leads?${urlParams.toString()}`
   }
 
   return (
     <div className="max-w-4xl mx-auto">
-      <PageHeader title="Leads" description={`${total} contact submission${total !== 1 ? "s" : ""}`} />
+      <PageHeader title={t("title")} description={`${total} ${t("title").toLowerCase()}`} />
 
-      {/* Status filter tabs */}
-      <div className="flex gap-1 mb-4">
-        {STATUS_TABS.map((tab) => (
-          <Link
-            key={tab.value}
-            href={tabLink(tab.value)}
-            className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${
-              statusFilter === tab.value
-                ? "bg-teal-600 text-white font-medium"
-                : "text-slate-600 hover:bg-slate-100"
-            }`}
-          >
-            {tab.label}
-          </Link>
-        ))}
-      </div>
+      <FilterTabs
+        tabs={STATUS_TABS}
+        active={statusFilter}
+        href={tabLink}
+      />
 
       <Card>
-        <CardHeader><CardTitle>All leads</CardTitle></CardHeader>
+        <CardHeader><CardTitle>{t("title")}</CardTitle></CardHeader>
         <CardContent>
           {all.length === 0 ? (
-            <p className="text-slate-400 text-sm py-4 text-center">No leads yet</p>
+            <p className="text-slate-400 text-sm py-4 text-center">{t("noLeads")}</p>
           ) : (
             <div className="flex flex-col divide-y divide-slate-100">
               {all.map((lead) => (
@@ -117,31 +115,13 @@ export default async function LeadsPage({
             </div>
           )}
 
-          {totalPages > 1 && (
-            <div className="flex items-center justify-between mt-6 pt-4 border-t border-slate-100">
-              <p className="text-xs text-slate-400">
-                Page {page} of {totalPages}
-              </p>
-              <div className="flex gap-2">
-                {page > 1 && (
-                  <Link
-                    href={pageLink(page - 1)}
-                    className="px-3 py-1.5 text-xs rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50"
-                  >
-                    ← Previous
-                  </Link>
-                )}
-                {page < totalPages && (
-                  <Link
-                    href={pageLink(page + 1)}
-                    className="px-3 py-1.5 text-xs rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50"
-                  >
-                    Next →
-                  </Link>
-                )}
-              </div>
-            </div>
-          )}
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            pageLink={pageLink}
+            previousLabel={tCommon("previous")}
+            nextLabel={tCommon("next")}
+          />
         </CardContent>
       </Card>
     </div>

@@ -8,12 +8,21 @@ import { formatDate, formatEnumValue } from "@/lib/utils"
 import { PAGINATION_DEFAULT } from "@/lib/constants"
 import { ClientSearch } from "./client-search"
 import { Suspense } from "react"
+import { getTranslations, setRequestLocale } from "next-intl/server"
+import { Pagination } from "@/components/ui/pagination"
 
 export default async function ClientsPage({
+  params,
   searchParams,
 }: {
+  params: Promise<{ locale: string }>
   searchParams: Promise<{ page?: string; q?: string }>
 }) {
+  const { locale } = await params
+  setRequestLocale(locale)
+  const t = await getTranslations("admin.clients")
+  const tCommon = await getTranslations("common")
+
   const { page: pageParam, q } = await searchParams
   const page = Math.max(1, parseInt(pageParam ?? "1") || 1)
   const offset = (page - 1) * PAGINATION_DEFAULT
@@ -51,7 +60,7 @@ export default async function ClientsPage({
 
   return (
     <div className="max-w-5xl mx-auto">
-      <PageHeader title="Clients" description={`${total} registered client${total !== 1 ? "s" : ""}`} />
+      <PageHeader title={t("title")} description={`${total} ${t("title").toLowerCase()}`} />
 
       <div className="flex items-center justify-between mb-4">
         <div className="flex-1">
@@ -63,20 +72,20 @@ export default async function ClientsPage({
           href="/admin/clients/at-risk"
           className="text-sm text-red-500 hover:text-red-700 font-medium ml-4 flex-shrink-0"
         >
-          At-risk clients →
+          {t("atRiskLink")}
         </Link>
       </div>
 
       <Card>
-        <CardHeader><CardTitle>All clients</CardTitle></CardHeader>
+        <CardHeader><CardTitle>{t("allClients")}</CardTitle></CardHeader>
         <CardContent>
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-slate-100">
-                <th className="text-left py-2 font-medium text-slate-500">Name</th>
-                <th className="text-left py-2 font-medium text-slate-500">Email</th>
-                <th className="text-left py-2 font-medium text-slate-500">Concern</th>
-                <th className="text-left py-2 font-medium text-slate-500">Joined</th>
+                <th className="text-left py-2 font-medium text-slate-500">{t("columnName")}</th>
+                <th className="text-left py-2 font-medium text-slate-500">{t("columnEmail")}</th>
+                <th className="text-left py-2 font-medium text-slate-500">{t("columnConcern")}</th>
+                <th className="text-left py-2 font-medium text-slate-500">{t("columnJoined")}</th>
                 <th />
               </tr>
             </thead>
@@ -94,7 +103,7 @@ export default async function ClientsPage({
                       href={`/admin/clients/${client.id}`}
                       className="text-teal-600 hover:underline text-xs font-medium"
                     >
-                      View →
+                      {t("viewLink")}
                     </Link>
                   </td>
                 </tr>
@@ -102,38 +111,20 @@ export default async function ClientsPage({
               {clients.length === 0 && (
                 <tr>
                   <td colSpan={5} className="py-8 text-center text-slate-400">
-                    {q ? "No clients match your search" : "No clients yet"}
+                    {q ? t("noResults") : t("noClients")}
                   </td>
                 </tr>
               )}
             </tbody>
           </table>
 
-          {totalPages > 1 && (
-            <div className="flex items-center justify-between mt-6 pt-4 border-t border-slate-100">
-              <p className="text-xs text-slate-400">
-                Page {page} of {totalPages}
-              </p>
-              <div className="flex gap-2">
-                {page > 1 && (
-                  <Link
-                    href={pageLink(page - 1)}
-                    className="px-3 py-1.5 text-xs rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50"
-                  >
-                    ← Previous
-                  </Link>
-                )}
-                {page < totalPages && (
-                  <Link
-                    href={pageLink(page + 1)}
-                    className="px-3 py-1.5 text-xs rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50"
-                  >
-                    Next →
-                  </Link>
-                )}
-              </div>
-            </div>
-          )}
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            pageLink={pageLink}
+            previousLabel={tCommon("previous")}
+            nextLabel={tCommon("next")}
+          />
         </CardContent>
       </Card>
     </div>

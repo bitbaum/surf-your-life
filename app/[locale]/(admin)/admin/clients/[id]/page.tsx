@@ -5,14 +5,15 @@ import { eq, desc } from "drizzle-orm"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { formatDate, formatEnumValue } from "@/lib/utils"
 import Link from "next/link"
-import { MOODS } from "@/lib/constants"
+import { MOOD_EMOJI } from "@/lib/constants"
 import { ResetLinkButton } from "./reset-link-button"
 import { NewThreadButton } from "./new-thread-button"
+import { getTranslations, setRequestLocale } from "next-intl/server"
 
-const moodEmoji = Object.fromEntries(MOODS.map((m) => [m.value, m.emoji]))
-
-export default async function ClientDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params
+export default async function ClientDetailPage({ params }: { params: Promise<{ locale: string; id: string }> }) {
+  const { locale, id } = await params
+  setRequestLocale(locale)
+  const t = await getTranslations("admin.clients")
 
   const [client, clientCheckIns] = await Promise.all([
     db.query.users.findFirst({
@@ -34,14 +35,14 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
     <div className="max-w-4xl mx-auto">
       <div className="mb-6">
         <Link href="/admin/clients" className="text-sm text-slate-400 hover:text-slate-600">
-          ← Clients
+          {t("detail.backLink")}
         </Link>
       </div>
 
       <div className="mb-8 flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">{client.name ?? "Unnamed"}</h1>
-          <p className="text-slate-500">{client.email} · Joined {formatDate(client.createdAt)}</p>
+          <h1 className="text-2xl font-bold text-slate-900">{client.name ?? t("detail.unnamed")}</h1>
+          <p className="text-slate-500">{client.email} · {t("detail.joinedOn", { date: formatDate(client.createdAt) })}</p>
         </div>
         <div className="flex items-center gap-2">
           <NewThreadButton clientId={id} />
@@ -51,40 +52,40 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
-          <CardHeader><CardTitle>Profile</CardTitle></CardHeader>
+          <CardHeader><CardTitle>{t("detail.profileCard")}</CardTitle></CardHeader>
           <CardContent className="flex flex-col gap-3 text-sm">
             {profile ? (
               <>
-                <Row label="Main concern" value={profile.mainConcern ? formatEnumValue(profile.mainConcern) : undefined} />
-                <Row label="Occupation" value={profile.occupation} />
-                <Row label="Date of birth" value={profile.dateOfBirth} />
-                <Row label="Exercise" value={profile.exerciseFrequency} />
-                <Row label="Previous therapy" value={profile.previousTherapy ? "Yes" : "No"} />
-                <Row label="Sleep quality" value={profile.sleepQuality ? `${profile.sleepQuality}/10` : undefined} />
-                <Row label="Stress level" value={profile.stressLevel ? `${profile.stressLevel}/10` : undefined} />
-                <Row label="Medications" value={profile.medications} />
+                <Row label={t("detail.mainConcern")} value={profile.mainConcern ? formatEnumValue(profile.mainConcern) : undefined} />
+                <Row label={t("detail.occupation")} value={profile.occupation} />
+                <Row label={t("detail.dateOfBirth")} value={profile.dateOfBirth} />
+                <Row label={t("detail.exercise")} value={profile.exerciseFrequency} />
+                <Row label={t("detail.previousTherapy")} value={profile.previousTherapy ? t("detail.yes") : t("detail.no")} />
+                <Row label={t("detail.sleepQuality")} value={profile.sleepQuality ? `${profile.sleepQuality}/10` : undefined} />
+                <Row label={t("detail.stressLevel")} value={profile.stressLevel ? `${profile.stressLevel}/10` : undefined} />
+                <Row label={t("detail.medications")} value={profile.medications} />
                 {profile.currentSituation && (
                   <div>
-                    <p className="text-slate-400 text-xs mb-1">Current situation</p>
+                    <p className="text-slate-400 text-xs mb-1">{t("detail.currentSituation")}</p>
                     <p className="text-slate-700 leading-relaxed">{profile.currentSituation}</p>
                   </div>
                 )}
                 {profile.goals && (
                   <div>
-                    <p className="text-slate-400 text-xs mb-1">Goals</p>
+                    <p className="text-slate-400 text-xs mb-1">{t("detail.goals")}</p>
                     <p className="text-slate-700 leading-relaxed">{profile.goals}</p>
                   </div>
                 )}
               </>
             ) : (
-              <p className="text-slate-400">No profile filled in yet</p>
+              <p className="text-slate-400">{t("detail.noProfile")}</p>
             )}
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Check-ins ({clientCheckIns.length})</CardTitle>
+            <CardTitle>{t("detail.checkInsCard")} ({clientCheckIns.length})</CardTitle>
           </CardHeader>
           <CardContent>
             {clientCheckIns.length > 0 ? (
@@ -93,14 +94,14 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
                   <div key={ci.id} className="py-3">
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-sm font-medium text-slate-700 flex items-center gap-1.5">
-                        <span>{moodEmoji[ci.mood] ?? "😐"}</span>
+                        <span>{MOOD_EMOJI[ci.mood] ?? "😐"}</span>
                         {formatEnumValue(ci.mood)}
                       </span>
                       <span className="text-xs text-slate-400">{formatDate(ci.createdAt)}</span>
                     </div>
                     <div className="flex gap-4 text-xs text-slate-500">
-                      <span>Energy: <strong className="text-slate-700">{ci.energyLevel}/10</strong></span>
-                      {ci.sleepHours != null && <span>Sleep: <strong className="text-slate-700">{ci.sleepHours}h</strong></span>}
+                      <span>{t("detail.energy")}: <strong className="text-slate-700">{ci.energyLevel}/10</strong></span>
+                      {ci.sleepHours != null && <span>{t("detail.sleep")}: <strong className="text-slate-700">{ci.sleepHours}h</strong></span>}
                     </div>
                     {ci.wins && <p className="text-xs text-teal-700 mt-1">✓ {ci.wins}</p>}
                     {ci.challenges && <p className="text-xs text-slate-500 mt-1 italic">{ci.challenges}</p>}
@@ -109,7 +110,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
                 ))}
               </div>
             ) : (
-              <p className="text-slate-400 text-sm">No check-ins yet</p>
+              <p className="text-slate-400 text-sm">{t("detail.noCheckIns")}</p>
             )}
           </CardContent>
         </Card>

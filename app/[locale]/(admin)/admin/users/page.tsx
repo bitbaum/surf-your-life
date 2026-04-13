@@ -1,46 +1,82 @@
 import { db } from "@/lib/db"
 import { users } from "@/lib/db/schema"
-import { desc } from "drizzle-orm"
+import { desc, count } from "drizzle-orm"
 import { auth } from "@/lib/auth"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { formatDate } from "@/lib/utils"
 import { PAGINATION_DEFAULT } from "@/lib/constants"
 import { RoleButton } from "./role-button"
+import { getTranslations, setRequestLocale } from "next-intl/server"
+import { Badge } from "@/components/ui/badge"
+import { Pagination } from "@/components/ui/pagination"
+import type { BadgeVariant } from "@/components/ui/badge"
 
-export default async function UsersPage() {
+export default async function UsersPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ locale: string }>
+  searchParams: Promise<{ page?: string }>
+}) {
+  const { locale } = await params
+  setRequestLocale(locale)
+  const t = await getTranslations("admin.users")
+  const tCommon = await getTranslations("common")
+
   const session = await auth()
   const canEdit = session?.user?.role === "admin"
 
-  const allUsers = await db
-    .select({
-      id: users.id,
-      name: users.name,
-      email: users.email,
-      role: users.role,
-      createdAt: users.createdAt,
-    })
-    .from(users)
-    .orderBy(desc(users.createdAt))
-    .limit(PAGINATION_DEFAULT)
+  const { page: pageParam } = await searchParams
+  const page = Math.max(1, parseInt(pageParam ?? "1") || 1)
+  const offset = (page - 1) * PAGINATION_DEFAULT
+
+  const [allUsers, totalResult] = await Promise.all([
+    db
+      .select({
+        id: users.id,
+        name: users.name,
+        email: users.email,
+        role: users.role,
+        createdAt: users.createdAt,
+      })
+      .from(users)
+      .orderBy(desc(users.createdAt))
+      .limit(PAGINATION_DEFAULT)
+      .offset(offset),
+    db.select({ count: count() }).from(users),
+  ])
+
+  const total = totalResult[0]?.count ?? 0
+  const totalPages = Math.ceil(total / PAGINATION_DEFAULT)
+
+  const roleVariant: Record<string, BadgeVariant> = {
+    admin: "teal",
+    practitioner: "blue",
+    client: "slate",
+  }
+
+  function pageLink(p: number) {
+    return `/admin/users?page=${p}`
+  }
 
   return (
     <div className="max-w-5xl mx-auto">
-      <PageHeader title="Users" description={`${allUsers.length} users`} />
+      <PageHeader title={t("title")} description={`${total} ${t("title").toLowerCase()}`} />
 
       <Card>
         <CardHeader>
-          <CardTitle>All Users</CardTitle>
+          <CardTitle>{t("allUsers")}</CardTitle>
         </CardHeader>
         <CardContent>
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-slate-100">
-                <th className="text-left py-2 font-medium text-slate-500">Name</th>
-                <th className="text-left py-2 font-medium text-slate-500">Email</th>
-                <th className="text-left py-2 font-medium text-slate-500">Role</th>
-                <th className="text-left py-2 font-medium text-slate-500">Joined</th>
-                {canEdit && <th className="text-right py-2 font-medium text-slate-500">Change Role</th>}
+                <th className="text-left py-2 font-medium text-slate-500">{t("name")}</th>
+                <th className="text-left py-2 font-medium text-slate-500">{t("email")}</th>
+                <th className="text-left py-2 font-medium text-slate-500">{t("role")}</th>
+                <th className="text-left py-2 font-medium text-slate-500">{t("joined")}</th>
+                {canEdit && <th className="text-right py-2 font-medium text-slate-500">{t("changeRole")}</th>}
               </tr>
             </thead>
             <tbody>
@@ -49,7 +85,10 @@ export default async function UsersPage() {
                   <td className="py-3 font-medium text-slate-800">{user.name ?? "—"}</td>
                   <td className="py-3 text-slate-600">{user.email}</td>
                   <td className="py-3">
-                    <RoleBadge role={user.role} />
+                    <Badge
+                      label={user.role}
+                      variant={roleVariant[user.role] ?? "slate"}
+                    />
                   </td>
                   <td className="py-3 text-slate-400">{formatDate(user.createdAt)}</td>
                   {canEdit && (
@@ -66,32 +105,22 @@ export default async function UsersPage() {
               {allUsers.length === 0 && (
                 <tr>
                   <td colSpan={5} className="py-8 text-center text-slate-400">
-                    No users yet
+                    {t("noUsers")}
                   </td>
                 </tr>
               )}
             </tbody>
           </table>
+
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            pageLink={pageLink}
+            previousLabel={tCommon("previous")}
+            nextLabel={tCommon("next")}
+          />
         </CardContent>
       </Card>
     </div>
-  )
-}
-
-function RoleBadge({ role }: { role: string }) {
-  const styles: Record<string, string> = {
-    admin: "bg-teal-50 text-teal-700",
-    practitioner: "bg-blue-50 text-blue-600",
-    client: "bg-slate-100 text-slate-600",
-  }
-  const labels: Record<string, string> = {
-    admin: "Admin",
-    practitioner: "Practitioner",
-    client: "Client",
-  }
-  return (
-    <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${styles[role] ?? "bg-slate-100 text-slate-600"}`}>
-      {labels[role] ?? role}
-    </span>
   )
 }

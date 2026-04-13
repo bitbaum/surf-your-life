@@ -342,7 +342,9 @@
       "energyTrend": "Tendance énergétique",
       "viewAll": "Voir tout →",
       "recentCheckIns": "Check-ins récents",
-      "energy": "Énergie"
+      "energy": "Énergie",
+      "moodTrend": "Évolution de l'humeur",
+      "sleepTrend": "Données de sommeil"
     },
     "checkIn": {
       "title": "Comment allez-vous aujourd'hui?",
@@ -571,6 +573,7 @@
       "changeRole": "Changer le rôle",
       "roleUpdated": "Rôle mis à jour",
       "cannotChangeSelf": "Vous ne pouvez pas modifier votre propre rôle",
+      "noUsers": "Aucun utilisateur pour l'instant",
       "roles": {
         "client": "Client",
         "practitioner": "Praticien",
@@ -579,6 +582,39 @@
     },
     "clients": {
       "searchPlaceholder": "Rechercher par nom ou e-mail...",
+      "title": "Clients",
+      "allClients": "Tous les clients",
+      "columnName": "Nom",
+      "columnEmail": "E-mail",
+      "columnConcern": "Problématique",
+      "columnJoined": "Inscrit le",
+      "noResults": "Aucun client ne correspond à la recherche",
+      "noClients": "Aucun client pour l'instant",
+      "atRiskLink": "Clients à risque →",
+      "viewLink": "Voir →",
+      "detail": {
+        "backLink": "← Clients",
+        "unnamed": "Sans nom",
+        "joinedOn": "Inscrit le {date}",
+        "profileCard": "Profil",
+        "checkInsCard": "Check-ins",
+        "noProfile": "Profil non renseigné",
+        "noCheckIns": "Aucun check-in pour l'instant",
+        "mainConcern": "Problématique principale",
+        "occupation": "Profession",
+        "dateOfBirth": "Date de naissance",
+        "exercise": "Activité physique",
+        "previousTherapy": "Thérapie antérieure",
+        "yes": "Oui",
+        "no": "Non",
+        "sleepQuality": "Qualité du sommeil",
+        "stressLevel": "Niveau de stress",
+        "medications": "Médicaments",
+        "currentSituation": "Situation actuelle",
+        "goals": "Objectifs",
+        "energy": "Énergie",
+        "sleep": "Sommeil"
+      },
       "atRisk": {
         "title": "Clients à risque",
         "description": "Clients qui ne se sont pas connectés depuis 7+ jours",
@@ -586,7 +622,8 @@
         "daysSince": "Il y a {n} jours",
         "never": "Jamais",
         "noAtRisk": "Tous les clients se sont connectés récemment",
-        "viewAtRisk": "Clients à risque"
+        "viewAtRisk": "Clients à risque",
+        "sendMessage": "Envoyer un message"
       }
     },
     "leads": {
@@ -594,7 +631,13 @@
       "statusContacted": "Contacté",
       "statusDismissed": "Rejeté",
       "filterAll": "Tous",
-      "updateStatus": "Mettre à jour le statut"
+      "updateStatus": "Mettre à jour le statut",
+      "title": "Leads",
+      "columnName": "Nom",
+      "columnEmail": "E-mail",
+      "columnMessage": "Message",
+      "columnDate": "Date",
+      "noLeads": "Aucun lead pour l'instant"
     },
     "bookings": {
       "title": "Réservations",
@@ -613,7 +656,9 @@
       "noBookings": "Aucune réservation trouvée",
       "confirming": "Confirmation…",
       "cancelling": "Annulation…",
-      "statusUpdated": "Réservation mise à jour"
+      "statusUpdated": "Réservation mise à jour",
+      "description": "Gérer toutes les demandes de réservation",
+      "created": "Créé le"
     }
   },
   "concerns": {
@@ -629,6 +674,8 @@
     "tryAgain": "Réessayer",
     "goHome": "Retour à l'accueil",
     "or": "ou",
-    "back": "Retour"
+    "back": "Retour",
+    "previous": "← Précédent",
+    "next": "Suivant →"
   }
 }

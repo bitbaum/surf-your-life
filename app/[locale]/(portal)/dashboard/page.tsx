@@ -143,7 +143,7 @@ export default async function DashboardPage() {
           {/* Mood trend */}
           <Card>
             <CardHeader>
-              <CardTitle>Mood trend</CardTitle>
+              <CardTitle>{t("moodTrend")}</CardTitle>
             </CardHeader>
             <CardContent>
               <MoodChart data={trendCheckIns} />
@@ -158,7 +158,7 @@ export default async function DashboardPage() {
           {trendCheckIns.filter((c) => c.sleepHours != null).length >= 2 && (
             <Card>
               <CardHeader>
-                <CardTitle>Sleep trend</CardTitle>
+                <CardTitle>{t("sleepTrend")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <SleepChart data={trendCheckIns} />

@@ -1,14 +1,19 @@
 import { db } from "@/lib/db"
 import { users, checkIns } from "@/lib/db/schema"
-import { eq, max, sql } from "drizzle-orm"
+import { eq, max } from "drizzle-orm"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import Link from "next/link"
 import { formatDate } from "@/lib/utils"
+import { getTranslations, setRequestLocale } from "next-intl/server"
 
 const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000
 
-export default async function AtRiskClientsPage() {
+export default async function AtRiskClientsPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params
+  setRequestLocale(locale)
+  const t = await getTranslations("admin.clients")
+
   const sevenDaysAgo = new Date(Date.now() - SEVEN_DAYS_MS)
 
   const clientsWithLastCheckIn = await db
@@ -31,38 +36,38 @@ export default async function AtRiskClientsPage() {
   function daysSince(date: Date | null): string {
     if (!date) return "—"
     const days = Math.floor((Date.now() - date.getTime()) / (1000 * 60 * 60 * 24))
-    return `${days} days ago`
+    return t("atRisk.daysSince", { n: days })
   }
 
   return (
     <div className="max-w-5xl mx-auto">
       <PageHeader
-        title="At-Risk Clients"
-        description="Clients who haven't checked in for 7+ days"
+        title={t("atRisk.title")}
+        description={t("atRisk.description")}
       />
 
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle>At-risk clients ({atRisk.length})</CardTitle>
+            <CardTitle>{t("atRisk.title")} ({atRisk.length})</CardTitle>
             <Link href="/admin/clients" className="text-sm text-teal-600 hover:underline">
-              ← All clients
+              {t("detail.backLink")}
             </Link>
           </div>
         </CardHeader>
         <CardContent>
           {atRisk.length === 0 ? (
             <p className="text-slate-400 text-sm py-8 text-center">
-              All clients have checked in recently
+              {t("atRisk.noAtRisk")}
             </p>
           ) : (
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-slate-100">
-                  <th className="text-left py-2 font-medium text-slate-500">Name</th>
-                  <th className="text-left py-2 font-medium text-slate-500">Email</th>
-                  <th className="text-left py-2 font-medium text-slate-500">Last check-in</th>
-                  <th className="text-left py-2 font-medium text-slate-500">Days since</th>
+                  <th className="text-left py-2 font-medium text-slate-500">{t("columnName")}</th>
+                  <th className="text-left py-2 font-medium text-slate-500">{t("columnEmail")}</th>
+                  <th className="text-left py-2 font-medium text-slate-500">{t("atRisk.lastCheckIn")}</th>
+                  <th className="text-left py-2 font-medium text-slate-500">{t("columnJoined")}</th>
                   <th />
                 </tr>
               </thead>
@@ -75,7 +80,7 @@ export default async function AtRiskClientsPage() {
                     <td className="py-3 font-medium text-slate-800">{client.name ?? "—"}</td>
                     <td className="py-3 text-slate-600">{client.email}</td>
                     <td className="py-3 text-slate-500">
-                      {client.lastCheckIn ? formatDate(client.lastCheckIn) : "Never"}
+                      {client.lastCheckIn ? formatDate(client.lastCheckIn) : t("atRisk.never")}
                     </td>
                     <td className="py-3 text-slate-400">{daysSince(client.lastCheckIn)}</td>
                     <td className="py-3 text-right">
@@ -84,13 +89,13 @@ export default async function AtRiskClientsPage() {
                           href={`/admin/clients/${client.id}`}
                           className="text-teal-600 hover:underline text-xs font-medium"
                         >
-                          View →
+                          {t("viewLink")}
                         </Link>
                         <a
                           href={`mailto:${client.email}`}
                           className="text-xs text-slate-500 hover:text-teal-600 transition-colors"
                         >
-                          Send message
+                          {t("atRisk.sendMessage")}
                         </a>
                       </div>
                     </td>
