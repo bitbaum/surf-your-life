@@ -1,38 +1,71 @@
 import { db } from "@/lib/db"
 import { users } from "@/lib/db/schema"
-import { eq, desc, count } from "drizzle-orm"
+import { eq, desc, count, or, ilike, and } from "drizzle-orm"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import Link from "next/link"
 import { formatDate, formatEnumValue } from "@/lib/utils"
 import { PAGINATION_DEFAULT } from "@/lib/constants"
+import { ClientSearch } from "./client-search"
+import { Suspense } from "react"
 
 export default async function ClientsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string }>
+  searchParams: Promise<{ page?: string; q?: string }>
 }) {
-  const { page: pageParam } = await searchParams
+  const { page: pageParam, q } = await searchParams
   const page = Math.max(1, parseInt(pageParam ?? "1") || 1)
   const offset = (page - 1) * PAGINATION_DEFAULT
 
+  const searchFilter = q?.trim()
+    ? or(
+        ilike(users.name, `%${q.trim()}%`),
+        ilike(users.email, `%${q.trim()}%`)
+      )
+    : undefined
+
+  const roleFilter = eq(users.role, "client")
+  const whereClause = searchFilter ? and(roleFilter, searchFilter) : roleFilter
+
   const [clients, totalResult] = await Promise.all([
     db.query.users.findMany({
-      where: eq(users.role, "client"),
+      where: whereClause,
       orderBy: [desc(users.createdAt)],
       limit: PAGINATION_DEFAULT,
       offset,
       with: { profile: true },
     }),
-    db.select({ count: count() }).from(users).where(eq(users.role, "client")),
+    db.select({ count: count() }).from(users).where(whereClause),
   ])
 
   const total = totalResult[0]?.count ?? 0
   const totalPages = Math.ceil(total / PAGINATION_DEFAULT)
 
+  function pageLink(p: number) {
+    const params = new URLSearchParams()
+    params.set("page", String(p))
+    if (q?.trim()) params.set("q", q.trim())
+    return `/admin/clients?${params.toString()}`
+  }
+
   return (
     <div className="max-w-5xl mx-auto">
       <PageHeader title="Clients" description={`${total} registered client${total !== 1 ? "s" : ""}`} />
+
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex-1">
+          <Suspense>
+            <ClientSearch defaultValue={q ?? ""} />
+          </Suspense>
+        </div>
+        <Link
+          href="/admin/clients/at-risk"
+          className="text-sm text-red-500 hover:text-red-700 font-medium ml-4 flex-shrink-0"
+        >
+          At-risk clients →
+        </Link>
+      </div>
 
       <Card>
         <CardHeader><CardTitle>All clients</CardTitle></CardHeader>
@@ -69,7 +102,7 @@ export default async function ClientsPage({
               {clients.length === 0 && (
                 <tr>
                   <td colSpan={5} className="py-8 text-center text-slate-400">
-                    No clients yet
+                    {q ? "No clients match your search" : "No clients yet"}
                   </td>
                 </tr>
               )}
@@ -84,7 +117,7 @@ export default async function ClientsPage({
               <div className="flex gap-2">
                 {page > 1 && (
                   <Link
-                    href={`/admin/clients?page=${page - 1}`}
+                    href={pageLink(page - 1)}
                     className="px-3 py-1.5 text-xs rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50"
                   >
                     ← Previous
@@ -92,7 +125,7 @@ export default async function ClientsPage({
                 )}
                 {page < totalPages && (
                   <Link
-                    href={`/admin/clients?page=${page + 1}`}
+                    href={pageLink(page + 1)}
                     className="px-3 py-1.5 text-xs rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50"
                   >
                     Next →

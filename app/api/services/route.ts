@@ -9,6 +9,7 @@ export async function GET() {
     .from(services)
     .where(eq(services.available, true))
     .orderBy(asc(services.sortOrder))
+    .limit(100)
 
   return NextResponse.json({ success: true, data })
 }

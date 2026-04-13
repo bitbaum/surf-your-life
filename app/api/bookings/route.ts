@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
-import { bookings, services } from "@/lib/db/schema"
-import { eq, desc } from "drizzle-orm"
+import { bookings, services, users } from "@/lib/db/schema"
+import { eq, desc, inArray } from "drizzle-orm"
 import { createBookingSchema } from "@/lib/domain/booking"
+import { sendEmail } from "@/lib/email"
+import { bookingNotificationEmail, bookingRequestEmail } from "@/lib/email/templates"
 
 export async function GET() {
   const session = await auth()
@@ -49,6 +51,46 @@ export async function POST(req: Request) {
       notes: parsed.data.notes,
     })
     .returning({ id: bookings.id })
+
+  // Notify all admins and practitioners — fire-and-forget, never block the response
+  const adminUsers = await db
+    .select({ email: users.email, name: users.name })
+    .from(users)
+    .where(inArray(users.role, ["admin", "practitioner"]))
+
+  if (adminUsers.length > 0) {
+    const html = bookingNotificationEmail({
+      clientEmail: session.user.email!,
+      clientName: session.user.name ?? null,
+      service,
+      preferredDate: parsed.data.preferredDate,
+      preferredTime: parsed.data.preferredTime ?? null,
+      notes: parsed.data.notes ?? null,
+      bookingId: booking.id,
+    })
+
+    Promise.all(
+      adminUsers.map((admin) =>
+        sendEmail({
+          to: admin.email,
+          subject: `New booking: ${service.name}`,
+          html,
+        }).catch((err) => console.error("[booking-notify]", err))
+      )
+    )
+  }
+
+  // Confirm to the client — fire-and-forget
+  void sendEmail({
+    to: session.user.email!,
+    subject: `Booking request received: ${service.name}`,
+    html: bookingRequestEmail({
+      clientName: session.user.name ?? null,
+      serviceName: service.name,
+      preferredDate: parsed.data.preferredDate ?? null,
+      preferredTime: parsed.data.preferredTime ?? null,
+    }),
+  }).catch((e) => console.error("[booking-request-confirm]", e))
 
   return NextResponse.json({ success: true, data: { id: booking.id } }, { status: 201 })
 }

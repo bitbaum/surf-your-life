@@ -16,6 +16,8 @@ import {
   Waves,
   Menu,
   X,
+  MessageSquare,
+  Settings,
 } from "lucide-react"
 
 export function PortalSidebar() {
@@ -28,7 +30,9 @@ export function PortalSidebar() {
     { href: "/check-in", label: t("checkIn"), icon: ClipboardList },
     { href: "/check-ins", label: t("history"), icon: History },
     { href: "/book", label: t("book"), icon: CalendarPlus },
+    { href: "/messages", label: t("messages"), icon: MessageSquare },
     { href: "/profile", label: t("profile"), icon: User },
+    { href: "/settings", label: t("settings"), icon: Settings },
   ]
 
   const logo = (
@@ -92,7 +96,7 @@ export function PortalSidebar() {
           <button
             onClick={() => setOpen(true)}
             className="p-2 rounded-lg hover:bg-slate-100 transition-colors"
-            aria-label="Open menu"
+            aria-label={t("openMenu")}
           >
             <Menu className="w-5 h-5 text-slate-700" />
           </button>
@@ -114,7 +118,7 @@ export function PortalSidebar() {
           <button
             onClick={() => setOpen(false)}
             className="p-1.5 rounded-lg hover:bg-slate-100 transition-colors"
-            aria-label="Close menu"
+            aria-label={t("closeMenu")}
           >
             <X className="w-5 h-5 text-slate-600" />
           </button>

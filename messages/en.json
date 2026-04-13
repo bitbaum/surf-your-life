@@ -10,7 +10,8 @@
     "getStarted": "Get started",
     "dashboard": "Dashboard",
     "close": "Close menu",
-    "open": "Open menu"
+    "open": "Open menu",
+    "privacy": "Privacy Policy"
   },
   "landing": {
     "badge": "Zürich · Medical Performance Space",
@@ -22,16 +23,35 @@
       "cta": "Start your programme",
       "ctaSecondary": "See the method"
     },
-    "trust": ["Psychiatry-led", "Body-first methodology", "Zollikerstrasse 183"],
-    "proof": ["230 m² performance space", "Psychiatry-led", "Individual programmes", "Daily tracking portal", "Zürich CBD"],
+    "trust": [
+      "Psychiatry-led",
+      "Body-first methodology",
+      "Zollikerstrasse 183"
+    ],
+    "proof": [
+      "230 m² performance space",
+      "Psychiatry-led",
+      "Individual programmes",
+      "Daily tracking portal",
+      "Zürich CBD"
+    ],
     "gap": {
       "label": "The gap",
       "title": "Why most recovery never completes",
       "body": "A dysregulated nervous system cannot be coached or willed back to health. Standard approaches fail because they skip the biology — or never address the gap between clinical discharge and functional life.",
       "cards": [
-        { "title": "Coaching before the body is ready", "body": "Talk therapy and mindset work have no traction when the nervous system is still in threat response. The biology has to come first." },
-        { "title": "The discharge gap is unmanaged", "body": "Most clinics discharge without a structured bridge back to function. The space between treatment and life is where recovery breaks down." },
-        { "title": "No medical anchor", "body": "Wellness programmes lack the clinical depth to distinguish burnout from depression, or Long COVID from chronic stress. Precision matters." }
+        {
+          "title": "Coaching before the body is ready",
+          "body": "Talk therapy and mindset work have no traction when the nervous system is still in threat response. The biology has to come first."
+        },
+        {
+          "title": "The discharge gap is unmanaged",
+          "body": "Most clinics discharge without a structured bridge back to function. The space between treatment and life is where recovery breaks down."
+        },
+        {
+          "title": "No medical anchor",
+          "body": "Wellness programmes lack the clinical depth to distinguish burnout from depression, or Long COVID from chronic stress. Precision matters."
+        }
       ]
     },
     "method": {
@@ -39,9 +59,18 @@
       "title": "Hardware before software",
       "subtitle": "Every programme starts with your body — sleep, nervous system, and physical resilience. Only once that foundation is stable does the psychological work begin.",
       "pillars": [
-        { "title": "Biological reset", "body": "Sleep architecture, nervous system regulation, and physical recovery — sequenced and monitored. No psychological programme lands without this foundation." },
-        { "title": "Psychiatric guidance", "body": "Medically anchored from day one. Our psychiatrist establishes a clear clinical picture and keeps your programme evidence-based throughout." },
-        { "title": "Reintegration", "body": "Returning to work, reinventing what's next, or simply reclaiming your capacity — we map the gap and navigate it with you, step by step." }
+        {
+          "title": "Biological reset",
+          "body": "Sleep architecture, nervous system regulation, and physical recovery — sequenced and monitored. No psychological programme lands without this foundation."
+        },
+        {
+          "title": "Psychiatric guidance",
+          "body": "Medically anchored from day one. Our psychiatrist establishes a clear clinical picture and keeps your programme evidence-based throughout."
+        },
+        {
+          "title": "Reintegration",
+          "body": "Returning to work, reinventing what's next, or simply reclaiming your capacity — we map the gap and navigate it with you, step by step."
+        }
       ]
     },
     "quote": {
@@ -55,19 +84,42 @@
       "body": "Executives, doctors, founders, creatives. People who did everything right and still burned out — or who never fully recovered from Long COVID, a health crisis, or a major life transition.",
       "testimonialsLabel": "What our clients say",
       "testimonials": [
-        { "text": "I didn't realise how burned out I was until I started tracking properly. The structure gave me something to hold onto.", "author": "Executive, Zürich" },
-        { "text": "After 18 months of Long COVID, this was the first programme that actually started with how I felt physically.", "author": "Physician, Basel" }
+        {
+          "text": "I didn't realise how burned out I was until I started tracking properly. The structure gave me something to hold onto.",
+          "author": "Executive, Zürich"
+        },
+        {
+          "text": "After 18 months of Long COVID, this was the first programme that actually started with how I felt physically.",
+          "author": "Physician, Basel"
+        }
       ],
-      "conditions": ["Burnout", "Long COVID", "Midlife reinvention", "Work reintegration", "Chronic stress", "Post-clinic transition", "Energy & performance"]
+      "conditions": [
+        "Burnout",
+        "Long COVID",
+        "Midlife reinvention",
+        "Work reintegration",
+        "Chronic stress",
+        "Post-clinic transition",
+        "Energy & performance"
+      ]
     },
     "process": {
       "label": "The process",
       "title": "Simple. Structured. Clear.",
       "subtitle": "No guesswork. Every step is defined before you start.",
       "steps": [
-        { "title": "Deep assessment", "body": "A thorough intake covering your medical history, current state, work context, and goals — so we understand the full picture before anything begins." },
-        { "title": "Your programme", "body": "A structured plan combining body-first protocols, regular psychiatric check-ins, and reintegration milestones. Personalised, not generic." },
-        { "title": "Track & evolve", "body": "Daily check-ins in the portal. We see the data. Your programme adapts as you recover — no waiting for the next appointment." }
+        {
+          "title": "Deep assessment",
+          "body": "A thorough intake covering your medical history, current state, work context, and goals — so we understand the full picture before anything begins."
+        },
+        {
+          "title": "Your programme",
+          "body": "A structured plan combining body-first protocols, regular psychiatric check-ins, and reintegration milestones. Personalised, not generic."
+        },
+        {
+          "title": "Track & evolve",
+          "body": "Daily check-ins in the portal. We see the data. Your programme adapts as you recover — no waiting for the next appointment."
+        }
       ]
     },
     "cta": {
@@ -167,13 +219,20 @@
         "excerpt": "Midlife transitions are not crises. They are predictable developmental events with identifiable patterns — and they go better with structure.",
         "body": "The \"midlife crisis\" framing does people a disservice. It pathologises what is, in most cases, a predictable developmental transition — a recalibration of identity, values, and direction that tends to occur between 40 and 55.\n\nThe research on midlife transitions (Levinson, Vaillant, the Harvard Study of Adult Development) is consistent: people who navigate this period well are not those who avoid the discomfort, but those who engage with it deliberately. The transition involves grief (for paths not taken), identity revision, and, ultimately, a more integrated sense of self.\n\nThe problem is that most high-functioning people have no framework for this. They are skilled at achievement — at executing against clear goals with measurable outcomes. Midlife asks them to operate in ambiguity, to sit with not-knowing, and to make decisions that cannot be optimised.\n\nA well-structured programme creates the conditions for this work to proceed safely. That means: physical stability first (sleep, exercise, basic regulation), a clear clinical picture (distinguishing developmental transition from depression or burnout), and a structured reintegration process as new directions emerge.\n\nWe work with many clients for whom the question is not 'how do I get back to where I was?' but 'what do I actually want my life to look like?' That question deserves serious attention — and serious support."
       }
-    ]
+    ],
+    "ctaTitle": "Ready to start your recovery?",
+    "ctaBody": "Join the programme and take the first step.",
+    "ctaButton": "Create your account"
   },
   "auth": {
     "panel": {
       "quote": "The gap between discharge and return is where most people fall through.",
       "author": "Dr. Manu · Psychiatrist & Founder, Vitareba",
-      "bullets": ["Psychiatry-led programme", "Body-first methodology", "Zollikerstrasse 183, Zürich"]
+      "bullets": [
+        "Psychiatry-led programme",
+        "Body-first methodology",
+        "Zollikerstrasse 183, Zürich"
+      ]
     },
     "login": {
       "title": "Welcome back",
@@ -225,7 +284,31 @@
       "errorMismatch": "Passwords do not match",
       "errorInvalid": "This reset link is invalid or has expired",
       "errorGeneric": "Something went wrong"
-    }
+    },
+    "verifyEmail": {
+      "title": "Verify your email",
+      "body": "We sent a verification link to your email address.",
+      "resend": "Resend verification email",
+      "success": "Email verified!",
+      "successBody": "Your email has been verified. You can now access all features.",
+      "goToDashboard": "Go to dashboard",
+      "invalid": "This verification link is invalid or has expired.",
+      "alreadyVerified": "Your email is already verified."
+    },
+    "changePassword": {
+      "title": "Password & Security",
+      "current": "Current password",
+      "new": "New password",
+      "confirm": "Confirm new password",
+      "save": "Update password",
+      "saving": "Updating...",
+      "success": "Password updated",
+      "mismatch": "Passwords do not match",
+      "wrongCurrent": "Current password is incorrect"
+    },
+    "unverifiedBanner": "Please verify your email address.",
+    "resendVerification": "Resend verification email",
+    "resendSent": "Verification email sent"
   },
   "contact": {
     "title": "Get in touch",
@@ -340,7 +423,9 @@
       "familyHistoryPlaceholder": "Relevant mental or physical health history in your family",
       "physicalCard": "Physical",
       "heightLabel": "Height (cm)",
+      "heightPlaceholder": "e.g. 175",
       "weightLabel": "Weight (kg)",
+      "weightPlaceholder": "e.g. 72",
       "lifestyleCard": "Lifestyle",
       "sleepScheduleLabel": "Typical sleep schedule",
       "sleepSchedulePlaceholder": "e.g. 11pm–7am",
@@ -387,7 +472,26 @@
       "categoryConsultation": "Consultation",
       "durationMin": "{n} min",
       "cancel": "Cancel",
-      "selectService": "Select to book"
+      "selectService": "Select to book",
+      "bookingError": "Something went wrong. Please try again.",
+      "bookingConfirmed": "Booking confirmed",
+      "bookingCancelled": "Booking cancelled",
+      "cancelBooking": "Cancel booking",
+      "cancelling": "Cancelling…",
+      "cancelError": "Could not cancel. Please try again."
+    },
+    "settings": {
+      "title": "Account Settings",
+      "exportTitle": "Export your data",
+      "exportBody": "Download a copy of all your personal data stored in this portal.",
+      "exportButton": "Download my data",
+      "exporting": "Preparing download...",
+      "deleteTitle": "Delete account",
+      "deleteBody": "Permanently delete your account and all associated data. This cannot be undone.",
+      "deleteConfirm": "Enter your password to confirm",
+      "deleteButton": "Delete my account",
+      "deleting": "Deleting...",
+      "deleteWarning": "This is permanent. All check-ins, bookings, messages and profile data will be deleted."
     }
   },
   "sidebar": {
@@ -395,9 +499,129 @@
     "checkIn": "Check-in",
     "history": "History",
     "book": "Book",
+    "messages": "Messages",
     "profile": "My Profile",
+    "settings": "Settings",
     "signOut": "Sign out",
-    "language": "Language"
+    "language": "Language",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
+  },
+  "messages": {
+    "title": "Messages",
+    "newMessage": "New Message",
+    "noMessages": "No messages yet",
+    "noMessagesDescription": "When you receive a message, it will appear here.",
+    "startConversation": "Start a Conversation",
+    "subject": "Subject",
+    "subjectPlaceholder": "What's this about?",
+    "message": "Message",
+    "messagePlaceholder": "Write your message...",
+    "send": "Send",
+    "reply": "Reply",
+    "replyPlaceholder": "Write a reply...",
+    "sendReply": "Send Reply",
+    "from": "From",
+    "you": "You",
+    "unread": "Unread",
+    "backToMessages": "Back to messages",
+    "sendMessage": "Send Message",
+    "sending": "Sending...",
+    "noSubject": "(No subject)",
+    "teamName": "Surf Your Life Team"
+  },
+  "admin": {
+    "sidebar": {
+      "dashboard": "Dashboard",
+      "clients": "Clients",
+      "bookings": "Bookings",
+      "messages": "Messages",
+      "leads": "Leads",
+      "users": "Users",
+      "language": "Language",
+      "signOut": "Sign out"
+    },
+    "dashboard": {
+      "title": "Admin Dashboard",
+      "description": "Overview of the Surf Your Life portal",
+      "totalClients": "Total clients",
+      "checkIns30d": "Check-ins (30 days)",
+      "avgCheckIns": "Avg check-ins / client",
+      "pendingBookings": "Pending bookings",
+      "unreadMessages": "Unread messages",
+      "recentClients": "Recent clients",
+      "viewAll": "View all",
+      "noClients": "No clients yet",
+      "noProfile": "No profile yet"
+    },
+    "messages": {
+      "title": "Messages",
+      "allConversations": "All Conversations",
+      "newConversation": "New Conversation",
+      "selectClient": "Select Client",
+      "noThreads": "No conversations yet"
+    },
+    "users": {
+      "title": "Users",
+      "allUsers": "All Users",
+      "name": "Name",
+      "email": "Email",
+      "role": "Role",
+      "joined": "Joined",
+      "changeRole": "Change Role",
+      "roleUpdated": "Role updated",
+      "cannotChangeSelf": "You cannot change your own role",
+      "roles": {
+        "client": "Client",
+        "practitioner": "Practitioner",
+        "admin": "Admin"
+      }
+    },
+    "clients": {
+      "searchPlaceholder": "Search by name or email...",
+      "atRisk": {
+        "title": "At-Risk Clients",
+        "description": "Clients who haven't checked in for 7+ days",
+        "lastCheckIn": "Last check-in",
+        "daysSince": "{n} days ago",
+        "never": "Never",
+        "noAtRisk": "All clients have checked in recently",
+        "viewAtRisk": "At-risk clients"
+      }
+    },
+    "leads": {
+      "statusNew": "New",
+      "statusContacted": "Contacted",
+      "statusDismissed": "Dismissed",
+      "filterAll": "All",
+      "updateStatus": "Update status"
+    },
+    "bookings": {
+      "title": "Bookings",
+      "allBookings": "All Bookings",
+      "filterAll": "All",
+      "filterPending": "Pending",
+      "filterConfirmed": "Confirmed",
+      "filterCancelled": "Cancelled",
+      "client": "Client",
+      "service": "Service",
+      "dateTime": "Date / Time",
+      "status": "Status",
+      "actions": "Actions",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "noBookings": "No bookings found",
+      "confirming": "Confirming...",
+      "cancelling": "Cancelling...",
+      "statusUpdated": "Booking updated"
+    }
+  },
+  "concerns": {
+    "burnout": "Burnout",
+    "long_covid": "Long COVID",
+    "midlife_reinvention": "Midlife reinvention",
+    "general_wellbeing": "General wellbeing",
+    "other": "Other"
   },
   "common": {
     "loading": "Loading…",

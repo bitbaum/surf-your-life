@@ -12,17 +12,19 @@ export function StepChallenges({
 }) {
   const t = useTranslations("portal.profile")
 
+  const tc = useTranslations("concerns")
+
   return (
     <div>
       <p className="text-sm text-slate-500 mb-4">{t("concernsNote")}</p>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-        {MAIN_CONCERNS.map((opt) => {
-          const selected = form.mainConcerns.includes(opt.value)
+        {MAIN_CONCERNS.map((value) => {
+          const selected = form.mainConcerns.includes(value)
           return (
             <button
-              key={opt.value}
+              key={value}
               type="button"
-              onClick={() => onToggle(opt.value)}
+              onClick={() => onToggle(value)}
               className={`p-3 rounded-xl border-2 text-sm font-medium transition-all text-left flex items-center gap-2 ${
                 selected
                   ? "border-teal-500 bg-teal-50 text-teal-700"
@@ -36,7 +38,7 @@ export function StepChallenges({
               >
                 {selected && <span className="text-white text-xs">✓</span>}
               </span>
-              {opt.label}
+              {tc(value)}
             </button>
           )
         })}

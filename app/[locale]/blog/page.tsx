@@ -2,10 +2,10 @@ import { setRequestLocale } from "next-intl/server"
 import { getTranslations } from "next-intl/server"
 import { Link } from "@/i18n/navigation"
 import { MarketingNav } from "@/components/marketing/nav"
+import { MarketingFooter } from "@/components/marketing/footer"
 import { auth } from "@/lib/auth"
-import { Waves, ArrowLeft, ArrowRight } from "lucide-react"
-
-type Post = { slug: string; title: string; date: string; category: string; excerpt: string; body: string }
+import { ArrowLeft, ArrowRight } from "lucide-react"
+import type { Post } from "./types"
 
 export default async function BlogPage({
   params,
@@ -60,19 +60,7 @@ export default async function BlogPage({
         </div>
       </main>
 
-      <footer className="py-10 px-6 border-t border-slate-100 bg-white">
-        <div className="max-w-5xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded bg-teal-600 flex items-center justify-center">
-              <Waves className="w-3 h-3 text-white" />
-            </div>
-            <span className="text-sm text-slate-400">Surf Your Life · Zürich</span>
-          </div>
-          <Link href="/" className="text-xs text-slate-400 hover:text-teal-600 transition-colors">
-            surf-your-life.ch
-          </Link>
-        </div>
-      </footer>
+      <MarketingFooter />
     </div>
   )
 }

@@ -10,7 +10,8 @@
     "blog": "Blog",
     "dashboard": "Tableau de bord",
     "close": "Fermer le menu",
-    "open": "Ouvrir le menu"
+    "open": "Ouvrir le menu",
+    "privacy": "Politique de confidentialité"
   },
   "landing": {
     "badge": "Zurich · Medical Performance Space",
@@ -22,16 +23,35 @@
       "cta": "Démarrer votre programme",
       "ctaSecondary": "Voir la méthode"
     },
-    "trust": ["Guidé par la psychiatrie", "Méthodologie biologie d'abord", "Zollikerstrasse 183"],
-    "proof": ["230 m² d'espace performance", "Guidé par la psychiatrie", "Programmes individuels", "Portail de suivi quotidien", "Zurich CBD"],
+    "trust": [
+      "Guidé par la psychiatrie",
+      "Méthodologie biologie d'abord",
+      "Zollikerstrasse 183"
+    ],
+    "proof": [
+      "230 m² d'espace performance",
+      "Guidé par la psychiatrie",
+      "Programmes individuels",
+      "Portail de suivi quotidien",
+      "Zurich CBD"
+    ],
     "gap": {
       "label": "Le manque",
       "title": "Pourquoi la plupart des rétablissements ne se complètent jamais",
       "body": "Un système nerveux dérégulé ne peut pas être coaché ou ramené à la santé par la volonté. Les approches standard échouent parce qu'elles sautent la biologie — ou n'abordent jamais l'écart entre la sortie clinique et la vie fonctionnelle.",
       "cards": [
-        { "title": "Le coaching avant que le corps soit prêt", "body": "La thérapie par la parole et le travail sur l'état d'esprit n'ont aucune prise quand le système nerveux est encore en réponse de menace. La biologie doit venir en premier." },
-        { "title": "L'écart de sortie n'est pas géré", "body": "La plupart des cliniques sortent les patients sans pont structuré vers le fonctionnement. L'espace entre le traitement et la vie est là où le rétablissement s'effondre." },
-        { "title": "Pas d'ancrage médical", "body": "Les programmes de bien-être manquent de profondeur clinique pour distinguer le burnout de la dépression, ou le Long COVID du stress chronique. La précision est importante." }
+        {
+          "title": "Le coaching avant que le corps soit prêt",
+          "body": "La thérapie par la parole et le travail sur l'état d'esprit n'ont aucune prise quand le système nerveux est encore en réponse de menace. La biologie doit venir en premier."
+        },
+        {
+          "title": "L'écart de sortie n'est pas géré",
+          "body": "La plupart des cliniques sortent les patients sans pont structuré vers le fonctionnement. L'espace entre le traitement et la vie est là où le rétablissement s'effondre."
+        },
+        {
+          "title": "Pas d'ancrage médical",
+          "body": "Les programmes de bien-être manquent de profondeur clinique pour distinguer le burnout de la dépression, ou le Long COVID du stress chronique. La précision est importante."
+        }
       ]
     },
     "method": {
@@ -39,9 +59,18 @@
       "title": "Le matériel avant le logiciel",
       "subtitle": "Chaque programme commence par votre corps — sommeil, système nerveux et résilience physique. Ce n'est qu'une fois ce fondement stable que le travail psychologique commence.",
       "pillars": [
-        { "title": "Réinitialisation biologique", "body": "Architecture du sommeil, régulation du système nerveux et récupération physique — séquencées et surveillées. Aucun programme psychologique ne fonctionne sans ce fondement." },
-        { "title": "Accompagnement psychiatrique", "body": "Ancré médicalement dès le premier jour. Notre psychiatre établit un tableau clinique clair et maintient votre programme fondé sur des preuves tout au long." },
-        { "title": "Réintégration", "body": "Retourner au travail, réinventer la suite, ou simplement retrouver votre capacité — nous cartographions l'écart et le naviguons avec vous, étape par étape." }
+        {
+          "title": "Réinitialisation biologique",
+          "body": "Architecture du sommeil, régulation du système nerveux et récupération physique — séquencées et surveillées. Aucun programme psychologique ne fonctionne sans ce fondement."
+        },
+        {
+          "title": "Accompagnement psychiatrique",
+          "body": "Ancré médicalement dès le premier jour. Notre psychiatre établit un tableau clinique clair et maintient votre programme fondé sur des preuves tout au long."
+        },
+        {
+          "title": "Réintégration",
+          "body": "Retourner au travail, réinventer la suite, ou simplement retrouver votre capacité — nous cartographions l'écart et le naviguons avec vous, étape par étape."
+        }
       ]
     },
     "quote": {
@@ -55,19 +84,42 @@
       "body": "Cadres, médecins, fondateurs, créatifs. Des gens qui ont tout fait correctement et qui ont quand même brûlé — ou qui ne se sont jamais complètement remis du Long COVID, d'une crise de santé ou d'une grande transition de vie.",
       "testimonialsLabel": "Ce que disent nos clients",
       "testimonials": [
-        { "text": "Je ne réalisais pas à quel point j'étais épuisé jusqu'à ce que je commence à suivre correctement. La structure m'a donné quelque chose à quoi m'accrocher.", "author": "Cadre dirigeant, Zurich" },
-        { "text": "Après 18 mois de Long COVID, c'était le premier programme qui a réellement commencé par comment je me sentais physiquement.", "author": "Médecin, Bâle" }
+        {
+          "text": "Je ne réalisais pas à quel point j'étais épuisé jusqu'à ce que je commence à suivre correctement. La structure m'a donné quelque chose à quoi m'accrocher.",
+          "author": "Cadre dirigeant, Zurich"
+        },
+        {
+          "text": "Après 18 mois de Long COVID, c'était le premier programme qui a réellement commencé par comment je me sentais physiquement.",
+          "author": "Médecin, Bâle"
+        }
       ],
-      "conditions": ["Burnout", "Long COVID", "Réinvention à mi-vie", "Réintégration au travail", "Stress chronique", "Transition post-clinique", "Énergie & performance"]
+      "conditions": [
+        "Burnout",
+        "Long COVID",
+        "Réinvention à mi-vie",
+        "Réintégration au travail",
+        "Stress chronique",
+        "Transition post-clinique",
+        "Énergie & performance"
+      ]
     },
     "process": {
       "label": "Le processus",
       "title": "Simple. Structuré. Clair.",
       "subtitle": "Pas de conjectures. Chaque étape est définie avant que vous commenciez.",
       "steps": [
-        { "title": "Évaluation approfondie", "body": "Un bilan complet couvrant vos antécédents médicaux, votre état actuel, votre contexte professionnel et vos objectifs — pour que nous comprenions le tableau complet avant que quoi que ce soit ne commence." },
-        { "title": "Votre programme", "body": "Un plan structuré combinant des protocoles biologie d'abord, des check-ins psychiatriques réguliers et des jalons de réintégration. Personnalisé, pas générique." },
-        { "title": "Suivre & évoluer", "body": "Des check-ins quotidiens dans le portail. Nous voyons les données. Votre programme s'adapte au fur et à mesure de votre rétablissement — pas d'attente jusqu'au prochain rendez-vous." }
+        {
+          "title": "Évaluation approfondie",
+          "body": "Un bilan complet couvrant vos antécédents médicaux, votre état actuel, votre contexte professionnel et vos objectifs — pour que nous comprenions le tableau complet avant que quoi que ce soit ne commence."
+        },
+        {
+          "title": "Votre programme",
+          "body": "Un plan structuré combinant des protocoles biologie d'abord, des check-ins psychiatriques réguliers et des jalons de réintégration. Personnalisé, pas générique."
+        },
+        {
+          "title": "Suivre & évoluer",
+          "body": "Des check-ins quotidiens dans le portail. Nous voyons les données. Votre programme s'adapte au fur et à mesure de votre rétablissement — pas d'attente jusqu'au prochain rendez-vous."
+        }
       ]
     },
     "cta": {
@@ -142,6 +194,9 @@
     "subtitle": "Points de vue cliniques sur le burnout, le Long COVID et la récupération.",
     "backHome": "Retour à l'accueil",
     "readMore": "Lire la suite →",
+    "ctaTitle": "Prêt à démarrer votre rétablissement?",
+    "ctaBody": "Rejoignez le programme et faites le premier pas.",
+    "ctaButton": "Créer votre compte",
     "posts": [
       {
         "slug": "why-burnout-is-biological",
@@ -173,7 +228,11 @@
     "panel": {
       "quote": "L'écart entre la sortie et le retour est là où la plupart des gens tombent.",
       "author": "Dr. Manu · Psychiatre & Fondateur, Vitareba",
-      "bullets": ["Programme guidé par la psychiatrie", "Méthodologie biologie d'abord", "Zollikerstrasse 183, Zurich"]
+      "bullets": [
+        "Programme guidé par la psychiatrie",
+        "Méthodologie biologie d'abord",
+        "Zollikerstrasse 183, Zurich"
+      ]
     },
     "login": {
       "title": "Content de vous revoir",
@@ -225,7 +284,31 @@
       "errorMismatch": "Les mots de passe ne correspondent pas",
       "errorInvalid": "Ce lien de réinitialisation est invalide ou a expiré",
       "errorGeneric": "Une erreur s'est produite"
-    }
+    },
+    "verifyEmail": {
+      "title": "Vérifier votre e-mail",
+      "body": "Nous avons envoyé un lien de vérification à votre adresse e-mail.",
+      "resend": "Renvoyer l'e-mail de vérification",
+      "success": "E-mail vérifié !",
+      "successBody": "Votre e-mail a été vérifié. Vous avez maintenant accès à toutes les fonctionnalités.",
+      "goToDashboard": "Aller au tableau de bord",
+      "invalid": "Ce lien de vérification est invalide ou a expiré.",
+      "alreadyVerified": "Votre e-mail est déjà vérifié."
+    },
+    "changePassword": {
+      "title": "Mot de passe & sécurité",
+      "current": "Mot de passe actuel",
+      "new": "Nouveau mot de passe",
+      "confirm": "Confirmer le nouveau mot de passe",
+      "save": "Mettre à jour le mot de passe",
+      "saving": "Mise à jour...",
+      "success": "Mot de passe mis à jour",
+      "mismatch": "Les mots de passe ne correspondent pas",
+      "wrongCurrent": "Le mot de passe actuel est incorrect"
+    },
+    "unverifiedBanner": "Veuillez vérifier votre adresse e-mail.",
+    "resendVerification": "Renvoyer l'e-mail de vérification",
+    "resendSent": "E-mail de vérification envoyé"
   },
   "contact": {
     "title": "Prendre contact",
@@ -340,7 +423,9 @@
       "familyHistoryPlaceholder": "Antécédents de santé mentale ou physique pertinents dans votre famille",
       "physicalCard": "Physique",
       "heightLabel": "Taille (cm)",
+      "heightPlaceholder": "ex. 175",
       "weightLabel": "Poids (kg)",
+      "weightPlaceholder": "ex. 72",
       "lifestyleCard": "Mode de vie",
       "sleepScheduleLabel": "Horaire de sommeil typique",
       "sleepSchedulePlaceholder": "ex. 23h–7h",
@@ -387,7 +472,26 @@
       "categoryConsultation": "Consultation",
       "durationMin": "{n} min",
       "cancel": "Annuler",
-      "selectService": "Sélectionner pour réserver"
+      "selectService": "Sélectionner pour réserver",
+      "bookingError": "Une erreur s'est produite. Veuillez réessayer.",
+      "bookingConfirmed": "Réservation confirmée",
+      "bookingCancelled": "Réservation annulée",
+      "cancelBooking": "Annuler la réservation",
+      "cancelling": "Annulation…",
+      "cancelError": "Impossible d'annuler. Veuillez réessayer."
+    },
+    "settings": {
+      "title": "Paramètres du compte",
+      "exportTitle": "Exporter vos données",
+      "exportBody": "Téléchargez une copie de toutes vos données personnelles stockées dans ce portail.",
+      "exportButton": "Télécharger mes données",
+      "exporting": "Préparation du téléchargement...",
+      "deleteTitle": "Supprimer le compte",
+      "deleteBody": "Supprimez définitivement votre compte et toutes les données associées. Cette action est irréversible.",
+      "deleteConfirm": "Saisissez votre mot de passe pour confirmer",
+      "deleteButton": "Supprimer mon compte",
+      "deleting": "Suppression...",
+      "deleteWarning": "Cette action est définitive. Tous vos check-ins, réservations, messages et données de profil seront supprimés."
     }
   },
   "sidebar": {
@@ -395,9 +499,129 @@
     "checkIn": "Check-in",
     "history": "Historique",
     "book": "Réserver",
+    "messages": "Messages",
     "profile": "Mon profil",
+    "settings": "Paramètres",
     "signOut": "Se déconnecter",
-    "language": "Langue"
+    "language": "Langue",
+    "openMenu": "Ouvrir le menu",
+    "closeMenu": "Fermer le menu"
+  },
+  "messages": {
+    "title": "Messages",
+    "newMessage": "Nouveau message",
+    "noMessages": "Aucun message",
+    "noMessagesDescription": "Lorsque vous recevrez un message, il apparaîtra ici.",
+    "startConversation": "Démarrer une conversation",
+    "subject": "Objet",
+    "subjectPlaceholder": "De quoi s'agit-il ?",
+    "message": "Message",
+    "messagePlaceholder": "Rédigez votre message...",
+    "send": "Envoyer",
+    "reply": "Répondre",
+    "replyPlaceholder": "Écrire une réponse...",
+    "sendReply": "Envoyer la réponse",
+    "from": "De",
+    "you": "Vous",
+    "unread": "Non lu",
+    "backToMessages": "Retour aux messages",
+    "sendMessage": "Envoyer un message",
+    "sending": "Envoi en cours...",
+    "noSubject": "(Sans objet)",
+    "teamName": "Équipe Surf Your Life"
+  },
+  "admin": {
+    "sidebar": {
+      "dashboard": "Tableau de bord",
+      "clients": "Clients",
+      "bookings": "Réservations",
+      "messages": "Messages",
+      "leads": "Prospects",
+      "users": "Utilisateurs",
+      "language": "Langue",
+      "signOut": "Se déconnecter"
+    },
+    "dashboard": {
+      "title": "Tableau de bord Admin",
+      "description": "Vue d'ensemble du portail Surf Your Life",
+      "totalClients": "Clients au total",
+      "checkIns30d": "Check-ins (30 jours)",
+      "avgCheckIns": "Moy. check-ins / client",
+      "pendingBookings": "Réservations en attente",
+      "unreadMessages": "Messages non lus",
+      "recentClients": "Clients récents",
+      "viewAll": "Voir tout",
+      "noClients": "Aucun client pour l'instant",
+      "noProfile": "Aucun profil"
+    },
+    "messages": {
+      "title": "Messages",
+      "allConversations": "Toutes les conversations",
+      "newConversation": "Nouvelle conversation",
+      "selectClient": "Sélectionner un client",
+      "noThreads": "Aucune conversation"
+    },
+    "users": {
+      "title": "Utilisateurs",
+      "allUsers": "Tous les utilisateurs",
+      "name": "Nom",
+      "email": "E-mail",
+      "role": "Rôle",
+      "joined": "Inscrit",
+      "changeRole": "Changer le rôle",
+      "roleUpdated": "Rôle mis à jour",
+      "cannotChangeSelf": "Vous ne pouvez pas modifier votre propre rôle",
+      "roles": {
+        "client": "Client",
+        "practitioner": "Praticien",
+        "admin": "Admin"
+      }
+    },
+    "clients": {
+      "searchPlaceholder": "Rechercher par nom ou e-mail...",
+      "atRisk": {
+        "title": "Clients à risque",
+        "description": "Clients qui ne se sont pas connectés depuis 7+ jours",
+        "lastCheckIn": "Dernier check-in",
+        "daysSince": "Il y a {n} jours",
+        "never": "Jamais",
+        "noAtRisk": "Tous les clients se sont connectés récemment",
+        "viewAtRisk": "Clients à risque"
+      }
+    },
+    "leads": {
+      "statusNew": "Nouveau",
+      "statusContacted": "Contacté",
+      "statusDismissed": "Rejeté",
+      "filterAll": "Tous",
+      "updateStatus": "Mettre à jour le statut"
+    },
+    "bookings": {
+      "title": "Réservations",
+      "allBookings": "Toutes les réservations",
+      "filterAll": "Toutes",
+      "filterPending": "En attente",
+      "filterConfirmed": "Confirmées",
+      "filterCancelled": "Annulées",
+      "client": "Client",
+      "service": "Service",
+      "dateTime": "Date / Heure",
+      "status": "Statut",
+      "actions": "Actions",
+      "confirm": "Confirmer",
+      "cancel": "Annuler",
+      "noBookings": "Aucune réservation trouvée",
+      "confirming": "Confirmation…",
+      "cancelling": "Annulation…",
+      "statusUpdated": "Réservation mise à jour"
+    }
+  },
+  "concerns": {
+    "burnout": "Burnout",
+    "long_covid": "Long COVID",
+    "midlife_reinvention": "Réinvention à mi-vie",
+    "general_wellbeing": "Bien-être général",
+    "other": "Autre"
   },
   "common": {
     "loading": "Chargement…",

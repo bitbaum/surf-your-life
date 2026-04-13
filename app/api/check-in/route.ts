@@ -7,7 +7,7 @@ import { eq, and, gte } from "drizzle-orm"
 
 export async function POST(req: Request) {
   const session = await auth()
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  if (!session) return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
 
   // Prevent duplicate check-ins on the same calendar day
   const startOfDay = new Date()
@@ -19,13 +19,13 @@ export async function POST(req: Request) {
     ),
   })
   if (existing) {
-    return NextResponse.json({ error: "Already checked in today" }, { status: 409 })
+    return NextResponse.json({ success: false, error: "Already checked in today" }, { status: 409 })
   }
 
   const body = await req.json()
   const parsed = checkInSchema.safeParse(body)
   if (!parsed.success) {
-    return NextResponse.json({ error: "Invalid input" }, { status: 400 })
+    return NextResponse.json({ success: false, error: "Invalid input" }, { status: 400 })
   }
 
   await db.insert(checkIns).values({ ...parsed.data, userId: session.user.id })

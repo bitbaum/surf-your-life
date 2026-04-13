@@ -31,11 +31,13 @@ export function BookingGrid({ services }: { services: Service[] }) {
   const [form, setForm] = useState<BookingForm>({ preferredDate: "", preferredTime: "flexible", notes: "" })
   const [loading, setLoading] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   function openModal(service: Service) {
     const today = new Date().toISOString().split("T")[0]
     setForm({ preferredDate: today, preferredTime: "flexible", notes: "" })
     setSubmitted(false)
+    setError(null)
     setSelected(service)
   }
 
@@ -47,13 +49,18 @@ export function BookingGrid({ services }: { services: Service[] }) {
     e.preventDefault()
     if (!selected) return
     setLoading(true)
+    setError(null)
     const res = await fetch("/api/bookings", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ serviceId: selected.id, ...form }),
     })
     setLoading(false)
-    if (res.ok) setSubmitted(true)
+    if (res.ok) {
+      setSubmitted(true)
+    } else {
+      setError(t("bookingError"))
+    }
   }
 
   return (
@@ -172,6 +179,7 @@ export function BookingGrid({ services }: { services: Service[] }) {
                     {loading ? t("submitting") : t("submitBooking")}
                   </Button>
                 </div>
+                {error && <p className="text-sm text-red-600 mt-2">{error}</p>}
               </form>
             )}
           </div>

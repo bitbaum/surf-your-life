@@ -5,17 +5,26 @@ import { Link, usePathname } from "@/i18n/navigation"
 import { signOut } from "next-auth/react"
 import { cn } from "@/lib/utils"
 import { LocaleSwitcher } from "@/components/ui/locale-switcher"
-import { LayoutDashboard, Users, LogOut, Waves, Menu, X, Inbox } from "lucide-react"
+import { useTranslations } from "next-intl"
+import { LayoutDashboard, Users, LogOut, Waves, Menu, X, Inbox, MessageSquare, UserCog, CalendarCheck } from "lucide-react"
 
-const navItems = [
-  { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/admin/clients", label: "Clients", icon: Users },
-  { href: "/admin/leads", label: "Leads", icon: Inbox },
-]
+interface AdminSidebarProps {
+  unreadMessages?: number
+}
 
-export function AdminSidebar() {
+export function AdminSidebar({ unreadMessages = 0 }: AdminSidebarProps) {
+  const t = useTranslations("admin.sidebar")
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
+
+  const navItems = [
+    { href: "/admin/dashboard", label: t("dashboard"), icon: LayoutDashboard, badge: 0 },
+    { href: "/admin/clients", label: t("clients"), icon: Users, badge: 0 },
+    { href: "/admin/bookings", label: t("bookings"), icon: CalendarCheck, badge: 0 },
+    { href: "/admin/messages", label: t("messages"), icon: MessageSquare, badge: unreadMessages },
+    { href: "/admin/leads", label: t("leads"), icon: Inbox, badge: 0 },
+    { href: "/admin/users", label: t("users"), icon: UserCog, badge: 0 },
+  ]
 
   const logo = (
     <Link href="/admin/dashboard" className="flex items-center gap-2 px-2 mb-8" onClick={() => setOpen(false)}>
@@ -31,7 +40,7 @@ export function AdminSidebar() {
 
   const nav = (
     <nav className="flex flex-col gap-1 flex-1">
-      {navItems.map(({ href, label, icon: Icon }) => (
+      {navItems.map(({ href, label, icon: Icon, badge }) => (
         <Link
           key={href}
           href={href}
@@ -45,6 +54,11 @@ export function AdminSidebar() {
         >
           <Icon className="w-4 h-4" />
           {label}
+          {badge > 0 && (
+            <span className="ml-auto text-xs bg-teal-500 text-white rounded-full px-1.5 py-0.5 min-w-[1.25rem] text-center">
+              {badge}
+            </span>
+          )}
         </Link>
       ))}
     </nav>
@@ -53,7 +67,7 @@ export function AdminSidebar() {
   const bottom = (
     <div className="flex flex-col gap-3 pt-4 border-t border-slate-700">
       <div className="px-2">
-        <p className="text-xs text-slate-500 mb-1.5">Language</p>
+        <p className="text-xs text-slate-500 mb-1.5">{t("language")}</p>
         <LocaleSwitcher dark />
       </div>
       <button
@@ -61,7 +75,7 @@ export function AdminSidebar() {
         className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
       >
         <LogOut className="w-4 h-4" />
-        Sign out
+        {t("signOut")}
       </button>
     </div>
   )

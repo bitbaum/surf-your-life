@@ -7,6 +7,7 @@ import { formatDate, formatEnumValue } from "@/lib/utils"
 import Link from "next/link"
 import { MOODS } from "@/lib/constants"
 import { ResetLinkButton } from "./reset-link-button"
+import { NewThreadButton } from "./new-thread-button"
 
 const moodEmoji = Object.fromEntries(MOODS.map((m) => [m.value, m.emoji]))
 
@@ -42,7 +43,10 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
           <h1 className="text-2xl font-bold text-slate-900">{client.name ?? "Unnamed"}</h1>
           <p className="text-slate-500">{client.email} · Joined {formatDate(client.createdAt)}</p>
         </div>
-        <ResetLinkButton userId={id} />
+        <div className="flex items-center gap-2">
+          <NewThreadButton clientId={id} />
+          <ResetLinkButton userId={id} />
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

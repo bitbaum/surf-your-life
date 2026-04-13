@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { formatDate, formatEnumValue } from "@/lib/utils"
 import { PAGINATION_DEFAULT, MOODS } from "@/lib/constants"
 import { Link } from "@/i18n/navigation"
+import { CheckInActions } from "./check-in-actions"
 
 const moodEmoji = Object.fromEntries(MOODS.map((m) => [m.value, m.emoji]))
 
@@ -101,6 +102,7 @@ export default async function CheckInsPage({
                       )}
                     </div>
                   )}
+                  <CheckInActions checkInId={ci.id} checkIn={ci} />
                 </CardContent>
               </Card>
             ))}

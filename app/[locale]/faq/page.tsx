@@ -2,9 +2,10 @@ import { setRequestLocale } from "next-intl/server"
 import { getTranslations } from "next-intl/server"
 import { Link } from "@/i18n/navigation"
 import { MarketingNav } from "@/components/marketing/nav"
+import { MarketingFooter } from "@/components/marketing/footer"
 import { auth } from "@/lib/auth"
 import { FaqAccordion } from "./faq-accordion"
-import { Waves, ArrowLeft } from "lucide-react"
+import { ArrowLeft } from "lucide-react"
 
 export default async function FaqPage({
   params,
@@ -35,19 +36,7 @@ export default async function FaqPage({
         <FaqAccordion items={items} />
       </main>
 
-      <footer className="py-10 px-6 border-t border-slate-100 bg-white">
-        <div className="max-w-5xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded bg-teal-600 flex items-center justify-center">
-              <Waves className="w-3 h-3 text-white" />
-            </div>
-            <span className="text-sm text-slate-400">Surf Your Life · Zürich</span>
-          </div>
-          <Link href="/" className="text-xs text-slate-400 hover:text-teal-600 transition-colors">
-            surf-your-life.ch
-          </Link>
-        </div>
-      </footer>
+      <MarketingFooter />
     </div>
   )
 }

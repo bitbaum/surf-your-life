@@ -7,23 +7,23 @@ import { profileSchema } from "@/lib/domain/profile"
 
 export async function GET() {
   const session = await auth()
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  if (!session) return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
 
   const profile = await db.query.profiles.findFirst({
     where: eq(profiles.userId, session.user.id),
   })
 
-  return NextResponse.json({ success: true, profile })
+  return NextResponse.json({ success: true, data: profile })
 }
 
 export async function PUT(req: Request) {
   const session = await auth()
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  if (!session) return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
 
   const body = await req.json()
   const parsed = profileSchema.safeParse(body)
   if (!parsed.success) {
-    return NextResponse.json({ error: "Invalid input" }, { status: 400 })
+    return NextResponse.json({ success: false, error: "Invalid input" }, { status: 400 })
   }
 
   const { name, ...profileData } = parsed.data

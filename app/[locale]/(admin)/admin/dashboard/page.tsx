@@ -1,20 +1,41 @@
 import { db } from "@/lib/db"
-import { users, checkIns } from "@/lib/db/schema"
-import { eq, desc, gte, count } from "drizzle-orm"
+import { users, checkIns, bookings, threadMessages } from "@/lib/db/schema"
+import { eq, desc, gte, count, and, isNull, inArray } from "drizzle-orm"
+import { getTranslations, setRequestLocale } from "next-intl/server"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { StatCard } from "@/components/ui/stat-card"
 import { PageHeader } from "@/components/ui/page-header"
-import Link from "next/link"
+import { Link } from "@/i18n/navigation"
 import { formatDate, formatEnumValue } from "@/lib/utils"
-import { Users, ClipboardList, TrendingUp } from "lucide-react"
+import { Users, ClipboardList, TrendingUp, CalendarClock, MessageSquare } from "lucide-react"
 
-export default async function AdminDashboardPage() {
+export default async function AdminDashboardPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}) {
+  const { locale } = await params
+  setRequestLocale(locale)
+  const t = await getTranslations("admin.dashboard")
+
   const thirtyDaysAgo = new Date()
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 
-  const [clientCountResult, recentCheckInsCountResult, recentClients] = await Promise.all([
+  const [
+    clientCountResult,
+    recentCheckInsCountResult,
+    pendingBookingsResult,
+    unreadMessagesResult,
+    recentClients,
+  ] = await Promise.all([
     db.select({ count: count() }).from(users).where(eq(users.role, "client")),
     db.select({ count: count() }).from(checkIns).where(gte(checkIns.createdAt, thirtyDaysAgo)),
+    db.select({ count: count() }).from(bookings).where(eq(bookings.status, "pending")),
+    db
+      .select({ count: count() })
+      .from(threadMessages)
+      .innerJoin(users, eq(threadMessages.senderId, users.id))
+      .where(and(isNull(threadMessages.readAt), eq(users.role, "client"))),
     db.query.users.findMany({
       where: eq(users.role, "client"),
       orderBy: [desc(users.createdAt)],
@@ -25,26 +46,30 @@ export default async function AdminDashboardPage() {
 
   const clientCount = clientCountResult[0]?.count ?? 0
   const recentCheckInsCount = recentCheckInsCountResult[0]?.count ?? 0
+  const pendingBookings = pendingBookingsResult[0]?.count ?? 0
+  const unreadMessages = unreadMessagesResult[0]?.count ?? 0
   const avgCheckIns = clientCount > 0
     ? Math.round((recentCheckInsCount / clientCount) * 10) / 10
     : 0
 
   return (
     <div className="max-w-5xl mx-auto">
-      <PageHeader title="Admin Dashboard" description="Overview of the Surf Your Life portal" />
+      <PageHeader title={t("title")} description={t("description")} />
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <StatCard label="Total clients" value={clientCount} icon={Users} color="teal" />
-        <StatCard label="Check-ins (30 days)" value={recentCheckInsCount} icon={ClipboardList} color="blue" />
-        <StatCard label="Avg check-ins / client" value={avgCheckIns} icon={TrendingUp} color="violet" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-8">
+        <StatCard label={t("totalClients")} value={clientCount} icon={Users} color="teal" />
+        <StatCard label={t("checkIns30d")} value={recentCheckInsCount} icon={ClipboardList} color="blue" />
+        <StatCard label={t("avgCheckIns")} value={avgCheckIns} icon={TrendingUp} color="violet" />
+        <StatCard label={t("pendingBookings")} value={pendingBookings} icon={CalendarClock} color="violet" />
+        <StatCard label={t("unreadMessages")} value={unreadMessages} icon={MessageSquare} color="blue" />
       </div>
 
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle>Recent clients</CardTitle>
+            <CardTitle>{t("recentClients")}</CardTitle>
             <Link href="/admin/clients" className="text-sm text-teal-600 hover:underline">
-              View all →
+              {t("viewAll")} →
             </Link>
           </div>
         </CardHeader>
@@ -62,14 +87,16 @@ export default async function AdminDashboardPage() {
                 </div>
                 <div className="text-right">
                   <p className="text-xs text-slate-500">
-                    {client.profile?.mainConcern ? formatEnumValue(client.profile.mainConcern) : "No profile yet"}
+                    {client.profile?.mainConcern
+                      ? formatEnumValue(client.profile.mainConcern)
+                      : t("noProfile")}
                   </p>
                   <p className="text-xs text-slate-400">{formatDate(client.createdAt)}</p>
                 </div>
               </Link>
             ))}
             {recentClients.length === 0 && (
-              <p className="text-sm text-slate-400 py-4 text-center">No clients yet</p>
+              <p className="text-sm text-slate-400 py-4 text-center">{t("noClients")}</p>
             )}
           </div>
         </CardContent>

@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
-import { checkIns, profiles } from "@/lib/db/schema"
-import { eq, desc } from "drizzle-orm"
+import { checkIns, profiles, users } from "@/lib/db/schema"
+import { eq, desc, asc } from "drizzle-orm"
 import { getTranslations } from "next-intl/server"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { StatCard } from "@/components/ui/stat-card"
@@ -11,6 +11,9 @@ import { Link } from "@/i18n/navigation"
 import { formatDate, formatEnumValue } from "@/lib/utils"
 import { ClipboardList, TrendingUp } from "lucide-react"
 import { ONBOARDING_REQUIRED_FIELDS, PROFILE_COMPLETION_FIELDS, ENERGY_SCALE } from "@/lib/constants"
+import { MoodChart } from "./mood-chart"
+import { SleepChart } from "./sleep-chart"
+import { EmailVerificationBanner } from "@/components/portal/EmailVerificationBanner"
 
 export default async function DashboardPage() {
   const session = await auth()
@@ -18,12 +21,22 @@ export default async function DashboardPage() {
 
   const t = await getTranslations("portal.dashboard")
 
-  const [profile, recentCheckIns] = await Promise.all([
+  const [profile, recentCheckIns, trendCheckIns, dbUser] = await Promise.all([
     db.query.profiles.findFirst({ where: eq(profiles.userId, session.user.id) }),
     db.query.checkIns.findMany({
       where: eq(checkIns.userId, session.user.id),
       orderBy: [desc(checkIns.createdAt)],
       limit: 7,
+    }),
+    db.query.checkIns.findMany({
+      where: eq(checkIns.userId, session.user.id),
+      orderBy: [asc(checkIns.createdAt)],
+      limit: 14,
+      columns: { createdAt: true, mood: true, energyLevel: true, sleepHours: true },
+    }),
+    db.query.users.findFirst({
+      where: eq(users.id, session.user.id),
+      columns: { emailVerified: true },
     }),
   ])
 
@@ -45,6 +58,8 @@ export default async function DashboardPage() {
         title={t("title", { name: session.user.name?.split(" ")[0] ?? session.user.email?.split("@")[0] ?? "" })}
         description={t("subtitle")}
       />
+
+      {!dbUser?.emailVerified && <EmailVerificationBanner />}
 
       {!isOnboarded && (
         <div className="mb-6 rounded-xl bg-teal-50 border border-teal-200 p-4">
@@ -121,6 +136,40 @@ export default async function DashboardPage() {
             </div>
           </CardContent>
         </Card>
+      )}
+
+      {trendCheckIns.length >= 2 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          {/* Mood trend */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Mood trend</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <MoodChart data={trendCheckIns} />
+              <div className="flex items-center justify-between mt-2 text-xs text-slate-400">
+                <span>{formatDate(trendCheckIns[0].createdAt)}</span>
+                <span>{formatDate(trendCheckIns[trendCheckIns.length - 1].createdAt)}</span>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Sleep trend */}
+          {trendCheckIns.filter((c) => c.sleepHours != null).length >= 2 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Sleep trend</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <SleepChart data={trendCheckIns} />
+                <div className="flex items-center justify-between mt-2 text-xs text-slate-400">
+                  <span>{formatDate(trendCheckIns[0].createdAt)}</span>
+                  <span>{formatDate(trendCheckIns[trendCheckIns.length - 1].createdAt)}</span>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </div>
       )}
 
       {recentCheckIns.length > 0 && (

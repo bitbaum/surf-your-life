@@ -7,6 +7,17 @@ import { Waves, Menu, X, LayoutDashboard } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { LocaleSwitcher } from "@/components/ui/locale-switcher"
 
+// anchor=true → rendered as <a href="..."> (same-page scroll)
+// anchor=false → rendered as <Link href="..."> (route navigation)
+const NAV_LINKS = [
+  { href: "#method", labelKey: "method", anchor: true },
+  { href: "#who", labelKey: "forWhom", anchor: true },
+  { href: "#process", labelKey: "howItWorks", anchor: true },
+  { href: "/faq", labelKey: "faq", anchor: false },
+  { href: "/blog", labelKey: "blog", anchor: false },
+  { href: "/contact", labelKey: "contact", anchor: false },
+] as const
+
 export function MarketingNav({ isLoggedIn = false }: { isLoggedIn?: boolean }) {
   const t = useTranslations("nav")
   const [open, setOpen] = useState(false)
@@ -23,12 +34,17 @@ export function MarketingNav({ isLoggedIn = false }: { isLoggedIn?: boolean }) {
           </Link>
 
           <nav className="hidden md:flex items-center gap-8">
-            <a href="#method" className="text-sm text-slate-500 hover:text-slate-900 transition-colors">{t("method")}</a>
-            <a href="#who" className="text-sm text-slate-500 hover:text-slate-900 transition-colors">{t("forWhom")}</a>
-            <a href="#process" className="text-sm text-slate-500 hover:text-slate-900 transition-colors">{t("howItWorks")}</a>
-            <Link href="/faq" className="text-sm text-slate-500 hover:text-slate-900 transition-colors">{t("faq")}</Link>
-            <Link href="/blog" className="text-sm text-slate-500 hover:text-slate-900 transition-colors">{t("blog")}</Link>
-            <Link href="/contact" className="text-sm text-slate-500 hover:text-slate-900 transition-colors">{t("contact")}</Link>
+            {NAV_LINKS.map(({ href, labelKey, anchor }) =>
+              anchor ? (
+                <a key={href} href={href} className="text-sm text-slate-500 hover:text-slate-900 transition-colors">
+                  {t(labelKey)}
+                </a>
+              ) : (
+                <Link key={href} href={href} className="text-sm text-slate-500 hover:text-slate-900 transition-colors">
+                  {t(labelKey)}
+                </Link>
+              )
+            )}
           </nav>
 
           <div className="hidden md:flex items-center gap-3">
@@ -63,12 +79,27 @@ export function MarketingNav({ isLoggedIn = false }: { isLoggedIn?: boolean }) {
 
         {open && (
           <div className="md:hidden border-t border-slate-100 bg-white px-6 py-5 flex flex-col gap-4">
-            <a href="#method" onClick={() => setOpen(false)} className="text-sm text-slate-700 py-1 hover:text-teal-600 transition-colors">{t("method")}</a>
-            <a href="#who" onClick={() => setOpen(false)} className="text-sm text-slate-700 py-1 hover:text-teal-600 transition-colors">{t("forWhom")}</a>
-            <a href="#process" onClick={() => setOpen(false)} className="text-sm text-slate-700 py-1 hover:text-teal-600 transition-colors">{t("howItWorks")}</a>
-            <Link href="/faq" onClick={() => setOpen(false)} className="text-sm text-slate-700 py-1 hover:text-teal-600 transition-colors">{t("faq")}</Link>
-            <Link href="/blog" onClick={() => setOpen(false)} className="text-sm text-slate-700 py-1 hover:text-teal-600 transition-colors">{t("blog")}</Link>
-            <Link href="/contact" onClick={() => setOpen(false)} className="text-sm text-slate-700 py-1 hover:text-teal-600 transition-colors">{t("contact")}</Link>
+            {NAV_LINKS.map(({ href, labelKey, anchor }) =>
+              anchor ? (
+                <a
+                  key={href}
+                  href={href}
+                  onClick={() => setOpen(false)}
+                  className="text-sm text-slate-700 py-1 hover:text-teal-600 transition-colors"
+                >
+                  {t(labelKey)}
+                </a>
+              ) : (
+                <Link
+                  key={href}
+                  href={href}
+                  onClick={() => setOpen(false)}
+                  className="text-sm text-slate-700 py-1 hover:text-teal-600 transition-colors"
+                >
+                  {t(labelKey)}
+                </Link>
+              )
+            )}
             <div className="pt-3 border-t border-slate-100 flex flex-col gap-2">
               <LocaleSwitcher />
               {isLoggedIn ? (

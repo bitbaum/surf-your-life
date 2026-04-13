@@ -10,11 +10,11 @@ export const MOODS = [
 ] as const
 
 export const MAIN_CONCERNS = [
-  { value: "burnout", label: "Burnout" },
-  { value: "long_covid", label: "Long COVID" },
-  { value: "midlife_reinvention", label: "Midlife reinvention" },
-  { value: "general_wellbeing", label: "General wellbeing" },
-  { value: "other", label: "Other" },
+  "burnout",
+  "long_covid",
+  "midlife_reinvention",
+  "general_wellbeing",
+  "other",
 ] as const
 
 export const ENERGY_SCALE = { min: 1, max: 10, default: 5 } as const

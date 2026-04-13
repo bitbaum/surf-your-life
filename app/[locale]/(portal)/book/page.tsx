@@ -1,6 +1,7 @@
 import { setRequestLocale } from "next-intl/server"
 import { getTranslations } from "next-intl/server"
 import { auth } from "@/lib/auth"
+import { redirect } from "next/navigation"
 import { db } from "@/lib/db"
 import { services, bookings } from "@/lib/db/schema"
 import { eq, desc, asc } from "drizzle-orm"
@@ -17,7 +18,8 @@ export default async function BookPage({
   setRequestLocale(locale)
   const t = await getTranslations("portal.book")
   const session = await auth()
-  const userId = session!.user!.id!
+  if (!session?.user?.id) redirect(`/${locale}/login`)
+  const userId = session.user.id
 
   const [availableServices, userBookings] = await Promise.all([
     db.select().from(services).where(eq(services.available, true)).orderBy(asc(services.sortOrder)),

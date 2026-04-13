@@ -59,7 +59,7 @@ export function StepLifestyle({
           max={300}
           value={form.heightCm}
           onChange={(e) => onChange("heightCm", e.target.value)}
-          placeholder="e.g. 175"
+          placeholder={t("heightPlaceholder")}
         />
         <Input
           label={t("weightLabel")}
@@ -68,7 +68,7 @@ export function StepLifestyle({
           max={500}
           value={form.weightKg}
           onChange={(e) => onChange("weightKg", e.target.value)}
-          placeholder="e.g. 72"
+          placeholder={t("weightPlaceholder")}
         />
       </div>
       <Input

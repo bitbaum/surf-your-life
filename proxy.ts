@@ -5,7 +5,7 @@ import { NextResponse } from "next/server"
 
 const intlMiddleware = createMiddleware(routing)
 
-const publicPaths = ["/", "/login", "/register", "/forgot-password", "/reset-password", "/contact", "/faq", "/blog"]
+const publicPaths = ["/", "/login", "/register", "/forgot-password", "/reset-password", "/contact", "/faq", "/blog", "/privacy", "/verify-email"]
 const authPaths = ["/login", "/register", "/forgot-password", "/reset-password"]
 
 function stripLocale(pathname: string): string {

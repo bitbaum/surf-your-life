@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { GoogleButton } from "@/components/auth/google-button"
+import { PasswordStrength } from "@/components/ui/password-strength"
 
 export default function RegisterPage() {
   const t = useTranslations("auth.register")
@@ -75,7 +76,10 @@ export default function RegisterPage() {
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <Input label={t("email")} type="email" value={form.email} onChange={(e) => set("email", e.target.value)} placeholder="you@example.com" required />
-          <Input label={t("password")} type="password" value={form.password} onChange={(e) => set("password", e.target.value)} placeholder={t("passwordPlaceholder")} required minLength={8} />
+          <div>
+            <Input label={t("password")} type="password" value={form.password} onChange={(e) => set("password", e.target.value)} placeholder={t("passwordPlaceholder")} required minLength={8} />
+            <PasswordStrength password={form.password} />
+          </div>
           {error && <p className="text-sm text-red-600">{error}</p>}
           <Button type="submit" disabled={loading} className="w-full mt-1">
             {loading ? t("loading") : t("submit")}

@@ -2,11 +2,11 @@ import { setRequestLocale } from "next-intl/server"
 import { getTranslations } from "next-intl/server"
 import { Link } from "@/i18n/navigation"
 import { MarketingNav } from "@/components/marketing/nav"
+import { MarketingFooter } from "@/components/marketing/footer"
 import { auth } from "@/lib/auth"
 import { notFound } from "next/navigation"
-import { Waves, ArrowLeft } from "lucide-react"
-
-type Post = { slug: string; title: string; date: string; category: string; excerpt: string; body: string }
+import { ArrowLeft } from "lucide-react"
+import type { Post } from "../types"
 
 export default async function BlogPostPage({
   params,
@@ -15,7 +15,7 @@ export default async function BlogPostPage({
 }) {
   const { locale, slug } = await params
   setRequestLocale(locale)
-  const t = await getTranslations("blog")
+  const t = await getTranslations({ locale, namespace: "blog" })
   const session = await auth()
   const posts = t.raw("posts") as Post[]
   const post = posts.find((p) => p.slug === slug)
@@ -61,31 +61,19 @@ export default async function BlogPostPage({
 
         <div className="mt-16 pt-8 border-t border-slate-100">
           <div className="bg-teal-50 rounded-2xl p-6 text-center">
-            <p className="font-semibold text-slate-900 mb-2">Ready to start your recovery?</p>
-            <p className="text-sm text-slate-500 mb-4">Join the programme and take the first step.</p>
+            <p className="font-semibold text-slate-900 mb-2">{t("ctaTitle")}</p>
+            <p className="text-sm text-slate-500 mb-4">{t("ctaBody")}</p>
             <Link
               href="/register"
               className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-lg bg-teal-600 text-white text-sm font-medium hover:bg-teal-700 transition-colors"
             >
-              Create your account
+              {t("ctaButton")}
             </Link>
           </div>
         </div>
       </main>
 
-      <footer className="py-10 px-6 border-t border-slate-100 bg-white">
-        <div className="max-w-5xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded bg-teal-600 flex items-center justify-center">
-              <Waves className="w-3 h-3 text-white" />
-            </div>
-            <span className="text-sm text-slate-400">Surf Your Life · Zürich</span>
-          </div>
-          <Link href="/" className="text-xs text-slate-400 hover:text-teal-600 transition-colors">
-            surf-your-life.ch
-          </Link>
-        </div>
-      </footer>
+      <MarketingFooter />
     </div>
   )
 }

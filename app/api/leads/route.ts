@@ -1,12 +1,7 @@
 import { NextResponse } from "next/server"
-import { z } from "zod"
 import { db } from "@/lib/db"
 import { leads } from "@/lib/db/schema"
-
-const newsletterSchema = z.object({
-  email: z.string().email().max(300),
-  source: z.string().max(100).default("newsletter"),
-})
+import { newsletterSchema } from "@/lib/domain/lead"
 
 export async function POST(req: Request) {
   const body = await req.json()
