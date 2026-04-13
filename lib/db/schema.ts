@@ -32,6 +32,8 @@ export const documentTypeEnum = pgEnum("document_type", [
   "upload",
 ])
 
+export const leadStatusEnum = pgEnum("lead_status", ["new", "contacted", "dismissed"])
+
 // ─── Auth tables (Auth.js v5 compatible) ──────────────────────────────────────
 
 export const users = pgTable("users", {
@@ -184,14 +186,19 @@ export const assignments = pgTable("assignments", {
 
 // ─── Leads (marketing intake) ─────────────────────────────────────────────────
 
-export const leads = pgTable("leads", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  name: text("name").notNull(),
-  email: text("email").notNull(),
-  message: text("message"),
-  source: text("source").default("contact_form"), // where did they come from
-  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
-})
+export const leads = pgTable(
+  "leads",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    name: text("name").notNull(),
+    email: text("email").notNull(),
+    message: text("message"),
+    source: text("source").default("contact_form"), // where did they come from
+    status: leadStatusEnum("status").notNull().default("new"),
+    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+  },
+  (table) => [index("leads_email_idx").on(table.email)]
+)
 
 // ─── Services & Bookings ──────────────────────────────────────────────────────
 
@@ -243,6 +250,36 @@ export const passwordResetTokens = pgTable("password_reset_tokens", {
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
 })
 
+// ─── Messaging ────────────────────────────────────────────────────────────────
+
+export const threads = pgTable(
+  "threads",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    clientId: uuid("client_id").notNull().references(() => users.id),
+    subject: text("subject"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [index("threads_client_id_idx").on(table.clientId)]
+)
+
+export const threadMessages = pgTable(
+  "thread_messages",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    threadId: uuid("thread_id").notNull().references(() => threads.id),
+    senderId: uuid("sender_id").notNull().references(() => users.id),
+    body: text("body").notNull(),
+    readAt: timestamp("read_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("thread_messages_thread_id_idx").on(table.threadId),
+    index("thread_messages_sender_id_idx").on(table.senderId),
+  ]
+)
+
 // ─── Relations ────────────────────────────────────────────────────────────────
 
 export const usersRelations = relations(users, ({ one, many }) => ({
@@ -252,6 +289,8 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   assignmentsAsClient: many(assignments, { relationName: "client" }),
   assignmentsAsPractitioner: many(assignments, { relationName: "practitioner" }),
   bookings: many(bookings),
+  threads: many(threads),
+  sentMessages: many(threadMessages),
 }))
 
 export const servicesRelations = relations(services, ({ many }) => ({
@@ -276,6 +315,16 @@ export const documentsRelations = relations(documents, ({ one }) => ({
   author: one(users, { fields: [documents.authorId], references: [users.id] }),
 }))
 
+export const threadsRelations = relations(threads, ({ one, many }) => ({
+  client: one(users, { fields: [threads.clientId], references: [users.id] }),
+  messages: many(threadMessages),
+}))
+
+export const threadMessagesRelations = relations(threadMessages, ({ one }) => ({
+  thread: one(threads, { fields: [threadMessages.threadId], references: [threads.id] }),
+  sender: one(users, { fields: [threadMessages.senderId], references: [users.id] }),
+}))
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export type User = typeof users.$inferSelect
@@ -284,6 +333,9 @@ export type Profile = typeof profiles.$inferSelect
 export type CheckIn = typeof checkIns.$inferSelect
 export type Document = typeof documents.$inferSelect
 export type Lead = typeof leads.$inferSelect
+export type LeadStatus = (typeof leadStatusEnum.enumValues)[number]
 export type Service = typeof services.$inferSelect
 export type Booking = typeof bookings.$inferSelect
 export type Role = (typeof roleEnum.enumValues)[number]
+export type Thread = typeof threads.$inferSelect
+export type ThreadMessage = typeof threadMessages.$inferSelect
