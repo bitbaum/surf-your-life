@@ -3,7 +3,7 @@ import { db } from "@/lib/db"
 import { threads, threadMessages } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
 import { createThreadSchema, notifyMessageParty } from "@/lib/domain/messaging"
-import { PAGINATION_DEFAULT } from "@/lib/constants"
+import { PAGINATION_DEFAULT, SITE_URL } from "@/lib/constants"
 
 export async function GET() {
   const session = await auth()
@@ -37,7 +37,7 @@ export async function POST(request: Request) {
 
   const parsed = createThreadSchema.safeParse(body)
   if (!parsed.success) {
-    return Response.json({ success: false, error: parsed.error.flatten() }, { status: 422 })
+    return Response.json({ success: false, error: "Validation failed", details: parsed.error.flatten() }, { status: 422 })
   }
 
   const isAdmin = session.user.role === "admin" || session.user.role === "practitioner"
@@ -71,7 +71,7 @@ export async function POST(request: Request) {
     threadId: thread.id,
     threadSubject: parsed.data.subject,
     body: parsed.data.body,
-    baseUrl: process.env.AUTH_URL ?? "https://surf-your-life.ch",
+    baseUrl: SITE_URL,
   })
 
   return Response.json({ success: true, data: { threadId: thread.id } })

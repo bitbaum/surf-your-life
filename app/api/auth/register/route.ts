@@ -4,9 +4,10 @@ import { eq, inArray } from "drizzle-orm"
 import crypto from "crypto"
 import { db } from "@/lib/db"
 import { users, profiles, verificationTokens } from "@/lib/db/schema"
-import { registerSchema } from "@/lib/domain/auth"
+import { registerSchema, resolveRole } from "@/lib/domain/auth"
 import { sendEmail } from "@/lib/email"
 import { welcomeEmail, newUserAlertEmail, verificationEmail } from "@/lib/email/templates"
+import { SITE_URL } from "@/lib/constants"
 
 export async function POST(req: Request) {
   const body = await req.json()
@@ -30,11 +31,7 @@ export async function POST(req: Request) {
   }
 
   // Bootstrap: emails listed in ADMIN_EMAILS get admin role automatically on signup
-  const adminEmails = (process.env.ADMIN_EMAILS ?? '')
-    .split(',')
-    .map(e => e.trim().toLowerCase())
-    .filter(Boolean)
-  const role = adminEmails.includes(email.toLowerCase()) ? 'admin' : 'client'
+  const role = resolveRole(email)
 
   const hashed = await bcrypt.hash(password, 12)
   const [user] = await db
@@ -47,7 +44,7 @@ export async function POST(req: Request) {
 
   // Fire-and-forget: welcome + verification email + alert admins
   const name = null
-  const baseUrl = process.env.AUTH_URL ?? "https://surf-your-life.ch"
+  const baseUrl = SITE_URL
 
   void Promise.all([
     // Welcome email

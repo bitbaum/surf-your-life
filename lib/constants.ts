@@ -66,3 +66,9 @@ export const PROFILE_WIZARD_STEPS = [
 ] as const
 
 export const PAGINATION_DEFAULT = 20
+
+// Lookup maps derived from MOODS — import these instead of redefining inline
+export const MOOD_EMOJI = Object.fromEntries(MOODS.map((m) => [m.value, m.emoji])) as Record<string, string>
+export const MOOD_LABEL = Object.fromEntries(MOODS.map((m) => [m.value, m.label])) as Record<string, string>
+
+export const SITE_URL = process.env.AUTH_URL ?? "https://surf-your-life.ch"

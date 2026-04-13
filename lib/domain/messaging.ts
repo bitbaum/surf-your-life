@@ -4,6 +4,7 @@ import { users } from "@/lib/db/schema"
 import { eq, inArray } from "drizzle-orm"
 import { sendEmail } from "@/lib/email"
 import { newMessageEmail } from "@/lib/email/templates"
+import { SITE_URL } from "@/lib/constants"
 
 export const createThreadSchema = z.object({
   subject: z.string().min(1).max(200),

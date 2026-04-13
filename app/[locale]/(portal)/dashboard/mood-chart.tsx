@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { formatDate } from "@/lib/utils"
+import { MOOD_LABEL } from "@/lib/constants"
 
 const MOOD_VALUES: Record<string, number> = {
   very_low: 1,
@@ -17,14 +18,6 @@ const MOOD_COLORS: Record<string, string> = {
   neutral: "bg-slate-300",
   good: "bg-teal-300",
   excellent: "bg-teal-500",
-}
-
-const MOOD_LABELS: Record<string, string> = {
-  very_low: "Very low",
-  low: "Low",
-  neutral: "Neutral",
-  good: "Good",
-  excellent: "Excellent",
 }
 
 interface DataPoint {
@@ -62,7 +55,7 @@ export function MoodChart({ data }: Props) {
             />
             {isHovered && (
               <div className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs rounded px-2 py-1 whitespace-nowrap z-10 pointer-events-none">
-                {MOOD_LABELS[ci.mood] ?? ci.mood}
+                {MOOD_LABEL[ci.mood] ?? ci.mood}
                 <br />
                 {formatDate(ci.createdAt)}
               </div>

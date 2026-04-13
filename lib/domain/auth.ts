@@ -16,6 +16,14 @@ export const registerSchema = z.object({
 export type LoginInput = z.infer<typeof loginSchema>
 export type RegisterInput = z.infer<typeof registerSchema>
 
+export function resolveRole(email: string): "admin" | "client" {
+  const adminEmails = (process.env.ADMIN_EMAILS ?? "")
+    .split(",")
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean)
+  return adminEmails.includes(email.toLowerCase()) ? "admin" : "client"
+}
+
 export async function verifyEmailToken(
   token: string
 ): Promise<{ success: boolean; error?: string }> {

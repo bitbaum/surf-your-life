@@ -7,11 +7,9 @@ import { Card, CardContent } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
 import { formatDate, formatEnumValue } from "@/lib/utils"
-import { PAGINATION_DEFAULT, MOODS } from "@/lib/constants"
+import { PAGINATION_DEFAULT, MOOD_EMOJI } from "@/lib/constants"
 import { Link } from "@/i18n/navigation"
 import { CheckInActions } from "./check-in-actions"
-
-const moodEmoji = Object.fromEntries(MOODS.map((m) => [m.value, m.emoji]))
 
 export default async function CheckInsPage({
   searchParams,
@@ -67,7 +65,7 @@ export default async function CheckInsPage({
                 <CardContent className="pt-5">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex items-center gap-3">
-                      <span className="text-2xl">{moodEmoji[ci.mood] ?? "😐"}</span>
+                      <span className="text-2xl">{MOOD_EMOJI[ci.mood] ?? "😐"}</span>
                       <div>
                         <p className="font-medium text-slate-900">{formatEnumValue(ci.mood)}</p>
                         <p className="text-xs text-slate-400">{formatDate(ci.createdAt)}</p>
