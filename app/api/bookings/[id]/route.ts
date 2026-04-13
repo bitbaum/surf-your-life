@@ -1,0 +1,84 @@
+import { NextResponse } from "next/server"
+import { z } from "zod"
+import { auth } from "@/lib/auth"
+import { db } from "@/lib/db"
+import { bookings, services, users } from "@/lib/db/schema"
+import { eq } from "drizzle-orm"
+import { sendEmail } from "@/lib/email"
+import { bookingStatusEmail } from "@/lib/email/templates"
+
+const adminUpdateSchema = z.object({ status: z.enum(["confirmed", "cancelled"]) })
+const clientUpdateSchema = z.object({ status: z.literal("cancelled") })
+
+export async function PATCH(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const session = await auth()
+  if (!session?.user?.id) {
+    return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
+  }
+
+  const isAdmin = session.user.role === "admin" || session.user.role === "practitioner"
+  const isClient = session.user.role === "client"
+
+  const body = await req.json()
+  const schema = isAdmin ? adminUpdateSchema : clientUpdateSchema
+  const parsed = schema.safeParse(body)
+  if (!parsed.success) {
+    return NextResponse.json({ success: false, error: "Invalid input" }, { status: 400 })
+  }
+
+  const { id } = await params
+
+  const booking = await db.query.bookings.findFirst({
+    where: eq(bookings.id, id),
+    with: { user: true, service: true },
+  })
+
+  if (!booking) {
+    return NextResponse.json({ success: false, error: "Booking not found" }, { status: 404 })
+  }
+
+  // Clients can only cancel their own bookings; cannot act on already-cancelled ones
+  if (isClient) {
+    if (booking.userId !== session.user.id) {
+      return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 })
+    }
+    if (booking.status === "cancelled") {
+      return NextResponse.json({ success: false, error: "Already cancelled" }, { status: 400 })
+    }
+  }
+
+  const [updated] = await db
+    .update(bookings)
+    .set({ status: parsed.data.status })
+    .where(eq(bookings.id, id))
+    .returning({ id: bookings.id, status: bookings.status })
+
+  // Send status email to the client — fire-and-forget
+  const client = await db.query.users.findFirst({
+    where: eq(users.id, booking.userId),
+  })
+
+  if (client?.email) {
+    const html = bookingStatusEmail({
+      clientName: client.name ?? null,
+      serviceName: booking.service.name,
+      status: parsed.data.status,
+      preferredDate: booking.preferredDate ?? null,
+      preferredTime: booking.preferredTime ?? null,
+    })
+
+    const subject =
+      parsed.data.status === "confirmed"
+        ? `Booking confirmed: ${booking.service.name}`
+        : `Booking cancelled: ${booking.service.name}`
+
+    sendEmail({ to: client.email, subject, html }).catch((err) =>
+      console.error("[booking-status-notify]", err)
+    )
+  }
+
+  return NextResponse.json({ success: true, data: updated })
+}
