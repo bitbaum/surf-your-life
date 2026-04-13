@@ -34,6 +34,16 @@ export const documentTypeEnum = pgEnum("document_type", [
 
 export const leadStatusEnum = pgEnum("lead_status", ["new", "contacted", "dismissed"])
 
+export const mainConcernEnum = pgEnum("main_concern_type", [
+  "burnout",
+  "long_covid",
+  "midlife_reinvention",
+  "general_wellbeing",
+  "other",
+])
+
+export const programmeStatusEnum = pgEnum("programme_status", ["active", "completed", "paused"])
+
 // ─── Auth tables (Auth.js v5 compatible) ──────────────────────────────────────
 
 export const users = pgTable("users", {
@@ -101,7 +111,7 @@ export const profiles = pgTable("profiles", {
   workHoursPerWeek: integer("work_hours_per_week"),
   insuranceProvider: text("insurance_provider"),
   // Clinical
-  mainConcern: text("main_concern"),
+  mainConcern: mainConcernEnum("main_concern"),
   currentSituation: text("current_situation"),
   goals: text("goals"),
   existingDiagnoses: text("existing_diagnoses"),
@@ -280,6 +290,36 @@ export const threadMessages = pgTable(
   ]
 )
 
+// ─── Programmes ───────────────────────────────────────────────────────────────
+
+export const programmes = pgTable("programmes", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  title: text("title").notNull(),
+  description: text("description"),
+  durationWeeks: integer("duration_weeks"),
+  targetConcern: mainConcernEnum("target_concern"),
+  createdBy: uuid("created_by").references(() => users.id),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+})
+
+export const programmeEnrolments = pgTable(
+  "programme_enrolments",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    clientId: uuid("client_id").notNull().references(() => users.id),
+    programmeId: uuid("programme_id").notNull().references(() => programmes.id),
+    status: programmeStatusEnum("status").notNull().default("active"),
+    startDate: timestamp("start_date", { withTimezone: true }),
+    notes: text("notes"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("programme_enrolments_client_id_idx").on(table.clientId),
+    index("programme_enrolments_programme_id_idx").on(table.programmeId),
+  ]
+)
+
 // ─── Relations ────────────────────────────────────────────────────────────────
 
 export const usersRelations = relations(users, ({ one, many }) => ({
@@ -291,6 +331,7 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   bookings: many(bookings),
   threads: many(threads),
   sentMessages: many(threadMessages),
+  programmeEnrolments: many(programmeEnrolments),
 }))
 
 export const servicesRelations = relations(services, ({ many }) => ({
@@ -325,6 +366,16 @@ export const threadMessagesRelations = relations(threadMessages, ({ one }) => ({
   sender: one(users, { fields: [threadMessages.senderId], references: [users.id] }),
 }))
 
+export const programmesRelations = relations(programmes, ({ one, many }) => ({
+  createdByUser: one(users, { fields: [programmes.createdBy], references: [users.id] }),
+  enrolments: many(programmeEnrolments),
+}))
+
+export const programmeEnrolmentsRelations = relations(programmeEnrolments, ({ one }) => ({
+  client: one(users, { fields: [programmeEnrolments.clientId], references: [users.id] }),
+  programme: one(programmes, { fields: [programmeEnrolments.programmeId], references: [programmes.id] }),
+}))
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export type User = typeof users.$inferSelect
@@ -339,3 +390,7 @@ export type Booking = typeof bookings.$inferSelect
 export type Role = (typeof roleEnum.enumValues)[number]
 export type Thread = typeof threads.$inferSelect
 export type ThreadMessage = typeof threadMessages.$inferSelect
+export type Programme = typeof programmes.$inferSelect
+export type ProgrammeEnrolment = typeof programmeEnrolments.$inferSelect
+export type MainConcern = (typeof mainConcernEnum.enumValues)[number]
+export type ProgrammeStatus = (typeof programmeStatusEnum.enumValues)[number]

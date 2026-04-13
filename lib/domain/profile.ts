@@ -1,5 +1,6 @@
 import { z } from "zod"
 import { ENERGY_SCALE, QUALITY_SCALE, SLEEP_HOURS } from "@/lib/constants"
+import { mainConcernEnum } from "@/lib/db/schema"
 
 export const profileSchema = z.object({
   name: z.string().max(200).optional(),
@@ -8,7 +9,7 @@ export const profileSchema = z.object({
   dateOfBirth: z.string().optional(),
   workHoursPerWeek: z.number().int().min(0).max(168).optional().nullable(),
   insuranceProvider: z.string().max(200).optional(),
-  mainConcern: z.string().max(500).optional(), // stores comma-separated values for multi-select
+  mainConcern: z.enum(mainConcernEnum.enumValues).optional().nullable(),
   currentSituation: z.string().max(5000).optional(),
   goals: z.string().max(5000).optional(),
   existingDiagnoses: z.string().max(2000).optional(),
