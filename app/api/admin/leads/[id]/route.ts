@@ -13,8 +13,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   const session = await auth()
   if (!session) return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
 
-  const role = (session.user as { role?: string }).role
-  if (role !== "admin" && role !== "practitioner") {
+  if (session.user.role !== "admin" && session.user.role !== "practitioner") {
     return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 })
   }
 

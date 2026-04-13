@@ -49,7 +49,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
     session({ session, token }) {
       session.user.id = token.id as string
-      session.user.role = token.role as string
+      session.user.role = token.role as "admin" | "practitioner" | "client"
       session.user.emailVerified = (token.emailVerified as Date | null | undefined) ?? null
       return session
     },
