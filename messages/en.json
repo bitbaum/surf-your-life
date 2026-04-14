@@ -19,8 +19,8 @@
       "line1": "Get back",
       "line2": "to yourself.",
       "line3": "On your terms.",
-      "subtitle": "A psychiatry-led programme for burnout, Long COVID, and midlife reinvention. We reset the biology first — because everything else depends on it.",
-      "cta": "Start your programme",
+      "subtitle": "A psychiatry-led program for burnout, Long COVID, and midlife reinvention. We reset the biology first — because everything else depends on it.",
+      "cta": "Start your program",
       "ctaSecondary": "See the method"
     },
     "trust": [
@@ -57,15 +57,15 @@
     "method": {
       "label": "The method",
       "title": "Hardware before software",
-      "subtitle": "Every programme starts with your body — sleep, nervous system, and physical resilience. Only once that foundation is stable does the psychological work begin.",
+      "subtitle": "Every program starts with your body — sleep, nervous system, and physical resilience. Only once that foundation is stable does the psychological work begin.",
       "pillars": [
         {
           "title": "Biological reset",
-          "body": "Sleep architecture, nervous system regulation, and physical recovery — sequenced and monitored. No psychological programme lands without this foundation."
+          "body": "Sleep architecture, nervous system regulation, and physical recovery — sequenced and monitored. No psychological program lands without this foundation."
         },
         {
           "title": "Psychiatric guidance",
-          "body": "Medically anchored from day one. Our psychiatrist establishes a clear clinical picture and keeps your programme evidence-based throughout."
+          "body": "Medically anchored from day one. Our psychiatrist establishes a clear clinical picture and keeps your program evidence-based throughout."
         },
         {
           "title": "Reintegration",
@@ -89,7 +89,7 @@
           "author": "Executive, Zürich"
         },
         {
-          "text": "After 18 months of Long COVID, this was the first programme that actually started with how I felt physically.",
+          "text": "After 18 months of Long COVID, this was the first program that actually started with how I felt physically.",
           "author": "Physician, Basel"
         }
       ],
@@ -113,18 +113,18 @@
           "body": "A thorough intake covering your medical history, current state, work context, and goals — so we understand the full picture before anything begins."
         },
         {
-          "title": "Your programme",
+          "title": "Your program",
           "body": "A structured plan combining body-first protocols, regular psychiatric check-ins, and reintegration milestones. Personalised, not generic."
         },
         {
           "title": "Track & evolve",
-          "body": "Daily check-ins in the portal. We see the data. Your programme adapts as you recover — no waiting for the next appointment."
+          "body": "Daily check-ins in the portal. We see the data. Your program adapts as you recover — no waiting for the next appointment."
         }
       ]
     },
     "cta": {
       "title1": "Ready to start",
-      "title2": "your programme?",
+      "title2": "your program?",
       "body": "Create your account, complete the intake, and we'll be in touch within 24 hours to schedule your initial assessment.",
       "button": "Create your account",
       "signIn": "Already have an account →",
@@ -152,11 +152,11 @@
   },
   "faq": {
     "title": "Frequently asked questions",
-    "subtitle": "Everything you need to know before starting your programme.",
+    "subtitle": "Everything you need to know before starting your program.",
     "backHome": "Back to home",
     "items": [
       {
-        "q": "Who is this programme for?",
+        "q": "Who is this program for?",
         "a": "Surf Your Life is designed for high-functioning professionals who have experienced burnout, Long COVID, or a major life transition. Our clients are typically executives, doctors, founders, and creatives who need a medically grounded approach — not generic coaching."
       },
       {
@@ -164,28 +164,28 @@
         "a": "We start with the biology. Most programmes jump straight to psychological work before the nervous system is ready. Our psychiatrist-led approach sequences the biological reset first — sleep, nervous system regulation, physical recovery — and only then moves to cognitive and reintegration work."
       },
       {
-        "q": "How long does a programme last?",
+        "q": "How long does a program last?",
         "a": "Programmes are typically 12–24 weeks, depending on your starting point and goals. The first phase focuses on biological stabilisation (4–8 weeks), followed by reintegration work. The pace is yours — we don't rush the biology."
       },
       {
         "q": "Do I need a formal diagnosis to join?",
-        "a": "No. Many clients come without a formal diagnosis. Our psychiatrist conducts a thorough assessment at the start, establishes a clear clinical picture, and guides the programme accordingly. If a formal diagnosis is relevant, that conversation happens in context — not as a prerequisite."
+        "a": "No. Many clients come without a formal diagnosis. Our psychiatrist conducts a thorough assessment at the start, establishes a clear clinical picture, and guides the program accordingly. If a formal diagnosis is relevant, that conversation happens in context — not as a prerequisite."
       },
       {
         "q": "Is this covered by Swiss health insurance?",
-        "a": "Psychiatric consultations may be partially covered by your Grundversicherung, depending on your insurer and policy. Our team can provide documentation to support your claim. The programme fee itself is not currently covered by standard insurance plans."
+        "a": "Psychiatric consultations may be partially covered by your Grundversicherung, depending on your insurer and policy. Our team can provide documentation to support your claim. The program fee itself is not currently covered by standard insurance plans."
       },
       {
         "q": "What is the Vacuul, and why is it used?",
         "a": "The Vacuul is a lower-body negative pressure device that supports circulation, lymphatic drainage, and recovery at a cellular level. It is used as part of the biological reset phase — one of several evidence-based tools in our 230 m² performance space."
       },
       {
-        "q": "Can I continue working during the programme?",
-        "a": "Yes — in most cases. One of the explicit goals of the programme is structured work reintegration. We calibrate the intensity of your plan around your work capacity, not against it."
+        "q": "Can I continue working during the program?",
+        "a": "Yes — in most cases. One of the explicit goals of the program is structured work reintegration. We calibrate the intensity of your plan around your work capacity, not against it."
       },
       {
         "q": "How does the digital portal work?",
-        "a": "After registration, you get access to your personal portal where you complete daily check-ins (mood, energy, sleep). Your clinical team reviews the data in real time and adjusts your programme between appointments. You don't have to wait for your next session to get a response."
+        "a": "After registration, you get access to your personal portal where you complete daily check-ins (mood, energy, sleep). Your clinical team reviews the data in real time and adjusts your program between appointments. You don't have to wait for your next session to get a response."
       }
     ]
   },
@@ -217,11 +217,11 @@
         "date": "2026-01-14",
         "category": "Reinvention",
         "excerpt": "Midlife transitions are not crises. They are predictable developmental events with identifiable patterns — and they go better with structure.",
-        "body": "The \"midlife crisis\" framing does people a disservice. It pathologises what is, in most cases, a predictable developmental transition — a recalibration of identity, values, and direction that tends to occur between 40 and 55.\n\nThe research on midlife transitions (Levinson, Vaillant, the Harvard Study of Adult Development) is consistent: people who navigate this period well are not those who avoid the discomfort, but those who engage with it deliberately. The transition involves grief (for paths not taken), identity revision, and, ultimately, a more integrated sense of self.\n\nThe problem is that most high-functioning people have no framework for this. They are skilled at achievement — at executing against clear goals with measurable outcomes. Midlife asks them to operate in ambiguity, to sit with not-knowing, and to make decisions that cannot be optimised.\n\nA well-structured programme creates the conditions for this work to proceed safely. That means: physical stability first (sleep, exercise, basic regulation), a clear clinical picture (distinguishing developmental transition from depression or burnout), and a structured reintegration process as new directions emerge.\n\nWe work with many clients for whom the question is not 'how do I get back to where I was?' but 'what do I actually want my life to look like?' That question deserves serious attention — and serious support."
+        "body": "The \"midlife crisis\" framing does people a disservice. It pathologises what is, in most cases, a predictable developmental transition — a recalibration of identity, values, and direction that tends to occur between 40 and 55.\n\nThe research on midlife transitions (Levinson, Vaillant, the Harvard Study of Adult Development) is consistent: people who navigate this period well are not those who avoid the discomfort, but those who engage with it deliberately. The transition involves grief (for paths not taken), identity revision, and, ultimately, a more integrated sense of self.\n\nThe problem is that most high-functioning people have no framework for this. They are skilled at achievement — at executing against clear goals with measurable outcomes. Midlife asks them to operate in ambiguity, to sit with not-knowing, and to make decisions that cannot be optimised.\n\nA well-structured program creates the conditions for this work to proceed safely. That means: physical stability first (sleep, exercise, basic regulation), a clear clinical picture (distinguishing developmental transition from depression or burnout), and a structured reintegration process as new directions emerge.\n\nWe work with many clients for whom the question is not 'how do I get back to where I was?' but 'what do I actually want my life to look like?' That question deserves serious attention — and serious support."
       }
     ],
     "ctaTitle": "Ready to start your recovery?",
-    "ctaBody": "Join the programme and take the first step.",
+    "ctaBody": "Join the program and take the first step.",
     "ctaButton": "Create your account"
   },
   "auth": {
@@ -229,7 +229,7 @@
       "quote": "The gap between discharge and return is where most people fall through.",
       "author": "Dr. Manu · Psychiatrist & Founder, Vitareba",
       "bullets": [
-        "Psychiatry-led programme",
+        "Psychiatry-led program",
         "Body-first methodology",
         "Zollikerstrasse 183, Zürich"
       ]
@@ -250,7 +250,7 @@
     },
     "register": {
       "title": "Create your account",
-      "subtitle": "Begin your programme — takes 2 minutes",
+      "subtitle": "Begin your program — takes 2 minutes",
       "email": "Email",
       "password": "Password",
       "passwordPlaceholder": "At least 8 characters",
@@ -312,7 +312,7 @@
   },
   "contact": {
     "title": "Get in touch",
-    "subtitle": "Tell us about your situation. We'll reach out within 24 hours to discuss whether this programme is a fit.",
+    "subtitle": "Tell us about your situation. We'll reach out within 24 hours to discuss whether this program is a fit.",
     "name": "Your name",
     "email": "Email",
     "message": "What brings you here?",
@@ -332,7 +332,7 @@
       "title": "Welcome back, {name}",
       "subtitle": "Here's how your journey is going",
       "completeProfile": "Complete your profile",
-      "completeProfileBody": "{pct}% done — add your situation and goals so we can tailor your programme",
+      "completeProfileBody": "{pct}% done — add your situation and goals so we can tailor your program",
       "completeProfileCta": "Complete profile",
       "totalCheckIns": "Total check-ins",
       "lastEnergy": "Last energy level",
@@ -387,7 +387,7 @@
       "saveSuccess": "Profile saved",
       "saveError": "Something went wrong. Please try again.",
       "optionalSection": "Optional details",
-      "optionalSubtitle": "Add more context to help us personalise your programme",
+      "optionalSubtitle": "Add more context to help us personalise your program",
       "occupation": "Occupation",
       "dateOfBirth": "Date of birth",
       "nameLabel": "Your name",
@@ -435,7 +435,7 @@
       "alcoholTobaccoPlaceholder": "e.g. 2–3 glasses of wine per week, no tobacco",
       "socialSupportLabel": "Social support (1–10)",
       "socialSupportHint": "1 = isolated · 10 = strong network",
-      "namePrivacyNote": "You can use any name — it's only used to personalise your programme.",
+      "namePrivacyNote": "You can use any name — it's only used to personalise your program.",
       "dobDay": "Day",
       "dobMonth": "Month",
       "dobYear": "Year",
@@ -494,6 +494,24 @@
       "deleteButton": "Delete my account",
       "deleting": "Deleting...",
       "deleteWarning": "This is permanent. All check-ins, bookings, messages and profile data will be deleted."
+    },
+    "program": {
+      "title": "My Program",
+      "noProgram": "No active program",
+      "noProgramDescription": "Your practitioner will assign you to a structured recovery program.",
+      "duration": "Duration",
+      "weeks": "weeks",
+      "startDate": "Started",
+      "focus": "Focus area",
+      "currentWeek": "Current week",
+      "weekOf": "Week {current} of {total}",
+      "progress": "Progress",
+      "notesFromPractitioner": "Notes from your practitioner",
+      "status": {
+        "active": "Active",
+        "paused": "Paused",
+        "completed": "Completed"
+      }
     }
   },
   "sidebar": {
@@ -507,7 +525,8 @@
     "signOut": "Sign out",
     "language": "Language",
     "openMenu": "Open menu",
-    "closeMenu": "Close menu"
+    "closeMenu": "Close menu",
+    "program": "My Program"
   },
   "messages": {
     "title": "Messages",
@@ -541,7 +560,8 @@
       "leads": "Leads",
       "users": "Users",
       "language": "Language",
-      "signOut": "Sign out"
+      "signOut": "Sign out",
+      "programs": "Programs"
     },
     "dashboard": {
       "title": "Admin Dashboard",
@@ -596,7 +616,10 @@
         "currentSituation": "Current situation",
         "goals": "Goals",
         "energy": "Energy",
-        "sleep": "Sleep"
+        "sleep": "Sleep",
+        "programCard": "Active program",
+        "startedOn": "Started {date}",
+        "weeks": "weeks"
       },
       "atRisk": {
         "title": "At-Risk Clients",
@@ -658,6 +681,48 @@
         "client": "Client",
         "practitioner": "Practitioner",
         "admin": "Admin"
+      }
+    },
+    "programs": {
+      "title": "Programs",
+      "description": "Structured multi-week recovery plans for clients",
+      "new": "New program",
+      "newTitle": "Create program",
+      "newDescription": "Define a new structured recovery plan",
+      "backToPrograms": "Back to programs",
+      "empty": "No programs yet",
+      "weeks": "weeks",
+      "createdOn": "Created {date}",
+      "enrolledClients": "Enrolled clients",
+      "noEnrollments": "No clients enrolled yet",
+      "fieldTitle": "Program name",
+      "fieldTitlePlaceholder": "e.g. 12-Week Burnout Recovery",
+      "fieldDescription": "Description",
+      "fieldDescriptionPlaceholder": "What does this program cover? What can clients expect?",
+      "fieldDuration": "Duration (weeks)",
+      "fieldDurationPlaceholder": "e.g. 12",
+      "fieldTargetConcern": "Target concern",
+      "fieldTargetConcernAny": "Any / General",
+      "save": "Create program",
+      "saving": "Creating...",
+      "cancel": "Cancel",
+      "saveError": "Something went wrong. Please try again.",
+      "enroll": "Enroll in program",
+      "enrollTitle": "Enroll in program",
+      "enrollConfirm": "Enroll",
+      "fieldSelectProgram": "Program",
+      "fieldSelectProgramPlaceholder": "— select a program —",
+      "fieldStartDate": "Start date",
+      "fieldNotes": "Notes for client",
+      "fieldNotesPlaceholder": "Optional notes visible to the client",
+      "changeStatus": "Change status...",
+      "unnamed": "Unnamed",
+      "startedOn": "Started {date}",
+      "enrolledOn": "Enrolled {date}",
+      "status": {
+        "active": "Active",
+        "paused": "Paused",
+        "completed": "Completed"
       }
     }
   },

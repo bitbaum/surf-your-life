@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation"
 import { db } from "@/lib/db"
-import { users, checkIns } from "@/lib/db/schema"
+import { users, checkIns, programs, programEnrollments } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { formatDate, formatEnumValue } from "@/lib/utils"
@@ -8,6 +8,7 @@ import { Link } from "@/i18n/navigation"
 import { MOOD_EMOJI } from "@/lib/constants"
 import { ResetLinkButton } from "./reset-link-button"
 import { NewThreadButton } from "./new-thread-button"
+import { EnrollProgramButton } from "./enroll-program-button"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 
 export default async function ClientDetailPage({ params }: { params: Promise<{ locale: string; id: string }> }) {
@@ -15,7 +16,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
   setRequestLocale(locale)
   const t = await getTranslations("admin.clients")
 
-  const [client, clientCheckIns] = await Promise.all([
+  const [client, clientCheckIns, allPrograms, activeEnrollment] = await Promise.all([
     db.query.users.findFirst({
       where: eq(users.id, id),
       with: { profile: true },
@@ -24,6 +25,12 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
       where: eq(checkIns.userId, id),
       orderBy: [desc(checkIns.createdAt)],
       limit: 20,
+    }),
+    db.query.programs.findMany({ orderBy: [desc(programs.createdAt)] }),
+    db.query.programEnrollments.findFirst({
+      where: eq(programEnrollments.clientId, id),
+      with: { program: true },
+      orderBy: [desc(programEnrollments.createdAt)],
     }),
   ])
 
@@ -44,7 +51,8 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
           <h1 className="text-2xl font-bold text-slate-900">{client.name ?? t("detail.unnamed")}</h1>
           <p className="text-slate-500">{client.email} · {t("detail.joinedOn", { date: formatDate(client.createdAt) })}</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <EnrollProgramButton clientId={id} programs={allPrograms} />
           <NewThreadButton clientId={id} />
           <ResetLinkButton userId={id} />
         </div>
@@ -115,6 +123,48 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
           </CardContent>
         </Card>
       </div>
+
+      {activeEnrollment && (
+        <div className="mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>{t("detail.programCard")}</CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <Link
+                    href={`/admin/programs/${activeEnrollment.programId}`}
+                    className="font-medium text-slate-900 hover:text-teal-600 transition-colors"
+                  >
+                    {activeEnrollment.program.title}
+                  </Link>
+                  <div className="flex flex-wrap gap-3 mt-1 text-slate-500">
+                    {activeEnrollment.startDate && (
+                      <span>{t("detail.startedOn", { date: formatDate(activeEnrollment.startDate) })}</span>
+                    )}
+                    {activeEnrollment.program.durationWeeks && (
+                      <span>{activeEnrollment.program.durationWeeks} {t("detail.weeks")}</span>
+                    )}
+                  </div>
+                  {activeEnrollment.notes && (
+                    <p className="text-slate-500 mt-2 italic">{activeEnrollment.notes}</p>
+                  )}
+                </div>
+                <span className={`text-xs px-2 py-0.5 rounded-full font-medium flex-shrink-0 ${
+                  activeEnrollment.status === "active"
+                    ? "bg-teal-50 text-teal-700 border border-teal-200"
+                    : activeEnrollment.status === "paused"
+                    ? "bg-yellow-50 text-yellow-700 border border-yellow-200"
+                    : "bg-slate-100 text-slate-600 border border-slate-200"
+                }`}>
+                  {activeEnrollment.status}
+                </span>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   )
 }

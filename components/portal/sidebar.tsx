@@ -18,6 +18,7 @@ import {
   X,
   MessageSquare,
   Settings,
+  BookOpen,
 } from "lucide-react"
 
 export function PortalSidebar() {
@@ -27,6 +28,7 @@ export function PortalSidebar() {
 
   const navItems = [
     { href: "/dashboard", label: t("dashboard"), icon: LayoutDashboard },
+    { href: "/program", label: t("program"), icon: BookOpen },
     { href: "/check-in", label: t("checkIn"), icon: ClipboardList },
     { href: "/check-ins", label: t("history"), icon: History },
     { href: "/book", label: t("book"), icon: CalendarPlus },

@@ -494,6 +494,24 @@
       "deleteButton": "Mein Konto löschen",
       "deleting": "Wird gelöscht...",
       "deleteWarning": "Dies ist dauerhaft. Alle Check-ins, Buchungen, Nachrichten und Profildaten werden gelöscht."
+    },
+    "program": {
+      "title": "Mein Programm",
+      "noProgram": "Kein aktives Programm",
+      "noProgramDescription": "Ihr Therapeut wird Ihnen ein strukturiertes Genesungsprogramm zuweisen.",
+      "duration": "Dauer",
+      "weeks": "Wochen",
+      "startDate": "Gestartet",
+      "focus": "Schwerpunkt",
+      "currentWeek": "Aktuelle Woche",
+      "weekOf": "Woche {current} von {total}",
+      "progress": "Fortschritt",
+      "notesFromPractitioner": "Notizen vom Therapeuten",
+      "status": {
+        "active": "Aktiv",
+        "paused": "Pausiert",
+        "completed": "Abgeschlossen"
+      }
     }
   },
   "sidebar": {
@@ -507,7 +525,8 @@
     "signOut": "Abmelden",
     "language": "Sprache",
     "openMenu": "Menü öffnen",
-    "closeMenu": "Menü schliessen"
+    "closeMenu": "Menü schliessen",
+    "program": "Mein Programm"
   },
   "messages": {
     "title": "Nachrichten",
@@ -541,7 +560,8 @@
       "leads": "Leads",
       "users": "Benutzer",
       "language": "Sprache",
-      "signOut": "Abmelden"
+      "signOut": "Abmelden",
+      "programs": "Programme"
     },
     "dashboard": {
       "title": "Admin-Übersicht",
@@ -596,7 +616,10 @@
         "currentSituation": "Aktuelle Situation",
         "goals": "Ziele",
         "energy": "Energie",
-        "sleep": "Schlaf"
+        "sleep": "Schlaf",
+        "programCard": "Aktives Programm",
+        "startedOn": "Gestartet am {date}",
+        "weeks": "Wochen"
       },
       "atRisk": {
         "title": "Gefährdete Klienten",
@@ -658,6 +681,48 @@
         "client": "Klient",
         "practitioner": "Therapeut",
         "admin": "Admin"
+      }
+    },
+    "programs": {
+      "title": "Programme",
+      "description": "Strukturierte mehrwöchige Genesungspläne für Klienten",
+      "new": "Neues Programm",
+      "newTitle": "Programm erstellen",
+      "newDescription": "Einen neuen strukturierten Genesungsplan definieren",
+      "backToPrograms": "Zurück zu Programmen",
+      "empty": "Noch keine Programme",
+      "weeks": "Wochen",
+      "createdOn": "Erstellt am {date}",
+      "enrolledClients": "Eingeschriebene Klienten",
+      "noEnrollments": "Noch keine Klienten eingeschrieben",
+      "fieldTitle": "Programmname",
+      "fieldTitlePlaceholder": "z.B. 12-Wochen Burnout-Erholung",
+      "fieldDescription": "Beschreibung",
+      "fieldDescriptionPlaceholder": "Was umfasst dieses Programm? Was können Klienten erwarten?",
+      "fieldDuration": "Dauer (Wochen)",
+      "fieldDurationPlaceholder": "z.B. 12",
+      "fieldTargetConcern": "Zielthema",
+      "fieldTargetConcernAny": "Allgemein",
+      "save": "Programm erstellen",
+      "saving": "Wird erstellt...",
+      "cancel": "Abbrechen",
+      "saveError": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",
+      "enroll": "In Programm einschreiben",
+      "enrollTitle": "In Programm einschreiben",
+      "enrollConfirm": "Einschreiben",
+      "fieldSelectProgram": "Programm",
+      "fieldSelectProgramPlaceholder": "— Programm auswählen —",
+      "fieldStartDate": "Startdatum",
+      "fieldNotes": "Notizen für Klient",
+      "fieldNotesPlaceholder": "Optionale Notizen, die der Klient sieht",
+      "changeStatus": "Status ändern...",
+      "unnamed": "Unbenannt",
+      "startedOn": "Gestartet am {date}",
+      "enrolledOn": "Eingeschrieben am {date}",
+      "status": {
+        "active": "Aktiv",
+        "paused": "Pausiert",
+        "completed": "Abgeschlossen"
       }
     }
   },

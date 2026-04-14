@@ -494,6 +494,24 @@
       "deleteButton": "Supprimer mon compte",
       "deleting": "Suppression...",
       "deleteWarning": "Cette action est définitive. Tous vos check-ins, réservations, messages et données de profil seront supprimés."
+    },
+    "program": {
+      "title": "Mon programme",
+      "noProgram": "Aucun programme actif",
+      "noProgramDescription": "Votre praticien vous assignera un programme de récupération structuré.",
+      "duration": "Durée",
+      "weeks": "semaines",
+      "startDate": "Démarré",
+      "focus": "Domaine de focus",
+      "currentWeek": "Semaine actuelle",
+      "weekOf": "Semaine {current} sur {total}",
+      "progress": "Progression",
+      "notesFromPractitioner": "Notes de votre praticien",
+      "status": {
+        "active": "Actif",
+        "paused": "En pause",
+        "completed": "Terminé"
+      }
     }
   },
   "sidebar": {
@@ -507,7 +525,8 @@
     "signOut": "Se déconnecter",
     "language": "Langue",
     "openMenu": "Ouvrir le menu",
-    "closeMenu": "Fermer le menu"
+    "closeMenu": "Fermer le menu",
+    "program": "Mon programme"
   },
   "messages": {
     "title": "Messages",
@@ -541,7 +560,8 @@
       "leads": "Prospects",
       "users": "Utilisateurs",
       "language": "Langue",
-      "signOut": "Se déconnecter"
+      "signOut": "Se déconnecter",
+      "programs": "Programmes"
     },
     "dashboard": {
       "title": "Tableau de bord Admin",
@@ -613,7 +633,10 @@
         "currentSituation": "Situation actuelle",
         "goals": "Objectifs",
         "energy": "Énergie",
-        "sleep": "Sommeil"
+        "sleep": "Sommeil",
+        "programCard": "Programme actif",
+        "startedOn": "Démarré le {date}",
+        "weeks": "semaines"
       },
       "atRisk": {
         "title": "Clients à risque",
@@ -659,6 +682,48 @@
       "statusUpdated": "Réservation mise à jour",
       "description": "Gérer toutes les demandes de réservation",
       "created": "Créé le"
+    },
+    "programs": {
+      "title": "Programmes",
+      "description": "Plans de récupération structurés sur plusieurs semaines",
+      "new": "Nouveau programme",
+      "newTitle": "Créer un programme",
+      "newDescription": "Définir un nouveau plan de récupération structuré",
+      "backToPrograms": "Retour aux programmes",
+      "empty": "Aucun programme pour l'instant",
+      "weeks": "semaines",
+      "createdOn": "Créé le {date}",
+      "enrolledClients": "Clients inscrits",
+      "noEnrollments": "Aucun client inscrit pour l'instant",
+      "fieldTitle": "Nom du programme",
+      "fieldTitlePlaceholder": "ex. Récupération burnout 12 semaines",
+      "fieldDescription": "Description",
+      "fieldDescriptionPlaceholder": "Que couvre ce programme? À quoi les clients peuvent-ils s'attendre?",
+      "fieldDuration": "Durée (semaines)",
+      "fieldDurationPlaceholder": "ex. 12",
+      "fieldTargetConcern": "Problématique ciblée",
+      "fieldTargetConcernAny": "Générale",
+      "save": "Créer le programme",
+      "saving": "Création...",
+      "cancel": "Annuler",
+      "saveError": "Une erreur s'est produite. Veuillez réessayer.",
+      "enroll": "Inscrire au programme",
+      "enrollTitle": "Inscrire au programme",
+      "enrollConfirm": "Inscrire",
+      "fieldSelectProgram": "Programme",
+      "fieldSelectProgramPlaceholder": "— sélectionner un programme —",
+      "fieldStartDate": "Date de début",
+      "fieldNotes": "Notes pour le client",
+      "fieldNotesPlaceholder": "Notes optionnelles visibles par le client",
+      "changeStatus": "Changer le statut...",
+      "unnamed": "Sans nom",
+      "startedOn": "Démarré le {date}",
+      "enrolledOn": "Inscrit le {date}",
+      "status": {
+        "active": "Actif",
+        "paused": "En pause",
+        "completed": "Terminé"
+      }
     }
   },
   "concerns": {
