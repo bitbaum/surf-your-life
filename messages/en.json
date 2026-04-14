@@ -447,7 +447,8 @@
       "stepLifestyleTitle": "Your lifestyle",
       "stepOf": "of",
       "next": "Next",
-      "saveAndFinish": "Save & finish"
+      "saveAndFinish": "Save & finish",
+      "back": "Back"
     },
     "book": {
       "title": "Book a service",

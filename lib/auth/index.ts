@@ -44,15 +44,20 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.id = user.id
         token.emailVerified = (user as { emailVerified?: Date | null }).emailVerified ?? null
 
-        // Resolve role — credentials users have the correct role from DB already,
-        // but OAuth users are created by the adapter with the default "client" role
-        // before this callback runs. Check ADMIN_EMAILS and promote if needed.
+        // Resolve role — only apply ADMIN_EMAILS promotion when the env var is
+        // actually configured. If it's not set, trust the DB role as-is so that
+        // manually-assigned admin accounts don't get silently downgraded to client.
         const existingRole = (user as { role?: string }).role ?? "client"
-        const correctRole = resolveRole(user.email ?? "")
-        if (correctRole !== existingRole && user.id) {
-          await db.update(users).set({ role: correctRole }).where(eq(users.id, user.id))
+        const adminEmailsConfigured = (process.env.ADMIN_EMAILS ?? "").trim().length > 0
+        if (adminEmailsConfigured) {
+          const correctRole = resolveRole(user.email ?? "")
+          if (correctRole !== existingRole && user.id) {
+            await db.update(users).set({ role: correctRole }).where(eq(users.id, user.id))
+          }
+          token.role = correctRole
+        } else {
+          token.role = existingRole
         }
-        token.role = correctRole
       }
       return token
     },

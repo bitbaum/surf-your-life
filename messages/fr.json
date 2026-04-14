@@ -447,7 +447,8 @@
       "stepLifestyleTitle": "Votre mode de vie",
       "stepOf": "sur",
       "next": "Suivant",
-      "saveAndFinish": "Enregistrer & terminer"
+      "saveAndFinish": "Enregistrer & terminer",
+      "back": "Retour"
     },
     "book": {
       "title": "Réserver un service",

@@ -447,7 +447,8 @@
       "stepLifestyleTitle": "Ihr Lebensstil",
       "stepOf": "von",
       "next": "Weiter",
-      "saveAndFinish": "Speichern & abschliessen"
+      "saveAndFinish": "Speichern & abschliessen",
+      "back": "Zurück"
     },
     "book": {
       "title": "Leistung buchen",
