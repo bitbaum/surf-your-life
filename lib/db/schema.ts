@@ -42,7 +42,7 @@ export const mainConcernEnum = pgEnum("main_concern_type", [
   "other",
 ])
 
-export const programmeStatusEnum = pgEnum("programme_status", ["active", "completed", "paused"])
+export const programStatusEnum = pgEnum("program_status", ["active", "completed", "paused"])
 
 // ─── Auth tables (Auth.js v5 compatible) ──────────────────────────────────────
 
@@ -290,9 +290,9 @@ export const threadMessages = pgTable(
   ]
 )
 
-// ─── Programmes ───────────────────────────────────────────────────────────────
+// ─── Programs ─────────────────────────────────────────────────────────────────
 
-export const programmes = pgTable("programmes", {
+export const programs = pgTable("programs", {
   id: uuid("id").primaryKey().defaultRandom(),
   title: text("title").notNull(),
   description: text("description"),
@@ -303,20 +303,20 @@ export const programmes = pgTable("programmes", {
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 })
 
-export const programmeEnrolments = pgTable(
-  "programme_enrolments",
+export const programEnrollments = pgTable(
+  "program_enrollments",
   {
     id: uuid("id").primaryKey().defaultRandom(),
     clientId: uuid("client_id").notNull().references(() => users.id, { onDelete: "cascade" }),
-    programmeId: uuid("programme_id").notNull().references(() => programmes.id, { onDelete: "cascade" }),
-    status: programmeStatusEnum("status").notNull().default("active"),
+    programId: uuid("program_id").notNull().references(() => programs.id, { onDelete: "cascade" }),
+    status: programStatusEnum("status").notNull().default("active"),
     startDate: timestamp("start_date", { withTimezone: true }),
     notes: text("notes"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
-    index("programme_enrolments_client_id_idx").on(table.clientId),
-    index("programme_enrolments_programme_id_idx").on(table.programmeId),
+    index("program_enrollments_client_id_idx").on(table.clientId),
+    index("program_enrollments_program_id_idx").on(table.programId),
   ]
 )
 
@@ -331,7 +331,7 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   bookings: many(bookings),
   threads: many(threads),
   sentMessages: many(threadMessages),
-  programmeEnrolments: many(programmeEnrolments),
+  programEnrollments: many(programEnrollments),
 }))
 
 export const servicesRelations = relations(services, ({ many }) => ({
@@ -366,14 +366,14 @@ export const threadMessagesRelations = relations(threadMessages, ({ one }) => ({
   sender: one(users, { fields: [threadMessages.senderId], references: [users.id] }),
 }))
 
-export const programmesRelations = relations(programmes, ({ one, many }) => ({
-  createdByUser: one(users, { fields: [programmes.createdBy], references: [users.id] }),
-  enrolments: many(programmeEnrolments),
+export const programsRelations = relations(programs, ({ one, many }) => ({
+  createdByUser: one(users, { fields: [programs.createdBy], references: [users.id] }),
+  enrollments: many(programEnrollments),
 }))
 
-export const programmeEnrolmentsRelations = relations(programmeEnrolments, ({ one }) => ({
-  client: one(users, { fields: [programmeEnrolments.clientId], references: [users.id] }),
-  programme: one(programmes, { fields: [programmeEnrolments.programmeId], references: [programmes.id] }),
+export const programEnrollmentsRelations = relations(programEnrollments, ({ one }) => ({
+  client: one(users, { fields: [programEnrollments.clientId], references: [users.id] }),
+  program: one(programs, { fields: [programEnrollments.programId], references: [programs.id] }),
 }))
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -390,7 +390,7 @@ export type Booking = typeof bookings.$inferSelect
 export type Role = (typeof roleEnum.enumValues)[number]
 export type Thread = typeof threads.$inferSelect
 export type ThreadMessage = typeof threadMessages.$inferSelect
-export type Programme = typeof programmes.$inferSelect
-export type ProgrammeEnrolment = typeof programmeEnrolments.$inferSelect
+export type Program = typeof programs.$inferSelect
+export type ProgramEnrollment = typeof programEnrollments.$inferSelect
 export type MainConcern = (typeof mainConcernEnum.enumValues)[number]
-export type ProgrammeStatus = (typeof programmeStatusEnum.enumValues)[number]
+export type ProgramStatus = (typeof programStatusEnum.enumValues)[number]

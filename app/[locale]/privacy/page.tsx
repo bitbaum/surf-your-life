@@ -83,7 +83,7 @@ export default async function PrivacyPage({
             <ul className="list-disc pl-5 text-slate-600 text-sm space-y-2">
               <li>Providing and personalising the client portal and health tracking features.</li>
               <li>Enabling practitioners to review your progress and provide clinical guidance.</li>
-              <li>Communicating with you about your programme and appointments.</li>
+              <li>Communicating with you about your program and appointments.</li>
               <li>Improving our service through anonymised, aggregated analytics.</li>
               <li>Complying with legal obligations under Swiss and EU law.</li>
             </ul>

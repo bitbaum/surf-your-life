@@ -97,7 +97,7 @@ export function welcomeEmail(data: WelcomeEmailData): string {
 <body>
   <div class="header">
     <h1 style="margin:0;font-size:20px;">Welcome to Surf Your Life</h1>
-    <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">Your programme starts here</p>
+    <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">Your program starts here</p>
   </div>
 
   <p>Hello ${displayName},</p>

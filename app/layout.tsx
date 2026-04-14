@@ -6,7 +6,7 @@ export const metadata: Metadata = {
     template: "%s · Surf Your Life",
   },
   description:
-    "A psychiatry-led programme for burnout, Long COVID, and midlife reinvention. Body-first methodology. Based at Zollikerstrasse 183, Zürich.",
+    "A psychiatry-led program for burnout, Long COVID, and midlife reinvention. Body-first methodology. Based at Zollikerstrasse 183, Zürich.",
   openGraph: {
     siteName: "Surf Your Life",
     locale: "de_CH",
