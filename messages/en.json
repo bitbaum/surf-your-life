@@ -580,7 +580,11 @@
       "recentClients": "Recent clients",
       "viewAll": "View all",
       "noClients": "No clients yet",
-      "noProfile": "No profile yet"
+      "noProfile": "No profile yet",
+      "atRiskClients": "Needs attention",
+      "needsAttention": "Needs attention",
+      "never": "Never checked in",
+      "daysAgo": "{n} days without check-in"
     },
     "messages": {
       "title": "Messages",
