@@ -567,7 +567,8 @@
       "users": "Benutzer",
       "language": "Sprache",
       "signOut": "Abmelden",
-      "programs": "Programme"
+      "programs": "Programme",
+      "services": "Angebote"
     },
     "dashboard": {
       "title": "Admin-Übersicht",

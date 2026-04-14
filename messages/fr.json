@@ -567,7 +567,8 @@
       "users": "Utilisateurs",
       "language": "Langue",
       "signOut": "Se déconnecter",
-      "programs": "Programmes"
+      "programs": "Programmes",
+      "services": "Services"
     },
     "dashboard": {
       "title": "Tableau de bord Admin",

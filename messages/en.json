@@ -567,7 +567,8 @@
       "users": "Users",
       "language": "Language",
       "signOut": "Sign out",
-      "programs": "Programs"
+      "programs": "Programs",
+      "services": "Services"
     },
     "dashboard": {
       "title": "Admin Dashboard",

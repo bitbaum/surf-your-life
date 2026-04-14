@@ -6,7 +6,7 @@ import { signOut } from "next-auth/react"
 import { cn } from "@/lib/utils"
 import { LocaleSwitcher } from "@/components/ui/locale-switcher"
 import { useTranslations } from "next-intl"
-import { LayoutDashboard, Users, LogOut, Waves, Menu, X, Inbox, MessageSquare, UserCog, CalendarCheck, BookOpen } from "lucide-react"
+import { LayoutDashboard, Users, LogOut, Waves, Menu, X, Inbox, MessageSquare, UserCog, CalendarCheck, BookOpen, Wrench } from "lucide-react"
 
 interface AdminSidebarProps {
   unreadMessages?: number
@@ -21,6 +21,7 @@ export function AdminSidebar({ unreadMessages = 0 }: AdminSidebarProps) {
     { href: "/admin/dashboard", label: t("dashboard"), icon: LayoutDashboard, badge: 0 },
     { href: "/admin/clients", label: t("clients"), icon: Users, badge: 0 },
     { href: "/admin/bookings", label: t("bookings"), icon: CalendarCheck, badge: 0 },
+    { href: "/admin/services", label: t("services"), icon: Wrench, badge: 0 },
     { href: "/admin/messages", label: t("messages"), icon: MessageSquare, badge: unreadMessages },
     { href: "/admin/programs", label: t("programs"), icon: BookOpen, badge: 0 },
     { href: "/admin/leads", label: t("leads"), icon: Inbox, badge: 0 },
