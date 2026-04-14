@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/ui/page-header"
 import { formatDate } from "@/lib/utils"
 import { PAGINATION_DEFAULT } from "@/lib/constants"
 import { LeadStatus } from "./lead-status"
+import { InviteButton } from "./invite-button"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { Pagination } from "@/components/ui/pagination"
 import { FilterTabs } from "@/components/ui/filter-tabs"
@@ -109,7 +110,10 @@ export default async function LeadsPage({
                   {lead.message && (
                     <p className="text-sm text-slate-500 leading-relaxed mb-2">{lead.message}</p>
                   )}
-                  <LeadStatus leadId={lead.id} currentStatus={lead.status} />
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <LeadStatus leadId={lead.id} currentStatus={lead.status} />
+                    <InviteButton leadId={lead.id} currentStatus={lead.status} />
+                  </div>
                 </div>
               ))}
             </div>

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useSearchParams } from "next/navigation"
 import { signIn } from "next-auth/react"
 import { useTranslations } from "next-intl"
 import { useRouter, Link } from "@/i18n/navigation"
@@ -13,7 +14,9 @@ import { PasswordStrength } from "@/components/ui/password-strength"
 export default function RegisterPage() {
   const t = useTranslations("auth.register")
   const router = useRouter()
-  const [form, setForm] = useState({ email: "", password: "" })
+  const searchParams = useSearchParams()
+  const prefillEmail = searchParams.get("email") ?? ""
+  const [form, setForm] = useState({ email: prefillEmail, password: "" })
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
 

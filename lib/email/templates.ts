@@ -278,6 +278,41 @@ export function newMessageEmail(data: NewMessageData): string {
   `.trim()
 }
 
+// ─── Lead invite ─────────────────────────────────────────────────────────────
+
+type InviteEmailData = { name: string; registerUrl: string }
+
+export function inviteEmail(data: InviteEmailData): string {
+  const { name, registerUrl } = data
+  return `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><style>
+  body { font-family: -apple-system, sans-serif; color: #1e293b; max-width: 600px; margin: 0 auto; padding: 24px; }
+  .header { background: #0d9488; color: white; padding: 20px 24px; border-radius: 12px; margin-bottom: 24px; }
+  .cta { display: inline-block; background: #0d9488; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px; margin-top: 20px; }
+  a { color: #0d9488; }
+</style></head>
+<body>
+  <div class="header">
+    <h1 style="margin:0;font-size:20px;">Your invitation to Surf Your Life</h1>
+    <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">Personal message from Manu</p>
+  </div>
+  <p>Hi ${name},</p>
+  <p>Thank you for reaching out. I have reviewed your situation and I would like to personally invite you to join the Surf Your Life portal.</p>
+  <p>The portal is where we work together — you will be able to track your progress, access your personalised program, and stay in touch with me directly.</p>
+  <p>Your first step is to create an account. It only takes a minute:</p>
+  <a href="${registerUrl}" class="cta">Create my account</a>
+  <p style="margin-top:24px;font-size:13px;color:#64748b;">If you have any questions before registering, simply reply to this email.</p>
+  <p style="margin-top:24px;font-size:13px;color:#64748b;">Looking forward to working with you.</p>
+  <p style="font-size:13px;color:#64748b;margin-top:4px;"><strong>Manu</strong><br>Surf Your Life · Zollikerstrasse 183, 8008 Zürich</p>
+</body>
+</html>
+  `.trim()
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 type BookingNotificationData = {
   clientEmail: string
   clientName: string | null

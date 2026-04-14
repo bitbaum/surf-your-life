@@ -660,7 +660,10 @@
       "columnEmail": "E-mail",
       "columnMessage": "Message",
       "columnDate": "Date",
-      "noLeads": "Aucun lead pour l'instant"
+      "noLeads": "Aucun lead pour l'instant",
+      "invite": "Inviter",
+      "inviting": "Envoi...",
+      "inviteSent": "Invitation envoyée"
     },
     "bookings": {
       "title": "Réservations",

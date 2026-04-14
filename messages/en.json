@@ -643,7 +643,10 @@
       "columnEmail": "Email",
       "columnMessage": "Message",
       "columnDate": "Date",
-      "noLeads": "No leads yet"
+      "noLeads": "No leads yet",
+      "invite": "Send invite",
+      "inviting": "Sending...",
+      "inviteSent": "Invite sent"
     },
     "bookings": {
       "title": "Bookings",
