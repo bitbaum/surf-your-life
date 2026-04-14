@@ -373,3 +373,39 @@ export function bookingNotificationEmail(data: BookingNotificationData): string 
 </html>
   `.trim()
 }
+
+// ─── Practitioner note email ──────────────────────────────────────────────────
+
+type PractitionerNoteEmailData = {
+  clientName: string
+  checkInDate: Date
+  note: string
+  portalUrl: string
+}
+
+export function practitionerNoteEmail(data: PractitionerNoteEmailData): string {
+  const { clientName, checkInDate, note, portalUrl } = data
+  const dateStr = checkInDate.toLocaleDateString("en-CH", { day: "numeric", month: "long", year: "numeric" })
+  return `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><style>
+  body { font-family: -apple-system, sans-serif; color: #1e293b; max-width: 600px; margin: 0 auto; padding: 24px; }
+  .header { background: #0d9488; color: white; padding: 20px 24px; border-radius: 12px; margin-bottom: 24px; }
+  .note { background: #f0fdfa; border-left: 3px solid #0d9488; padding: 16px; border-radius: 0 8px 8px 0; margin: 20px 0; font-style: italic; color: #134e4a; line-height: 1.6; }
+  .cta { display: inline-block; background: #0d9488; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px; margin-top: 20px; }
+</style></head>
+<body>
+  <div class="header">
+    <h1 style="margin:0;font-size:20px;">A note from your practitioner</h1>
+    <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">Surf Your Life</p>
+  </div>
+  <p>Hello ${clientName},</p>
+  <p>Your practitioner left a note on your check-in from <strong>${dateStr}</strong>:</p>
+  <div class="note">${note.replace(/\n/g, "<br>")}</div>
+  <a href="${portalUrl}" class="cta">View in portal</a>
+  <p style="font-size:12px;color:#94a3b8;margin-top:32px;">Surf Your Life · Zollikerstrasse 183, 8008 Zürich</p>
+</body>
+</html>
+  `.trim()
+}

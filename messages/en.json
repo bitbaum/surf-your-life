@@ -340,6 +340,10 @@
       "readySubtitle": "Track your day",
       "checkIn": "Check in",
       "energyTrend": "Energy trend",
+      "wellnessTrend": "Your 30-day wellness trend",
+      "wellnessTrendSubtitle": "Mood and energy over the last 30 days",
+      "streak": "Day streak",
+      "days": "days",
       "viewAll": "View all →",
       "recentCheckIns": "Recent check-ins",
       "energy": "Energy",
@@ -377,7 +381,8 @@
       "title": "Check-in history",
       "noCheckIns": "No check-ins yet",
       "energy": "Energy",
-      "sleep": "Sleep"
+      "sleep": "Sleep",
+      "practitionerNote": "Note from your practitioner"
     },
     "profile": {
       "title": "Your profile",

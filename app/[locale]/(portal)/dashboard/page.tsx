@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { checkIns, profiles, users } from "@/lib/db/schema"
-import { eq, desc, asc } from "drizzle-orm"
+import { eq, desc, asc, and, gte, count } from "drizzle-orm"
 import { getTranslations } from "next-intl/server"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { StatCard } from "@/components/ui/stat-card"
@@ -9,9 +9,9 @@ import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
 import { Link } from "@/i18n/navigation"
 import { formatDate, formatEnumValue } from "@/lib/utils"
-import { ClipboardList, TrendingUp } from "lucide-react"
-import { ONBOARDING_REQUIRED_FIELDS, PROFILE_COMPLETION_FIELDS, ENERGY_SCALE } from "@/lib/constants"
-import { MoodChart } from "./mood-chart"
+import { ClipboardList, TrendingUp, Flame } from "lucide-react"
+import { ONBOARDING_REQUIRED_FIELDS, PROFILE_COMPLETION_FIELDS, MOOD_EMOJI } from "@/lib/constants"
+import { WellnessTrendChart } from "./wellness-trend-chart"
 import { SleepChart } from "./sleep-chart"
 import { EmailVerificationBanner } from "@/components/portal/EmailVerificationBanner"
 
@@ -21,24 +21,32 @@ export default async function DashboardPage() {
 
   const t = await getTranslations("portal.dashboard")
 
-  const [profile, recentCheckIns, trendCheckIns, dbUser] = await Promise.all([
+  const thirtyDaysAgo = new Date()
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+
+  const [profile, recentCheckIns, trendCheckIns, totalResult, dbUser] = await Promise.all([
     db.query.profiles.findFirst({ where: eq(profiles.userId, session.user.id) }),
     db.query.checkIns.findMany({
       where: eq(checkIns.userId, session.user.id),
       orderBy: [desc(checkIns.createdAt)],
-      limit: 7,
+      limit: 5,
     }),
     db.query.checkIns.findMany({
-      where: eq(checkIns.userId, session.user.id),
+      where: and(
+        eq(checkIns.userId, session.user.id),
+        gte(checkIns.createdAt, thirtyDaysAgo)
+      ),
       orderBy: [asc(checkIns.createdAt)],
-      limit: 14,
       columns: { createdAt: true, mood: true, energyLevel: true, sleepHours: true },
     }),
+    db.select({ value: count() }).from(checkIns).where(eq(checkIns.userId, session.user.id)),
     db.query.users.findFirst({
       where: eq(users.id, session.user.id),
       columns: { emailVerified: true },
     }),
   ])
+
+  const totalCheckIns = totalResult[0]?.value ?? 0
 
   const isOnboarded = ONBOARDING_REQUIRED_FIELDS.every(
     (f) => profile?.[f as keyof typeof profile]
@@ -49,8 +57,28 @@ export default async function DashboardPage() {
   ).length
   const completionPct = Math.round((completedFields / PROFILE_COMPLETION_FIELDS.length) * 100)
 
-  // Chronological order for sparkline
-  const trend = [...recentCheckIns].reverse()
+  // Current streak: consecutive days with a check-in ending today/yesterday
+  const streak = (() => {
+    if (recentCheckIns.length === 0) return 0
+    const days = recentCheckIns.map((ci) => {
+      const d = new Date(ci.createdAt)
+      return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime()
+    })
+    const unique = [...new Set(days)].sort((a, b) => b - a)
+    const today = new Date()
+    const todayMs = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime()
+    const DAY = 86400000
+    let s = 0
+    let expected = todayMs
+    // Allow streak to start from yesterday if not yet checked in today
+    if (unique[0] !== todayMs && unique[0] !== todayMs - DAY) return 0
+    if (unique[0] === todayMs - DAY) expected = todayMs - DAY
+    for (const d of unique) {
+      if (d === expected) { s++; expected -= DAY }
+      else break
+    }
+    return s
+  })()
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -84,92 +112,65 @@ export default async function DashboardPage() {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <StatCard label={t("totalCheckIns")} value={recentCheckIns.length} icon={ClipboardList} color="teal" />
+        <StatCard label={t("totalCheckIns")} value={totalCheckIns} icon={ClipboardList} color="teal" />
         <StatCard
           label={t("lastEnergy")}
           value={recentCheckIns[0] ? `${recentCheckIns[0].energyLevel}/10` : "—"}
           icon={TrendingUp}
           color="slate"
         />
-        <div className="rounded-xl border border-slate-200 bg-white shadow-sm p-6 flex items-center justify-between">
-          <div>
-            <p className="text-sm font-medium text-slate-700">{t("readyTitle")}</p>
-            <p className="text-xs text-slate-400 mt-0.5">{t("readySubtitle")}</p>
+        {streak >= 2 ? (
+          <StatCard
+            label={t("streak")}
+            value={`${streak} ${t("days")}`}
+            icon={Flame}
+            color="teal"
+          />
+        ) : (
+          <div className="rounded-xl border border-slate-200 bg-white shadow-sm p-6 flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-slate-700">{t("readyTitle")}</p>
+              <p className="text-xs text-slate-400 mt-0.5">{t("readySubtitle")}</p>
+            </div>
+            <Link href="/check-in">
+              <Button size="sm">{t("checkIn")}</Button>
+            </Link>
           </div>
-          <Link href="/check-in">
-            <Button size="sm">{t("checkIn")}</Button>
-          </Link>
-        </div>
+        )}
       </div>
 
-      {trend.length >= 2 && (
+      {trendCheckIns.length >= 2 && (
         <Card className="mb-6">
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle>{t("energyTrend")}</CardTitle>
-              <Link href="/check-ins" className="text-sm text-teal-600 hover:underline">
+              <div>
+                <CardTitle>{t("wellnessTrend")}</CardTitle>
+                <p className="text-xs text-slate-400 mt-0.5">{t("wellnessTrendSubtitle")}</p>
+              </div>
+              <Link href="/check-ins" className="text-sm text-teal-600 hover:underline shrink-0">
                 {t("viewAll")}
               </Link>
             </div>
           </CardHeader>
           <CardContent>
-            <div className="flex items-end gap-1.5 h-16">
-              {trend.map((ci) => {
-                const pct = ((ci.energyLevel - ENERGY_SCALE.min) / (ENERGY_SCALE.max - ENERGY_SCALE.min)) * 100
-                return (
-                  <div
-                    key={ci.id}
-                    className="flex-1"
-                    title={`Energy ${ci.energyLevel}/10 — ${formatDate(ci.createdAt)}`}
-                  >
-                    <div
-                      className="w-full rounded-t bg-teal-500 transition-all"
-                      style={{ height: `${Math.max(pct, 8)}%` }}
-                    />
-                  </div>
-                )
-              })}
-            </div>
-            <div className="flex items-center justify-between mt-2 text-xs text-slate-400">
-              <span>{formatDate(trend[0].createdAt)}</span>
-              <span>{formatDate(trend[trend.length - 1].createdAt)}</span>
-            </div>
+            <WellnessTrendChart data={trendCheckIns} />
           </CardContent>
         </Card>
       )}
 
-      {trendCheckIns.length >= 2 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          {/* Mood trend */}
-          <Card>
-            <CardHeader>
-              <CardTitle>{t("moodTrend")}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <MoodChart data={trendCheckIns} />
-              <div className="flex items-center justify-between mt-2 text-xs text-slate-400">
-                <span>{formatDate(trendCheckIns[0].createdAt)}</span>
-                <span>{formatDate(trendCheckIns[trendCheckIns.length - 1].createdAt)}</span>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Sleep trend */}
-          {trendCheckIns.filter((c) => c.sleepHours != null).length >= 2 && (
-            <Card>
-              <CardHeader>
-                <CardTitle>{t("sleepTrend")}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <SleepChart data={trendCheckIns} />
-                <div className="flex items-center justify-between mt-2 text-xs text-slate-400">
-                  <span>{formatDate(trendCheckIns[0].createdAt)}</span>
-                  <span>{formatDate(trendCheckIns[trendCheckIns.length - 1].createdAt)}</span>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-        </div>
+      {trendCheckIns.filter((c) => c.sleepHours != null).length >= 2 && (
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>{t("sleepTrend")}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <SleepChart data={trendCheckIns} />
+            <div className="flex items-center justify-between mt-2 text-xs text-slate-400">
+              <span>{formatDate(trendCheckIns[0].createdAt)}</span>
+              <span>{formatDate(trendCheckIns[trendCheckIns.length - 1].createdAt)}</span>
+            </div>
+          </CardContent>
+        </Card>
       )}
 
       {recentCheckIns.length > 0 && (
@@ -179,10 +180,12 @@ export default async function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="flex flex-col divide-y divide-slate-100">
-              {recentCheckIns.slice(0, 5).map((ci) => (
+              {recentCheckIns.map((ci) => (
                 <div key={ci.id} className="py-3 flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-slate-800">{formatEnumValue(ci.mood)}</p>
+                    <p className="text-sm font-medium text-slate-800">
+                      {MOOD_EMOJI[ci.mood]} {formatEnumValue(ci.mood)}
+                    </p>
                     <p className="text-xs text-slate-400">{formatDate(ci.createdAt)}</p>
                   </div>
                   <div className="flex items-center gap-2">

@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { ENERGY_SCALE, QUALITY_SCALE, SLEEP_HOURS } from "@/lib/constants"
+import { ENERGY_SCALE, QUALITY_SCALE, SLEEP_HOURS, PRACTITIONER_NOTE_MAX_LENGTH } from "@/lib/constants"
 import { mainConcernEnum } from "@/lib/db/schema"
 
 export const profileSchema = z.object({
@@ -35,5 +35,10 @@ export const checkInSchema = z.object({
   challenges: z.string().max(1000).optional(),
 })
 
+export const practitionerNoteSchema = z.object({
+  note: z.string().min(1).max(PRACTITIONER_NOTE_MAX_LENGTH),
+})
+
 export type ProfileInput = z.infer<typeof profileSchema>
 export type CheckInInput = z.infer<typeof checkInSchema>
+export type PractitionerNoteInput = z.infer<typeof practitionerNoteSchema>

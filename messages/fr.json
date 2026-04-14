@@ -340,6 +340,10 @@
       "readySubtitle": "Suivez votre journée",
       "checkIn": "Check-in",
       "energyTrend": "Tendance énergétique",
+      "wellnessTrend": "Votre évolution sur 30 jours",
+      "wellnessTrendSubtitle": "Humeur et énergie des 30 derniers jours",
+      "streak": "Jours consécutifs",
+      "days": "jours",
       "viewAll": "Voir tout →",
       "recentCheckIns": "Check-ins récents",
       "energy": "Énergie",
@@ -377,7 +381,8 @@
       "title": "Historique des check-ins",
       "noCheckIns": "Pas encore de check-ins",
       "energy": "Énergie",
-      "sleep": "Sommeil"
+      "sleep": "Sommeil",
+      "practitionerNote": "Note de votre praticien"
     },
     "profile": {
       "title": "Votre profil",

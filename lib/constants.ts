@@ -73,5 +73,8 @@ export const MOOD_LABEL = Object.fromEntries(MOODS.map((m) => [m.value, m.label]
 
 export const SITE_URL = process.env.AUTH_URL ?? "https://surf-your-life.ch"
 
+// Practitioner note on check-ins
+export const PRACTITIONER_NOTE_MAX_LENGTH = 1000
+
 // Time constants (milliseconds)
 export const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000

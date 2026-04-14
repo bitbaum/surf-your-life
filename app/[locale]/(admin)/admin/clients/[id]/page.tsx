@@ -9,6 +9,7 @@ import { MOOD_EMOJI } from "@/lib/constants"
 import { ResetLinkButton } from "./reset-link-button"
 import { NewThreadButton } from "./new-thread-button"
 import { EnrollProgramButton } from "./enroll-program-button"
+import { CheckInNote } from "./check-in-note"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 
 export default async function ClientDetailPage({ params }: { params: Promise<{ locale: string; id: string }> }) {
@@ -114,6 +115,11 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
                     {ci.wins && <p className="text-xs text-teal-700 mt-1">✓ {ci.wins}</p>}
                     {ci.challenges && <p className="text-xs text-slate-500 mt-1 italic">{ci.challenges}</p>}
                     {ci.notes && <p className="text-xs text-slate-400 mt-1">{ci.notes}</p>}
+                    <CheckInNote
+                      checkInId={ci.id}
+                      existingNote={ci.practitionerNote ?? null}
+                      existingNoteAt={ci.practitionerNoteAt ?? null}
+                    />
                   </div>
                 ))}
               </div>

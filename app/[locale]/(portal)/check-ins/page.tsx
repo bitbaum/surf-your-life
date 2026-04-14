@@ -100,6 +100,17 @@ export default async function CheckInsPage({
                       )}
                     </div>
                   )}
+                  {ci.practitionerNote && (
+                    <div className="mt-4 bg-teal-50 border-l-2 border-teal-400 rounded-r-lg px-3 py-2">
+                      <p className="text-xs font-medium text-teal-700 mb-0.5">
+                        {t("practitionerNote")}
+                        {ci.practitionerNoteAt && (
+                          <span className="font-normal text-teal-600"> · {formatDate(ci.practitionerNoteAt)}</span>
+                        )}
+                      </p>
+                      <p className="text-sm text-teal-900 leading-relaxed">{ci.practitionerNote}</p>
+                    </div>
+                  )}
                   <CheckInActions checkInId={ci.id} checkIn={ci} />
                 </CardContent>
               </Card>

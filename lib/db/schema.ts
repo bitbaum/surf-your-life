@@ -151,6 +151,9 @@ export const checkIns = pgTable(
     // AI-generated analysis stored alongside the raw data
     aiInsight: text("ai_insight"),
     embedding: vector("embedding", { dimensions: 1536 }),
+    // Practitioner feedback on this check-in
+    practitionerNote: text("practitioner_note"),
+    practitionerNoteAt: timestamp("practitioner_note_at", { mode: "date" }),
     createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
   },
   (table) => [index("check_ins_user_idx").on(table.userId)]
