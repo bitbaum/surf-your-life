@@ -19,8 +19,9 @@ export async function sendEmail({ to, subject, html }: SendOptions) {
     console.log(`[email] To: ${to}\nSubject: ${subject}`)
     return
   }
+  const from = process.env.RESEND_FROM ?? "Surf Your Life <onboarding@resend.dev>"
   await getResend().emails.send({
-    from: "Surf Your Life <noreply@surf-your-life.ch>",
+    from,
     to: Array.isArray(to) ? to : [to],
     subject,
     html,
