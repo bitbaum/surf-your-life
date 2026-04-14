@@ -5,13 +5,12 @@ interface StatCardProps {
   label: string
   value: string | number
   icon: LucideIcon
-  color?: "teal" | "blue" | "violet"
+  color?: "teal" | "slate"
 }
 
 const colorMap = {
   teal: "bg-teal-50 text-teal-600",
-  blue: "bg-blue-50 text-blue-600",
-  violet: "bg-violet-50 text-violet-600",
+  slate: "bg-slate-100 text-slate-600",
 }
 
 export function StatCard({ label, value, icon: Icon, color = "teal" }: StatCardProps) {

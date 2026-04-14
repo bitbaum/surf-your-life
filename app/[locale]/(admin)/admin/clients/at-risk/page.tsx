@@ -3,11 +3,10 @@ import { users, checkIns } from "@/lib/db/schema"
 import { eq, max } from "drizzle-orm"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
-import Link from "next/link"
+import { Link } from "@/i18n/navigation"
 import { formatDate } from "@/lib/utils"
 import { getTranslations, setRequestLocale } from "next-intl/server"
-
-const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000
+import { SEVEN_DAYS_MS } from "@/lib/constants"
 
 export default async function AtRiskClientsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
@@ -61,6 +60,7 @@ export default async function AtRiskClientsPage({ params }: { params: Promise<{ 
               {t("atRisk.noAtRisk")}
             </p>
           ) : (
+            <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-slate-100">
@@ -103,6 +103,7 @@ export default async function AtRiskClientsPage({ params }: { params: Promise<{ 
                 ))}
               </tbody>
             </table>
+            </div>
           )}
         </CardContent>
       </Card>

@@ -19,7 +19,7 @@ export function GapSection() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {gapCards.map(({ title, body }) => (
-            <div key={title} className="border border-slate-800 rounded-2xl p-6">
+            <div key={title} className="border border-slate-800 rounded-xl p-6">
               <div className="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center mb-5">
                 <div className="w-2 h-2 rounded-full bg-teal-400" />
               </div>

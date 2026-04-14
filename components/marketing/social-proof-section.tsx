@@ -38,7 +38,7 @@ export function SocialProofSection({ isLoggedIn }: SocialProofSectionProps) {
               </div>
             </div>
 
-            <div className="bg-slate-50 rounded-2xl border border-slate-200 p-8">
+            <div className="bg-slate-50 rounded-xl border border-slate-200 p-8">
               <p className="text-sm font-semibold text-slate-400 uppercase tracking-widest mb-6">
                 {t("who.testimonialsLabel")}
               </p>

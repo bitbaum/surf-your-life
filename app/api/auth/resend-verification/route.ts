@@ -3,7 +3,7 @@ import { randomBytes } from "crypto"
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { users, verificationTokens } from "@/lib/db/schema"
-import { eq, and } from "drizzle-orm"
+import { eq } from "drizzle-orm"
 import { sendEmail } from "@/lib/email"
 import { verificationEmail } from "@/lib/email/templates"
 

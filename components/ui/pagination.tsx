@@ -19,7 +19,7 @@ export function Pagination({ page, totalPages, pageLink, previousLabel = "← Pr
         {page > 1 && (
           <Link
             href={pageLink(page - 1)}
-            className="px-3 py-1.5 text-xs rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50"
+            className="inline-flex items-center min-h-[44px] px-4 py-2 text-xs rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50"
           >
             {previousLabel}
           </Link>
@@ -27,7 +27,7 @@ export function Pagination({ page, totalPages, pageLink, previousLabel = "← Pr
         {page < totalPages && (
           <Link
             href={pageLink(page + 1)}
-            className="px-3 py-1.5 text-xs rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50"
+            className="inline-flex items-center min-h-[44px] px-4 py-2 text-xs rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50"
           >
             {nextLabel}
           </Link>

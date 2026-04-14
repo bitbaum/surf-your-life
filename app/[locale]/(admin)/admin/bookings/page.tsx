@@ -63,6 +63,7 @@ export default async function AdminBookingsPage({
           </CardTitle>
         </CardHeader>
         <CardContent>
+          <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-slate-100">
@@ -115,6 +116,7 @@ export default async function AdminBookingsPage({
               )}
             </tbody>
           </table>
+          </div>
         </CardContent>
       </Card>
     </div>

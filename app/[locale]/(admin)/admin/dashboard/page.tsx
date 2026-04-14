@@ -58,10 +58,10 @@ export default async function AdminDashboardPage({
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-8">
         <StatCard label={t("totalClients")} value={clientCount} icon={Users} color="teal" />
-        <StatCard label={t("checkIns30d")} value={recentCheckInsCount} icon={ClipboardList} color="blue" />
-        <StatCard label={t("avgCheckIns")} value={avgCheckIns} icon={TrendingUp} color="violet" />
-        <StatCard label={t("pendingBookings")} value={pendingBookings} icon={CalendarClock} color="violet" />
-        <StatCard label={t("unreadMessages")} value={unreadMessages} icon={MessageSquare} color="blue" />
+        <StatCard label={t("checkIns30d")} value={recentCheckInsCount} icon={ClipboardList} color="slate" />
+        <StatCard label={t("avgCheckIns")} value={avgCheckIns} icon={TrendingUp} color="teal" />
+        <StatCard label={t("pendingBookings")} value={pendingBookings} icon={CalendarClock} color="slate" />
+        <StatCard label={t("unreadMessages")} value={unreadMessages} icon={MessageSquare} color="teal" />
       </div>
 
       <Card>

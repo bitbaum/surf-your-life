@@ -72,3 +72,6 @@ export const MOOD_EMOJI = Object.fromEntries(MOODS.map((m) => [m.value, m.emoji]
 export const MOOD_LABEL = Object.fromEntries(MOODS.map((m) => [m.value, m.label])) as Record<string, string>
 
 export const SITE_URL = process.env.AUTH_URL ?? "https://surf-your-life.ch"
+
+// Time constants (milliseconds)
+export const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000

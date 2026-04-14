@@ -6,7 +6,7 @@ import bcrypt from "bcryptjs"
 import { eq } from "drizzle-orm"
 import { db } from "@/lib/db"
 import { users } from "@/lib/db/schema"
-import { loginSchema } from "@/lib/domain/auth"
+import { loginSchema, resolveRole } from "@/lib/domain/auth"
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: DrizzleAdapter(db),
@@ -39,11 +39,20 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
-    jwt({ token, user }) {
+    async jwt({ token, user }) {
       if (user) {
         token.id = user.id
-        token.role = (user as { role?: string }).role
         token.emailVerified = (user as { emailVerified?: Date | null }).emailVerified ?? null
+
+        // Resolve role — credentials users have the correct role from DB already,
+        // but OAuth users are created by the adapter with the default "client" role
+        // before this callback runs. Check ADMIN_EMAILS and promote if needed.
+        const existingRole = (user as { role?: string }).role ?? "client"
+        const correctRole = resolveRole(user.email ?? "")
+        if (correctRole !== existingRole && user.id) {
+          await db.update(users).set({ role: correctRole }).where(eq(users.id, user.id))
+        }
+        token.role = correctRole
       }
       return token
     },

@@ -266,7 +266,7 @@ export const threads = pgTable(
   "threads",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    clientId: uuid("client_id").notNull().references(() => users.id),
+    clientId: uuid("client_id").notNull().references(() => users.id, { onDelete: "cascade" }),
     subject: text("subject"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
@@ -278,8 +278,8 @@ export const threadMessages = pgTable(
   "thread_messages",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    threadId: uuid("thread_id").notNull().references(() => threads.id),
-    senderId: uuid("sender_id").notNull().references(() => users.id),
+    threadId: uuid("thread_id").notNull().references(() => threads.id, { onDelete: "cascade" }),
+    senderId: uuid("sender_id").notNull().references(() => users.id, { onDelete: "cascade" }),
     body: text("body").notNull(),
     readAt: timestamp("read_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
@@ -307,8 +307,8 @@ export const programmeEnrolments = pgTable(
   "programme_enrolments",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    clientId: uuid("client_id").notNull().references(() => users.id),
-    programmeId: uuid("programme_id").notNull().references(() => programmes.id),
+    clientId: uuid("client_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    programmeId: uuid("programme_id").notNull().references(() => programmes.id, { onDelete: "cascade" }),
     status: programmeStatusEnum("status").notNull().default("active"),
     startDate: timestamp("start_date", { withTimezone: true }),
     notes: text("notes"),

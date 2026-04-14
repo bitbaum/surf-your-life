@@ -3,7 +3,7 @@ import { users } from "@/lib/db/schema"
 import { eq, desc, count, or, ilike, and } from "drizzle-orm"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
-import Link from "next/link"
+import { Link } from "@/i18n/navigation"
 import { formatDate, formatEnumValue } from "@/lib/utils"
 import { PAGINATION_DEFAULT } from "@/lib/constants"
 import { ClientSearch } from "./client-search"
@@ -79,6 +79,7 @@ export default async function ClientsPage({
       <Card>
         <CardHeader><CardTitle>{t("allClients")}</CardTitle></CardHeader>
         <CardContent>
+          <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-slate-100">
@@ -117,6 +118,7 @@ export default async function ClientsPage({
               )}
             </tbody>
           </table>
+          </div>
 
           <Pagination
             page={page}

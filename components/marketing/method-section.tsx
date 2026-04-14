@@ -29,7 +29,7 @@ export function MethodSection() {
               return (
                 <div
                   key={n}
-                  className="group relative rounded-2xl border border-slate-200 bg-white p-8 hover:border-teal-300 hover:shadow-md transition-all duration-200"
+                  className="group relative rounded-xl border border-slate-200 bg-white p-8 hover:border-teal-300 hover:shadow-md transition-all duration-200"
                 >
                   <span className="absolute top-6 right-6 text-6xl font-bold text-slate-50 select-none group-hover:text-teal-50 transition-colors">
                     {n}
@@ -80,7 +80,7 @@ export function MethodSection() {
             {steps.map(({ title, body }, i) => {
               const n = String(i + 1).padStart(2, "0")
               return (
-                <div key={n} className="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm">
+                <div key={n} className="bg-white rounded-xl border border-slate-200 p-8 shadow-sm">
                   <div className="text-5xl font-bold text-teal-50 mb-4 leading-none select-none"
                     style={{ textShadow: "0 0 0 #0d9488", WebkitTextStroke: "1.5px #0d9488" }}
                   >

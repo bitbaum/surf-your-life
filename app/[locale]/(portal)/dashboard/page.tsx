@@ -89,7 +89,7 @@ export default async function DashboardPage() {
           label={t("lastEnergy")}
           value={recentCheckIns[0] ? `${recentCheckIns[0].energyLevel}/10` : "—"}
           icon={TrendingUp}
-          color="blue"
+          color="slate"
         />
         <div className="rounded-xl border border-slate-200 bg-white shadow-sm p-6 flex items-center justify-between">
           <div>
