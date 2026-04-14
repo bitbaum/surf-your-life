@@ -658,6 +658,15 @@
         "noAtRisk": "Tous les clients se sont connectés récemment",
         "viewAtRisk": "Clients à risque",
         "sendMessage": "Envoyer un message"
+      },
+      "checkInNote": {
+        "yourNote": "Votre note",
+        "edit": "Modifier",
+        "addNote": "+ Ajouter une note au client",
+        "placeholder": "Rédiger une note pour ce client…",
+        "save": "Enregistrer et notifier le client",
+        "saving": "Enregistrement…",
+        "cancel": "Annuler"
       }
     },
     "leads": {
@@ -695,7 +704,20 @@
       "cancelling": "Annulation…",
       "statusUpdated": "Réservation mise à jour",
       "description": "Gérer toutes les demandes de réservation",
-      "created": "Créé le"
+      "created": "Créé le",
+      "error": "Une erreur est survenue",
+      "calendarView": "Calendrier",
+      "listView": "Liste",
+      "weekOf": "Semaine du {date}",
+      "prevWeek": "← Préc.",
+      "nextWeek": "Suiv. →",
+      "today": "Aujourd'hui",
+      "noBookingsDay": "Aucune réservation",
+      "timePreference": {
+        "morning": "Matin",
+        "afternoon": "Après-midi",
+        "flexible": "Flexible"
+      }
     },
     "programs": {
       "title": "Programmes",
@@ -737,6 +759,40 @@
         "active": "Actif",
         "paused": "En pause",
         "completed": "Terminé"
+      }
+    },
+    "services": {
+      "title": "Services",
+      "description": "Gérer les services disponibles pour les clients",
+      "allServices": "Tous les services ({n})",
+      "columnName": "Nom",
+      "columnCategory": "Catégorie",
+      "columnDuration": "Durée",
+      "columnStatus": "Statut",
+      "noServices": "Aucun service pour l'instant. Créez-en un ci-dessus.",
+      "available": "Disponible",
+      "hidden": "Masqué",
+      "edit": "Modifier",
+      "cancel": "Annuler",
+      "save": "Enregistrer",
+      "saving": "Enregistrement…",
+      "newService": "+ Nouveau service",
+      "newServiceTitle": "Nouveau service",
+      "creating": "Création…",
+      "createService": "Créer le service",
+      "fieldName": "Nom",
+      "fieldNameRequired": "Nom *",
+      "fieldDuration": "Durée (min)",
+      "fieldCategory": "Catégorie",
+      "fieldCategoryRequired": "Catégorie *",
+      "fieldDescription": "Description",
+      "fieldDescriptionPlaceholder": "Optionnel",
+      "hiddenCount": "{hidden} masqué(s) · {available} disponible(s)",
+      "namePlaceholder": "ex. Consultation initiale",
+      "categoryLabels": {
+        "machine": "Machine",
+        "space": "Espace",
+        "consultation": "Consultation"
       }
     }
   },

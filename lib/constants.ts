@@ -78,3 +78,6 @@ export const PRACTITIONER_NOTE_MAX_LENGTH = 1000
 
 // Time constants (milliseconds)
 export const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000
+
+// Valid booking time preference values (schema SSOT)
+export const BOOKING_TIME_PREFERENCE_VALUES = ["morning", "afternoon", "flexible"] as const

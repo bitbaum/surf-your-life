@@ -641,6 +641,15 @@
         "noAtRisk": "All clients have checked in recently",
         "viewAtRisk": "At-risk clients",
         "sendMessage": "Send message"
+      },
+      "checkInNote": {
+        "yourNote": "Your note",
+        "edit": "Edit",
+        "addNote": "+ Add note for client",
+        "placeholder": "Write a note for this client…",
+        "save": "Save & notify client",
+        "saving": "Saving…",
+        "cancel": "Cancel"
       }
     },
     "leads": {
@@ -674,11 +683,24 @@
       "confirm": "Confirm",
       "cancel": "Cancel",
       "noBookings": "No bookings found",
-      "confirming": "Confirming...",
-      "cancelling": "Cancelling...",
+      "confirming": "Confirming…",
+      "cancelling": "Cancelling…",
       "statusUpdated": "Booking updated",
       "description": "Manage all client booking requests",
-      "created": "Created"
+      "created": "Created",
+      "error": "Something went wrong",
+      "calendarView": "Calendar",
+      "listView": "List",
+      "weekOf": "Week of {date}",
+      "prevWeek": "← Prev",
+      "nextWeek": "Next →",
+      "today": "Today",
+      "noBookingsDay": "No bookings",
+      "timePreference": {
+        "morning": "Morning",
+        "afternoon": "Afternoon",
+        "flexible": "Flexible"
+      }
     },
     "users": {
       "title": "Users",
@@ -737,6 +759,40 @@
         "active": "Active",
         "paused": "Paused",
         "completed": "Completed"
+      }
+    },
+    "services": {
+      "title": "Services",
+      "description": "Manage bookable services shown to clients",
+      "allServices": "All services ({n})",
+      "columnName": "Name",
+      "columnCategory": "Category",
+      "columnDuration": "Duration",
+      "columnStatus": "Status",
+      "noServices": "No services yet. Create one above.",
+      "available": "Available",
+      "hidden": "Hidden",
+      "edit": "Edit",
+      "cancel": "Cancel",
+      "save": "Save",
+      "saving": "Saving…",
+      "newService": "+ New service",
+      "newServiceTitle": "New service",
+      "creating": "Creating…",
+      "createService": "Create service",
+      "fieldName": "Name",
+      "fieldNameRequired": "Name *",
+      "fieldDuration": "Duration (min)",
+      "fieldCategory": "Category",
+      "fieldCategoryRequired": "Category *",
+      "fieldDescription": "Description",
+      "fieldDescriptionPlaceholder": "Optional",
+      "hiddenCount": "{hidden} hidden · {available} available",
+      "namePlaceholder": "e.g. Initial consultation",
+      "categoryLabels": {
+        "machine": "Machine",
+        "space": "Space",
+        "consultation": "Consultation"
       }
     }
   },

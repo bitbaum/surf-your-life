@@ -2,16 +2,12 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 import { SERVICE_CATEGORIES } from "@/lib/domain/services"
 
-const CATEGORY_LABELS: Record<string, string> = {
-  machine: "Machine",
-  space: "Space",
-  consultation: "Consultation",
-}
-
 export function CreateServiceForm() {
+  const t = useTranslations("admin.services")
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -39,7 +35,7 @@ export function CreateServiceForm() {
     })
     const data = await res.json()
     if (!res.ok) {
-      setError(data.error ?? "Failed to create")
+      setError(data.error ?? t("error"))
       setSaving(false)
       return
     }
@@ -52,27 +48,27 @@ export function CreateServiceForm() {
   if (!open) {
     return (
       <Button size="sm" onClick={() => setOpen(true)}>
-        + New service
+        {t("newService")}
       </Button>
     )
   }
 
   return (
     <div className="rounded-xl border border-teal-200 bg-teal-50 p-4">
-      <p className="text-sm font-medium text-teal-800 mb-3">New service</p>
+      <p className="text-sm font-medium text-teal-800 mb-3">{t("newServiceTitle")}</p>
       <div className="grid grid-cols-2 gap-3 mb-3">
         <div>
-          <label className="text-xs font-medium text-slate-500 block mb-1">Name *</label>
+          <label className="text-xs font-medium text-slate-500 block mb-1">{t("fieldNameRequired")}</label>
           <input
             value={form.name}
             onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-            placeholder="e.g. Initial consultation"
+            placeholder={t("namePlaceholder")}
             autoFocus
             className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white"
           />
         </div>
         <div>
-          <label className="text-xs font-medium text-slate-500 block mb-1">Duration (min)</label>
+          <label className="text-xs font-medium text-slate-500 block mb-1">{t("fieldDuration")}</label>
           <input
             type="number"
             value={form.durationMinutes}
@@ -86,23 +82,23 @@ export function CreateServiceForm() {
       </div>
       <div className="grid grid-cols-2 gap-3 mb-4">
         <div>
-          <label className="text-xs font-medium text-slate-500 block mb-1">Category *</label>
+          <label className="text-xs font-medium text-slate-500 block mb-1">{t("fieldCategoryRequired")}</label>
           <select
             value={form.category}
             onChange={(e) => setForm((f) => ({ ...f, category: e.target.value as typeof form.category }))}
             className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white"
           >
             {SERVICE_CATEGORIES.map((c) => (
-              <option key={c} value={c}>{CATEGORY_LABELS[c]}</option>
+              <option key={c} value={c}>{t(`categoryLabels.${c}`)}</option>
             ))}
           </select>
         </div>
         <div>
-          <label className="text-xs font-medium text-slate-500 block mb-1">Description</label>
+          <label className="text-xs font-medium text-slate-500 block mb-1">{t("fieldDescription")}</label>
           <input
             value={form.description}
             onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-            placeholder="Optional"
+            placeholder={t("fieldDescriptionPlaceholder")}
             className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white"
           />
         </div>
@@ -110,14 +106,11 @@ export function CreateServiceForm() {
       <div className="flex items-center gap-3">
         {error && <span className="text-xs text-red-500 flex-1">{error}</span>}
         <div className="flex gap-2 ml-auto">
-          <button
-            onClick={() => setOpen(false)}
-            className="text-xs text-slate-400 hover:text-slate-600"
-          >
-            Cancel
+          <button onClick={() => setOpen(false)} className="text-xs text-slate-400 hover:text-slate-600">
+            {t("cancel")}
           </button>
           <Button size="sm" onClick={handleSubmit} disabled={saving || !form.name.trim()}>
-            {saving ? "Creating…" : "Create service"}
+            {saving ? t("creating") : t("createService")}
           </Button>
         </div>
       </div>

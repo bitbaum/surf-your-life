@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 import { SERVICE_CATEGORIES } from "@/lib/domain/services"
 import type { InferSelectModel } from "drizzle-orm"
@@ -12,13 +13,8 @@ interface Props {
   service: Service
 }
 
-const CATEGORY_LABELS: Record<string, string> = {
-  machine: "Machine",
-  space: "Space",
-  consultation: "Consultation",
-}
-
 export function ServiceRow({ service }: Props) {
+  const t = useTranslations("admin.services")
   const [data, setData] = useState(service)
   const [editing, setEditing] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -63,7 +59,7 @@ export function ServiceRow({ service }: Props) {
           <div className="flex flex-col gap-3">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-xs font-medium text-slate-500 block mb-1">Name</label>
+                <label className="text-xs font-medium text-slate-500 block mb-1">{t("fieldName")}</label>
                 <input
                   value={form.name}
                   onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
@@ -71,7 +67,7 @@ export function ServiceRow({ service }: Props) {
                 />
               </div>
               <div>
-                <label className="text-xs font-medium text-slate-500 block mb-1">Duration (minutes)</label>
+                <label className="text-xs font-medium text-slate-500 block mb-1">{t("fieldDuration")}</label>
                 <input
                   type="number"
                   value={form.durationMinutes}
@@ -84,19 +80,19 @@ export function ServiceRow({ service }: Props) {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-xs font-medium text-slate-500 block mb-1">Category</label>
+                <label className="text-xs font-medium text-slate-500 block mb-1">{t("fieldCategory")}</label>
                 <select
                   value={form.category}
                   onChange={(e) => setForm((f) => ({ ...f, category: e.target.value as typeof service.category }))}
                   className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white"
                 >
                   {SERVICE_CATEGORIES.map((c) => (
-                    <option key={c} value={c}>{CATEGORY_LABELS[c]}</option>
+                    <option key={c} value={c}>{t(`categoryLabels.${c}`)}</option>
                   ))}
                 </select>
               </div>
               <div>
-                <label className="text-xs font-medium text-slate-500 block mb-1">Description</label>
+                <label className="text-xs font-medium text-slate-500 block mb-1">{t("fieldDescription")}</label>
                 <input
                   value={form.description}
                   onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
@@ -109,10 +105,10 @@ export function ServiceRow({ service }: Props) {
                 onClick={() => setEditing(false)}
                 className="text-xs text-slate-400 hover:text-slate-600"
               >
-                Cancel
+                {t("cancel")}
               </button>
               <Button size="sm" onClick={handleSave} disabled={saving || !form.name.trim()}>
-                {saving ? "Saving…" : "Save"}
+                {saving ? t("saving") : t("save")}
               </Button>
             </div>
           </div>
@@ -127,7 +123,7 @@ export function ServiceRow({ service }: Props) {
         <p className="font-medium text-slate-800">{data.name}</p>
         {data.description && <p className="text-xs text-slate-400 mt-0.5">{data.description}</p>}
       </td>
-      <td className="py-3 text-sm text-slate-600">{CATEGORY_LABELS[data.category]}</td>
+      <td className="py-3 text-sm text-slate-600">{t(`categoryLabels.${data.category}`)}</td>
       <td className="py-3 text-sm text-slate-500">
         {data.durationMinutes ? `${data.durationMinutes} min` : "—"}
       </td>
@@ -141,7 +137,7 @@ export function ServiceRow({ service }: Props) {
               : "bg-slate-100 text-slate-500 border-slate-200 hover:bg-slate-200"
           }`}
         >
-          {data.available ? "Available" : "Hidden"}
+          {data.available ? t("available") : t("hidden")}
         </button>
       </td>
       <td className="py-3 text-right">
@@ -149,7 +145,7 @@ export function ServiceRow({ service }: Props) {
           onClick={() => setEditing(true)}
           className="text-xs text-teal-600 hover:underline font-medium"
         >
-          Edit
+          {t("edit")}
         </button>
       </td>
     </tr>

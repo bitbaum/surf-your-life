@@ -641,6 +641,15 @@
         "noAtRisk": "Alle Klienten haben sich kürzlich eingeloggt",
         "viewAtRisk": "Gefährdete Klienten",
         "sendMessage": "Nachricht senden"
+      },
+      "checkInNote": {
+        "yourNote": "Deine Notiz",
+        "edit": "Bearbeiten",
+        "addNote": "+ Notiz für Klient hinzufügen",
+        "placeholder": "Notiz für diesen Klienten schreiben…",
+        "save": "Speichern & Klient benachrichtigen",
+        "saving": "Wird gespeichert…",
+        "cancel": "Abbrechen"
       }
     },
     "leads": {
@@ -678,7 +687,20 @@
       "cancelling": "Wird abgesagt…",
       "statusUpdated": "Buchung aktualisiert",
       "description": "Alle Buchungsanfragen verwalten",
-      "created": "Erstellt"
+      "created": "Erstellt",
+      "error": "Etwas ist schiefgelaufen",
+      "calendarView": "Kalender",
+      "listView": "Liste",
+      "weekOf": "Woche vom {date}",
+      "prevWeek": "← Zurück",
+      "nextWeek": "Weiter →",
+      "today": "Heute",
+      "noBookingsDay": "Keine Buchungen",
+      "timePreference": {
+        "morning": "Morgen",
+        "afternoon": "Nachmittag",
+        "flexible": "Flexibel"
+      }
     },
     "users": {
       "title": "Benutzer",
@@ -737,6 +759,40 @@
         "active": "Aktiv",
         "paused": "Pausiert",
         "completed": "Abgeschlossen"
+      }
+    },
+    "services": {
+      "title": "Angebote",
+      "description": "Buchbare Angebote für Klienten verwalten",
+      "allServices": "Alle Angebote ({n})",
+      "columnName": "Name",
+      "columnCategory": "Kategorie",
+      "columnDuration": "Dauer",
+      "columnStatus": "Status",
+      "noServices": "Noch keine Angebote. Erstelle eines oben.",
+      "available": "Verfügbar",
+      "hidden": "Versteckt",
+      "edit": "Bearbeiten",
+      "cancel": "Abbrechen",
+      "save": "Speichern",
+      "saving": "Wird gespeichert…",
+      "newService": "+ Neues Angebot",
+      "newServiceTitle": "Neues Angebot",
+      "creating": "Wird erstellt…",
+      "createService": "Angebot erstellen",
+      "fieldName": "Name",
+      "fieldNameRequired": "Name *",
+      "fieldDuration": "Dauer (Min.)",
+      "fieldCategory": "Kategorie",
+      "fieldCategoryRequired": "Kategorie *",
+      "fieldDescription": "Beschreibung",
+      "fieldDescriptionPlaceholder": "Optional",
+      "hiddenCount": "{hidden} versteckt · {available} verfügbar",
+      "namePlaceholder": "z. B. Erstgespräch",
+      "categoryLabels": {
+        "machine": "Gerät",
+        "space": "Raum",
+        "consultation": "Beratung"
       }
     }
   },

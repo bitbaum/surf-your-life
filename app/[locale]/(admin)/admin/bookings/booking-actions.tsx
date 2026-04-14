@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { useTranslations } from "next-intl"
 
 type Props = {
   bookingId: string
@@ -9,6 +10,7 @@ type Props = {
 }
 
 export function BookingActions({ bookingId, currentStatus }: Props) {
+  const t = useTranslations("admin.bookings")
   const router = useRouter()
   const [loading, setLoading] = useState<"confirmed" | "cancelled" | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -26,13 +28,13 @@ export function BookingActions({ bookingId, currentStatus }: Props) {
 
       const json = await res.json()
       if (!json.success) {
-        setError(json.error ?? "Something went wrong")
+        setError(json.error ?? t("error"))
         return
       }
 
       router.refresh()
     } catch {
-      setError("Something went wrong")
+      setError(t("error"))
     } finally {
       setLoading(null)
     }
@@ -48,7 +50,7 @@ export function BookingActions({ bookingId, currentStatus }: Props) {
           disabled={loading !== null}
           className="px-3 py-1.5 text-xs font-medium rounded-lg bg-teal-600 text-white hover:bg-teal-700 transition-colors disabled:opacity-50 disabled:pointer-events-none"
         >
-          {loading === "confirmed" ? "Confirming…" : "Confirm"}
+          {loading === "confirmed" ? t("confirming") : t("confirm")}
         </button>
       )}
       <button
@@ -56,7 +58,7 @@ export function BookingActions({ bookingId, currentStatus }: Props) {
         disabled={loading !== null}
         className="px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors disabled:opacity-50 disabled:pointer-events-none"
       >
-        {loading === "cancelled" ? "Cancelling…" : "Cancel"}
+        {loading === "cancelled" ? t("cancelling") : t("cancel")}
       </button>
       {error && <span className="text-xs text-red-600">{error}</span>}
     </div>

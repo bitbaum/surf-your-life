@@ -9,6 +9,7 @@ import { BookingActions } from "./booking-actions"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { Badge } from "@/components/ui/badge"
 import { FilterTabs } from "@/components/ui/filter-tabs"
+import { Link } from "@/i18n/navigation"
 
 type BookingStatus = "pending" | "confirmed" | "cancelled"
 
@@ -48,7 +49,15 @@ export default async function AdminBookingsPage({
 
   return (
     <div className="max-w-5xl mx-auto">
-      <PageHeader title={t("title")} description={t("description")} />
+      <PageHeader
+        title={t("title")}
+        description={t("description")}
+        action={
+          <Link href="/admin/bookings/calendar" className="text-sm text-teal-600 hover:underline">
+            {t("calendarView")} →
+          </Link>
+        }
+      />
 
       <FilterTabs
         tabs={STATUS_FILTERS}
