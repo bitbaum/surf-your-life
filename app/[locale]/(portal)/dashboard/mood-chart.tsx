@@ -2,15 +2,7 @@
 
 import { useState } from "react"
 import { formatDate } from "@/lib/utils"
-import { MOOD_LABEL } from "@/lib/constants"
-
-const MOOD_VALUES: Record<string, number> = {
-  very_low: 1,
-  low: 2,
-  neutral: 3,
-  good: 4,
-  excellent: 5,
-}
+import { MOOD_LABEL, MOOD_NUMERIC } from "@/lib/constants"
 
 const MOOD_COLORS: Record<string, string> = {
   very_low: "bg-red-300",
@@ -32,13 +24,11 @@ interface Props {
 export function MoodChart({ data }: Props) {
   const [tooltip, setTooltip] = useState<{ index: number } | null>(null)
 
-  const MAX_VALUE = 5
-
   return (
     <div className="flex items-end gap-1.5 h-16 relative">
       {data.map((ci, i) => {
-        const value = MOOD_VALUES[ci.mood] ?? 3
-        const pct = (value / MAX_VALUE) * 100
+        const value = MOOD_NUMERIC[ci.mood] ?? 0.5
+        const pct = value * 100
         const colorClass = MOOD_COLORS[ci.mood] ?? "bg-slate-300"
         const isHovered = tooltip?.index === i
 

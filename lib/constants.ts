@@ -116,6 +116,16 @@ export const MOOD_NUMERIC: Record<string, number> = {
   excellent: 1,
 }
 
+// Mood integer score for clinical averaging (1–5 scale).
+// Use MOOD_NUMERIC for chart percentages; use MOOD_SCORE for averaging across check-ins.
+export const MOOD_SCORE: Record<string, number> = {
+  very_low: 1,
+  low: 2,
+  neutral: 3,
+  good: 4,
+  excellent: 5,
+}
+
 // Sleep chart display cap (hours above this are clamped visually)
 export const SLEEP_CHART_MAX_HOURS = 10
 

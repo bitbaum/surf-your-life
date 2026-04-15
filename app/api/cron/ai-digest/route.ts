@@ -9,25 +9,9 @@ import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { users, checkIns, clientAlerts } from "@/lib/db/schema"
 import { eq, and, gte, desc, inArray, count } from "drizzle-orm"
-import { SEVEN_DAYS_MS, SITE_URL } from "@/lib/constants"
+import { SEVEN_DAYS_MS, SITE_URL, MOOD_SCORE, MOODS } from "@/lib/constants"
 import { sendEmail } from "@/lib/email"
 import { practitionerWeeklyDigestEmail, type PractitionerDigestClientRow } from "@/lib/email/templates"
-
-// Maps mood enum values to numeric scores (for averaging) and back to labels
-const MOOD_NUM: Record<string, number> = {
-  very_low: 1,
-  low: 2,
-  neutral: 3,
-  good: 4,
-  excellent: 5,
-}
-const MOOD_LABEL: Record<number, string> = {
-  1: "very low",
-  2: "low",
-  3: "neutral",
-  4: "good",
-  5: "excellent",
-}
 
 const AI_DIGEST_MIN_CHECKINS = 3
 
@@ -184,12 +168,12 @@ export async function GET(req: Request) {
       : 0
 
     const moodValues = weekCheckIns
-      .map((r) => r.mood ? (MOOD_NUM[r.mood] ?? null) : null)
+      .map((r) => r.mood ? (MOOD_SCORE[r.mood] ?? null) : null)
       .filter((v): v is number => v != null)
-    const avgMoodNum = moodValues.length > 0
+    const avgMoodScore = moodValues.length > 0
       ? Math.round(moodValues.reduce((a, b) => a + b, 0) / moodValues.length)
       : 3
-    const avgMood = MOOD_LABEL[avgMoodNum] ?? "neutral"
+    const avgMood = MOODS.find((m) => MOOD_SCORE[m.value] === avgMoodScore)?.label.toLowerCase() ?? "neutral"
 
     const pemEpisodes = weekCheckIns.filter((r) => r.pemFlag === true).length
 

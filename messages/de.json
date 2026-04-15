@@ -704,6 +704,17 @@
       "logOne": "Eine Wiederholung loggen",
       "catchUp": "Nachholbedarf: {reps} Wiederholung(en) aus dieser Woche",
       "howTo": "Wie geht das?"
+    },
+    "documents": {
+      "title": "Dokumente",
+      "subtitle": "Notizen und Berichte, die Ihr Behandlungsteam mit Ihnen geteilt hat",
+      "empty": "Noch keine Dokumente",
+      "emptySubtext": "Ihr Praktiker wird hier nach Ihren Sitzungen Notizen und Berichte hinzufügen",
+      "by": "von",
+      "type_session_note": "Sitzungsnotiz",
+      "type_assessment": "Assessment",
+      "type_report": "Bericht",
+      "type_upload": "Upload"
     }
   },
   "sidebar": {
@@ -727,7 +738,8 @@
     "groupTrack": "Verfolgen",
     "groupCare": "Pflege",
     "progress": "Fortschritt",
-    "techniques": "Techniken"
+    "techniques": "Techniken",
+    "documents": "Meine Dokumente"
   },
   "messages": {
     "title": "Nachrichten",
@@ -876,6 +888,28 @@
         "refresh": "Aktualisieren",
         "error": "Zusammenfassung konnte nicht erstellt werden. Bitte versuche es erneut.",
         "ruleBasedNote": "Zusammenfassung basiert auf Check-in-Daten (KI nicht konfiguriert)."
+      },
+      "sessionNotes": {
+        "title": "Sitzungsnotizen",
+        "addNote": "Notiz hinzufügen",
+        "cancel": "Abbrechen",
+        "save": "Notiz speichern",
+        "saving": "Wird gespeichert...",
+        "optional": "optional",
+        "typeLabel": "Typ",
+        "titleLabel": "Titel",
+        "titlePlaceholder": "Automatisch generiert wenn leer",
+        "contentLabel": "Notiz",
+        "contentPlaceholder": "Schreiben Sie hier Ihre Sitzungsnotizen...",
+        "loadNotes": "Notizen laden",
+        "delete": "Notiz löschen",
+        "deleteError": "Notiz konnte nicht gelöscht werden",
+        "typeSessionNote": "Sitzungsnotiz",
+        "typeAssessment": "Assessment",
+        "typeReport": "Bericht",
+        "typeUpload": "Upload",
+        "noNotes": "Noch keine Notizen. Fügen Sie nach einer Sitzung eine hinzu.",
+        "error": "Notiz konnte nicht gespeichert werden"
       }
     },
     "leads": {

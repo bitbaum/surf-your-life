@@ -12,6 +12,7 @@ import {
   ALERT_STRESS_SPIKE_THRESHOLD,
   ALERT_PEM_CLUSTER_COUNT,
   SEVEN_DAYS_MS,
+  MOOD_SCORE,
 } from "@/lib/constants"
 import { sendEmail } from "@/lib/email"
 import { practitionerAlertEmail } from "@/lib/email/templates"
@@ -143,11 +144,8 @@ export async function generateAlerts(clientId: string, newCheckInId: string): Pr
     }
 
     // ─── Rule 5: Mood decline ──────────────────────────────────────────────────
-    const MOOD_NUM: Record<string, number> = {
-      very_low: 0, low: 1, neutral: 2, good: 3, excellent: 4,
-    }
     if (recent.length >= 3) {
-      const moodValues = recent.slice(0, 3).map((ci) => MOOD_NUM[ci.mood] ?? 2)
+      const moodValues = recent.slice(0, 3).map((ci) => MOOD_SCORE[ci.mood] ?? 3)
       const moodDrop = moodValues[2] - moodValues[0]
       if (moodDrop <= -2) {
         const alreadyExists = await db.query.clientAlerts.findFirst({

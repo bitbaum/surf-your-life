@@ -42,18 +42,36 @@ export async function POST(req: Request) {
   }
 
   // Prevent duplicate active bookings for the same service by the same user
-  const existing = await db.query.bookings.findFirst({
+  const existingOwn = await db.query.bookings.findFirst({
     where: and(
       eq(bookings.userId, session.user.id),
       eq(bookings.serviceId, parsed.data.serviceId),
       inArray(bookings.status, ["pending", "confirmed"])
     ),
   })
-  if (existing) {
+  if (existingOwn) {
     return NextResponse.json(
       { success: false, error: "You already have an active booking for this service" },
       { status: 409 }
     )
+  }
+
+  // Prevent slot conflicts: block if another client already holds the same date+time
+  if (parsed.data.preferredDate && parsed.data.preferredTime) {
+    const slotTaken = await db.query.bookings.findFirst({
+      where: and(
+        eq(bookings.serviceId, parsed.data.serviceId),
+        eq(bookings.preferredDate, parsed.data.preferredDate),
+        eq(bookings.preferredTime, parsed.data.preferredTime),
+        inArray(bookings.status, ["pending", "confirmed"])
+      ),
+    })
+    if (slotTaken) {
+      return NextResponse.json(
+        { success: false, error: "This time slot is no longer available. Please choose another." },
+        { status: 409 }
+      )
+    }
   }
 
   const [booking] = await db

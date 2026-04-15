@@ -25,6 +25,7 @@ import {
   ShieldCheck,
   TrendingUp,
   Sparkles,
+  FileText,
 } from "lucide-react"
 
 interface PortalSidebarProps {
@@ -55,6 +56,7 @@ const NAV_GROUPS = [
       { href: "/ai-chat", labelKey: "aiChat" as const, icon: Bot },
       { href: "/messages", labelKey: "messages" as const, icon: MessageSquare },
       { href: "/book", labelKey: "book" as const, icon: CalendarPlus },
+      { href: "/documents", labelKey: "documents" as const, icon: FileText },
     ],
   },
 ]

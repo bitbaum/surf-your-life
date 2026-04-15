@@ -11,7 +11,7 @@
 import { db } from "@/lib/db"
 import { checkIns, medicationLog, functionalAssessments } from "@/lib/db/schema"
 import { eq, desc, isNull, and } from "drizzle-orm"
-import { SEVEN_DAYS_MS } from "@/lib/constants"
+import { SEVEN_DAYS_MS, MOOD_SCORE } from "@/lib/constants"
 
 const CONTEXT_CHECKINS = 14 // how many recent check-ins to include in context
 
@@ -86,11 +86,8 @@ function summariseCheckIns(rows: CheckInRow[]) {
     rows.filter((r) => r.stressLevel != null).reduce((s, r) => s + (r.stressLevel ?? 0), 0) /
     Math.max(rows.filter((r) => r.stressLevel != null).length, 1)
 
-  const MOOD_NUM: Record<string, number> = {
-    very_low: 1, low: 2, neutral: 3, good: 4, excellent: 5,
-  }
   const avgMoodNum =
-    rows.reduce((s, r) => s + (MOOD_NUM[r.mood ?? "neutral"] ?? 3), 0) / rows.length
+    rows.reduce((s, r) => s + (MOOD_SCORE[r.mood ?? "neutral"] ?? 3), 0) / rows.length
 
   return { avgEnergy, avgSleep, pemCount, avgStress, avgMoodNum, count: rows.length }
 }

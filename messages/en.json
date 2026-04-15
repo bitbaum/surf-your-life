@@ -704,6 +704,17 @@
       "logOne": "Log one rep",
       "catchUp": "Catch up: {reps} rep(s) from earlier this week",
       "howTo": "How to do this"
+    },
+    "documents": {
+      "title": "Documents",
+      "subtitle": "Notes and reports your care team has shared with you",
+      "empty": "No documents yet",
+      "emptySubtext": "Your practitioner will add session notes and reports here after your sessions",
+      "by": "by",
+      "type_session_note": "Session note",
+      "type_assessment": "Assessment",
+      "type_report": "Report",
+      "type_upload": "Upload"
     }
   },
   "sidebar": {
@@ -727,7 +738,8 @@
     "groupCare": "Care",
     "adminArea": "Admin area",
     "progress": "Progress",
-    "techniques": "Techniques"
+    "techniques": "Techniques",
+    "documents": "My Documents"
   },
   "messages": {
     "title": "Messages",
@@ -876,6 +888,28 @@
         "refresh": "Refresh",
         "error": "Failed to generate summary. Please try again.",
         "ruleBasedNote": "Summary generated from check-in data (AI not configured)."
+      },
+      "sessionNotes": {
+        "title": "Session Notes",
+        "addNote": "Add note",
+        "cancel": "Cancel",
+        "save": "Save note",
+        "saving": "Saving...",
+        "optional": "optional",
+        "typeLabel": "Type",
+        "titleLabel": "Title",
+        "titlePlaceholder": "Auto-generated if blank",
+        "contentLabel": "Note",
+        "contentPlaceholder": "Write your session notes here...",
+        "loadNotes": "Load notes",
+        "delete": "Delete note",
+        "deleteError": "Failed to delete note",
+        "typeSessionNote": "Session note",
+        "typeAssessment": "Assessment",
+        "typeReport": "Report",
+        "typeUpload": "Upload",
+        "noNotes": "No notes yet. Add one after a session.",
+        "error": "Failed to save note"
       }
     },
     "leads": {

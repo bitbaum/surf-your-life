@@ -704,6 +704,17 @@
       "logOne": "Enregistrer une répétition",
       "catchUp": "Rattrapage : {reps} répétition(s) de cette semaine",
       "howTo": "Comment faire ?"
+    },
+    "documents": {
+      "title": "Documents",
+      "subtitle": "Notes et rapports que votre équipe soignante a partagés avec vous",
+      "empty": "Aucun document pour l'instant",
+      "emptySubtext": "Votre praticien ajoutera ici des notes de séance et des rapports après vos séances",
+      "by": "par",
+      "type_session_note": "Note de séance",
+      "type_assessment": "Évaluation",
+      "type_report": "Rapport",
+      "type_upload": "Téléchargement"
     }
   },
   "sidebar": {
@@ -727,7 +738,8 @@
     "groupTrack": "Suivre",
     "groupCare": "Soin",
     "progress": "Progression",
-    "techniques": "Techniques"
+    "techniques": "Techniques",
+    "documents": "Mes documents"
   },
   "messages": {
     "title": "Messages",
@@ -893,6 +905,28 @@
         "refresh": "Actualiser",
         "error": "Impossible de générer le résumé. Veuillez réessayer.",
         "ruleBasedNote": "Résumé généré à partir des données de check-in (IA non configurée)."
+      },
+      "sessionNotes": {
+        "title": "Notes de séance",
+        "addNote": "Ajouter une note",
+        "cancel": "Annuler",
+        "save": "Enregistrer la note",
+        "saving": "Enregistrement...",
+        "optional": "optionnel",
+        "typeLabel": "Type",
+        "titleLabel": "Titre",
+        "titlePlaceholder": "Généré automatiquement si vide",
+        "contentLabel": "Note",
+        "contentPlaceholder": "Rédigez vos notes de séance ici...",
+        "loadNotes": "Charger les notes",
+        "delete": "Supprimer la note",
+        "deleteError": "Impossible de supprimer la note",
+        "typeSessionNote": "Note de séance",
+        "typeAssessment": "Évaluation",
+        "typeReport": "Rapport",
+        "typeUpload": "Téléchargement",
+        "noNotes": "Aucune note pour l'instant. Ajoutez-en une après une séance.",
+        "error": "Impossible d'enregistrer la note"
       }
     },
     "leads": {

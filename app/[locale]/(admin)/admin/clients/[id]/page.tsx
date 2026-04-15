@@ -11,6 +11,7 @@ import { NewThreadButton } from "./new-thread-button"
 import { EnrollProgramButton } from "./enroll-program-button"
 import { CheckInNote } from "./check-in-note"
 import { SessionPrep } from "./session-prep"
+import { SessionNotes } from "./session-notes"
 import { TechniqueAssignments } from "./technique-assignments"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 
@@ -243,6 +244,10 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
           assignments={clientAssignments}
           allTechniques={allTechniques}
         />
+      </div>
+
+      <div className="mt-6">
+        <SessionNotes clientId={id} />
       </div>
 
       <div className="mt-6">
