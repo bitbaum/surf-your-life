@@ -616,7 +616,11 @@
         "active": "Aktiv",
         "paused": "Pausiert",
         "completed": "Abgeschlossen"
-      }
+      },
+      "phasesTitle": "Programmabschnitte",
+      "phaseWeekLabel": "Woche {week}",
+      "phaseCurrentBadge": "Aktuell",
+      "phaseCompletion": "Programm abgeschlossen"
     },
     "aiChat": {
       "title": "KI fragen",

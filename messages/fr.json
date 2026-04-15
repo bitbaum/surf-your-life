@@ -616,7 +616,11 @@
         "active": "Actif",
         "paused": "En pause",
         "completed": "Terminé"
-      }
+      },
+      "phasesTitle": "Phases du programme",
+      "phaseWeekLabel": "Semaine {week}",
+      "phaseCurrentBadge": "Vous êtes ici",
+      "phaseCompletion": "Programme terminé"
     },
     "aiChat": {
       "title": "Demander à l'IA",

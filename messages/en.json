@@ -616,7 +616,11 @@
         "active": "Active",
         "paused": "Paused",
         "completed": "Completed"
-      }
+      },
+      "phasesTitle": "Program Phases",
+      "phaseWeekLabel": "Week {week}",
+      "phaseCurrentBadge": "You are here",
+      "phaseCompletion": "Program complete"
     },
     "aiChat": {
       "title": "Ask AI",

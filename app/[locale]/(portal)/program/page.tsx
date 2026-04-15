@@ -9,6 +9,7 @@ import { formatDate, formatEnumValue } from "@/lib/utils"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { SEVEN_DAYS_MS } from "@/lib/constants"
 import { CheckCircle, Clock, Pause } from "lucide-react"
+import { PhaseTimeline } from "./phase-timeline"
 
 export default async function ProgramPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
@@ -140,6 +141,14 @@ export default async function ProgramPage({ params }: { params: Promise<{ locale
               <p className="text-sm text-slate-700 leading-relaxed">{enrollment.notes}</p>
             </CardContent>
           </Card>
+        )}
+
+        {Array.isArray(program.phaseConfig) && program.phaseConfig.length > 0 && (
+          <PhaseTimeline
+            phases={program.phaseConfig as { week: number; title: string; guidance: string }[]}
+            currentWeek={currentWeek}
+            totalWeeks={program.durationWeeks ?? null}
+          />
         )}
       </div>
     </div>
