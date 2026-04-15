@@ -1,0 +1,74 @@
+import { auth } from "@/lib/auth"
+import { db } from "@/lib/db"
+import { techniqueAssignments, techniqueLogs } from "@/lib/db/schema"
+import { eq, and, gte } from "drizzle-orm"
+import { getTranslations, setRequestLocale } from "next-intl/server"
+import { PageHeader } from "@/components/ui/page-header"
+import { TechniqueTracker } from "./technique-tracker"
+import type { LogByDate } from "@/lib/domain/techniques"
+
+export default async function TechniquesPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params
+  setRequestLocale(locale)
+  const session = await auth()
+  if (!session) return null
+
+  const t = await getTranslations("portal.techniques")
+
+  const today = new Date().toISOString().slice(0, 10)
+  // Fetch logs for debt window (14 days)
+  const since = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10)
+
+  const [assignments, logs] = await Promise.all([
+    db.query.techniqueAssignments.findMany({
+      where: and(
+        eq(techniqueAssignments.clientId, session.user.id),
+        eq(techniqueAssignments.isActive, true)
+      ),
+      with: { technique: true },
+      orderBy: (a, { asc }) => [asc(a.createdAt)],
+    }),
+    db.query.techniqueLogs.findMany({
+      where: and(
+        eq(techniqueLogs.userId, session.user.id),
+        gte(techniqueLogs.date, since)
+      ),
+    }),
+  ])
+
+  // Build logsByAssignment: assignmentId → { date → completedReps }
+  // If a date has multiple log entries (incremental taps), sum them
+  const logsByAssignment: Record<string, LogByDate> = {}
+  for (const log of logs) {
+    if (!logsByAssignment[log.assignmentId]) logsByAssignment[log.assignmentId] = {}
+    const existing = logsByAssignment[log.assignmentId][log.date] ?? 0
+    // Use the latest completedReps value for the date (not cumulative — each POST replaces)
+    logsByAssignment[log.assignmentId][log.date] = Math.max(existing, log.completedReps)
+  }
+
+  const totalToday = assignments.reduce((sum, a) => {
+    const done = logsByAssignment[a.id]?.[today] ?? 0
+    return sum + (done >= a.frequencyPerDay ? 1 : 0)
+  }, 0)
+
+  return (
+    <div className="max-w-2xl mx-auto">
+      <div className="mb-6">
+        <PageHeader
+          title={t("title")}
+          description={
+            assignments.length > 0
+              ? t("progress", { done: totalToday, total: assignments.length })
+              : t("description")
+          }
+        />
+      </div>
+
+      <TechniqueTracker
+        assignments={assignments}
+        logsByAssignment={logsByAssignment}
+        today={today}
+      />
+    </div>
+  )
+}

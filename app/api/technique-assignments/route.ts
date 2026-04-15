@@ -1,0 +1,56 @@
+import { auth } from "@/lib/auth"
+import { db } from "@/lib/db"
+import { techniqueAssignments } from "@/lib/db/schema"
+import { eq, and } from "drizzle-orm"
+import { createAssignmentSchema } from "@/lib/domain/techniques"
+
+export async function GET(req: Request) {
+  const session = await auth()
+  if (!session) return Response.json({ success: false, error: "Unauthorized" }, { status: 401 })
+
+  const { searchParams } = new URL(req.url)
+  const clientId = searchParams.get("clientId")
+
+  // Practitioners can query any client; clients can only query themselves
+  const targetId =
+    session.user.role === "admin" || session.user.role === "practitioner"
+      ? (clientId ?? session.user.id)
+      : session.user.id
+
+  const rows = await db.query.techniqueAssignments.findMany({
+    where: and(
+      eq(techniqueAssignments.clientId, targetId),
+      eq(techniqueAssignments.isActive, true)
+    ),
+    with: { technique: true },
+    orderBy: (a, { asc }) => [asc(a.createdAt)],
+  })
+
+  return Response.json({ success: true, data: rows })
+}
+
+export async function POST(req: Request) {
+  const session = await auth()
+  if (!session) return Response.json({ success: false, error: "Unauthorized" }, { status: 401 })
+  if (session.user.role !== "admin" && session.user.role !== "practitioner") {
+    return Response.json({ success: false, error: "Forbidden" }, { status: 403 })
+  }
+
+  const body = await req.json()
+  const result = createAssignmentSchema.safeParse(body)
+  if (!result.success) {
+    return Response.json({ success: false, error: result.error.flatten() }, { status: 400 })
+  }
+
+  const [assignment] = await db
+    .insert(techniqueAssignments)
+    .values({
+      ...result.data,
+      endDate: result.data.endDate ?? null,
+      notes: result.data.notes ?? null,
+      assignedBy: session.user.id,
+    })
+    .returning()
+
+  return Response.json({ success: true, data: assignment }, { status: 201 })
+}

@@ -8,7 +8,7 @@ export default async function PortalLayout({ children }: { children: React.React
 
   return (
     <div className="flex min-h-screen bg-slate-50">
-      <PortalSidebar />
+      <PortalSidebar role={session.user.role} />
       <main className="flex-1 p-8 pt-[5.5rem] md:pt-8 overflow-auto">{children}</main>
     </div>
   )

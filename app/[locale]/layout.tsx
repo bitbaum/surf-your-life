@@ -4,6 +4,7 @@ import { setRequestLocale, getMessages } from "next-intl/server"
 import { routing } from "@/i18n/routing"
 import { Geist } from "next/font/google"
 import type { Metadata } from "next"
+import { Toaster } from "sonner"
 import "../globals.css"
 
 export const metadata: Metadata = {
@@ -51,6 +52,7 @@ export default async function LocaleLayout({
       <body className="min-h-full">
         <NextIntlClientProvider messages={messages}>
           {children}
+          <Toaster richColors position="top-right" />
         </NextIntlClientProvider>
       </body>
     </html>

@@ -1,5 +1,5 @@
 import { db } from "@/lib/db"
-import { users, checkIns, bookings, threadMessages } from "@/lib/db/schema"
+import { users, checkIns, bookings, threadMessages, clientAlerts } from "@/lib/db/schema"
 import { eq, desc, gte, count, and, isNull, max } from "drizzle-orm"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -8,7 +8,8 @@ import { PageHeader } from "@/components/ui/page-header"
 import { Link } from "@/i18n/navigation"
 import { formatDate, formatEnumValue } from "@/lib/utils"
 import { Users, ClipboardList, TrendingUp, CalendarClock, MessageSquare, AlertTriangle } from "lucide-react"
-import { SEVEN_DAYS_MS } from "@/lib/constants"
+import { SEVEN_DAYS_MS, THIRTY_DAYS_MS, RECENT_CLIENTS_LIMIT, AT_RISK_CLIENTS_LIMIT, DAY_MS } from "@/lib/constants"
+import { AlertList } from "./alert-list"
 
 export default async function AdminDashboardPage({
   params,
@@ -19,8 +20,7 @@ export default async function AdminDashboardPage({
   setRequestLocale(locale)
   const t = await getTranslations("admin.dashboard")
 
-  const thirtyDaysAgo = new Date()
-  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+  const thirtyDaysAgo = new Date(Date.now() - THIRTY_DAYS_MS)
   const sevenDaysAgo = new Date(Date.now() - SEVEN_DAYS_MS)
 
   const [
@@ -30,6 +30,7 @@ export default async function AdminDashboardPage({
     unreadMessagesResult,
     recentClients,
     allClientsLastCheckIn,
+    unresolvedAlerts,
   ] = await Promise.all([
     db.select({ count: count() }).from(users).where(eq(users.role, "client")),
     db.select({ count: count() }).from(checkIns).where(gte(checkIns.createdAt, thirtyDaysAgo)),
@@ -42,7 +43,7 @@ export default async function AdminDashboardPage({
     db.query.users.findMany({
       where: eq(users.role, "client"),
       orderBy: [desc(users.createdAt)],
-      limit: 8,
+      limit: RECENT_CLIENTS_LIMIT,
       with: { profile: true },
     }),
     db
@@ -56,6 +57,12 @@ export default async function AdminDashboardPage({
       .leftJoin(checkIns, eq(checkIns.userId, users.id))
       .where(eq(users.role, "client"))
       .groupBy(users.id, users.name, users.email),
+    db.query.clientAlerts.findMany({
+      where: eq(clientAlerts.isResolved, false),
+      orderBy: [desc(clientAlerts.createdAt)],
+      limit: 10,
+      with: { client: { columns: { id: true, name: true, email: true } } },
+    }),
   ])
 
   const clientCount = clientCountResult[0]?.count ?? 0
@@ -73,7 +80,7 @@ export default async function AdminDashboardPage({
       if (b.lastCheckIn === null) return 1
       return a.lastCheckIn.getTime() - b.lastCheckIn.getTime()
     })
-    .slice(0, 5)
+    .slice(0, AT_RISK_CLIENTS_LIMIT)
 
   return (
     <div className="max-w-5xl mx-auto">
@@ -93,6 +100,20 @@ export default async function AdminDashboardPage({
         />
       </div>
 
+      {unresolvedAlerts.length > 0 && (
+        <Card className="mb-6 border-red-200">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-red-700">
+              <AlertTriangle className="w-4 h-4" />
+              {t("clinicalAlerts")} ({unresolvedAlerts.length})
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <AlertList alerts={unresolvedAlerts} />
+          </CardContent>
+        </Card>
+      )}
+
       {atRiskClients.length > 0 && (
         <Card className="mb-6 border-amber-200">
           <CardHeader>
@@ -110,7 +131,7 @@ export default async function AdminDashboardPage({
             <div className="flex flex-col divide-y divide-slate-100">
               {atRiskClients.map((client) => {
                 const daysAgo = client.lastCheckIn
-                  ? Math.floor((Date.now() - client.lastCheckIn.getTime()) / (1000 * 60 * 60 * 24))
+                  ? Math.floor((Date.now() - client.lastCheckIn.getTime()) / DAY_MS)
                   : null
                 return (
                   <Link

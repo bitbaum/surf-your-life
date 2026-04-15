@@ -34,11 +34,7 @@ export default auth((req) => {
   if (!session && !isPublic) {
     return NextResponse.redirect(new URL(`/${locale}/login`, req.url))
   }
-  // Redirect admins who land on the client portal to the admin dashboard
-  const isAdmin = session?.user.role === "admin" || session?.user.role === "practitioner"
-  if (session && isAdmin && (path === "/dashboard" || path === "/")) {
-    return NextResponse.redirect(new URL(`/${locale}/admin/dashboard`, req.url))
-  }
+  // Clients cannot access admin routes
   if (session && path.startsWith("/admin") && session.user.role === "client") {
     return NextResponse.redirect(new URL(`/${locale}/dashboard`, req.url))
   }

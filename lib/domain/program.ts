@@ -1,12 +1,22 @@
 import { z } from "zod"
 import { mainConcernEnum, programStatusEnum } from "@/lib/db/schema"
 
+export const phaseSchema = z.object({
+  week: z.number().int().min(1).max(104),
+  title: z.string().min(1).max(200),
+  guidance: z.string().max(2000),
+})
+
 export const createProgramSchema = z.object({
   title: z.string().min(1).max(200),
   description: z.string().max(2000).optional(),
   durationWeeks: z.number().int().min(1).max(104).optional().nullable(),
   targetConcern: z.enum(mainConcernEnum.enumValues).optional().nullable(),
+  isTemplate: z.boolean().optional(),
+  phaseConfig: z.array(phaseSchema).optional().nullable(),
 })
+
+export type ProgramPhase = z.infer<typeof phaseSchema>
 
 export const enrollClientSchema = z.object({
   clientId: z.string().uuid(),

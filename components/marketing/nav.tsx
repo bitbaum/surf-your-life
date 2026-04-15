@@ -48,7 +48,7 @@ export function MarketingNav({ isLoggedIn = false }: { isLoggedIn?: boolean }) {
           </nav>
 
           <div className="hidden md:flex items-center gap-3">
-            <LocaleSwitcher />
+            <LocaleSwitcher direction="down" />
             {isLoggedIn ? (
               <Link href="/dashboard">
                 <Button size="sm" variant="outline" className="gap-1.5">

@@ -1,16 +1,18 @@
 "use client"
 
 import { useState, useRef } from "react"
+import { useTranslations } from "next-intl"
 import { formatDate } from "@/lib/utils"
-import { MOOD_LABEL, MOOD_EMOJI } from "@/lib/constants"
-
-const MOOD_NUMERIC: Record<string, number> = {
-  very_low: 0,
-  low: 0.25,
-  neutral: 0.5,
-  good: 0.75,
-  excellent: 1,
-}
+import {
+  MOOD_LABEL,
+  MOOD_EMOJI,
+  MOOD_NUMERIC,
+  CHART_W,
+  CHART_H,
+  CHART_PAD,
+  CHART_TOOLTIP_RIGHT_THRESHOLD,
+  CHART_TOOLTIP_LEFT_THRESHOLD,
+} from "@/lib/constants"
 
 interface DataPoint {
   createdAt: Date
@@ -22,11 +24,8 @@ interface Props {
   data: DataPoint[]
 }
 
-const W = 800
-const H = 220
-const PAD = { top: 20, right: 20, bottom: 36, left: 8 }
-const PLOT_W = W - PAD.left - PAD.right
-const PLOT_H = H - PAD.top - PAD.bottom
+const PLOT_W = CHART_W - CHART_PAD.left - CHART_PAD.right
+const PLOT_H = CHART_H - CHART_PAD.top - CHART_PAD.bottom
 
 function toPath(pts: [number, number][]): string {
   if (pts.length < 2) return ""
@@ -41,6 +40,7 @@ function toPath(pts: [number, number][]): string {
 }
 
 export function WellnessTrendChart({ data }: Props) {
+  const t = useTranslations("portal.dashboard")
   const [hovered, setHovered] = useState<number | null>(null)
   const svgRef = useRef<SVGSVGElement>(null)
 
@@ -49,24 +49,24 @@ export function WellnessTrendChart({ data }: Props) {
   const n = data.length
 
   const moodPts: [number, number][] = data.map((d, i) => [
-    PAD.left + (n === 1 ? PLOT_W / 2 : (i / (n - 1)) * PLOT_W),
-    PAD.top + (1 - (MOOD_NUMERIC[d.mood] ?? 0.5)) * PLOT_H,
+    CHART_PAD.left + (n === 1 ? PLOT_W / 2 : (i / (n - 1)) * PLOT_W),
+    CHART_PAD.top + (1 - (MOOD_NUMERIC[d.mood] ?? 0.5)) * PLOT_H,
   ])
   const energyPts: [number, number][] = data.map((d, i) => [
-    PAD.left + (n === 1 ? PLOT_W / 2 : (i / (n - 1)) * PLOT_W),
-    PAD.top + (1 - d.energyLevel / 10) * PLOT_H,
+    CHART_PAD.left + (n === 1 ? PLOT_W / 2 : (i / (n - 1)) * PLOT_W),
+    CHART_PAD.top + (1 - d.energyLevel / 10) * PLOT_H,
   ])
 
   const moodLinePath = toPath(moodPts)
   const energyLinePath = toPath(energyPts)
-  const bottom = PAD.top + PLOT_H
+  const bottom = CHART_PAD.top + PLOT_H
   const moodAreaPath = `${moodLinePath} L ${moodPts[n - 1][0].toFixed(1)} ${bottom} L ${moodPts[0][0].toFixed(1)} ${bottom} Z`
   const energyAreaPath = `${energyLinePath} L ${energyPts[n - 1][0].toFixed(1)} ${bottom} L ${energyPts[0][0].toFixed(1)} ${bottom} Z`
 
   function handleMouseMove(e: React.MouseEvent<SVGSVGElement>) {
     const rect = svgRef.current?.getBoundingClientRect()
     if (!rect) return
-    const mx = ((e.clientX - rect.left) / rect.width) * W
+    const mx = ((e.clientX - rect.left) / rect.width) * CHART_W
     let closest = 0
     let minDist = Infinity
     moodPts.forEach(([x], i) => {
@@ -88,17 +88,17 @@ export function WellnessTrendChart({ data }: Props) {
       <div className="flex items-center gap-5 mb-3">
         <span className="flex items-center gap-1.5 text-xs text-slate-500">
           <span className="inline-block w-4 h-0.5 rounded-full bg-teal-500" />
-          Mood
+          {t("chartMood")}
         </span>
         <span className="flex items-center gap-1.5 text-xs text-slate-500">
           <span className="inline-block w-4 h-0.5 rounded-full bg-violet-400" />
-          Energy
+          {t("chartEnergy")}
         </span>
       </div>
 
       <svg
         ref={svgRef}
-        viewBox={`0 0 ${W} ${H}`}
+        viewBox={`0 0 ${CHART_W} ${CHART_H}`}
         className="w-full"
         onMouseMove={handleMouseMove}
         onMouseLeave={() => setHovered(null)}
@@ -118,8 +118,8 @@ export function WellnessTrendChart({ data }: Props) {
         {[0.25, 0.5, 0.75, 1].map((v) => (
           <line
             key={v}
-            x1={PAD.left} y1={PAD.top + (1 - v) * PLOT_H}
-            x2={W - PAD.right} y2={PAD.top + (1 - v) * PLOT_H}
+            x1={CHART_PAD.left} y1={CHART_PAD.top + (1 - v) * PLOT_H}
+            x2={CHART_W - CHART_PAD.right} y2={CHART_PAD.top + (1 - v) * PLOT_H}
             stroke="#f1f5f9" strokeWidth="1"
           />
         ))}
@@ -127,7 +127,7 @@ export function WellnessTrendChart({ data }: Props) {
         {/* Hover crosshair */}
         {h !== null && (
           <line
-            x1={moodPts[h][0]} y1={PAD.top}
+            x1={moodPts[h][0]} y1={CHART_PAD.top}
             x2={moodPts[h][0]} y2={bottom}
             stroke="#e2e8f0" strokeWidth="1.5" strokeDasharray="4 3"
           />
@@ -166,7 +166,7 @@ export function WellnessTrendChart({ data }: Props) {
           <text
             key={i}
             x={moodPts[i][0]}
-            y={H - 6}
+            y={CHART_H - 6}
             textAnchor={i === 0 ? "start" : i === n - 1 ? "end" : "middle"}
             fontSize="11" fill="#94a3b8"
           >
@@ -180,12 +180,12 @@ export function WellnessTrendChart({ data }: Props) {
         <div
           className="absolute pointer-events-none z-10"
           style={{
-            left: `${(moodPts[h][0] / W) * 100}%`,
+            left: `${(moodPts[h][0] / CHART_W) * 100}%`,
             top: "32px",
             transform:
-              h > n * 0.65
+              h > n * CHART_TOOLTIP_RIGHT_THRESHOLD
                 ? "translateX(calc(-100% - 8px))"
-                : h < n * 0.35
+                : h < n * CHART_TOOLTIP_LEFT_THRESHOLD
                   ? "translateX(8px)"
                   : "translateX(-50%)",
           }}
@@ -193,11 +193,11 @@ export function WellnessTrendChart({ data }: Props) {
           <div className="bg-slate-900 text-white text-xs rounded-xl px-3 py-2.5 shadow-xl min-w-[120px]">
             <p className="text-slate-400 mb-1.5 font-medium">{formatDate(ci.createdAt)}</p>
             <p className="flex items-center gap-1.5 mb-1">
-              <span className="text-teal-400 font-medium">Mood</span>
+              <span className="text-teal-400 font-medium">{t("chartMood")}</span>
               <span>{MOOD_EMOJI[ci.mood]} {MOOD_LABEL[ci.mood]}</span>
             </p>
             <p className="flex items-center gap-1.5">
-              <span className="text-violet-300 font-medium">Energy</span>
+              <span className="text-violet-300 font-medium">{t("chartEnergy")}</span>
               <span>{ci.energyLevel}/10</span>
             </p>
           </div>

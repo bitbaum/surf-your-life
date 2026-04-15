@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { bookings, services, users } from "@/lib/db/schema"
-import { eq, desc, inArray } from "drizzle-orm"
+import { and, eq, desc, inArray } from "drizzle-orm"
 import { createBookingSchema } from "@/lib/domain/booking"
 import { sendEmail } from "@/lib/email"
 import { bookingNotificationEmail, bookingRequestEmail } from "@/lib/email/templates"
@@ -39,6 +39,21 @@ export async function POST(req: Request) {
   })
   if (!service || !service.available) {
     return NextResponse.json({ success: false, error: "Service not available" }, { status: 404 })
+  }
+
+  // Prevent duplicate active bookings for the same service by the same user
+  const existing = await db.query.bookings.findFirst({
+    where: and(
+      eq(bookings.userId, session.user.id),
+      eq(bookings.serviceId, parsed.data.serviceId),
+      inArray(bookings.status, ["pending", "confirmed"])
+    ),
+  })
+  if (existing) {
+    return NextResponse.json(
+      { success: false, error: "You already have an active booking for this service" },
+      { status: 409 }
+    )
   }
 
   const [booking] = await db

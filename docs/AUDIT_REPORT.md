@@ -1,17 +1,19 @@
 # Codebase Audit Report
 
-**Date**: 2026-04-13
-**Auditor**: Claude Code
-**Branch**: main
-**Commit**: b4b1713d2bc85c23267526d0bd9a8fafe761dfa5
+**Date**: 2026-04-14  
+**Auditor**: Claude Code  
+**Branch**: main  
+**Commit**: 0103e62 — feat: i18n compliance pass + booking calendar (EN/DE/FR)
+
+---
 
 ## Executive Summary
 
-The surf-your-life codebase is in good structural shape for a project at this stage. The architecture is coherent — route groups, domain layer, schema-derived types, and centralized constants all follow the first principles from CLAUDE.md. The recent batch of improvements (rate limiting, shared components, i18n wiring, mainConcern enum migration, programmes schema) demonstrate healthy development velocity.
+Surf Your Life is a health portal for burnout/Long-COVID reintegration built on Next.js 16, Drizzle ORM, Auth.js v5, and next-intl. The codebase reflects disciplined engineering: schema-driven types, config-driven constants, consistent API response format, complete role-based access control, and thorough i18n coverage (DE/EN/FR). The client check-in flow, practitioner dashboard, messaging system, booking calendar, and services manager are all implemented and functionally correct.
 
-The main risk areas are **functional correctness gaps** (missing cascade deletes, OAuth admin role bug, double-booking potential) and **mobile UX deficiencies** (touch targets, missing overflow wrappers, no loading states on most routes). These are fixable in a focused session. The codebase has no architectural rot — no god objects, no layered cake of abstractions, no hidden SSOT violations.
+Three categories of issues require attention before the next release. **Critical** (must fix): one functional bug allows double-booking of the same service slot by two clients simultaneously. **High** (should fix before release): several hardcoded English strings in the check-ins history page and edit modal violate the i18n policy, and two SSOT violations duplicate mood label definitions. **Medium** (schedule soon): six files exceed the 200-line component size limit, small touch targets on pagination buttons (32px, below the 44px minimum), and missing aria-labels on modal close buttons.
 
-The biggest gap between the codebase and CLAUDE.md is the **programmes feature**: the schema and types exist but there is zero UI, meaning the DB has tables that nothing serves yet. This violates the "no UI for features without backend" principle in the opposite direction — there's backend with no UI.
+Typecheck passes with zero errors. ESLint is clean. All cascade deletes are correctly wired. Authentication guards are present on every protected route. The AI/embedding infrastructure (pgvector, 1536-dim columns) is in place for future analysis. The codebase is in a healthy state with focused, addressable gaps.
 
 ---
 
@@ -19,153 +21,163 @@ The biggest gap between the codebase and CLAUDE.md is the **programmes feature**
 
 | Area | Score | Notes |
 |------|-------|-------|
-| First Principles | 7/10 | Good SSOT discipline; a few React purity violations and unused code |
-| Best Practices | 7/10 | Consistent patterns; design system color drift in 3 charts/components |
-| Mission Alignment | 8/10 | Core clinical/portal flows well implemented; programmes has no UI yet |
-| Functional Correctness | 6/10 | Missing cascade deletes, OAuth admin gap, at-risk page purity bug |
-| UI/UX & Responsive | 6/10 | Touch targets and overflow wrappers missing in several admin views |
-| **Overall** | **7/10** | Solid foundation — correct things need fixing before mobile launch |
+| First Principles | 7/10 | SSOT violations in mood labels; 6 oversized files |
+| Best Practices | 8/10 | Typecheck clean, lint clean; console.log in email handlers; unused imports |
+| Mission Alignment | 8/10 | Core flows complete; programmes/assignments/documents UI not yet built |
+| Functional Correctness | 7/10 | Double-booking bug is the one critical gap; auth + cascades are solid |
+| UI/UX & Responsive | 7/10 | Mobile-first, good empty/loading states; i18n gaps and a11y issues |
+| **Overall** | **7.4/10** | Production-ready for MVP with the double-booking fix applied |
 
 ---
 
 ## Phase 1: First Principles
 
-### Ground Truth #1 — Software serves humans
+### GT1 — Software Serves Humans (dead code, orphan links)
 
-**Good:**
-- Every page serves a clear user need; no placeholder or demo-only pages shipped
-- Progressive disclosure applied correctly: check-in has optional reflection collapsed, profile has sections
+**Result: PASS**
 
-**Issues:**
-- `programmes` schema + types exist but zero UI — practitioners can't create or view programmes. Backend without product = dead code that must be maintained. Either build the UI or remove the schema until ready. (`lib/db/schema.ts:295-321`)
-- Sidebar links match existing routes — no broken navigation found
+All sidebar nav items in both portal (`components/portal/sidebar.tsx`) and admin (`components/admin/sidebar.tsx`) map to implemented pages. No orphan routes found. No unused exported components detected in a spot check.
 
-### Ground Truth #2 — State defines behavior (SSOT)
+---
 
-**Good:**
-- `lib/db/schema.ts` is the SSOT — all TypeScript types derived via `$inferSelect`/`$inferInsert`
-- `mainConcernEnum` defined once in schema, reused in Zod domain schema (`lib/domain/profile.ts:12`)
-- `lib/constants.ts` centralizes all display config: `MOODS`, `MAIN_CONCERNS`, `ENERGY_SCALE`, etc.
-- `MOOD_EMOJI` and `MOOD_LABEL` maps derived from `MOODS` array — not duplicated
+### GT2 — State Defines Behavior / SSOT
 
-**Issues:**
-- `SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000` hardcoded at `app/[locale]/(admin)/admin/clients/at-risk/page.tsx:8` — should be `TIME_CONSTANTS.SEVEN_DAYS_MS` in `lib/constants.ts`
-- Magic number `20` (page size) appears in at least 3 admin list routes without a named constant
+**Result: 2 VIOLATIONS**
 
-### Ground Truth #3 — Design for change
+#### Violation 1 — Duplicate mood labels
+`app/[locale]/(portal)/check-ins/edit-check-in-modal.tsx:8-14` defines a local `moodLabels` object with hardcoded English strings (`"Very low"`, `"Low"`, etc.). The canonical source is `lib/constants.ts` (`MOOD_LABEL`, `MOOD_EMOJI`). This component should import from constants and use `t()` for translated display.
 
-**Good:**
-- Route groups allow adding/removing feature groups without touching shared layout
-- `lib/domain/` layer means API routes are thin and swappable
-- i18n integrated across all pages — adding a locale is config-only
+```ts
+// WRONG — edit-check-in-modal.tsx:8
+const moodLabels: Record<string, string> = {
+  very_low: "Very low",
+  ...
+}
+```
 
-**Issues:**
-- 4 admin pages still use `next/link` instead of `@/i18n/navigation` Link: `clients/page.tsx`, `clients/[id]/page.tsx`, `clients/at-risk/page.tsx` — locale prefix breaks when switching languages
+#### Violation 2 — Duplicate mood numeric scale
+`app/[locale]/(portal)/dashboard/mood-chart.tsx:7-13` defines `MOOD_VALUES` mapping mood enum → 1-5. The canonical source is `lib/constants.ts:MOOD_NUMERIC` (0–1 scale). Different scale, same concept, duplicated structure. Should derive from `MOOD_NUMERIC` or be justified and documented.
 
-### Ground Truth #4 — Automate the mechanical
+**Fix**: In `edit-check-in-modal.tsx`, remove the local object and call `t(\`moodValues.${mood}\`)` (or use `MOOD_LABEL` from constants). In `mood-chart.tsx`, import and adapt `MOOD_NUMERIC` rather than redefining.
 
-**Good:**
-- Rate limiting automated on all auth routes
-- Zod validates at API boundaries, not scattered in components
-- `formatEnumValue` utility prevents inline string manipulation
+---
 
-**Issues:**
-- No `loading.tsx` on 19 routes — Next.js streaming/Suspense boundaries require manual addition; not automated. Critical for perceived performance.
+### GT3 — Design for Change (modularity, file sizes)
 
-### Ground Truth #5 — Simplicity scales
+**Result: 6 FILES OVER LIMIT**
 
-**Good:**
-- `app/[locale]/page.tsx` decomposed from 330 → 33 lines using marketing section components
-- Shared `Badge`, `Pagination`, `FilterTabs` components replace inline duplication
+CLAUDE.md specifies: pages ≤ 200 lines, components ≤ 150 lines. Files found in violation:
 
-**Issues:**
-- `profile-form.tsx` is ~278 lines (CLAUDE.md limit: 150 lines for components). Three logical sections (clinical, physical, lifestyle) should each be their own component.
-- `privacy/page.tsx` is ~206 lines — static content; could be `.mdx` or split into section components
-- `booking-grid.tsx` is ~190 lines — service selection and time slot selection are two concerns
+| File | Lines | Over by |
+|------|-------|---------|
+| `app/[locale]/(portal)/profile/profile-form.tsx` | 278 | +128 |
+| `app/[locale]/(portal)/check-in/page.tsx` | 249 | +49 |
+| `app/[locale]/(portal)/dashboard/page.tsx` | 234 | +34 |
+| `app/[locale]/(portal)/dashboard/symptoms-chart.tsx` | 223 | +73 |
+| `app/[locale]/(portal)/dashboard/wellness-trend-chart.tsx` | 208 | +58 |
+| `app/[locale]/(privacy)/page.tsx` | 206 | +6 |
 
-### Ground Truth #6 — Correctness beats speed
+The two chart files are SVG-heavy; their verbosity is structural (path/gradient/dot rendering). The check-in page could extract a `<SymptomSection />` component. The profile form could extract step-specific sub-forms.
 
-**Issues (see Phase 5 for details):**
-- Missing cascade deletes on `threads`, `thread_messages`, `programme_enrolments`
-- OAuth users can never get admin role
-- `Date.now()` in server component render
-- `setState` in `useEffect` anti-pattern in verify-email
+---
+
+### GT4 — Automate the Mechanical
+
+**Result: PASS**
+
+`package.json` has scripts for lint, typecheck, build, dev, db:push, db:generate, db:studio, lint:umlauts. No obvious automation gaps.
+
+---
+
+### GT5 — Simplicity Scales
+
+**Result: PASS**
+
+No unnecessary abstraction layers or premature generalizations found. Domain logic lives in `lib/domain/`, API routes are thin wrappers, components handle rendering only.
+
+---
+
+### GT6 — Correctness Beats Speed
+
+**Result: ISSUES FOUND**
+
+- 16 `console.*` statements across email handlers and auth routes (acceptable in dev, but should be suppressed or replaced with a logging service in production). Worst case: `app/api/auth/forgot-password/route.ts:53` logs the raw reset token in development.
+- 2 unused imports: `services` in `app/api/bookings/[id]/route.ts:5`; `SITE_URL` in `lib/domain/messaging.ts:7`.
+- React purity: `new Date(Date.now() - THIRTY_DAYS_MS)` in `app/[locale]/(portal)/dashboard/page.tsx:32` is called during server component render. In a server component this is safe (no re-renders), but linters may flag it depending on config.
 
 ---
 
 ## Phase 2: Best Practices
 
-### No `console.log` in production code
+### TypeScript
 
-```
-app/api/admin/stats/route.ts       — console.error (acceptable, server logging)
-lib/email/index.ts                  — console.log for dev fallback (acceptable, gated on !RESEND_API_KEY)
-```
+**Result: PASS — 0 errors**
 
-No violations. ✓
+`npx tsc --noEmit` exits 0 with no output.
 
-### Naming Conventions
+### ESLint
 
-All components PascalCase, utilities camelCase, constants UPPER_SNAKE. ✓
+**Result: PASS — 0 errors, 0 warnings**
+
+`npm run lint` exits clean.
 
 ### API Response Format
 
-All API routes return `{ success: boolean, data?: T, error?: string }`. ✓
+**Result: PASS**
 
-### Auth checks on protected routes
+All API routes consistently return `{ success: boolean, data?: T }` or `{ success: false, error: string }`. Verified across `/api/profile`, `/api/threads`, `/api/bookings/[id]`, `/api/admin/services`, and 10+ others.
 
-All `/api/admin/*` routes check `session.user.role`. ✓
+### Admin Authorization
 
-### TypeScript — Unused imports
+**Result: PASS**
 
-- `app/[locale]/(admin)/admin/page.tsx`: `inArray`, `and` imported but not used
-- `app/api/auth/resend-verification/route.ts`: `and` imported but not used
+All routes under `app/api/admin/` check `session.user.role !== "admin" && session.user.role !== "practitioner"` before proceeding. Admin layout at `app/[locale]/(admin)/layout.tsx` redirects non-admins. `proxy.ts` blocks client-role users from `/admin/*` paths.
 
-### Design System Color Violations
+### Naming Conventions
 
-CLAUDE.md specifies `teal-600` as primary; `red-600` for destructive; no separate green. Found violations:
+**Result: PASS**
 
-| File | Violation | Fix |
-|------|-----------|-----|
-| `components/portal/sleep-chart.tsx` | `bg-blue-400` bar fill | `bg-teal-400` |
-| `components/admin/booking-grid.tsx` | `violet-*`, `amber-*` for service categories | Use teal/slate palette only |
-| `components/ui/stat-card.tsx` | `violet` color option | Remove; use teal or slate |
+Components PascalCase, utilities camelCase, constants UPPER_SNAKE_CASE, config files kebab-case. No violations found.
 
-### `rounded-2xl` in Marketing Components
+### Magic Numbers
 
-CLAUDE.md specifies `rounded-xl` for cards. Marketing components use `rounded-2xl`:
-- `components/marketing/hero-section.tsx`
-- `components/marketing/gap-section.tsx`
-- `components/marketing/method-section.tsx`
-- `components/marketing/social-proof-section.tsx`
+**Result: SUBSTANTIALLY RESOLVED**
 
-### Wrong Link Component in Admin Pages
+All previously hardcoded numbers are now in `lib/constants.ts`: `DAY_MS`, `THIRTY_DAYS_MS`, `SEVEN_DAYS_MS`, `CHART_W/H/PAD`, `MOOD_NUMERIC`, `SYMPTOM_SCALE`, `RECENT_CHECK_INS_LIMIT`, `RECENT_CLIENTS_LIMIT`, `AT_RISK_CLIENTS_LIMIT`, `SLEEP_CHART_MAX_HOURS`, `CHART_TOOLTIP_RIGHT_THRESHOLD`, `CHART_TOOLTIP_LEFT_THRESHOLD`.
 
-4 pages use `import Link from "next/link"` instead of `import { Link } from "@/i18n/navigation"`:
-- `app/[locale]/(admin)/admin/clients/page.tsx`
-- `app/[locale]/(admin)/admin/clients/[id]/page.tsx`
-- `app/[locale]/(admin)/admin/clients/at-risk/page.tsx`
-- (check all admin pages for same issue)
+Minor remaining: `mood-chart.tsx:35` has `MAX_VALUE = 5` (local const, acceptable); `mood-chart.tsx:54` has `8` as minimum bar height percentage (visual only, acceptable inline).
+
+### Pagination
+
+**Result: MOSTLY COMPLIANT**
+
+All major list endpoints use `PAGINATION_DEFAULT` or named limit constants. Intentionally unbounded: `app/api/account/export/route.ts` (user data export — correct by design), `app/api/admin/services/route.ts` (reference data, expected to be small). Admin leads page and at-risk query load all matching rows — acceptable at current scale, worth revisiting at 1000+ clients.
 
 ---
 
 ## Phase 3: Mission Alignment
 
-The mission is burnout/Long-COVID reintegration for Swiss clients. Assessed against the portal's stated goals:
+This is a clinical health portal for burnout/Long-COVID reintegration. Assessment against product goals:
 
 | Area | Status | Notes |
 |------|--------|-------|
-| **Client wellbeing tracking** | Implemented | Check-ins with mood, energy, sleep, reflection. AI insight column ready. |
-| **Practitioner management** | Partially | Client list, detail, at-risk flagging. Assignments table exists with no UI. |
-| **Structured programmes** | Not yet | Schema + types exist; zero UI for creating/assigning/viewing programmes. |
-| **Secure messaging** | Implemented | Thread + message tables, API routes, portal messaging page. |
-| **Document management** | Not yet | Schema exists; no UI. Assignment table same. |
-| **Booking system** | Implemented | Services + bookings with confirmation flow. |
-| **Lead capture** | Implemented | Contact form → leads table with admin management. |
-| **Multilingual (DE/EN/FR)** | Partially | All admin pages wired; some portal pages may have gaps in FR keys. |
-| **Swiss context** | Good | CHF implicit, Swiss address, clinic-appropriate terminology. |
+| Client check-in flow | **Implemented** | Mood, energy, sleep, reflections, symptoms — all fields, Zod-validated, duplicate-check |
+| Dashboard feedback | **Implemented** | Wellness trend, sleep trend, symptoms chart, streak, onboarding prompt |
+| Practitioner client list | **Implemented** | Paginated, profile data, check-in history, at-risk flagging |
+| Practitioner notes per check-in | **Implemented** | Inline textarea, saved to DB, shown to client |
+| Messaging system | **Implemented** | Full threading, email notifications, proper scope guards |
+| Booking flow | **Implemented** | Services list, date/time preference, calendar view, confirm/cancel |
+| At-risk flagging | **Implemented** | 7-day threshold, energy < 3 detection, dashboard widget |
+| Services admin | **Implemented** | CRUD, toggle availability, category labels |
+| Multilingual (DE/EN/FR) | **Implemented** | All portal + admin strings in messages/*.json |
+| Swiss clinical context | **Implemented** | Professional tone, GDPR-appropriate, clinic terminology |
+| AI readiness | **Planned** | `embedding vector(1536)` on profiles, check_ins, documents; `aiInsight text` on check_ins |
+| Practitioner assignments | **Not Yet** | Schema exists (`assignments` table); no UI |
+| Programmes management | **Not Yet** | Schema exists (`programs`, `programEnrollments`); no UI to create/manage |
+| Document upload | **Not Yet** | Schema exists (`documents` table); no UI |
+| Embedding generation | **Not Yet** | Infrastructure ready; no generation code |
 
-**Critical gap:** Programmes is the core clinical product differentiator (structured recovery plans). Having the data model without any UI means Manu cannot yet create or assign programmes to clients. This should be prioritized.
+**Clinical data gap**: Long-COVID-specific symptom tracking (orthostatic intolerance, post-exertional malaise severity, cognitive load, crash events) is not captured. The current `symptomFatigue/BrainFog/Pain/stressLevel` fields are a solid first layer; deeper Long-COVID-specific fields would increase clinical value.
 
 ---
 
@@ -173,31 +185,28 @@ The mission is burnout/Long-COVID reintegration for Swiss clients. Assessed agai
 
 ### Quick Wins (< 1 hour each)
 
-1. **Fix unused imports** — `inArray`/`and` in `admin/page.tsx`, `and` in `resend-verification/route.ts`
-2. **Extract `SEVEN_DAYS_MS`** to `lib/constants.ts` — remove magic number in at-risk page
-3. **Fix `rounded-2xl` → `rounded-xl`** in all 4 marketing components
-4. **Fix color violations** — `bg-blue-400` in sleep-chart, `violet`/`amber` in booking-grid, `violet` in stat-card
-5. **Fix Link imports** in 3+ admin pages — swap `next/link` for `@/i18n/navigation`
-6. **Add cascade deletes** to `threads`, `thread_messages`, `programme_enrolments` FK references in schema + migration
+1. **Fix double-booking bug** — `app/api/bookings/route.ts`: add a conflict query before insert.
+2. **Remove unused imports** — `services` from `app/api/bookings/[id]/route.ts:5`, `SITE_URL` from `lib/domain/messaging.ts:7`.
+3. **Fix hardcoded strings in check-ins/page.tsx** — lines 48, 55, 85, 91, 97, 122, 126, 131 — replace with `t()` calls; add keys to all 3 message files.
+4. **Fix hardcoded strings in edit-check-in-modal.tsx** — lines 50, 61, 82 — replace with `t()` calls.
+5. **Fix SSOT: mood labels in edit modal** — remove local `moodLabels` object, use `MOOD_LABEL` from constants.
 
 ### Medium Effort (1–5 hours each)
 
-7. **Add `overflow-x-auto` wrappers** to admin tables (clients, bookings) for mobile layout
-8. **Fix touch targets** — pagination buttons and booking action buttons need `min-h-[44px] min-w-[44px]`
-9. **Split `profile-form.tsx`** into `ClinicalSection`, `PhysicalSection`, `LifestyleSection` components
-10. **Split `booking-grid.tsx`** into service selector + time slot selector components
-11. **Add `loading.tsx`** to the 19 routes currently missing it (use skeleton pattern from existing ones)
-12. **Fix OAuth admin role** — check `ADMIN_EMAILS` in `signIn` callback or JWT `trigger === "signIn"` path, not only in register route
-13. **Fix React purity** in at-risk page — pass `Date.now()` as a prop from a Server Component wrapper, or use `new Date()` in a separate data-fetching function
-14. **Fix `setState` in `useEffect`** in `verify-email/page.tsx` — use `use()` hook or move to server component
+6. **Extract `<SymptomSection />`** from `check-in/page.tsx` — brings it from 249 → ~170 lines.
+7. **Extract step sub-forms** from `profile-form.tsx` — brings it from 278 → ~150 lines.
+8. **Increase touch targets** — `Button sm` variant is `h-8` (32px); increase to `h-10` or add padding.
+9. **Add missing aria-labels** — Modal close button in `book/booking-grid.tsx:120`; translate sidebar aria-labels.
+10. **Production logging** — wrap console calls in email handlers with an env-gated logger; fix token exposure in `forgot-password/route.ts:53`.
+11. **SSOT fix: mood-chart.tsx** — derive from `MOOD_NUMERIC` instead of redefining `MOOD_VALUES`.
 
-### Strategic Improvements (> 5 hours, requires product decision)
+### Strategic Improvements
 
-15. **Programmes UI** — create/edit programme page (admin), enrolment flow (admin), enrolled programme view (client). This is the biggest gap between schema and product.
-16. **Practitioner assignments UI** — assign clients to practitioners; the table exists, no way to populate it
-17. **Document upload** — practitioners need to attach session notes. Schema ready.
-18. **AI insights pipeline** — `aiInsight` column exists on check-ins; no generation logic yet. Could start with a cron job that runs weekly per client.
-19. **Pagination on admin messages/bookings** — both pages load unbounded lists
+12. **Programmes UI** — Build create/edit/enroll UI. Schema is ready (`programs`, `programEnrollments`).
+13. **Long-COVID symptom depth** — Add PEM tracking, activity tolerance, crash event logging to check-in.
+14. **Embedding generation pipeline** — On check-in POST and profile save, generate `text-embedding-3-small` embedding and store in `embedding` column. Enables cohort analysis and similarity-based insights.
+15. **Practitioner assignment UI** — Build UI to assign clients to specific practitioners.
+16. **Document upload** — Build file upload flow with metadata stored in `documents` table.
 
 ---
 
@@ -205,159 +214,135 @@ The mission is burnout/Long-COVID reintegration for Swiss clients. Assessed agai
 
 ### Authentication & Authorization
 
-**Session shape:** `session.user.{ id, role, emailVerified }` — correct and augmented via `types/next-auth.d.ts`. ✓
+- **Auth.js v5 + Drizzle adapter**: correctly configured at `lib/auth/index.ts`.
+- **Session shape**: `{ user: { id, email, name, role, emailVerified } }` — used consistently across all routes.
+- **JWT callback** calls `resolveRole()` on every sign-in to promote users in `ADMIN_EMAILS` env var. Works for both password and OAuth sign-in.
+- **Proxy** (`proxy.ts`): redirects unauthenticated users to login, blocks clients from `/admin`, blocks authenticated users from auth pages.
+- **Admin layout** (`app/[locale]/(admin)/layout.tsx`): additional guard redirects non-admin/practitioner to `/dashboard`.
 
-**Admin role via OAuth:** `lib/auth/index.ts` JWT callback only checks `ADMIN_EMAILS` when `trigger === "signIn"` — but this is only called on initial sign-in. However, the role is persisted in the JWT and re-read on subsequent requests, so the bug is specifically: **Google OAuth users who sign in for the first time will always get `client` role**, even if their email is in `ADMIN_EMAILS`. The `register` route handles password-based users but OAuth goes through `signIn` → `jwt` callback where the role is set. Verify the JWT callback applies `resolveRole()` for OAuth users.
+### Critical Bug: Double-Booking Not Prevented
 
-**Admin route guards:** All `/api/admin/*` routes check `session.user.role !== "admin"`. Admin layout (`app/[locale]/(admin)/admin/layout.tsx`) redirects unauthorized users. ✓
+`app/api/bookings/route.ts` POST validates service availability but **does not check** whether a confirmed booking already exists for the same `(serviceId, preferredDate, preferredTime)` combination. Two clients can book the same slot simultaneously.
 
-**Rate limiting:** Applied to register, login, change-password, forgot-password, reset-password, resend-verification. ✓
+**Fix** (~line 42, after service validation):
+
+```typescript
+const conflicting = await db.query.bookings.findFirst({
+  where: and(
+    eq(bookings.serviceId, parsed.data.serviceId),
+    eq(bookings.preferredDate, parsed.data.preferredDate ?? ""),
+    eq(bookings.status, "confirmed")
+  ),
+})
+if (conflicting) {
+  return NextResponse.json({ success: false, error: "Slot already booked" }, { status: 409 })
+}
+```
+
+### Check-in Flow
+
+- Duplicate prevention (same calendar day): `app/api/check-in/route.ts:13-23` — correct.
+- Zod validation: `checkInSchema` in `lib/domain/profile.ts` validates all fields including new symptom fields.
+- DB insert: `...parsed.data` spreads all validated fields; Drizzle auto-converts camelCase → snake_case. New columns `symptom_fatigue`, `symptom_brain_fog`, `symptom_pain`, `stress_level` will be populated correctly.
 
 ### Data Integrity
 
-**Missing cascade deletes in schema:**
+All foreign keys in `lib/db/schema.ts` include `{ onDelete: "cascade" }`. Verified: `checkIns`, `bookings`, `threads`, `threadMessages`, `assignments`, `documents`, `programEnrollments`.
 
-```ts
-// lib/db/schema.ts — these references lack { onDelete: "cascade" }
-threads.clientId     → users.id     (line ~269)
-threadMessages.threadId → threads.id (line ~282)
-threadMessages.senderId → users.id  (line ~283)
-programmeEnrolments.clientId → users.id (line ~310)
-programmeEnrolments.programmeId → programmes.id (line ~311)
-```
+### API Routes — Auth + Validation Coverage
 
-When a user is deleted via `/api/account/delete`, Postgres will error (or silently leave orphans depending on constraint mode) because these FK constraints have no `ON DELETE` behavior specified. The `assignments` and `documents` tables correctly use `{ onDelete: "cascade" }` — threading and programme enrolments need the same.
-
-**Double-booking prevention:** `app/api/bookings/route.ts` inserts a booking without checking for existing bookings on the same service/date. Two clients can book the same slot. This needs a uniqueness check or slot availability model.
-
-### User Paths
-
-**Client path:** Register → verify email → onboarding → dashboard → check-in → profile → messages → bookings. All routes exist and are protected. ✓
-
-**Practitioner/Admin path:** Login → `/admin` dashboard → clients list → client detail → at-risk → leads → bookings → users → messages. All routes exist. ✓
-
-**React purity violation — at-risk page:**
-```ts
-// app/[locale]/(admin)/admin/clients/at-risk/page.tsx:17
-const now = Date.now()  // called during render — unstable between calls
-const sevenDaysAgo = new Date(now - SEVEN_DAYS_MS)
-```
-Server components should be pure — `Date.now()` makes the component non-deterministic. Move to a data-fetching function outside the component.
-
-**`setState` in `useEffect` — verify-email page:**
-```ts
-// app/[locale]/(auth)/verify-email/page.tsx
-useEffect(() => {
-  setStatus(...)  // anti-pattern, causes extra render + potential flicker
-}, [token])
-```
-Refactor to use a `use(promise)` pattern or restructure as server component + client confirmation UI.
-
-### API Routes
-
-All routes return `{ success, error/data }` format. Rate limiting applied. Auth checked. No string concatenation in SQL (Drizzle parameterizes all queries). ✓
-
-No N+1 queries found — Drizzle `with:` used for relation loading in client detail. ✓
+| Route | Auth check | Zod validation |
+|-------|-----------|----------------|
+| `POST /api/check-in` | ✅ session check | ✅ checkInSchema |
+| `PATCH /api/bookings/[id]` | ✅ role check | ✅ partial status enum |
+| `POST /api/admin/services` | ✅ admin/practitioner | ✅ serviceSchema |
+| `PATCH /api/admin/services/[id]` | ✅ admin/practitioner | ✅ serviceUpdateSchema |
+| `POST /api/threads` | ✅ session check | ✅ message body |
+| `POST /api/profile` | ✅ session check | ✅ profileSchema |
+| `POST /api/check-in/[id]/note` | ✅ admin/practitioner | ✅ practitionerNoteSchema |
 
 ---
 
 ## Phase 6: UI/UX & Responsive Design
 
-### Touch Targets (CLAUDE.md: min 44×44px)
+### Responsive Design
 
-**Violations found:**
-- Pagination `<` / `>` buttons in `components/ui/pagination.tsx` — rendered as `<button>` with only `px-3 py-1` padding → approximately 32×28px
-- Booking action buttons in `components/admin/booking-grid.tsx` — confirm/cancel rendered as small icon buttons without explicit size
-- Filter tab buttons — `px-3 py-1.5` → approximately 32px height
+**Result: SOLID FOUNDATION with minor gaps**
 
-**Fix:** Add `min-h-[44px]` to all interactive button classes, or use `size-11` for icon-only buttons.
+Mobile-first approach is consistent: base Tailwind classes target mobile, `md:`/`lg:` add larger breakpoints. Mobile navigation is implemented in both portal and admin sidebars with overlay menus and hamburger buttons (`components/portal/sidebar.tsx:89-106`, `components/admin/sidebar.tsx:88-102`). Admin tables have `overflow-x-auto` wrapper.
 
-### Admin Table Overflow (Mobile)
+Hardcoded arbitrary values (minor): `w-[420px]` on auth sidebar (`auth/layout.tsx:14`), `pt-[5.5rem]` on portal/admin layouts (mobile top-bar offset — structural, acceptable), `min-w-[120px]` / `min-w-[130px]` on chart tooltips.
 
-Tables in the following pages have no `overflow-x-auto` wrapper:
-- `app/[locale]/(admin)/admin/clients/page.tsx` — 5-column table
-- `app/[locale]/(admin)/admin/bookings/page.tsx` — 5-column table
+### Loading States
 
-At viewport < 640px, these tables will overflow viewport and break layout. Wrap `<table>` in `<div className="overflow-x-auto">`.
+**Result: COMPLETE**
 
-### Missing Loading States
+`loading.tsx` files found for all major routes: `/dashboard`, `/check-in`, `/profile`, `/check-ins`, `/book`, and admin equivalents. All use animated skeleton placeholders.
 
-Routes with no `loading.tsx`:
-```
-app/[locale]/(admin)/admin/
-app/[locale]/(admin)/admin/bookings/
-app/[locale]/(admin)/admin/clients/
-app/[locale]/(admin)/admin/clients/[id]/
-app/[locale]/(admin)/admin/clients/at-risk/
-app/[locale]/(admin)/admin/leads/
-app/[locale]/(admin)/admin/messages/
-app/[locale]/(admin)/admin/users/
-app/[locale]/(portal)/check-in/
-app/[locale]/(portal)/dashboard/
-app/[locale]/(portal)/messages/
-app/[locale]/(portal)/profile/
-app/[locale]/(portal)/settings/
-app/[locale]/(auth)/login/
-app/[locale]/(auth)/register/
-app/[locale]/(auth)/forgot-password/
-app/[locale]/(auth)/reset-password/
-app/[locale]/(auth)/verify-email/
-app/[locale]/
-```
+### Empty States
 
-The loading experience should at minimum show a skeleton consistent with the final layout. At minimum, add a simple spinner `loading.tsx` per route group (3 files covers admin/portal/auth groups).
+**Result: COMPLETE**
 
-### Icon Button Accessibility
+All major list pages handle zero-data state with helpful copy and CTAs. Portal check-ins, admin clients, admin bookings, messages all handled.
 
-Booking grid cancel/confirm buttons lack `aria-label`. Screen readers will announce the icon character or nothing. All icon-only buttons need `aria-label="Cancel booking"` etc.
+### i18n Gaps (Hardcoded English Strings)
 
-### Marketing Components
+**Result: 13 VIOLATIONS**
 
-`components/marketing/social-proof-section.tsx` testimonial cards use `rounded-2xl` — inconsistent with design system `rounded-xl`. Same in hero, gap, method sections.
+| File | Line(s) | Hardcoded string |
+|------|---------|-----------------|
+| `check-ins/page.tsx` | 45 | `"check-in${total !== 1 ? "s" : ""} total"` |
+| `check-ins/page.tsx` | 48 | `"New check-in"` |
+| `check-ins/page.tsx` | 55 | `"Do your first check-in"` |
+| `check-ins/page.tsx` | 85 | `"Wins"` |
+| `check-ins/page.tsx` | 91 | `"Challenges"` |
+| `check-ins/page.tsx` | 97 | `"Notes"` |
+| `check-ins/page.tsx` | 122 | `"Page {page} of {totalPages}"` |
+| `check-ins/page.tsx` | 126 | `"← Previous"` |
+| `check-ins/page.tsx` | 131 | `"Next →"` |
+| `edit-check-in-modal.tsx` | 61 | `"Mood"` |
+| `edit-check-in-modal.tsx` | 82 | `"Energy: {n}/10"` |
+| `edit-check-in-modal.tsx` | 50 | `"Could not save. Please try again."` |
+| `check-in-actions.tsx` | 25 | `"Could not delete. Please try again."` |
 
-### Positive Findings
+### Accessibility
 
-- `focus-visible:ring-2 focus-visible:ring-teal-500` consistently applied to form inputs ✓
-- `sm:`, `md:`, `lg:` Tailwind breakpoints used throughout portal components ✓
-- Dark admin sidebar contrasts well at all viewport sizes ✓
-- Empty states implemented on check-ins and clients list ✓
+**Touch targets**: `Button sm` variant is `h-8` (32px), below the 44px WCAG minimum. Used on pagination in `check-ins/page.tsx:126-131` and admin clients list.
+
+**Aria-labels missing**: Modal close button in `book/booking-grid.tsx:120` (X icon, no `aria-label`). Admin sidebar aria-labels (`"Open menu"` / `"Close menu"`) are hardcoded English, not translated.
+
+**Focus states**: All interactive elements have visible focus rings via `focus-visible:ring-2`. ✅
+
+**Form labels**: All inputs have associated `<label>` elements. ✅
 
 ---
 
 ## Action Items
 
-Prioritized by: Data integrity first → Functional bugs → Mobile UX → Code quality
+### P0 — Fix Before Next User-Facing Release
 
-### P0 — Data Integrity (fix before next user data)
-- [ ] Add `{ onDelete: "cascade" }` to `threads.clientId`, `threadMessages.threadId/senderId`, `programmeEnrolments.clientId/programmeId` in `lib/db/schema.ts` + migration SQL
-- [ ] Fix OAuth admin role: verify `resolveRole()` is applied in JWT callback for OAuth `trigger === "signIn"`
+1. **Double-booking prevention** — `app/api/bookings/route.ts` ~line 42: add conflict check before insert. ~30 min.
 
-### P1 — Functional Bugs
-- [ ] Fix React purity: move `Date.now()` out of server component render in `clients/at-risk/page.tsx`
-- [ ] Add double-booking prevention in `app/api/bookings/route.ts`
-- [ ] Fix `setState` in `useEffect` in `verify-email/page.tsx`
+### P1 — Fix This Sprint
 
-### P2 — Link & i18n
-- [ ] Swap `next/link` → `@/i18n/navigation` Link in `clients/page.tsx`, `clients/[id]/page.tsx`, `clients/at-risk/page.tsx`
+2. **i18n: check-ins/page.tsx** — lines 48, 55, 85, 91, 97, 122, 126, 131: replace all hardcoded English with `t()` calls + add keys to DE/FR/EN message files. ~45 min.
+3. **i18n + SSOT: edit-check-in-modal.tsx** — lines 50, 61, 82: replace hardcoded strings; remove local `moodLabels` object, use `MOOD_LABEL` from constants + `t()`. ~30 min.
+4. **i18n: check-in-actions.tsx:25** — replace `"Could not delete."` with `t("error")`. ~10 min.
+5. **Remove unused imports** — `services` from `app/api/bookings/[id]/route.ts:5`; `SITE_URL` from `lib/domain/messaging.ts:7`. ~5 min.
 
-### P3 — Mobile UX
-- [ ] Wrap admin tables (clients, bookings) in `overflow-x-auto`
-- [ ] Fix touch targets on pagination buttons (`min-h-[44px]`) and booking action buttons
-- [ ] Add `loading.tsx` to each route group (`(admin)`, `(portal)`, `(auth)`) at minimum
+### P2 — Schedule This Month
 
-### P4 — Design System Compliance
-- [ ] Fix `rounded-2xl` → `rounded-xl` in all 4 marketing components
-- [ ] Fix color violations: `bg-blue-400` in sleep-chart, `violet`/`amber` in booking-grid, `violet` in stat-card
-- [ ] Remove unused imports in admin dashboard and resend-verification
+6. **Touch targets** — Increase `Button sm` to `h-10` minimum, or increase padding on pagination buttons.
+7. **Aria-labels** — Modal close in `booking-grid.tsx:120`; translate sidebar menu toggle labels.
+8. **Component size: check-in/page.tsx** — Extract `<SymptomSection />` component (lines 193–239).
+9. **Component size: profile-form.tsx** — Extract step-specific sub-forms.
+10. **SSOT: mood-chart.tsx** — Derive from `MOOD_NUMERIC`; remove duplicate `MOOD_VALUES`.
+11. **Production logging** — Env-gated logger wrapper for console calls; especially `forgot-password/route.ts:53` (token logged).
 
-### P5 — Code Quality
-- [ ] Extract `SEVEN_DAYS_MS` to `lib/constants.ts`
-- [ ] Split `profile-form.tsx` (278 lines) into 3 section components
-- [ ] Split `booking-grid.tsx` (190 lines) into service + time-slot components
-- [ ] Add `aria-label` to icon-only buttons in booking-grid and anywhere else icon buttons appear
+### P3 — Backlog
 
-### P6 — Strategic (product decision needed)
-- [ ] Build Programmes UI (admin: create/assign; client: view enrolled programme)
-- [ ] Build Practitioner Assignments UI
-- [ ] Add pagination to admin messages and bookings lists
-- [ ] Implement AI insights generation pipeline (cron job → OpenAI embeddings → `aiInsight` column)
+12. Build Programmes UI (schema ready).
+13. Expand Long-COVID symptom depth (PEM, activity tolerance, crash events).
+14. Embedding generation pipeline (OpenAI `text-embedding-3-small` on check-in save + profile update).
+15. Practitioner assignment UI.
+16. Document upload flow.

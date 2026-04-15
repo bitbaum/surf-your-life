@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 import { Download } from "lucide-react"
+import { toast } from "sonner"
 
 export function ExportButton() {
   const t = useTranslations("portal.settings")
@@ -13,7 +14,10 @@ export function ExportButton() {
     setLoading(true)
     try {
       const res = await fetch("/api/account/export")
-      if (!res.ok) return
+      if (!res.ok) {
+        toast.error(t("exportError"))
+        return
+      }
       const blob = await res.blob()
       const url = URL.createObjectURL(blob)
       const a = document.createElement("a")
@@ -23,6 +27,9 @@ export function ExportButton() {
       a.click()
       document.body.removeChild(a)
       URL.revokeObjectURL(url)
+      toast.success(t("exportSuccess"))
+    } catch {
+      toast.error(t("exportError"))
     } finally {
       setLoading(false)
     }

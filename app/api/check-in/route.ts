@@ -3,6 +3,8 @@ import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { checkIns } from "@/lib/db/schema"
 import { checkInSchema } from "@/lib/domain/profile"
+import { generateAlerts } from "@/lib/domain/alerts"
+import { embedCheckIn } from "@/lib/domain/embeddings"
 import { eq, and, gte } from "drizzle-orm"
 
 export async function POST(req: Request) {
@@ -28,7 +30,19 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: false, error: "Invalid input" }, { status: 400 })
   }
 
-  await db.insert(checkIns).values({ ...parsed.data, userId: session.user.id })
+  const [created] = await db
+    .insert(checkIns)
+    .values({
+      ...parsed.data,
+      userId: session.user.id,
+      // journalEntry also mirrors to notes for backward compat with admin views
+      notes: parsed.data.journalEntry ?? parsed.data.notes,
+    })
+    .returning({ id: checkIns.id })
+
+  // Fire-and-forget: generate rule-based clinical alerts and semantic embedding
+  void generateAlerts(session.user.id, created.id)
+  void embedCheckIn(created.id)
 
   return NextResponse.json({ success: true }, { status: 201 })
 }

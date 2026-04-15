@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useTranslations } from "next-intl"
 import { useRouter } from "@/i18n/navigation"
 import { Pencil, Trash2 } from "lucide-react"
 import type { CheckIn } from "@/lib/db/schema"
@@ -12,6 +13,7 @@ interface Props {
 }
 
 export function CheckInActions({ checkInId, checkIn }: Props) {
+  const t = useTranslations("portal.checkIns")
   const router = useRouter()
   const [mode, setMode] = useState<"idle" | "confirmDelete" | "edit">("idle")
   const [deleting, setDeleting] = useState(false)
@@ -22,7 +24,7 @@ export function CheckInActions({ checkInId, checkIn }: Props) {
     setError("")
     const res = await fetch(`/api/check-in/${checkInId}`, { method: "DELETE" })
     if (!res.ok) {
-      setError("Could not delete. Please try again.")
+      setError(t("deleteError"))
       setDeleting(false)
       return
     }
@@ -32,19 +34,19 @@ export function CheckInActions({ checkInId, checkIn }: Props) {
   if (mode === "confirmDelete") {
     return (
       <div className="mt-3 flex items-center gap-3 flex-wrap">
-        <span className="text-sm text-slate-600">Delete this check-in?</span>
+        <span className="text-sm text-slate-600">{t("confirmDelete")}</span>
         <button
           onClick={handleDelete}
           disabled={deleting}
           className="text-sm font-medium text-red-600 hover:text-red-700 disabled:opacity-50"
         >
-          {deleting ? "Deleting…" : "Yes, delete"}
+          {deleting ? t("deleting") : t("yesDelete")}
         </button>
         <button
           onClick={() => setMode("idle")}
           className="text-sm text-slate-400 hover:text-slate-600"
         >
-          Cancel
+          {t("actionCancel")}
         </button>
         {error && <span className="text-xs text-red-500">{error}</span>}
       </div>
@@ -67,18 +69,18 @@ export function CheckInActions({ checkInId, checkIn }: Props) {
       <button
         onClick={() => setMode("edit")}
         className="flex items-center gap-1 text-xs text-slate-400 hover:text-teal-600 transition-colors"
-        title="Edit check-in"
+        title={t("editAction")}
       >
         <Pencil className="w-3.5 h-3.5" />
-        Edit
+        {t("editAction")}
       </button>
       <button
         onClick={() => setMode("confirmDelete")}
         className="flex items-center gap-1 text-xs text-slate-400 hover:text-red-500 transition-colors"
-        title="Delete check-in"
+        title={t("deleteAction")}
       >
         <Trash2 className="w-3.5 h-3.5" />
-        Delete
+        {t("deleteAction")}
       </button>
     </div>
   )

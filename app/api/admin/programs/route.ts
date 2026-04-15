@@ -48,6 +48,8 @@ export async function POST(req: Request) {
       description: parsed.data.description,
       durationWeeks: parsed.data.durationWeeks ?? null,
       targetConcern: parsed.data.targetConcern ?? null,
+      isTemplate: parsed.data.isTemplate ?? false,
+      phaseConfig: parsed.data.phaseConfig ?? null,
       createdBy: session.user.id,
     })
     .returning({ id: programs.id })

@@ -1,0 +1,81 @@
+import { NextResponse } from "next/server"
+import { auth } from "@/lib/auth"
+import { db } from "@/lib/db"
+import { aiMessages } from "@/lib/db/schema"
+import { eq, desc } from "drizzle-orm"
+import { generateAiReply } from "@/lib/domain/ai-chat"
+import { z } from "zod"
+
+const AI_CHAT_HISTORY_LIMIT = 20 // messages sent as context to AI
+const AI_CHAT_MAX_LENGTH = 1000 // max user message length
+
+const messageSchema = z.object({
+  content: z.string().min(1).max(AI_CHAT_MAX_LENGTH),
+})
+
+export async function GET(req: Request) {
+  const session = await auth()
+  if (!session?.user?.id) {
+    return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
+  }
+
+  const { searchParams } = new URL(req.url)
+  const limit = Math.min(parseInt(searchParams.get("limit") ?? "50"), 100)
+
+  const messages = await db.query.aiMessages.findMany({
+    where: eq(aiMessages.userId, session.user.id),
+    orderBy: [desc(aiMessages.createdAt)],
+    limit,
+    columns: { id: true, role: true, content: true, createdAt: true },
+  })
+
+  return NextResponse.json({ success: true, data: messages.reverse() })
+}
+
+export async function POST(req: Request) {
+  const session = await auth()
+  if (!session?.user?.id) {
+    return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
+  }
+
+  const body = await req.json()
+  const parsed = messageSchema.safeParse(body)
+  if (!parsed.success) {
+    return NextResponse.json({ success: false, error: "Invalid input" }, { status: 400 })
+  }
+
+  // Save user message
+  await db.insert(aiMessages).values({
+    userId: session.user.id,
+    role: "user",
+    content: parsed.data.content,
+  })
+
+  // Fetch recent history for context
+  const history = await db.query.aiMessages.findMany({
+    where: eq(aiMessages.userId, session.user.id),
+    orderBy: [desc(aiMessages.createdAt)],
+    limit: AI_CHAT_HISTORY_LIMIT,
+    columns: { role: true, content: true },
+  })
+  const historyAsc = history.reverse().slice(0, -1) // exclude the message we just inserted
+
+  // Generate reply
+  const reply = await generateAiReply(
+    session.user.id,
+    parsed.data.content,
+    historyAsc
+  )
+
+  // Save assistant reply
+  const [saved] = await db
+    .insert(aiMessages)
+    .values({
+      userId: session.user.id,
+      role: "assistant",
+      content: reply,
+    })
+    .returning({ id: aiMessages.id, content: aiMessages.content, createdAt: aiMessages.createdAt })
+
+  return NextResponse.json({ success: true, data: { id: saved.id, content: saved.content, createdAt: saved.createdAt } })
+}

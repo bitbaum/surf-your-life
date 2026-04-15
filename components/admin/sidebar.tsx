@@ -6,7 +6,7 @@ import { signOut } from "next-auth/react"
 import { cn } from "@/lib/utils"
 import { LocaleSwitcher } from "@/components/ui/locale-switcher"
 import { useTranslations } from "next-intl"
-import { LayoutDashboard, Users, LogOut, Waves, Menu, X, Inbox, MessageSquare, UserCog, CalendarCheck, BookOpen, Wrench } from "lucide-react"
+import { LayoutDashboard, Users, LogOut, Waves, Menu, X, Inbox, MessageSquare, UserCog, CalendarCheck, BookOpen, Wrench, User, Sparkles } from "lucide-react"
 
 interface AdminSidebarProps {
   unreadMessages?: number
@@ -24,6 +24,7 @@ export function AdminSidebar({ unreadMessages = 0 }: AdminSidebarProps) {
     { href: "/admin/services", label: t("services"), icon: Wrench, badge: 0 },
     { href: "/admin/messages", label: t("messages"), icon: MessageSquare, badge: unreadMessages },
     { href: "/admin/programs", label: t("programs"), icon: BookOpen, badge: 0 },
+    { href: "/admin/techniques", label: t("techniques"), icon: Sparkles, badge: 0 },
     { href: "/admin/leads", label: t("leads"), icon: Inbox, badge: 0 },
     { href: "/admin/users", label: t("users"), icon: UserCog, badge: 0 },
   ]
@@ -68,6 +69,14 @@ export function AdminSidebar({ unreadMessages = 0 }: AdminSidebarProps) {
 
   const bottom = (
     <div className="flex flex-col gap-3 pt-4 border-t border-slate-700">
+      <Link
+        href="/dashboard"
+        onClick={() => setOpen(false)}
+        className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+      >
+        <User className="w-4 h-4" />
+        {t("clientPortal")}
+      </Link>
       <div className="px-2">
         <p className="text-xs text-slate-500 mb-1.5">{t("language")}</p>
         <LocaleSwitcher dark />

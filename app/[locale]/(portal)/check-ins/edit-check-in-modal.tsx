@@ -1,17 +1,10 @@
 "use client"
 
 import { useState } from "react"
+import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 import { MOODS, ENERGY_SCALE, SLEEP_HOURS } from "@/lib/constants"
 import type { CheckIn } from "@/lib/db/schema"
-
-const moodLabels: Record<string, string> = {
-  very_low: "Very low",
-  low: "Low",
-  neutral: "Neutral",
-  good: "Good",
-  excellent: "Excellent",
-}
 
 interface EditCheckInModalProps {
   checkIn: CheckIn
@@ -21,6 +14,15 @@ interface EditCheckInModalProps {
 }
 
 export function EditCheckInModal({ checkIn, checkInId, onSave, onCancel }: EditCheckInModalProps) {
+  const t = useTranslations("portal.checkIns")
+  const tCheckIn = useTranslations("portal.checkIn")
+  const moodLabels: Record<string, string> = {
+    very_low: tCheckIn("moodVeryLow"),
+    low: tCheckIn("moodLow"),
+    neutral: tCheckIn("moodNeutral"),
+    good: tCheckIn("moodGood"),
+    excellent: tCheckIn("moodExcellent"),
+  }
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState("")
   const [mood, setMood] = useState(checkIn.mood)
@@ -47,7 +49,7 @@ export function EditCheckInModal({ checkIn, checkInId, onSave, onCancel }: EditC
       }),
     })
     if (!res.ok) {
-      setError("Could not save. Please try again.")
+      setError(t("editError"))
       setSaving(false)
       return
     }
@@ -58,7 +60,7 @@ export function EditCheckInModal({ checkIn, checkInId, onSave, onCancel }: EditC
   return (
     <form onSubmit={handleSave} className="mt-4 flex flex-col gap-4 border-t border-slate-100 pt-4">
       <div>
-        <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">Mood</p>
+        <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">{t("editMood")}</p>
         <div className="grid grid-cols-5 gap-2">
           {MOODS.map((m) => (
             <button
@@ -80,7 +82,7 @@ export function EditCheckInModal({ checkIn, checkInId, onSave, onCancel }: EditC
 
       <div>
         <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">
-          Energy: <span className="text-teal-700 font-bold">{energy}/10</span>
+          {t("editEnergy", { n: energy })}
         </p>
         <div className="flex items-center gap-4">
           <span className="text-sm text-slate-400">{ENERGY_SCALE.min}</span>
@@ -98,7 +100,7 @@ export function EditCheckInModal({ checkIn, checkInId, onSave, onCancel }: EditC
 
       <div>
         <label className="text-xs font-medium text-slate-500 uppercase tracking-wide block mb-1.5">
-          Sleep hours <span className="text-slate-400 font-normal normal-case">(optional)</span>
+          {t("editSleepLabel")} <span className="text-slate-400 font-normal normal-case">{t("editOptional")}</span>
         </label>
         <input
           type="number"
@@ -113,7 +115,7 @@ export function EditCheckInModal({ checkIn, checkInId, onSave, onCancel }: EditC
 
       <div>
         <label className="text-xs font-medium text-slate-500 uppercase tracking-wide block mb-1.5">
-          Wins <span className="text-slate-400 font-normal normal-case">(optional)</span>
+          {t("editWinsLabel")} <span className="text-slate-400 font-normal normal-case">{t("editOptional")}</span>
         </label>
         <textarea
           value={wins}
@@ -125,7 +127,7 @@ export function EditCheckInModal({ checkIn, checkInId, onSave, onCancel }: EditC
 
       <div>
         <label className="text-xs font-medium text-slate-500 uppercase tracking-wide block mb-1.5">
-          Challenges <span className="text-slate-400 font-normal normal-case">(optional)</span>
+          {t("editChallengesLabel")} <span className="text-slate-400 font-normal normal-case">{t("editOptional")}</span>
         </label>
         <textarea
           value={challenges}
@@ -137,7 +139,7 @@ export function EditCheckInModal({ checkIn, checkInId, onSave, onCancel }: EditC
 
       <div>
         <label className="text-xs font-medium text-slate-500 uppercase tracking-wide block mb-1.5">
-          Notes <span className="text-slate-400 font-normal normal-case">(optional)</span>
+          {t("editNotesLabel")} <span className="text-slate-400 font-normal normal-case">{t("editOptional")}</span>
         </label>
         <textarea
           value={notes}
@@ -151,14 +153,14 @@ export function EditCheckInModal({ checkIn, checkInId, onSave, onCancel }: EditC
 
       <div className="flex items-center gap-3">
         <Button type="submit" size="sm" disabled={saving}>
-          {saving ? "Saving…" : "Save changes"}
+          {saving ? t("editSaving") : t("editSave")}
         </Button>
         <button
           type="button"
           onClick={onCancel}
           className="text-sm text-slate-400 hover:text-slate-600"
         >
-          Cancel
+          {t("editCancel")}
         </button>
       </div>
     </form>

@@ -3,6 +3,9 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  /* Bump base from browser default 16px → 18px so Tailwind's text-sm lands at
+     ~16px — comfortably readable without touching every component class. */
+  font-size: 18px;
 }
 
 @theme inline {

@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
 import { formatDate, formatEnumValue } from "@/lib/utils"
-import { PAGINATION_DEFAULT, MOOD_EMOJI } from "@/lib/constants"
+import { PAGINATION_DEFAULT, MOOD_EMOJI, SLEEP_QUALITY_OPTIONS } from "@/lib/constants"
 import { Link } from "@/i18n/navigation"
 import { CheckInActions } from "./check-in-actions"
 
@@ -42,10 +42,10 @@ export default async function CheckInsPage({
     <div className="max-w-3xl mx-auto">
       <PageHeader
         title={t("title")}
-        description={`${total} check-in${total !== 1 ? "s" : ""} total`}
+        description={t("totalCount", { n: total })}
         action={
           <Link href="/check-in">
-            <Button size="sm">New check-in</Button>
+            <Button size="sm">{t("newCheckIn")}</Button>
           </Link>
         }
       />
@@ -54,7 +54,7 @@ export default async function CheckInsPage({
         <div className="text-center py-16 text-slate-400">
           <p className="mb-4">{t("noCheckIns")}</p>
           <Link href="/check-in">
-            <Button>Do your first check-in</Button>
+            <Button>{t("doFirstCheckIn")}</Button>
           </Link>
         </div>
       ) : (
@@ -71,32 +71,50 @@ export default async function CheckInsPage({
                         <p className="text-xs text-slate-400">{formatDate(ci.createdAt)}</p>
                       </div>
                     </div>
-                    <div className="flex gap-4 text-sm text-slate-500 text-right">
+                    <div className="flex flex-wrap gap-3 text-sm text-slate-500 text-right">
                       <span>{t("energy")} <strong className="text-slate-800">{ci.energyLevel}/10</strong></span>
                       {ci.sleepHours != null && (
                         <span>{t("sleep")} <strong className="text-slate-800">{ci.sleepHours}h</strong></span>
                       )}
+                      {ci.sleepQuality != null && (
+                        <span>{SLEEP_QUALITY_OPTIONS[ci.sleepQuality - 1]?.emoji ?? "😴"} <strong className="text-slate-800">{ci.sleepQuality}/5</strong></span>
+                      )}
+                      {ci.orthostaticSymptoms && (
+                        <span className="text-orange-500 font-medium text-xs self-center">⬆ {t("orthostaticShort")}</span>
+                      )}
+                      {ci.pemFlag && (
+                        <span className="text-red-500 font-medium text-xs self-center">PEM{ci.pemSeverity ? ` ${ci.pemSeverity}/10` : ""}</span>
+                      )}
                     </div>
                   </div>
-                  {(ci.wins || ci.challenges || ci.notes) && (
+                  {(ci.journalEntry || ci.wins || ci.challenges || ci.notes) && (
                     <div className="mt-4 flex flex-col gap-2 text-sm text-slate-600">
-                      {ci.wins && (
+                      {ci.journalEntry ? (
                         <div>
-                          <span className="text-xs font-medium text-slate-400 uppercase tracking-wide">Wins</span>
-                          <p className="mt-0.5">{ci.wins}</p>
+                          <span className="text-xs font-medium text-slate-400 uppercase tracking-wide">{t("journal")}</span>
+                          <p className="mt-0.5 leading-relaxed">{ci.journalEntry}</p>
                         </div>
-                      )}
-                      {ci.challenges && (
-                        <div>
-                          <span className="text-xs font-medium text-slate-400 uppercase tracking-wide">Challenges</span>
-                          <p className="mt-0.5">{ci.challenges}</p>
-                        </div>
-                      )}
-                      {ci.notes && (
-                        <div>
-                          <span className="text-xs font-medium text-slate-400 uppercase tracking-wide">Notes</span>
-                          <p className="mt-0.5 italic">{ci.notes}</p>
-                        </div>
+                      ) : (
+                        <>
+                          {ci.wins && (
+                            <div>
+                              <span className="text-xs font-medium text-slate-400 uppercase tracking-wide">{t("wins")}</span>
+                              <p className="mt-0.5">{ci.wins}</p>
+                            </div>
+                          )}
+                          {ci.challenges && (
+                            <div>
+                              <span className="text-xs font-medium text-slate-400 uppercase tracking-wide">{t("challenges")}</span>
+                              <p className="mt-0.5">{ci.challenges}</p>
+                            </div>
+                          )}
+                          {ci.notes && (
+                            <div>
+                              <span className="text-xs font-medium text-slate-400 uppercase tracking-wide">{t("notes")}</span>
+                              <p className="mt-0.5 italic">{ci.notes}</p>
+                            </div>
+                          )}
+                        </>
                       )}
                     </div>
                   )}
@@ -119,16 +137,16 @@ export default async function CheckInsPage({
 
           {totalPages > 1 && (
             <div className="flex items-center justify-between mt-6">
-              <p className="text-xs text-slate-400">Page {page} of {totalPages}</p>
+              <p className="text-xs text-slate-400">{t("pageOf", { page, total: totalPages })}</p>
               <div className="flex gap-2">
                 {page > 1 && (
                   <Link href={`/check-ins?page=${page - 1}`}>
-                    <Button variant="outline" size="sm">← Previous</Button>
+                    <Button variant="outline" size="sm">{t("previous")}</Button>
                   </Link>
                 )}
                 {page < totalPages && (
                   <Link href={`/check-ins?page=${page + 1}`}>
-                    <Button variant="outline" size="sm">Next →</Button>
+                    <Button variant="outline" size="sm">{t("next")}</Button>
                   </Link>
                 )}
               </div>

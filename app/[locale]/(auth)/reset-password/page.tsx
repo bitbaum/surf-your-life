@@ -3,15 +3,15 @@
 import { useState, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import { useTranslations } from "next-intl"
-import { useRouter, Link } from "@/i18n/navigation"
+import { Link } from "@/i18n/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { CheckCircle } from "lucide-react"
 
 function ResetForm() {
   const t = useTranslations("auth.resetPassword")
   const searchParams = useSearchParams()
-  const router = useRouter()
   const token = searchParams.get("token") ?? ""
   const [password, setPassword] = useState("")
   const [confirm, setConfirm] = useState("")
@@ -39,7 +39,6 @@ function ResetForm() {
       return
     }
     setDone(true)
-    setTimeout(() => router.push("/login"), 2000)
   }
 
   if (!token) {
@@ -61,9 +60,21 @@ function ResetForm() {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>{t("successTitle")}</CardTitle>
-          <CardDescription>{t("successBody")}</CardDescription>
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-10 h-10 rounded-full bg-teal-50 flex items-center justify-center flex-shrink-0">
+              <CheckCircle className="w-5 h-5 text-teal-600" />
+            </div>
+            <div>
+              <CardTitle>{t("successTitle")}</CardTitle>
+              <CardDescription className="mt-0.5">{t("successBody")}</CardDescription>
+            </div>
+          </div>
         </CardHeader>
+        <CardContent>
+          <Link href="/login">
+            <Button className="w-full">{t("goToLogin")}</Button>
+          </Link>
+        </CardContent>
       </Card>
     )
   }

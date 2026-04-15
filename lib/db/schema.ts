@@ -44,6 +44,32 @@ export const mainConcernEnum = pgEnum("main_concern_type", [
 
 export const programStatusEnum = pgEnum("program_status", ["active", "completed", "paused"])
 
+export const activityLevelEnum = pgEnum("activity_level", ["rest", "light", "moderate", "active"])
+
+export const alertTypeEnum = pgEnum("alert_type", [
+  "energy_decline",
+  "fatigue_spike",
+  "pem_cluster",
+  "missed_checkins",
+  "mood_decline",
+  "stress_spike",
+  "orthostatic_intolerance",
+])
+
+export const alertSeverityEnum = pgEnum("alert_severity", ["low", "medium", "high"])
+
+export const techniqueCategoryEnum = pgEnum("technique_category", [
+  "breathwork",
+  "movement",
+  "mindfulness",
+  "cognitive",
+  "pacing",
+  "sleep",
+  "social",
+])
+
+export const techniqueDifficultyEnum = pgEnum("technique_difficulty", ["easy", "moderate", "challenging"])
+
 // ─── Auth tables (Auth.js v5 compatible) ──────────────────────────────────────
 
 export const users = pgTable("users", {
@@ -148,6 +174,21 @@ export const checkIns = pgTable(
     notes: text("notes"),
     wins: text("wins"),
     challenges: text("challenges"),
+    // Symptom severity tracking (all optional, 1–10)
+    symptomFatigue: integer("symptom_fatigue"),
+    symptomBrainFog: integer("symptom_brain_fog"),
+    symptomPain: integer("symptom_pain"),
+    stressLevel: integer("stress_level"),
+    // Activity & PEM (Post-Exertional Malaise) tracking — key for Long COVID clients
+    activityLevel: activityLevelEnum("activity_level"),
+    pemFlag: boolean("pem_flag").default(false),
+    pemSeverity: integer("pem_severity"), // 1-10, only relevant when pemFlag is true
+    // Sleep quality (1–5: very poor → excellent) — separate from duration
+    sleepQuality: integer("sleep_quality"),
+    // Orthostatic intolerance: dizziness on standing — common Long COVID / POTS indicator
+    orthostaticSymptoms: boolean("orthostatic_symptoms"),
+    // Single journal entry replacing separate wins/challenges/notes fields
+    journalEntry: text("journal_entry"),
     // AI-generated analysis stored alongside the raw data
     aiInsight: text("ai_insight"),
     embedding: vector("embedding", { dimensions: 1536 }),
@@ -301,6 +342,9 @@ export const programs = pgTable("programs", {
   description: text("description"),
   durationWeeks: integer("duration_weeks"),
   targetConcern: mainConcernEnum("target_concern"),
+  isTemplate: boolean("is_template").default(false).notNull(),
+  // Array of phase objects: [{ week: number, title: string, guidance: string }]
+  phaseConfig: jsonb("phase_config"),
   createdBy: uuid("created_by").references(() => users.id),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
@@ -323,6 +367,168 @@ export const programEnrollments = pgTable(
   ]
 )
 
+// ─── Functional Assessments (monthly capacity evaluations) ───────────────────
+
+export const functionalAssessments = pgTable(
+  "functional_assessments",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    assessedAt: timestamp("assessed_at", { mode: "date" }).defaultNow().notNull(),
+    overallCapacity: integer("overall_capacity").notNull(), // 1-10
+    cognitiveCapacity: integer("cognitive_capacity"), // 1-10
+    physicalCapacity: integer("physical_capacity"), // 1-10
+    emotionalCapacity: integer("emotional_capacity"), // 1-10
+    socialCapacity: integer("social_capacity"), // 1-10
+    notes: text("notes"),
+    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+  },
+  (table) => [index("functional_assessments_user_idx").on(table.userId)]
+)
+
+// ─── Medication Log ───────────────────────────────────────────────────────────
+
+export const medicationLog = pgTable(
+  "medication_log",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    medicationName: text("medication_name").notNull(),
+    dose: text("dose"),
+    frequency: text("frequency"),
+    startDate: text("start_date"), // ISO date string
+    endDate: text("end_date"), // ISO date string, null = ongoing
+    notes: text("notes"),
+    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
+  },
+  (table) => [index("medication_log_user_idx").on(table.userId)]
+)
+
+// ─── Client Alerts (rule-based clinical signals for practitioners) ────────────
+
+export const clientAlerts = pgTable(
+  "client_alerts",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    clientId: uuid("client_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    type: alertTypeEnum("type").notNull(),
+    severity: alertSeverityEnum("severity").notNull().default("medium"),
+    title: text("title").notNull(),
+    message: text("message").notNull(),
+    isResolved: boolean("is_resolved").default(false).notNull(),
+    checkInId: uuid("check_in_id").references(() => checkIns.id, { onDelete: "set null" }),
+    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+  },
+  (table) => [
+    index("client_alerts_client_id_idx").on(table.clientId),
+    index("client_alerts_resolved_idx").on(table.isResolved),
+  ]
+)
+
+// ─── AI Chat ─────────────────────────────────────────────────────────────────
+
+export const aiMessages = pgTable(
+  "ai_messages",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    // 'user' = client message, 'assistant' = AI response
+    role: text("role").$type<"user" | "assistant">().notNull(),
+    content: text("content").notNull(),
+    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+  },
+  (table) => [
+    index("ai_messages_user_id_idx").on(table.userId),
+    index("ai_messages_created_at_idx").on(table.createdAt),
+  ]
+)
+
+// ─── Techniques (therapeutic technique library + assignment + tracking) ───────
+
+export const techniques = pgTable(
+  "techniques",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    name: text("name").notNull(),
+    description: text("description"),
+    category: techniqueCategoryEnum("category").notNull(),
+    instructions: text("instructions"),
+    durationMinutes: integer("duration_minutes"),
+    difficulty: techniqueDifficultyEnum("difficulty").notNull().default("easy"),
+    resourceUrl: text("resource_url"),
+    isActive: boolean("is_active").default(true).notNull(),
+    createdBy: uuid("created_by").references(() => users.id),
+    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
+  },
+  (table) => [
+    index("techniques_category_idx").on(table.category),
+    index("techniques_active_idx").on(table.isActive),
+  ]
+)
+
+export const techniqueAssignments = pgTable(
+  "technique_assignments",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    techniqueId: uuid("technique_id")
+      .notNull()
+      .references(() => techniques.id, { onDelete: "cascade" }),
+    clientId: uuid("client_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    assignedBy: uuid("assigned_by")
+      .notNull()
+      .references(() => users.id),
+    frequencyPerDay: integer("frequency_per_day").notNull().default(1),
+    // Safety cap stored as ×100 integer: 150 = 1.5× daily target (protects Long COVID / PEM clients)
+    safetyCapMultiplier: integer("safety_cap_multiplier").notNull().default(150),
+    // Debt older than this many days is forgiven — prevents crushing catch-up loads
+    maxDebtDays: integer("max_debt_days").notNull().default(7),
+    startDate: text("start_date").notNull(), // ISO: YYYY-MM-DD
+    endDate: text("end_date"), // null = ongoing
+    notes: text("notes"),
+    isActive: boolean("is_active").default(true).notNull(),
+    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+  },
+  (table) => [
+    index("technique_assignments_client_idx").on(table.clientId),
+    index("technique_assignments_technique_idx").on(table.techniqueId),
+  ]
+)
+
+export const techniqueLogs = pgTable(
+  "technique_logs",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    assignmentId: uuid("assignment_id")
+      .notNull()
+      .references(() => techniqueAssignments.id, { onDelete: "cascade" }),
+    date: text("date").notNull(), // ISO: YYYY-MM-DD
+    completedReps: integer("completed_reps").notNull().default(1),
+    notes: text("notes"),
+    isRestDay: boolean("is_rest_day").default(false).notNull(),
+    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+  },
+  (table) => [
+    index("technique_logs_user_idx").on(table.userId),
+    index("technique_logs_assignment_idx").on(table.assignmentId),
+    index("technique_logs_date_idx").on(table.date),
+  ]
+)
+
 // ─── Relations ────────────────────────────────────────────────────────────────
 
 export const usersRelations = relations(users, ({ one, many }) => ({
@@ -335,6 +541,12 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   threads: many(threads),
   sentMessages: many(threadMessages),
   programEnrollments: many(programEnrollments),
+  functionalAssessments: many(functionalAssessments),
+  medicationLog: many(medicationLog),
+  alerts: many(clientAlerts),
+  aiMessages: many(aiMessages),
+  techniqueAssignments: many(techniqueAssignments),
+  techniqueLogs: many(techniqueLogs),
 }))
 
 export const servicesRelations = relations(services, ({ many }) => ({
@@ -379,6 +591,40 @@ export const programEnrollmentsRelations = relations(programEnrollments, ({ one 
   program: one(programs, { fields: [programEnrollments.programId], references: [programs.id] }),
 }))
 
+export const functionalAssessmentsRelations = relations(functionalAssessments, ({ one }) => ({
+  user: one(users, { fields: [functionalAssessments.userId], references: [users.id] }),
+}))
+
+export const medicationLogRelations = relations(medicationLog, ({ one }) => ({
+  user: one(users, { fields: [medicationLog.userId], references: [users.id] }),
+}))
+
+export const clientAlertsRelations = relations(clientAlerts, ({ one }) => ({
+  client: one(users, { fields: [clientAlerts.clientId], references: [users.id] }),
+  checkIn: one(checkIns, { fields: [clientAlerts.checkInId], references: [checkIns.id] }),
+}))
+
+export const aiMessagesRelations = relations(aiMessages, ({ one }) => ({
+  user: one(users, { fields: [aiMessages.userId], references: [users.id] }),
+}))
+
+export const techniquesRelations = relations(techniques, ({ one, many }) => ({
+  createdByUser: one(users, { fields: [techniques.createdBy], references: [users.id] }),
+  assignments: many(techniqueAssignments),
+}))
+
+export const techniqueAssignmentsRelations = relations(techniqueAssignments, ({ one, many }) => ({
+  technique: one(techniques, { fields: [techniqueAssignments.techniqueId], references: [techniques.id] }),
+  client: one(users, { fields: [techniqueAssignments.clientId], references: [users.id] }),
+  assignedByUser: one(users, { fields: [techniqueAssignments.assignedBy], references: [users.id] }),
+  logs: many(techniqueLogs),
+}))
+
+export const techniqueLogsRelations = relations(techniqueLogs, ({ one }) => ({
+  user: one(users, { fields: [techniqueLogs.userId], references: [users.id] }),
+  assignment: one(techniqueAssignments, { fields: [techniqueLogs.assignmentId], references: [techniqueAssignments.id] }),
+}))
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export type User = typeof users.$inferSelect
@@ -397,3 +643,18 @@ export type Program = typeof programs.$inferSelect
 export type ProgramEnrollment = typeof programEnrollments.$inferSelect
 export type MainConcern = (typeof mainConcernEnum.enumValues)[number]
 export type ProgramStatus = (typeof programStatusEnum.enumValues)[number]
+export type ActivityLevel = (typeof activityLevelEnum.enumValues)[number]
+export type AlertType = (typeof alertTypeEnum.enumValues)[number]
+export type AlertSeverity = (typeof alertSeverityEnum.enumValues)[number]
+export type FunctionalAssessment = typeof functionalAssessments.$inferSelect
+export type MedicationEntry = typeof medicationLog.$inferSelect
+export type ClientAlert = typeof clientAlerts.$inferSelect
+export type AiMessage = typeof aiMessages.$inferSelect
+export type Technique = typeof techniques.$inferSelect
+export type NewTechnique = typeof techniques.$inferInsert
+export type TechniqueCategory = (typeof techniqueCategoryEnum.enumValues)[number]
+export type TechniqueDifficulty = (typeof techniqueDifficultyEnum.enumValues)[number]
+export type TechniqueAssignment = typeof techniqueAssignments.$inferSelect
+export type NewTechniqueAssignment = typeof techniqueAssignments.$inferInsert
+export type TechniqueLog = typeof techniqueLogs.$inferSelect
+export type NewTechniqueLog = typeof techniqueLogs.$inferInsert

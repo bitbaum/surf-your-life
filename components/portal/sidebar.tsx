@@ -19,26 +19,81 @@ import {
   MessageSquare,
   Settings,
   BookOpen,
+  Bot,
+  Activity,
+  Pill,
+  ShieldCheck,
+  TrendingUp,
+  Sparkles,
 } from "lucide-react"
 
-export function PortalSidebar() {
+interface PortalSidebarProps {
+  role?: string
+}
+
+const NAV_GROUPS = [
+  {
+    labelKey: "groupToday" as const,
+    items: [
+      { href: "/dashboard", labelKey: "dashboard" as const, icon: LayoutDashboard },
+    ],
+  },
+  {
+    labelKey: "groupTrack" as const,
+    items: [
+      { href: "/check-ins", labelKey: "history" as const, icon: History },
+      { href: "/assessments", labelKey: "assessments" as const, icon: Activity },
+      { href: "/progress", labelKey: "progress" as const, icon: TrendingUp },
+      { href: "/medications", labelKey: "medications" as const, icon: Pill },
+      { href: "/techniques", labelKey: "techniques" as const, icon: Sparkles },
+    ],
+  },
+  {
+    labelKey: "groupCare" as const,
+    items: [
+      { href: "/program", labelKey: "program" as const, icon: BookOpen },
+      { href: "/ai-chat", labelKey: "aiChat" as const, icon: Bot },
+      { href: "/messages", labelKey: "messages" as const, icon: MessageSquare },
+      { href: "/book", labelKey: "book" as const, icon: CalendarPlus },
+    ],
+  },
+]
+
+const BOTTOM_ITEMS = [
+  { href: "/profile", labelKey: "profile" as const, icon: User },
+  { href: "/settings", labelKey: "settings" as const, icon: Settings },
+]
+
+export function PortalSidebar({ role }: PortalSidebarProps) {
   const t = useTranslations("sidebar")
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
 
-  const navItems = [
-    { href: "/dashboard", label: t("dashboard"), icon: LayoutDashboard },
-    { href: "/program", label: t("program"), icon: BookOpen },
-    { href: "/check-in", label: t("checkIn"), icon: ClipboardList },
-    { href: "/check-ins", label: t("history"), icon: History },
-    { href: "/book", label: t("book"), icon: CalendarPlus },
-    { href: "/messages", label: t("messages"), icon: MessageSquare },
-    { href: "/profile", label: t("profile"), icon: User },
-    { href: "/settings", label: t("settings"), icon: Settings },
-  ]
+  const isActive = (href: string) =>
+    pathname === href ||
+    (href !== "/dashboard" && pathname.startsWith(href))
+
+  const navLink = (href: string, label: string, Icon: React.ElementType) => (
+    <Link
+      key={href}
+      href={href}
+      onClick={() => setOpen(false)}
+      className={cn(
+        "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+        isActive(href)
+          ? "bg-teal-50 text-teal-700"
+          : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+      )}
+    >
+      <Icon className="w-4 h-4" />
+      {label}
+    </Link>
+  )
+
+  const isAdminUser = role === "admin" || role === "practitioner"
 
   const logo = (
-    <Link href="/dashboard" className="flex items-center gap-2 px-2 mb-8" onClick={() => setOpen(false)}>
+    <Link href="/dashboard" className="flex items-center gap-2 px-2 mb-6" onClick={() => setOpen(false)}>
       <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-teal-600">
         <Waves className="w-4 h-4 text-white" />
       </div>
@@ -47,39 +102,60 @@ export function PortalSidebar() {
   )
 
   const nav = (
-    <nav className="flex flex-col gap-1 flex-1">
-      {navItems.map(({ href, label, icon: Icon }) => (
-        <Link
-          key={href}
-          href={href}
-          onClick={() => setOpen(false)}
-          className={cn(
-            "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
-            pathname === href || (href === "/check-ins" && pathname.startsWith("/check-ins"))
-              ? "bg-teal-50 text-teal-700"
-              : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-          )}
-        >
-          <Icon className="w-4 h-4" />
-          {label}
-        </Link>
+    <nav className="flex flex-col flex-1 gap-4">
+      {/* Check-in CTA — primary daily action */}
+      <Link
+        href="/check-in"
+        onClick={() => setOpen(false)}
+        className={cn(
+          "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold transition-colors",
+          isActive("/check-in")
+            ? "bg-teal-600 text-white"
+            : "bg-teal-600 text-white hover:bg-teal-700"
+        )}
+      >
+        <ClipboardList className="w-4 h-4" />
+        {t("checkIn")}
+      </Link>
+
+      {NAV_GROUPS.map((group) => (
+        <div key={group.labelKey}>
+          <p className="px-3 mb-1 text-[10px] font-semibold uppercase tracking-widest text-slate-400">
+            {t(group.labelKey)}
+          </p>
+          <div className="flex flex-col gap-0.5">
+            {group.items.map(({ href, labelKey, icon }) => navLink(href, t(labelKey), icon))}
+          </div>
+        </div>
       ))}
     </nav>
   )
 
   const bottom = (
-    <div className="flex flex-col gap-3 pt-4 border-t border-slate-100">
-      <div className="px-2">
-        <p className="text-xs text-slate-400 mb-1.5">{t("language")}</p>
+    <div className="flex flex-col gap-1 pt-4 border-t border-slate-100">
+      {BOTTOM_ITEMS.map(({ href, labelKey, icon }) => navLink(href, t(labelKey), icon))}
+
+      {isAdminUser && (
+        <Link
+          href="/admin/dashboard"
+          onClick={() => setOpen(false)}
+          className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-teal-700 hover:bg-teal-50 transition-colors"
+        >
+          <ShieldCheck className="w-4 h-4" />
+          {t("adminArea")}
+        </Link>
+      )}
+
+      <div className="flex items-center justify-between px-3 py-2">
         <LocaleSwitcher />
+        <button
+          onClick={() => signOut({ callbackUrl: "/login" })}
+          className="flex items-center gap-2 text-sm font-medium text-slate-400 hover:text-slate-700 transition-colors"
+          title={t("signOut")}
+        >
+          <LogOut className="w-4 h-4" />
+        </button>
       </div>
-      <button
-        onClick={() => signOut({ callbackUrl: "/login" })}
-        className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-slate-50 transition-colors"
-      >
-        <LogOut className="w-4 h-4" />
-        {t("signOut")}
-      </button>
     </div>
   )
 
@@ -94,7 +170,13 @@ export function PortalSidebar() {
           <span className="font-semibold text-slate-900 text-sm">Surf Your Life</span>
         </Link>
         <div className="flex items-center gap-2">
-          <LocaleSwitcher compact />
+          <Link
+            href="/check-in"
+            className="flex items-center gap-1.5 text-xs font-semibold bg-teal-600 text-white px-3 py-1.5 rounded-lg hover:bg-teal-700 transition-colors"
+          >
+            <ClipboardList className="w-3.5 h-3.5" />
+            {t("checkIn")}
+          </Link>
           <button
             onClick={() => setOpen(true)}
             className="p-2 rounded-lg hover:bg-slate-100 transition-colors"
