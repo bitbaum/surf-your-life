@@ -4,10 +4,11 @@ import { programs, programEnrollments, users } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Link } from "@/i18n/navigation"
-import { formatDate, formatEnumValue } from "@/lib/utils"
+import { formatDate } from "@/lib/utils"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { EnrollmentStatus } from "./enrollment-status"
-import { Calendar, Clock, Users } from "lucide-react"
+import { EditProgramForm } from "./edit-program-form"
+import { Users } from "lucide-react"
 
 export default async function ProgramDetailPage({
   params,
@@ -47,29 +48,8 @@ export default async function ProgramDetailPage({
         </Link>
       </div>
 
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-900">{program.title}</h1>
-        {program.description && (
-          <p className="text-slate-500 mt-2 leading-relaxed">{program.description}</p>
-        )}
-        <div className="flex flex-wrap gap-4 mt-4 text-sm text-slate-500">
-          {program.durationWeeks && (
-            <span className="flex items-center gap-1.5">
-              <Clock className="w-4 h-4" />
-              {program.durationWeeks} {t("weeks")}
-            </span>
-          )}
-          {program.targetConcern && (
-            <span className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-teal-500" />
-              {formatEnumValue(program.targetConcern)}
-            </span>
-          )}
-          <span className="flex items-center gap-1.5">
-            <Calendar className="w-4 h-4" />
-            {t("createdOn", { date: formatDate(program.createdAt) })}
-          </span>
-        </div>
+      <div className="mb-6">
+        <EditProgramForm program={program} />
       </div>
 
       <Card>

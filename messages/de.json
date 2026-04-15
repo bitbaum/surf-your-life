@@ -1033,7 +1033,11 @@
         "active": "Aktiv",
         "paused": "Pausiert",
         "completed": "Abgeschlossen"
-      }
+      },
+      "edit": "Bearbeiten",
+      "editTitle": "Programm bearbeiten",
+      "editSave": "Änderungen speichern",
+      "editSaving": "Wird gespeichert..."
     },
     "services": {
       "title": "Angebote",

@@ -1033,7 +1033,11 @@
         "active": "Actif",
         "paused": "En pause",
         "completed": "Terminé"
-      }
+      },
+      "edit": "Modifier",
+      "editTitle": "Modifier le programme",
+      "editSave": "Enregistrer les modifications",
+      "editSaving": "Enregistrement..."
     },
     "services": {
       "title": "Services",

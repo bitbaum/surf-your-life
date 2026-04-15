@@ -1033,7 +1033,11 @@
         "active": "Active",
         "paused": "Paused",
         "completed": "Completed"
-      }
+      },
+      "edit": "Edit",
+      "editTitle": "Edit program",
+      "editSave": "Save changes",
+      "editSaving": "Saving..."
     },
     "services": {
       "title": "Services",
