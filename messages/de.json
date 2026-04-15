@@ -781,7 +781,8 @@
       "programs": "Programme",
       "services": "Angebote",
       "clientPortal": "Mein Portal",
-      "techniques": "Techniken"
+      "techniques": "Techniken",
+      "alerts": "Alarme"
     },
     "dashboard": {
       "title": "Admin-Übersicht",
@@ -1120,6 +1121,29 @@
         "easy": "Einfach",
         "moderate": "Mittel",
         "challenging": "Anspruchsvoll"
+      }
+    },
+    "alerts": {
+      "title": "Klinische Alarme",
+      "description": "{total} offene Alarme",
+      "descriptionWithHigh": "{total} offene Alarme — {high} hohe Priorität",
+      "descriptionEmpty": "Keine aktiven Alarme",
+      "resolve": "Lösen",
+      "allClear": "Alles klar",
+      "allClearSubtext": "Keine offenen Alarme",
+      "severity": {
+        "high": "Hoch",
+        "medium": "Mittel",
+        "low": "Niedrig"
+      },
+      "type": {
+        "energy_decline": "Energieabfall",
+        "fatigue_spike": "Müdigkeitsspitze",
+        "pem_cluster": "PEM-Häufung",
+        "missed_checkins": "Fehlende Check-ins",
+        "mood_decline": "Stimmungsabfall",
+        "stress_spike": "Stressspitze",
+        "orthostatic_intolerance": "Orthostatische Symptome"
       }
     }
   },

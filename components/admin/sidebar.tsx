@@ -6,13 +6,14 @@ import { signOut } from "next-auth/react"
 import { cn } from "@/lib/utils"
 import { LocaleSwitcher } from "@/components/ui/locale-switcher"
 import { useTranslations } from "next-intl"
-import { LayoutDashboard, Users, LogOut, Waves, Menu, X, Inbox, MessageSquare, UserCog, CalendarCheck, BookOpen, Wrench, User, Sparkles } from "lucide-react"
+import { LayoutDashboard, Users, LogOut, Waves, Menu, X, Inbox, MessageSquare, UserCog, CalendarCheck, BookOpen, Wrench, User, Sparkles, Bell } from "lucide-react"
 
 interface AdminSidebarProps {
   unreadMessages?: number
+  unresolvedAlerts?: number
 }
 
-export function AdminSidebar({ unreadMessages = 0 }: AdminSidebarProps) {
+export function AdminSidebar({ unreadMessages = 0, unresolvedAlerts = 0 }: AdminSidebarProps) {
   const t = useTranslations("admin.sidebar")
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
@@ -20,6 +21,7 @@ export function AdminSidebar({ unreadMessages = 0 }: AdminSidebarProps) {
   const navItems = [
     { href: "/admin/dashboard", label: t("dashboard"), icon: LayoutDashboard, badge: 0 },
     { href: "/admin/clients", label: t("clients"), icon: Users, badge: 0 },
+    { href: "/admin/alerts", label: t("alerts"), icon: Bell, badge: unresolvedAlerts },
     { href: "/admin/bookings", label: t("bookings"), icon: CalendarCheck, badge: 0 },
     { href: "/admin/services", label: t("services"), icon: Wrench, badge: 0 },
     { href: "/admin/messages", label: t("messages"), icon: MessageSquare, badge: unreadMessages },

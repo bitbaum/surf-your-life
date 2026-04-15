@@ -781,7 +781,8 @@
       "programs": "Programs",
       "services": "Services",
       "clientPortal": "My portal",
-      "techniques": "Techniques"
+      "techniques": "Techniques",
+      "alerts": "Alerts"
     },
     "dashboard": {
       "title": "Admin Dashboard",
@@ -1120,6 +1121,29 @@
         "easy": "Easy",
         "moderate": "Moderate",
         "challenging": "Challenging"
+      }
+    },
+    "alerts": {
+      "title": "Clinical Alerts",
+      "description": "{total} unresolved alerts",
+      "descriptionWithHigh": "{total} unresolved alerts — {high} high priority",
+      "descriptionEmpty": "No active alerts",
+      "resolve": "Resolve",
+      "allClear": "All clear",
+      "allClearSubtext": "No unresolved alerts at this time",
+      "severity": {
+        "high": "High",
+        "medium": "Medium",
+        "low": "Low"
+      },
+      "type": {
+        "energy_decline": "Energy decline",
+        "fatigue_spike": "Fatigue spike",
+        "pem_cluster": "PEM cluster",
+        "missed_checkins": "Missed check-ins",
+        "mood_decline": "Mood decline",
+        "stress_spike": "Stress spike",
+        "orthostatic_intolerance": "Orthostatic symptoms"
       }
     }
   },

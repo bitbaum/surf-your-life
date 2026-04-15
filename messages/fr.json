@@ -781,7 +781,8 @@
       "programs": "Programmes",
       "services": "Services",
       "clientPortal": "Mon portail",
-      "techniques": "Techniques"
+      "techniques": "Techniques",
+      "alerts": "Alertes"
     },
     "dashboard": {
       "title": "Tableau de bord Admin",
@@ -1120,6 +1121,29 @@
         "easy": "Facile",
         "moderate": "Modéré",
         "challenging": "Difficile"
+      }
+    },
+    "alerts": {
+      "title": "Alertes cliniques",
+      "description": "{total} alertes non résolues",
+      "descriptionWithHigh": "{total} alertes non résolues — {high} haute priorité",
+      "descriptionEmpty": "Aucune alerte active",
+      "resolve": "Résoudre",
+      "allClear": "Tout est en ordre",
+      "allClearSubtext": "Aucune alerte non résolue pour l'instant",
+      "severity": {
+        "high": "Haute",
+        "medium": "Moyenne",
+        "low": "Basse"
+      },
+      "type": {
+        "energy_decline": "Baisse d'énergie",
+        "fatigue_spike": "Pic de fatigue",
+        "pem_cluster": "Cluster PEM",
+        "missed_checkins": "Check-ins manqués",
+        "mood_decline": "Baisse de moral",
+        "stress_spike": "Pic de stress",
+        "orthostatic_intolerance": "Symptômes orthostatiques"
       }
     }
   },

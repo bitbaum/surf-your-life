@@ -1,6 +1,14 @@
 import { db } from "@/lib/db"
-import { threadMessages, users } from "@/lib/db/schema"
+import { threadMessages, users, clientAlerts } from "@/lib/db/schema"
 import { count, isNull, eq, and } from "drizzle-orm"
+
+export async function getUnresolvedAlertCount(): Promise<number> {
+  const [result] = await db
+    .select({ value: count() })
+    .from(clientAlerts)
+    .where(eq(clientAlerts.isResolved, false))
+  return result?.value ?? 0
+}
 
 export async function getUnreadCount(): Promise<number> {
   const [result] = await db
