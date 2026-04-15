@@ -255,3 +255,27 @@ These will be built in order of user value. Do not add scaffolding for them ahea
 - **Vercel** auto-deploys `main` to production. Every PR gets a preview URL.
 - **Branch protection:** PRs must pass CI before merge.
 - **Never commit `.env.local`.** All secrets go in Vercel env vars + `.env.example` for documentation.
+
+## Deploy Workflow (required after every push to main)
+
+After `git push`, always monitor the Vercel deployment to completion. Never leave a session without confirming the build passed.
+
+```bash
+# 1. Check the latest deployment status
+vercel ls
+
+# 2. Grab the top deployment URL and inspect it
+vercel inspect <deployment-url>
+
+# 3. If status is still "Building", poll until Ready or Error:
+watch -n 10 'vercel ls 2>&1 | head -5'
+
+# 4. If Error — get the build logs immediately:
+vercel logs <deployment-url> --output raw 2>&1 | tail -50
+```
+
+**Rules:**
+- A task is NOT done until Vercel shows `● Ready` for the production deployment.
+- If the build errors, fix it before ending the session — never leave a broken production.
+- The Vercel CLI is already linked to the `orangecat/surf-your-life` project (`vercel ls` works without arguments).
+- Production URL: `https://surf-your-life.vercel.app` (alias for latest Ready deployment).
