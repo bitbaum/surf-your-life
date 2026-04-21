@@ -321,7 +321,7 @@ export default function CheckInPage() {
                   max={SLEEP_HOURS.max}
                   value={sleep}
                   onChange={(e) => setSleep(e.target.value)}
-                  placeholder="7"
+                  placeholder={t("sleepHoursPlaceholder")}
                   className="h-10 w-24 rounded-lg border border-slate-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
                 />
               </div>

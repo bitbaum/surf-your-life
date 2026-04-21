@@ -8,12 +8,12 @@ import { Plus } from "lucide-react"
 import { NewAssessmentForm } from "./new-assessment-form"
 
 type Props = {
-  history: { id: string }[]
+  total: number
 }
 
-export function AssessmentsClient({ history }: Props) {
+export function AssessmentsClient({ total }: Props) {
   const t = useTranslations("portal.assessments")
-  const [showForm, setShowForm] = useState(history.length === 0)
+  const [showForm, setShowForm] = useState(total === 0)
 
   if (!showForm) {
     return (

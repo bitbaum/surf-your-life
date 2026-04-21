@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
-import { MOODS, ENERGY_SCALE, SLEEP_HOURS, SLEEP_QUALITY_OPTIONS, ACTIVITY_LEVELS } from "@/lib/constants"
+import { MOODS, ENERGY_SCALE, SLEEP_HOURS, SLEEP_QUALITY_OPTIONS, ACTIVITY_LEVELS, SYMPTOM_SCALE } from "@/lib/constants"
 import type { CheckIn } from "@/lib/db/schema"
 
 interface EditCheckInModalProps {
@@ -34,6 +34,10 @@ export function EditCheckInModal({ checkIn, checkInId, onSave, onCancel }: EditC
   const [pemSeverity, setPemSeverity] = useState(checkIn.pemSeverity ?? 5)
   const [orthostaticSymptoms, setOrthostaticSymptoms] = useState<boolean | null>(checkIn.orthostaticSymptoms ?? null)
   const [journalEntry, setJournalEntry] = useState(checkIn.journalEntry ?? "")
+  const [symptomFatigue, setSymptomFatigue] = useState<number | null>(checkIn.symptomFatigue ?? null)
+  const [symptomBrainFog, setSymptomBrainFog] = useState<number | null>(checkIn.symptomBrainFog ?? null)
+  const [symptomPain, setSymptomPain] = useState<number | null>(checkIn.symptomPain ?? null)
+  const [stressLevel, setStressLevel] = useState<number | null>(checkIn.stressLevel ?? null)
   const [wins, setWins] = useState(checkIn.wins ?? "")
   const [challenges, setChallenges] = useState(checkIn.challenges ?? "")
   const [notes, setNotes] = useState(checkIn.notes ?? "")
@@ -55,6 +59,10 @@ export function EditCheckInModal({ checkIn, checkInId, onSave, onCancel }: EditC
         pemSeverity: pemFlag ? pemSeverity : null,
         orthostaticSymptoms,
         journalEntry: journalEntry || null,
+        symptomFatigue,
+        symptomBrainFog,
+        symptomPain,
+        stressLevel,
         wins: wins || undefined,
         challenges: challenges || undefined,
         notes: notes || undefined,
@@ -209,6 +217,38 @@ export function EditCheckInModal({ checkIn, checkInId, onSave, onCancel }: EditC
           <span className="text-sm text-slate-700">{t("editOrthostaticFlagLabel")}</span>
         </label>
       </div>
+
+      {(checkIn.symptomFatigue != null || checkIn.symptomBrainFog != null || checkIn.symptomPain != null || checkIn.stressLevel != null) && (
+        <div>
+          <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">
+            {t("editSymptomsLabel")} <span className="text-slate-400 font-normal normal-case">{t("editOptional")}</span>
+          </p>
+          <p className="text-xs text-slate-400 mb-3">{t("editSymptomsHint")}</p>
+          <div className="flex flex-col gap-3">
+            {([
+              { key: "symptomFatigue" as const, label: tCheckIn("symptomFatigue"), value: symptomFatigue, set: setSymptomFatigue },
+              { key: "symptomBrainFog" as const, label: tCheckIn("symptomBrainFog"), value: symptomBrainFog, set: setSymptomBrainFog },
+              { key: "symptomPain" as const, label: tCheckIn("symptomPain"), value: symptomPain, set: setSymptomPain },
+              { key: "stressLevel" as const, label: tCheckIn("stressLevel"), value: stressLevel, set: setStressLevel },
+            ] as const).filter(({ key }) => checkIn[key] != null).map(({ label, value, set }) => (
+              <div key={label}>
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-xs text-slate-600">{label}</span>
+                  <span className="text-xs font-medium text-slate-700">{value ?? "—"}/10</span>
+                </div>
+                <input
+                  type="range"
+                  min={SYMPTOM_SCALE.min}
+                  max={SYMPTOM_SCALE.max}
+                  value={value ?? SYMPTOM_SCALE.default}
+                  onChange={(e) => set(parseInt(e.target.value))}
+                  className="w-full accent-teal-600"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {checkIn.journalEntry != null && (
         <div>

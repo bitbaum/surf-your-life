@@ -2,9 +2,11 @@ import { auth } from "@/lib/auth"
 import { redirect } from "next/navigation"
 import { db } from "@/lib/db"
 import { functionalAssessments } from "@/lib/db/schema"
-import { eq, desc } from "drizzle-orm"
+import { eq, desc, count } from "drizzle-orm"
+import { PAGINATION_DEFAULT } from "@/lib/constants"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ProgressBar } from "@/components/ui/progress-bar"
+import { Pagination } from "@/components/ui/pagination"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { formatDate } from "@/lib/utils"
 import { AssessmentsClient } from "./assessments-client"
@@ -17,7 +19,13 @@ const CAPACITY_DIMENSIONS = [
   "socialCapacity",
 ] as const
 
-export default async function AssessmentsPage({ params }: { params: Promise<{ locale: string }> }) {
+export default async function AssessmentsPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ locale: string }>
+  searchParams: Promise<{ page?: string }>
+}) {
   const { locale } = await params
   setRequestLocale(locale)
   const t = await getTranslations("portal.assessments")
@@ -25,11 +33,23 @@ export default async function AssessmentsPage({ params }: { params: Promise<{ lo
   const session = await auth()
   if (!session?.user?.id) redirect("/login")
 
-  const history = await db.query.functionalAssessments.findMany({
-    where: eq(functionalAssessments.userId, session.user.id),
-    orderBy: [desc(functionalAssessments.assessedAt)],
-    limit: 20,
-  })
+  const { page: pageParam } = await searchParams
+  const page = Math.max(1, parseInt(pageParam ?? "1") || 1)
+  const offset = (page - 1) * PAGINATION_DEFAULT
+  const whereClause = eq(functionalAssessments.userId, session.user.id)
+
+  const [history, totalResult] = await Promise.all([
+    db.query.functionalAssessments.findMany({
+      where: whereClause,
+      orderBy: [desc(functionalAssessments.assessedAt)],
+      limit: PAGINATION_DEFAULT,
+      offset,
+    }),
+    db.select({ value: count() }).from(functionalAssessments).where(whereClause),
+  ])
+
+  const total = totalResult[0]?.value ?? 0
+  const totalPages = Math.ceil(total / PAGINATION_DEFAULT)
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -40,7 +60,7 @@ export default async function AssessmentsPage({ params }: { params: Promise<{ lo
         </div>
       </div>
 
-      <AssessmentsClient history={history} />
+      <AssessmentsClient total={total} />
 
       {history.length > 0 && (
         <div className="mt-6 flex flex-col gap-4">
@@ -75,13 +95,15 @@ export default async function AssessmentsPage({ params }: { params: Promise<{ lo
         </div>
       )}
 
-      {history.length === 0 && (
+      {total === 0 && (
         <Card className="mt-4">
           <CardContent className="py-12 text-center">
             <p className="text-slate-400">{t("empty")}</p>
           </CardContent>
         </Card>
       )}
+
+      <Pagination page={page} totalPages={totalPages} pageLink={(p) => `/assessments?page=${p}`} />
     </div>
   )
 }
