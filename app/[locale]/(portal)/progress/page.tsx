@@ -8,8 +8,7 @@ import { PageHeader } from "@/components/ui/page-header"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { formatDate } from "@/lib/utils"
 import { Link } from "@/i18n/navigation"
-
-const NINETY_DAYS_MS = 90 * 24 * 60 * 60 * 1000
+import { NINETY_DAYS_MS, MOOD_SCORE } from "@/lib/constants"
 
 export default async function ProgressPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
@@ -55,18 +54,9 @@ export default async function ProgressPage({ params }: { params: Promise<{ local
     ? recentCheckIns.reduce((s, r) => s + r.energyLevel, 0) / totalCheckIns
     : null
 
-  const MOOD_NUM: Record<string, number> = {
-    very_low: 1, low: 2, neutral: 3, good: 4, excellent: 5,
-  }
   const avgMoodNum = totalCheckIns > 0
-    ? recentCheckIns.reduce((s, r) => s + (MOOD_NUM[r.mood ?? "neutral"] ?? 3), 0) / totalCheckIns
+    ? recentCheckIns.reduce((s, r) => s + (MOOD_SCORE[r.mood ?? "neutral"] ?? 3), 0) / totalCheckIns
     : null
-  const moodLabel =
-    avgMoodNum == null ? "—" :
-    avgMoodNum >= 4.5 ? "Excellent" :
-    avgMoodNum >= 3.5 ? "Good" :
-    avgMoodNum >= 2.5 ? "Neutral" :
-    "Low"
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -90,8 +80,8 @@ export default async function ProgressPage({ params }: { params: Promise<{ local
           {/* Narrative summary */}
           <p className="text-sm text-slate-600 mt-2 mb-6">
             {assessments.length === 1
-              ? `You've completed 1 assessment. Your overall capacity is ${first!.overallCapacity}/10.`
-              : `You've completed ${assessments.length} assessments. Your overall capacity has changed from ${first!.overallCapacity}/10 to ${latest!.overallCapacity}/10.`}
+              ? t("narrativeSingle", { capacity: first!.overallCapacity })
+              : t("narrativeMultiple", { n: assessments.length, first: first!.overallCapacity, latest: latest!.overallCapacity })}
           </p>
 
           {/* Assessment timeline */}
@@ -167,8 +157,14 @@ export default async function ProgressPage({ params }: { params: Promise<{ local
                 </span>
               </div>
               <div className="flex flex-col gap-0.5">
-                <span className="text-xs text-slate-500">Avg mood</span>
-                <span className="text-xl font-bold text-slate-900">{moodLabel}</span>
+                <span className="text-xs text-slate-500">{t("avgMood")}</span>
+                <span className="text-xl font-bold text-slate-900">
+                  {avgMoodNum == null ? "—" :
+                   avgMoodNum >= 4.5 ? t("moodExcellent") :
+                   avgMoodNum >= 3.5 ? t("moodGood") :
+                   avgMoodNum >= 2.5 ? t("moodNeutral") :
+                   t("moodLow")}
+                </span>
               </div>
               <div className="flex flex-col gap-0.5">
                 <span className="text-xs text-slate-500">{t("totalCheckIns")}</span>

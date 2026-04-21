@@ -669,7 +669,14 @@
       "avgEnergy": "Avg energy",
       "totalCheckIns": "Check-ins",
       "pemEpisodes": "PEM episodes",
-      "doAssessment": "Do an assessment"
+      "doAssessment": "Do an assessment",
+      "avgMood": "Avg mood",
+      "narrativeSingle": "You've completed 1 assessment. Your overall capacity is {capacity}/10.",
+      "narrativeMultiple": "You've completed {n} assessments. Your overall capacity has changed from {first}/10 to {latest}/10.",
+      "moodExcellent": "Excellent",
+      "moodGood": "Good",
+      "moodNeutral": "Neutral",
+      "moodLow": "Low"
     },
     "medications": {
       "title": "Medications",

@@ -669,7 +669,14 @@
       "avgEnergy": "Énergie moy.",
       "totalCheckIns": "Check-ins",
       "pemEpisodes": "Épisodes de SPE",
-      "doAssessment": "Faire une évaluation"
+      "doAssessment": "Faire une évaluation",
+      "avgMood": "Humeur moy.",
+      "narrativeSingle": "Vous avez complété 1 évaluation. Votre capacité globale est de {capacity}/10.",
+      "narrativeMultiple": "Vous avez complété {n} évaluations. Votre capacité globale est passée de {first}/10 à {latest}/10.",
+      "moodExcellent": "Excellent",
+      "moodGood": "Bien",
+      "moodNeutral": "Neutre",
+      "moodLow": "Bas"
     },
     "medications": {
       "title": "Médicaments",
