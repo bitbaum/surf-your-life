@@ -4,6 +4,7 @@ import { db } from "@/lib/db"
 import { functionalAssessments, checkIns } from "@/lib/db/schema"
 import { eq, asc, gte } from "drizzle-orm"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { ProgressBar } from "@/components/ui/progress-bar"
 import { PageHeader } from "@/components/ui/page-header"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { formatDate } from "@/lib/utils"
@@ -126,12 +127,7 @@ export default async function ProgressPage({ params }: { params: Promise<{ local
                   <CardContent className="pt-0">
                     <div className="flex items-center gap-2">
                       <span className="text-xs text-slate-500 w-28">{t("overallCapacity")}</span>
-                      <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-teal-500 rounded-full transition-all"
-                          style={{ width: `${(a.overallCapacity / 10) * 100}%` }}
-                        />
-                      </div>
+                      <ProgressBar value={(a.overallCapacity / 10) * 100} className="flex-1" />
                     </div>
                   </CardContent>
                 </Card>

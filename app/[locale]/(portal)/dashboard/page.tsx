@@ -21,6 +21,7 @@ import { WellnessTrendChart } from "./wellness-trend-chart"
 import { SleepChart } from "./sleep-chart"
 import { SymptomsChart } from "./symptoms-chart"
 import { EmailVerificationBanner } from "@/components/portal/EmailVerificationBanner"
+import { ProgressBar } from "@/components/ui/progress-bar"
 
 export default async function DashboardPage() {
   const session = await auth()
@@ -189,12 +190,7 @@ export default async function DashboardPage() {
               <Button size="sm">{t("completeProfileCta")}</Button>
             </Link>
           </div>
-          <div className="h-1.5 rounded-full bg-teal-100 overflow-hidden">
-            <div
-              className="h-full rounded-full bg-teal-500 transition-all"
-              style={{ width: `${completionPct}%` }}
-            />
-          </div>
+          <ProgressBar value={completionPct} size="sm" track="teal" />
         </div>
       )}
 
@@ -248,12 +244,7 @@ export default async function DashboardPage() {
           <CardContent>
             {programProgress.totalWeeks > 0 && (
               <div className="mb-4">
-                <div className="h-2 rounded-full bg-teal-100 overflow-hidden">
-                  <div
-                    className="h-full rounded-full bg-teal-500 transition-all"
-                    style={{ width: `${Math.min((programProgress.currentWeek / programProgress.totalWeeks) * 100, 100)}%` }}
-                  />
-                </div>
+                <ProgressBar value={Math.min((programProgress.currentWeek / programProgress.totalWeeks) * 100, 100)} track="teal" />
                 <p className="text-xs text-slate-400 mt-1">
                   {t("programProgress", { pct: Math.round((programProgress.currentWeek / programProgress.totalWeeks) * 100) })}
                 </p>

@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
+import { ProgressBar } from "@/components/ui/progress-bar"
 import { Check, CheckCircle } from "lucide-react"
 import { PROFILE_WIZARD_STEPS, WIZARD_COMPLETION_FIELDS } from "@/lib/constants"
 import type { Profile } from "@/lib/db/schema"
@@ -204,12 +205,7 @@ export function ProfileForm({ profile, initialName }: { profile: Profile | null;
             <span className="text-sm font-bold text-teal-700">{pct}%</span>
           </div>
         </div>
-        <div className="h-2 rounded-full bg-slate-100 overflow-hidden">
-          <div
-            className="h-full rounded-full bg-teal-500 transition-all duration-500"
-            style={{ width: `${pct}%` }}
-          />
-        </div>
+        <ProgressBar value={pct} />
         {/* Step indicators */}
         <div className="flex items-center gap-1 pt-1">
           {PROFILE_WIZARD_STEPS.map((s, i) => {

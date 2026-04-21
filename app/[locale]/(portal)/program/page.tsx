@@ -4,6 +4,7 @@ import { db } from "@/lib/db"
 import { programEnrollments } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { ProgressBar } from "@/components/ui/progress-bar"
 import { PageHeader } from "@/components/ui/page-header"
 import { formatDate, formatEnumValue } from "@/lib/utils"
 import { getTranslations, setRequestLocale } from "next-intl/server"
@@ -123,12 +124,7 @@ export default async function ProgramPage({ params }: { params: Promise<{ locale
                   <span>{t("progress")}</span>
                   <span>{progressPct}%</span>
                 </div>
-                <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-teal-500 rounded-full transition-all"
-                    style={{ width: `${Math.min(progressPct, 100)}%` }}
-                  />
-                </div>
+                <ProgressBar value={Math.min(progressPct, 100)} />
               </div>
             )}
           </CardContent>

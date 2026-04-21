@@ -3,6 +3,7 @@ import { db } from "@/lib/db"
 import { users, checkIns, programs, programEnrollments, medicationLog, functionalAssessments, techniqueAssignments, techniques } from "@/lib/db/schema"
 import { eq, desc, isNull, and } from "drizzle-orm"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { ProgressBar } from "@/components/ui/progress-bar"
 import { formatDate, formatEnumValue } from "@/lib/utils"
 import { Link } from "@/i18n/navigation"
 import { MOOD_EMOJI, PAGINATION_DEFAULT } from "@/lib/constants"
@@ -316,12 +317,7 @@ function CapacityBar({ label, value }: { label: string; value: number }) {
         <span className="text-xs text-slate-500">{label}</span>
         <span className="text-xs font-medium text-slate-700">{value}/10</span>
       </div>
-      <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
-        <div
-          className="h-full bg-teal-400 rounded-full"
-          style={{ width: `${value * 10}%` }}
-        />
-      </div>
+      <ProgressBar value={value * 10} size="sm" />
     </div>
   )
 }

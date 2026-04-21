@@ -4,6 +4,7 @@ import { db } from "@/lib/db"
 import { functionalAssessments } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { ProgressBar } from "@/components/ui/progress-bar"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { formatDate } from "@/lib/utils"
 import { AssessmentsClient } from "./assessments-client"
@@ -60,12 +61,7 @@ export default async function AssessmentsPage({ params }: { params: Promise<{ lo
                       <div key={dim} className="flex items-center justify-between">
                         <span className="text-slate-500">{t(dim as Parameters<typeof t>[0])}</span>
                         <div className="flex items-center gap-2">
-                          <div className="w-20 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                            <div
-                              className="h-full bg-teal-500 rounded-full"
-                              style={{ width: `${(val / 10) * 100}%` }}
-                            />
-                          </div>
+                          <ProgressBar value={(val / 10) * 100} size="sm" className="w-20" />
                           <span className="font-medium text-slate-700 w-6 text-right">{val}</span>
                         </div>
                       </div>
