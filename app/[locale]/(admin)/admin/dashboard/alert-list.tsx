@@ -17,6 +17,7 @@ type Alert = {
 
 export function AlertList({ alerts }: { alerts: Alert[] }) {
   const t = useTranslations("admin.dashboard")
+  const tAlerts = useTranslations("admin.alerts")
   const router = useRouter()
   const [dismissing, setDismissing] = useState<Set<string>>(new Set())
   const [dismissed, setDismissed] = useState<Set<string>>(new Set())
@@ -63,7 +64,7 @@ export function AlertList({ alerts }: { alerts: Alert[] }) {
             alert.severity === "medium" ? "bg-amber-50 text-amber-700 border border-amber-200" :
             "bg-slate-100 text-slate-600 border border-slate-200"
           }`}>
-            {alert.severity}
+            {tAlerts(`severity.${alert.severity}`)}
           </span>
 
           <button

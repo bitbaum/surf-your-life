@@ -20,6 +20,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
   const { locale, id } = await params
   setRequestLocale(locale)
   const t = await getTranslations("admin.clients")
+  const tPrograms = await getTranslations("admin.programs")
 
   const [client, clientCheckIns, allPrograms, activeEnrollment, currentMedications, latestAssessment, clientAssignments, allTechniques] = await Promise.all([
     db.query.users.findFirst({
@@ -289,7 +290,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
                     ? "bg-yellow-50 text-yellow-700 border border-yellow-200"
                     : "bg-slate-100 text-slate-600 border border-slate-200"
                 }`}>
-                  {activeEnrollment.status}
+                  {tPrograms(`status.${activeEnrollment.status}`)}
                 </span>
               </div>
             </CardContent>
