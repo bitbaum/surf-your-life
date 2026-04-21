@@ -77,7 +77,7 @@ export default async function AdminMessagesPage({
                         {thread.subject ?? t("noSubject")}
                       </p>
                       <p className="text-sm text-slate-500 mt-0.5">
-                        {thread.client?.name ?? thread.client?.email ?? "Unknown client"}
+                        {thread.client?.name ?? thread.client?.email ?? t("unknownClient")}
                       </p>
                       {lastMsg && (
                         <p className="text-sm text-slate-400 mt-1 truncate">

@@ -815,7 +815,9 @@
       "allConversations": "Alle Gespräche",
       "newConversation": "Neues Gespräch",
       "selectClient": "Klient auswählen",
-      "noThreads": "Noch keine Gespräche"
+      "noThreads": "Noch keine Gespräche",
+      "noSubject": "(Kein Betreff)",
+      "unknownClient": "Unbekannter Klient"
     },
     "clients": {
       "searchPlaceholder": "Nach Name oder E-Mail suchen...",

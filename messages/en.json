@@ -815,7 +815,9 @@
       "allConversations": "All Conversations",
       "newConversation": "New Conversation",
       "selectClient": "Select Client",
-      "noThreads": "No conversations yet"
+      "noThreads": "No conversations yet",
+      "noSubject": "(No subject)",
+      "unknownClient": "Unknown client"
     },
     "clients": {
       "searchPlaceholder": "Search by name or email...",

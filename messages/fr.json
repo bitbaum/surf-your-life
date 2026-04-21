@@ -815,7 +815,9 @@
       "allConversations": "Toutes les conversations",
       "newConversation": "Nouvelle conversation",
       "selectClient": "Sélectionner un client",
-      "noThreads": "Aucune conversation"
+      "noThreads": "Aucune conversation",
+      "noSubject": "(Sans objet)",
+      "unknownClient": "Client inconnu"
     },
     "users": {
       "title": "Utilisateurs",
