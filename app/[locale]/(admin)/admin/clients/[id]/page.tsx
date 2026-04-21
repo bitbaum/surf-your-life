@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ProgressBar } from "@/components/ui/progress-bar"
 import { formatDate, formatEnumValue } from "@/lib/utils"
 import { Link } from "@/i18n/navigation"
-import { MOOD_EMOJI, PAGINATION_DEFAULT } from "@/lib/constants"
+import { MOOD_EMOJI } from "@/lib/constants"
 import { ResetLinkButton } from "./reset-link-button"
 import { NewThreadButton } from "./new-thread-button"
 import { EnrollProgramButton } from "./enroll-program-button"
@@ -30,7 +30,6 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
     db.query.checkIns.findMany({
       where: eq(checkIns.userId, id),
       orderBy: [desc(checkIns.createdAt)],
-      limit: PAGINATION_DEFAULT,
     }),
     db.query.programs.findMany({ orderBy: [desc(programs.createdAt)] }),
     db.query.programEnrollments.findFirst({
