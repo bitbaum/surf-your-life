@@ -61,7 +61,7 @@ export function EditCheckInModal({ checkIn, checkInId, onSave, onCancel }: EditC
     <form onSubmit={handleSave} className="mt-4 flex flex-col gap-4 border-t border-slate-100 pt-4">
       <div>
         <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">{t("editMood")}</p>
-        <div className="grid grid-cols-5 gap-2">
+        <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
           {MOODS.map((m) => (
             <button
               key={m.value}
