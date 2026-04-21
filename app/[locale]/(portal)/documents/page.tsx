@@ -2,9 +2,11 @@ import { auth } from "@/lib/auth"
 import { redirect } from "next/navigation"
 import { db } from "@/lib/db"
 import { documents } from "@/lib/db/schema"
-import { eq, desc } from "drizzle-orm"
+import { eq, desc, count } from "drizzle-orm"
+import { PAGINATION_DEFAULT } from "@/lib/constants"
 import { Card, CardContent } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
+import { Pagination } from "@/components/ui/pagination"
 import { formatDate } from "@/lib/utils"
 import { FileText } from "lucide-react"
 import { getTranslations, setRequestLocale } from "next-intl/server"
@@ -16,7 +18,13 @@ const TYPE_BADGE: Record<string, string> = {
   upload:       "bg-slate-100 text-slate-600 border-slate-200",
 }
 
-export default async function DocumentsPage({ params }: { params: Promise<{ locale: string }> }) {
+export default async function DocumentsPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ locale: string }>
+  searchParams: Promise<{ page?: string }>
+}) {
   const { locale } = await params
   setRequestLocale(locale)
   const t = await getTranslations("portal.documents")
@@ -24,11 +32,24 @@ export default async function DocumentsPage({ params }: { params: Promise<{ loca
   const session = await auth()
   if (!session?.user?.id) redirect("/login")
 
-  const docs = await db.query.documents.findMany({
-    where: eq(documents.userId, session.user.id),
-    orderBy: [desc(documents.createdAt)],
-    with: { author: { columns: { name: true } } },
-  })
+  const { page: pageParam } = await searchParams
+  const page = Math.max(1, parseInt(pageParam ?? "1") || 1)
+  const offset = (page - 1) * PAGINATION_DEFAULT
+  const whereClause = eq(documents.userId, session.user.id)
+
+  const [docs, totalResult] = await Promise.all([
+    db.query.documents.findMany({
+      where: whereClause,
+      orderBy: [desc(documents.createdAt)],
+      limit: PAGINATION_DEFAULT,
+      offset,
+      with: { author: { columns: { name: true } } },
+    }),
+    db.select({ value: count() }).from(documents).where(whereClause),
+  ])
+
+  const total = totalResult[0]?.value ?? 0
+  const totalPages = Math.ceil(total / PAGINATION_DEFAULT)
 
   const typeLabel = (type: string) => {
     const key = `type_${type}` as Parameters<typeof t>[0]
@@ -80,6 +101,7 @@ export default async function DocumentsPage({ params }: { params: Promise<{ loca
           ))}
         </div>
       )}
+      <Pagination page={page} totalPages={totalPages} pageLink={(p) => `/documents?page=${p}`} />
     </div>
   )
 }
