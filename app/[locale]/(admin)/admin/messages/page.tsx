@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { threads, threadMessages } from "@/lib/db/schema"
-import { desc } from "drizzle-orm"
+import { desc, count } from "drizzle-orm"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { redirect } from "next/navigation"
 import { Link } from "@/i18n/navigation"
@@ -10,11 +10,14 @@ import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
 import { formatDate } from "@/lib/utils"
 import { MessageSquare } from "lucide-react"
+import { Pagination } from "@/components/ui/pagination"
 
 export default async function AdminMessagesPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string }>
+  searchParams: Promise<{ page?: string }>
 }) {
   const { locale } = await params
   setRequestLocale(locale)
@@ -24,18 +27,29 @@ export default async function AdminMessagesPage({
 
   const t = await getTranslations("admin.messages")
 
-  const allThreads = await db.query.threads.findMany({
-    orderBy: [desc(threads.updatedAt)],
-    limit: PAGINATION_DEFAULT,
-    with: {
-      client: true,
-      messages: {
-        orderBy: [desc(threadMessages.createdAt)],
-        limit: 1,
-        with: { sender: true },
+  const { page: pageParam } = await searchParams
+  const page = Math.max(1, parseInt(pageParam ?? "1") || 1)
+  const offset = (page - 1) * PAGINATION_DEFAULT
+
+  const [allThreads, totalResult] = await Promise.all([
+    db.query.threads.findMany({
+      orderBy: [desc(threads.updatedAt)],
+      limit: PAGINATION_DEFAULT,
+      offset,
+      with: {
+        client: true,
+        messages: {
+          orderBy: [desc(threadMessages.createdAt)],
+          limit: 1,
+          with: { sender: true },
+        },
       },
-    },
-  })
+    }),
+    db.select({ value: count() }).from(threads),
+  ])
+
+  const total = totalResult[0]?.value ?? 0
+  const totalPages = Math.ceil(total / PAGINATION_DEFAULT)
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -95,6 +109,11 @@ export default async function AdminMessagesPage({
           })}
         </div>
       )}
+      <Pagination
+        page={page}
+        totalPages={totalPages}
+        pageLink={(p) => `/admin/messages?page=${p}`}
+      />
     </div>
   )
 }
