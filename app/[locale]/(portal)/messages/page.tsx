@@ -1,10 +1,11 @@
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { threads, threadMessages } from "@/lib/db/schema"
-import { eq, desc } from "drizzle-orm"
+import { eq, desc, count } from "drizzle-orm"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { redirect } from "next/navigation"
 import { Link } from "@/i18n/navigation"
+import { Pagination } from "@/components/ui/pagination"
 import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
 import { formatDate } from "@/lib/utils"
@@ -13,8 +14,10 @@ import { PAGINATION_DEFAULT } from "@/lib/constants"
 
 export default async function PortalMessagesPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string }>
+  searchParams: Promise<{ page?: string }>
 }) {
   const { locale } = await params
   setRequestLocale(locale)
@@ -24,18 +27,30 @@ export default async function PortalMessagesPage({
 
   const t = await getTranslations("messages")
 
-  const myThreads = await db.query.threads.findMany({
-    where: eq(threads.clientId, session.user.id),
-    orderBy: [desc(threads.updatedAt)],
-    limit: PAGINATION_DEFAULT,
-    with: {
-      messages: {
-        orderBy: [desc(threadMessages.createdAt)],
-        limit: 1,
-        with: { sender: true },
+  const { page: pageParam } = await searchParams
+  const page = Math.max(1, parseInt(pageParam ?? "1") || 1)
+  const offset = (page - 1) * PAGINATION_DEFAULT
+  const whereClause = eq(threads.clientId, session.user.id)
+
+  const [myThreads, totalResult] = await Promise.all([
+    db.query.threads.findMany({
+      where: whereClause,
+      orderBy: [desc(threads.updatedAt)],
+      limit: PAGINATION_DEFAULT,
+      offset,
+      with: {
+        messages: {
+          orderBy: [desc(threadMessages.createdAt)],
+          limit: 1,
+          with: { sender: true },
+        },
       },
-    },
-  })
+    }),
+    db.select({ value: count() }).from(threads).where(whereClause),
+  ])
+
+  const total = totalResult[0]?.value ?? 0
+  const totalPages = Math.ceil(total / PAGINATION_DEFAULT)
 
   return (
     <div className="max-w-3xl mx-auto">
@@ -94,6 +109,11 @@ export default async function PortalMessagesPage({
           })}
         </div>
       )}
+      <Pagination
+        page={page}
+        totalPages={totalPages}
+        pageLink={(p) => `/messages?page=${p}`}
+      />
     </div>
   )
 }
