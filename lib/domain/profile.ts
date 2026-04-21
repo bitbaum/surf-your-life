@@ -30,9 +30,9 @@ export const checkInSchema = z.object({
   mood: z.enum(["very_low", "low", "neutral", "good", "excellent"]),
   energyLevel: z.number().int().min(ENERGY_SCALE.min).max(ENERGY_SCALE.max),
   sleepHours: z.number().int().min(SLEEP_HOURS.min).max(SLEEP_HOURS.max).nullable().optional(),
-  notes: z.string().max(2000).optional(),
-  wins: z.string().max(1000).optional(),
-  challenges: z.string().max(1000).optional(),
+  notes: z.string().max(2000).nullish(),
+  wins: z.string().max(1000).nullish(),
+  challenges: z.string().max(1000).nullish(),
   symptomFatigue: z.number().int().min(SYMPTOM_SCALE.min).max(SYMPTOM_SCALE.max).nullable().optional(),
   symptomBrainFog: z.number().int().min(SYMPTOM_SCALE.min).max(SYMPTOM_SCALE.max).nullable().optional(),
   symptomPain: z.number().int().min(SYMPTOM_SCALE.min).max(SYMPTOM_SCALE.max).nullable().optional(),
@@ -42,7 +42,7 @@ export const checkInSchema = z.object({
   pemSeverity: z.number().int().min(PEM_SEVERITY_SCALE.min).max(PEM_SEVERITY_SCALE.max).nullable().optional(),
   sleepQuality: z.number().int().min(SLEEP_QUALITY_SCALE.min).max(SLEEP_QUALITY_SCALE.max).nullable().optional(),
   orthostaticSymptoms: z.boolean().nullable().optional(),
-  journalEntry: z.string().max(3000).optional(),
+  journalEntry: z.string().max(3000).nullish(),
 })
 
 export const practitionerNoteSchema = z.object({
