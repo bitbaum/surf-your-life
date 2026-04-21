@@ -86,7 +86,7 @@ export default async function UsersPage({
                   <td className="py-3 text-slate-600">{user.email}</td>
                   <td className="py-3">
                     <Badge
-                      label={user.role}
+                      label={t(`roles.${user.role}`)}
                       variant={roleVariant[user.role] ?? "slate"}
                     />
                   </td>

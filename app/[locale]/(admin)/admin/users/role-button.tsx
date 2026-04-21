@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
+import { useTranslations } from "next-intl"
 
 type Role = "client" | "practitioner" | "admin"
 
@@ -11,11 +12,6 @@ const ROLE_BADGE: Record<Role, string> = {
   client: "bg-slate-100 text-slate-600",
 }
 
-const ROLE_LABELS: Record<Role, string> = {
-  admin: "Admin",
-  practitioner: "Practitioner",
-  client: "Client",
-}
 
 interface RoleButtonProps {
   userId: string
@@ -24,6 +20,7 @@ interface RoleButtonProps {
 }
 
 export function RoleButton({ userId, currentRole, canEdit }: RoleButtonProps) {
+  const t = useTranslations("admin.users")
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
@@ -54,7 +51,7 @@ export function RoleButton({ userId, currentRole, canEdit }: RoleButtonProps) {
   if (!canEdit) {
     return (
       <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${ROLE_BADGE[currentRole]}`}>
-        {ROLE_LABELS[currentRole]}
+        {t(`roles.${currentRole}`)}
       </span>
     )
   }
@@ -67,9 +64,9 @@ export function RoleButton({ userId, currentRole, canEdit }: RoleButtonProps) {
         onChange={(e) => handleChange(e.target.value as Role)}
         className="text-xs rounded-lg border border-slate-200 px-2 py-1 bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:opacity-50 disabled:pointer-events-none"
       >
-        <option value="client">Client</option>
-        <option value="practitioner">Practitioner</option>
-        <option value="admin">Admin</option>
+        <option value="client">{t("roles.client")}</option>
+        <option value="practitioner">{t("roles.practitioner")}</option>
+        <option value="admin">{t("roles.admin")}</option>
       </select>
       {error && <p className="text-xs text-red-600">{error}</p>}
     </div>
