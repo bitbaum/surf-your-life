@@ -68,7 +68,7 @@ export default async function AdminBookingsPage({
       <Card>
         <CardHeader>
           <CardTitle>
-            {activeFilter === "all" ? t("allBookings") : `${STATUS_FILTERS.find((f) => f.value === activeFilter)?.label} Bookings`}
+            {activeFilter === "all" ? t("allBookings") : STATUS_FILTERS.find((f) => f.value === activeFilter)?.label}
           </CardTitle>
         </CardHeader>
         <CardContent>
