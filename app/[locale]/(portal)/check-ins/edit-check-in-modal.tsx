@@ -33,6 +33,7 @@ export function EditCheckInModal({ checkIn, checkInId, onSave, onCancel }: EditC
   const [pemFlag, setPemFlag] = useState(checkIn.pemFlag ?? false)
   const [pemSeverity, setPemSeverity] = useState(checkIn.pemSeverity ?? 5)
   const [orthostaticSymptoms, setOrthostaticSymptoms] = useState<boolean | null>(checkIn.orthostaticSymptoms ?? null)
+  const [journalEntry, setJournalEntry] = useState(checkIn.journalEntry ?? "")
   const [wins, setWins] = useState(checkIn.wins ?? "")
   const [challenges, setChallenges] = useState(checkIn.challenges ?? "")
   const [notes, setNotes] = useState(checkIn.notes ?? "")
@@ -53,6 +54,7 @@ export function EditCheckInModal({ checkIn, checkInId, onSave, onCancel }: EditC
         pemFlag,
         pemSeverity: pemFlag ? pemSeverity : null,
         orthostaticSymptoms,
+        journalEntry: journalEntry || null,
         wins: wins || undefined,
         challenges: challenges || undefined,
         notes: notes || undefined,
@@ -208,41 +210,62 @@ export function EditCheckInModal({ checkIn, checkInId, onSave, onCancel }: EditC
         </label>
       </div>
 
-      <div>
-        <label className="text-xs font-medium text-slate-500 uppercase tracking-wide block mb-1.5">
-          {t("editWinsLabel")} <span className="text-slate-400 font-normal normal-case">{t("editOptional")}</span>
-        </label>
-        <textarea
-          value={wins}
-          onChange={(e) => setWins(e.target.value)}
-          rows={2}
-          className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
-        />
-      </div>
+      {checkIn.journalEntry != null && (
+        <div>
+          <label className="text-xs font-medium text-slate-500 uppercase tracking-wide block mb-1.5">
+            {t("editJournalLabel")} <span className="text-slate-400 font-normal normal-case">{t("editOptional")}</span>
+          </label>
+          <textarea
+            value={journalEntry}
+            onChange={(e) => setJournalEntry(e.target.value)}
+            rows={4}
+            maxLength={3000}
+            className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
+          />
+        </div>
+      )}
 
-      <div>
-        <label className="text-xs font-medium text-slate-500 uppercase tracking-wide block mb-1.5">
-          {t("editChallengesLabel")} <span className="text-slate-400 font-normal normal-case">{t("editOptional")}</span>
-        </label>
-        <textarea
-          value={challenges}
-          onChange={(e) => setChallenges(e.target.value)}
-          rows={2}
-          className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
-        />
-      </div>
+      {checkIn.journalEntry == null && (
+        <div>
+          <label className="text-xs font-medium text-slate-500 uppercase tracking-wide block mb-1.5">
+            {t("editWinsLabel")} <span className="text-slate-400 font-normal normal-case">{t("editOptional")}</span>
+          </label>
+          <textarea
+            value={wins}
+            onChange={(e) => setWins(e.target.value)}
+            rows={2}
+            className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
+          />
+        </div>
+      )}
 
-      <div>
-        <label className="text-xs font-medium text-slate-500 uppercase tracking-wide block mb-1.5">
-          {t("editNotesLabel")} <span className="text-slate-400 font-normal normal-case">{t("editOptional")}</span>
-        </label>
-        <textarea
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-          rows={3}
-          className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
-        />
-      </div>
+      {checkIn.journalEntry == null && (
+        <>
+          <div>
+            <label className="text-xs font-medium text-slate-500 uppercase tracking-wide block mb-1.5">
+              {t("editChallengesLabel")} <span className="text-slate-400 font-normal normal-case">{t("editOptional")}</span>
+            </label>
+            <textarea
+              value={challenges}
+              onChange={(e) => setChallenges(e.target.value)}
+              rows={2}
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
+            />
+          </div>
+
+          <div>
+            <label className="text-xs font-medium text-slate-500 uppercase tracking-wide block mb-1.5">
+              {t("editNotesLabel")} <span className="text-slate-400 font-normal normal-case">{t("editOptional")}</span>
+            </label>
+            <textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              rows={3}
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
+            />
+          </div>
+        </>
+      )}
 
       {error && <p className="text-sm text-red-600">{error}</p>}
 

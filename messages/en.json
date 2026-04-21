@@ -474,6 +474,7 @@
       "editOrthostaticLabel": "Dizziness on standing",
       "editOrthostaticFlagLabel": "Experienced orthostatic symptoms",
       "editOptional": "(optional)",
+      "editJournalLabel": "Journal entry",
       "editWinsLabel": "Wins",
       "editChallengesLabel": "Challenges",
       "editNotesLabel": "Notes",
