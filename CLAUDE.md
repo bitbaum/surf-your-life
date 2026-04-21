@@ -237,13 +237,10 @@ Every pixel follows these rules. If it's not in the system, add it to the system
 
 ## What's Not Built Yet (Do Not Add Prematurely)
 
-- Password reset email (needs Resend integration)
-- Email verification
-- AI analysis / embeddings generation
-- Document upload/management UI
-- Practitioner assignment UI
-- Notifications
-- Mobile navigation (hamburger menu)
+- AI analysis / embeddings generation (AI chat + parse work via `ANTHROPIC_API_KEY`; embeddings for semantic search are not yet generated)
+- Document upload by clients (practitioners can create documents via admin; client upload not built)
+- Practitioner assignment UI (schema exists, no UI)
+- Notifications (in-app or push)
 
 These will be built in order of user value. Do not add scaffolding for them ahead of time.
 

@@ -107,46 +107,43 @@ async function aiParse(text: string): Promise<ParsedFields | null> {
   const apiKey = process.env.ANTHROPIC_API_KEY
   if (!apiKey) return null
 
-  // TODO: uncomment when ready to enable AI parsing
-  // const prompt = `Extract structured health data from this daily check-in description.
-  // Return ONLY valid JSON with these optional fields (omit any you're not confident about):
-  // - mood: "very_low" | "low" | "neutral" | "good" | "excellent"
-  // - energyLevel: integer 1-10
-  // - sleepHours: integer 0-24
-  // - activityLevel: "rest" | "light" | "moderate" | "active"
-  // - pemFlag: boolean (true if post-exertional malaise / crash after activity)
-  // - orthostaticSymptoms: boolean (true if dizziness on standing)
-  // - journalEntry: the full input text, cleaned up
-  //
-  // Input: "${text.replace(/"/g, '\\"')}"
-  //
-  // JSON only, no explanation:`
-  //
-  // try {
-  //   const res = await fetch("https://api.anthropic.com/v1/messages", {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //       "x-api-key": apiKey,
-  //       "anthropic-version": "2023-06-01",
-  //     },
-  //     body: JSON.stringify({
-  //       model: "claude-haiku-4-5-20251001",
-  //       max_tokens: 200,
-  //       messages: [{ role: "user", content: prompt }],
-  //     }),
-  //   })
-  //   if (!res.ok) return null
-  //   const data = await res.json()
-  //   const raw = data.content?.[0]?.text ?? ""
-  //   const jsonMatch = raw.match(/\{[\s\S]*\}/)
-  //   if (!jsonMatch) return null
-  //   return JSON.parse(jsonMatch[0]) as ParsedFields
-  // } catch {
-  //   return null
-  // }
+  const prompt = `Extract structured health data from this daily check-in description.
+Return ONLY valid JSON with these optional fields (omit any you're not confident about):
+- mood: "very_low" | "low" | "neutral" | "good" | "excellent"
+- energyLevel: integer 1-10
+- sleepHours: integer 0-24
+- activityLevel: "rest" | "light" | "moderate" | "active"
+- pemFlag: boolean (true if post-exertional malaise / crash after activity)
+- orthostaticSymptoms: boolean (true if dizziness on standing)
+- journalEntry: the full input text, cleaned up
 
-  return null
+Input: "${text.replace(/"/g, '\\"')}"
+
+JSON only, no explanation:`
+
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01",
+      },
+      body: JSON.stringify({
+        model: "claude-haiku-4-5-20251001",
+        max_tokens: 200,
+        messages: [{ role: "user", content: prompt }],
+      }),
+    })
+    if (!res.ok) return null
+    const data = await res.json()
+    const raw = data.content?.[0]?.text ?? ""
+    const jsonMatch = raw.match(/\{[\s\S]*\}/)
+    if (!jsonMatch) return null
+    return JSON.parse(jsonMatch[0]) as ParsedFields
+  } catch {
+    return null
+  }
 }
 
 // ─── Route handler ────────────────────────────────────────────────────────────
