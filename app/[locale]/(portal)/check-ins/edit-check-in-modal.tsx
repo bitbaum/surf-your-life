@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
-import { MOODS, ENERGY_SCALE, SLEEP_HOURS } from "@/lib/constants"
+import { MOODS, ENERGY_SCALE, SLEEP_HOURS, SLEEP_QUALITY_OPTIONS, ACTIVITY_LEVELS } from "@/lib/constants"
 import type { CheckIn } from "@/lib/db/schema"
 
 interface EditCheckInModalProps {
@@ -28,6 +28,11 @@ export function EditCheckInModal({ checkIn, checkInId, onSave, onCancel }: EditC
   const [mood, setMood] = useState(checkIn.mood)
   const [energy, setEnergy] = useState(checkIn.energyLevel)
   const [sleep, setSleep] = useState(checkIn.sleepHours != null ? String(checkIn.sleepHours) : "")
+  const [sleepQuality, setSleepQuality] = useState<number | null>(checkIn.sleepQuality ?? null)
+  const [activityLevel, setActivityLevel] = useState<string | null>(checkIn.activityLevel ?? null)
+  const [pemFlag, setPemFlag] = useState(checkIn.pemFlag ?? false)
+  const [pemSeverity, setPemSeverity] = useState(checkIn.pemSeverity ?? 5)
+  const [orthostaticSymptoms, setOrthostaticSymptoms] = useState<boolean | null>(checkIn.orthostaticSymptoms ?? null)
   const [wins, setWins] = useState(checkIn.wins ?? "")
   const [challenges, setChallenges] = useState(checkIn.challenges ?? "")
   const [notes, setNotes] = useState(checkIn.notes ?? "")
@@ -43,6 +48,11 @@ export function EditCheckInModal({ checkIn, checkInId, onSave, onCancel }: EditC
         mood,
         energyLevel: energy,
         sleepHours: sleep ? parseInt(sleep) : null,
+        sleepQuality,
+        activityLevel,
+        pemFlag,
+        pemSeverity: pemFlag ? pemSeverity : null,
+        orthostaticSymptoms,
         wins: wins || undefined,
         challenges: challenges || undefined,
         notes: notes || undefined,
@@ -111,6 +121,91 @@ export function EditCheckInModal({ checkIn, checkInId, onSave, onCancel }: EditC
           placeholder={t("editSleepPlaceholder")}
           className="h-9 w-28 rounded-lg border border-slate-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
         />
+      </div>
+
+      <div>
+        <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">
+          {t("editSleepQualityLabel")} <span className="text-slate-400 font-normal normal-case">{t("editOptional")}</span>
+        </p>
+        <div className="flex gap-2 flex-wrap">
+          {SLEEP_QUALITY_OPTIONS.map((opt) => (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => setSleepQuality(sleepQuality === opt.value ? null : opt.value)}
+              className={`flex flex-col items-center gap-1 p-2 rounded-xl border-2 transition-all min-w-[52px] ${
+                sleepQuality === opt.value
+                  ? "border-teal-500 bg-teal-50"
+                  : "border-slate-200 hover:border-slate-300"
+              }`}
+            >
+              <span className="text-lg">{opt.emoji}</span>
+              <span className="text-xs text-slate-600">{tCheckIn(opt.labelKey as Parameters<typeof tCheckIn>[0])}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">
+          {t("editActivityLabel")} <span className="text-slate-400 font-normal normal-case">{t("editOptional")}</span>
+        </p>
+        <div className="flex gap-2 flex-wrap">
+          {ACTIVITY_LEVELS.map((lvl) => (
+            <button
+              key={lvl.value}
+              type="button"
+              onClick={() => setActivityLevel(activityLevel === lvl.value ? null : lvl.value)}
+              className={`flex flex-col items-center gap-1 p-2 rounded-xl border-2 transition-all min-w-[56px] ${
+                activityLevel === lvl.value
+                  ? "border-teal-500 bg-teal-50"
+                  : "border-slate-200 hover:border-slate-300"
+              }`}
+            >
+              <span className="text-lg">{lvl.emoji}</span>
+              <span className="text-xs text-slate-600">{tCheckIn(lvl.labelKey as Parameters<typeof tCheckIn>[0])}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">{t("editPemLabel")}</p>
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={pemFlag}
+            onChange={(e) => setPemFlag(e.target.checked)}
+            className="rounded border-slate-300 accent-teal-600"
+          />
+          <span className="text-sm text-slate-700">{t("editPemFlagLabel")}</span>
+        </label>
+        {pemFlag && (
+          <div className="mt-3">
+            <p className="text-xs text-slate-500 mb-1">{t("editPemSeverityLabel")}: {pemSeverity}/10</p>
+            <input
+              type="range"
+              min={1}
+              max={10}
+              value={pemSeverity}
+              onChange={(e) => setPemSeverity(parseInt(e.target.value))}
+              className="w-full accent-teal-600"
+            />
+          </div>
+        )}
+      </div>
+
+      <div>
+        <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">{t("editOrthostaticLabel")}</p>
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={orthostaticSymptoms === true}
+            onChange={(e) => setOrthostaticSymptoms(e.target.checked ? true : null)}
+            className="rounded border-slate-300 accent-teal-600"
+          />
+          <span className="text-sm text-slate-700">{t("editOrthostaticFlagLabel")}</span>
+        </label>
       </div>
 
       <div>
