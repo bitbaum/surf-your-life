@@ -23,7 +23,6 @@ export default async function LeadsPage({
   const { locale } = await params
   setRequestLocale(locale)
   const t = await getTranslations("admin.leads")
-  const tCommon = await getTranslations("common")
 
   const STATUS_TABS: { value: StatusFilter; label: string }[] = [
     { value: "all", label: t("filterAll") },
@@ -119,13 +118,7 @@ export default async function LeadsPage({
             </div>
           )}
 
-          <Pagination
-            page={page}
-            totalPages={totalPages}
-            pageLink={pageLink}
-            previousLabel={tCommon("previous")}
-            nextLabel={tCommon("next")}
-          />
+          <Pagination page={page} totalPages={totalPages} pageLink={pageLink} />
         </CardContent>
       </Card>
     </div>

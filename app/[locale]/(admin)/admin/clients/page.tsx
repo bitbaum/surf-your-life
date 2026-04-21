@@ -21,7 +21,6 @@ export default async function ClientsPage({
   const { locale } = await params
   setRequestLocale(locale)
   const t = await getTranslations("admin.clients")
-  const tCommon = await getTranslations("common")
 
   const { page: pageParam, q } = await searchParams
   const page = Math.max(1, parseInt(pageParam ?? "1") || 1)
@@ -120,13 +119,7 @@ export default async function ClientsPage({
           </table>
           </div>
 
-          <Pagination
-            page={page}
-            totalPages={totalPages}
-            pageLink={pageLink}
-            previousLabel={tCommon("previous")}
-            nextLabel={tCommon("next")}
-          />
+          <Pagination page={page} totalPages={totalPages} pageLink={pageLink} />
         </CardContent>
       </Card>
     </div>

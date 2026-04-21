@@ -22,7 +22,6 @@ export default async function UsersPage({
   const { locale } = await params
   setRequestLocale(locale)
   const t = await getTranslations("admin.users")
-  const tCommon = await getTranslations("common")
 
   const session = await auth()
   const canEdit = session?.user?.role === "admin"
@@ -112,13 +111,7 @@ export default async function UsersPage({
             </tbody>
           </table>
 
-          <Pagination
-            page={page}
-            totalPages={totalPages}
-            pageLink={pageLink}
-            previousLabel={tCommon("previous")}
-            nextLabel={tCommon("next")}
-          />
+          <Pagination page={page} totalPages={totalPages} pageLink={pageLink} />
         </CardContent>
       </Card>
     </div>

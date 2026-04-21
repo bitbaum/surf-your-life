@@ -1,6 +1,6 @@
 import { db } from "@/lib/db"
 import { bookings } from "@/lib/db/schema"
-import { eq, desc } from "drizzle-orm"
+import { eq, desc, count } from "drizzle-orm"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { formatDate } from "@/lib/utils"
@@ -9,6 +9,7 @@ import { BookingActions } from "./booking-actions"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { Badge } from "@/components/ui/badge"
 import { FilterTabs } from "@/components/ui/filter-tabs"
+import { Pagination } from "@/components/ui/pagination"
 import { Link } from "@/i18n/navigation"
 
 type BookingStatus = "pending" | "confirmed" | "cancelled"
@@ -18,7 +19,7 @@ export default async function AdminBookingsPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>
-  searchParams: Promise<{ status?: string }>
+  searchParams: Promise<{ status?: string; page?: string }>
 }) {
   const { locale } = await params
   setRequestLocale(locale)
@@ -31,15 +32,25 @@ export default async function AdminBookingsPage({
     { value: "cancelled", label: t("filterCancelled") },
   ]
 
-  const { status: statusParam } = await searchParams
+  const { status: statusParam, page: pageParam } = await searchParams
   const activeFilter = (STATUS_FILTERS.find((f) => f.value === statusParam)?.value ?? "all") as BookingStatus | "all"
+  const page = Math.max(1, parseInt(pageParam ?? "1") || 1)
+  const offset = (page - 1) * PAGINATION_DEFAULT
+  const whereClause = activeFilter !== "all" ? eq(bookings.status, activeFilter) : undefined
 
-  const allBookings = await db.query.bookings.findMany({
-    where: activeFilter !== "all" ? eq(bookings.status, activeFilter) : undefined,
-    orderBy: [desc(bookings.createdAt)],
-    limit: PAGINATION_DEFAULT,
-    with: { user: true, service: true },
-  })
+  const [allBookings, totalResult] = await Promise.all([
+    db.query.bookings.findMany({
+      where: whereClause,
+      orderBy: [desc(bookings.createdAt)],
+      limit: PAGINATION_DEFAULT,
+      offset,
+      with: { user: true, service: true },
+    }),
+    db.select({ value: count() }).from(bookings).where(whereClause),
+  ])
+
+  const total = totalResult[0]?.value ?? 0
+  const totalPages = Math.ceil(total / PAGINATION_DEFAULT)
 
   const statusVariant: Record<BookingStatus, "yellow" | "teal" | "slate"> = {
     pending: "yellow",
@@ -64,6 +75,7 @@ export default async function AdminBookingsPage({
         active={activeFilter}
         href={(value) => value === "all" ? "/admin/bookings" : `/admin/bookings?status=${value}`}
       />
+
 
       <Card>
         <CardHeader>
@@ -126,6 +138,11 @@ export default async function AdminBookingsPage({
             </tbody>
           </table>
           </div>
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            pageLink={(p) => activeFilter === "all" ? `/admin/bookings?page=${p}` : `/admin/bookings?status=${activeFilter}&page=${p}`}
+          />
         </CardContent>
       </Card>
     </div>
