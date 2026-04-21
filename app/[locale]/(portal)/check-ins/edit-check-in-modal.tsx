@@ -108,7 +108,7 @@ export function EditCheckInModal({ checkIn, checkInId, onSave, onCancel }: EditC
           max={SLEEP_HOURS.max}
           value={sleep}
           onChange={(e) => setSleep(e.target.value)}
-          placeholder="e.g. 7"
+          placeholder={t("editSleepPlaceholder")}
           className="h-9 w-28 rounded-lg border border-slate-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
         />
       </div>

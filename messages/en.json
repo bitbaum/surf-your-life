@@ -465,6 +465,7 @@
       "editMood": "Mood",
       "editEnergy": "Energy: {n}/10",
       "editSleepLabel": "Sleep hours",
+      "editSleepPlaceholder": "e.g. 7",
       "editOptional": "(optional)",
       "editWinsLabel": "Wins",
       "editChallengesLabel": "Challenges",
