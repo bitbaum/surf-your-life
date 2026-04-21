@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { formatDate, formatEnumValue } from "@/lib/utils"
 import { PAGINATION_DEFAULT, MOOD_EMOJI, SLEEP_QUALITY_OPTIONS } from "@/lib/constants"
 import { Link } from "@/i18n/navigation"
+import { Pagination } from "@/components/ui/pagination"
 import { CheckInActions } from "./check-in-actions"
 
 export default async function CheckInsPage({
@@ -135,23 +136,7 @@ export default async function CheckInsPage({
             ))}
           </div>
 
-          {totalPages > 1 && (
-            <div className="flex items-center justify-between mt-6">
-              <p className="text-xs text-slate-400">{t("pageOf", { page, total: totalPages })}</p>
-              <div className="flex gap-2">
-                {page > 1 && (
-                  <Link href={`/check-ins?page=${page - 1}`}>
-                    <Button variant="outline" size="sm">{t("previous")}</Button>
-                  </Link>
-                )}
-                {page < totalPages && (
-                  <Link href={`/check-ins?page=${page + 1}`}>
-                    <Button variant="outline" size="sm">{t("next")}</Button>
-                  </Link>
-                )}
-              </div>
-            </div>
-          )}
+          <Pagination page={page} totalPages={totalPages} pageLink={(p) => `/check-ins?page=${p}`} />
         </>
       )}
     </div>
