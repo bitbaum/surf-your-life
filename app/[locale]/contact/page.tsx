@@ -75,7 +75,7 @@ export default function ContactPage() {
                 label={t("name")}
                 value={form.name}
                 onChange={(e) => set("name", e.target.value)}
-                placeholder="Dr. Jane Smith"
+                placeholder={t("namePlaceholder")}
                 required
               />
               <Input
@@ -83,7 +83,7 @@ export default function ContactPage() {
                 type="email"
                 value={form.email}
                 onChange={(e) => set("email", e.target.value)}
-                placeholder="you@example.com"
+                placeholder={t("emailPlaceholder")}
                 required
               />
               <div>
