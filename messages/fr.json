@@ -1183,11 +1183,14 @@
   "common": {
     "loading": "Chargement…",
     "error": "Une erreur s'est produite",
+    "errorDescription": "Une erreur inattendue s'est produite. Veuillez réessayer.",
     "tryAgain": "Réessayer",
     "goHome": "Retour à l'accueil",
+    "goToDashboard": "Aller au tableau de bord",
     "or": "ou",
     "back": "Retour",
     "previous": "← Précédent",
-    "next": "Suivant →"
+    "next": "Suivant →",
+    "pageOf": "Page {page} sur {total}"
   }
 }

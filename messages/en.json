@@ -1183,11 +1183,14 @@
   "common": {
     "loading": "Loading…",
     "error": "Something went wrong",
+    "errorDescription": "An unexpected error occurred. Please try again.",
     "tryAgain": "Try again",
     "goHome": "Go home",
+    "goToDashboard": "Go to dashboard",
     "or": "or",
     "back": "Back",
     "previous": "← Previous",
-    "next": "Next →"
+    "next": "Next →",
+    "pageOf": "Page {page} of {total}"
   }
 }

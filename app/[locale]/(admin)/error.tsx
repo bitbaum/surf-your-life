@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect } from "react"
+import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 
 export default function AdminError({
@@ -10,18 +11,18 @@ export default function AdminError({
   error: Error & { digest?: string }
   reset: () => void
 }) {
+  const t = useTranslations("common")
+
   useEffect(() => {
     console.error("[admin]", error)
   }, [error])
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-8">
-      <h2 className="text-xl font-bold text-slate-900 mb-2">Something went wrong</h2>
-      <p className="text-slate-500 text-sm mb-6 max-w-sm">
-        An error occurred in the admin panel. Please try again or contact support if the problem persists.
-      </p>
+      <h2 className="text-xl font-bold text-slate-900 mb-2">{t("error")}</h2>
+      <p className="text-slate-500 text-sm mb-6 max-w-sm">{t("errorDescription")}</p>
       <Button onClick={reset} variant="outline">
-        Try again
+        {t("tryAgain")}
       </Button>
     </div>
   )

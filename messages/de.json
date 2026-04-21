@@ -1183,11 +1183,14 @@
   "common": {
     "loading": "Laden…",
     "error": "Etwas ist schiefgelaufen",
+    "errorDescription": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuche es erneut.",
     "tryAgain": "Erneut versuchen",
     "goHome": "Zur Startseite",
+    "goToDashboard": "Zum Dashboard",
     "or": "oder",
     "back": "Zurück",
     "previous": "← Zurück",
-    "next": "Weiter →"
+    "next": "Weiter →",
+    "pageOf": "Seite {page} von {total}"
   }
 }
