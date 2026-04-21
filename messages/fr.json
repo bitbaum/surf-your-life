@@ -902,6 +902,19 @@
         "viewAtRisk": "Clients à risque",
         "sendMessage": "Envoyer un message"
       },
+      "newThread": {
+        "button": "Envoyer un message",
+        "title": "Envoyer un message",
+        "subjectLabel": "Sujet",
+        "subjectPlaceholder": "De quoi s'agit-il?",
+        "messageLabel": "Message",
+        "messagePlaceholder": "Rédigez votre message…",
+        "cancel": "Annuler",
+        "send": "Envoyer",
+        "sending": "Envoi en cours…",
+        "close": "Fermer",
+        "failedToSend": "Échec de l'envoi"
+      },
       "checkInNote": {
         "yourNote": "Votre note",
         "edit": "Modifier",

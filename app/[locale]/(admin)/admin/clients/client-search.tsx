@@ -2,6 +2,7 @@
 
 import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import { useCallback, useRef } from "react"
+import { useTranslations } from "next-intl"
 import { Search } from "lucide-react"
 
 interface ClientSearchProps {
@@ -13,6 +14,7 @@ export function ClientSearch({ defaultValue = "" }: ClientSearchProps) {
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const t = useTranslations("admin.clients")
 
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,7 +41,7 @@ export function ClientSearch({ defaultValue = "" }: ClientSearchProps) {
         type="search"
         defaultValue={defaultValue}
         onChange={handleChange}
-        placeholder="Search by name or email..."
+        placeholder={t("searchPlaceholder")}
         className="w-full pl-9 pr-4 py-2 text-sm rounded-lg border border-slate-200 bg-white text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500"
       />
     </div>

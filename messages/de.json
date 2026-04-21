@@ -885,6 +885,19 @@
         "viewAtRisk": "Gefährdete Klienten",
         "sendMessage": "Nachricht senden"
       },
+      "newThread": {
+        "button": "Nachricht senden",
+        "title": "Nachricht senden",
+        "subjectLabel": "Betreff",
+        "subjectPlaceholder": "Worum geht es?",
+        "messageLabel": "Nachricht",
+        "messagePlaceholder": "Nachricht schreiben…",
+        "cancel": "Abbrechen",
+        "send": "Senden",
+        "sending": "Wird gesendet…",
+        "close": "Schließen",
+        "failedToSend": "Senden fehlgeschlagen"
+      },
       "checkInNote": {
         "yourNote": "Deine Notiz",
         "edit": "Bearbeiten",

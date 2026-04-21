@@ -885,6 +885,19 @@
         "viewAtRisk": "At-risk clients",
         "sendMessage": "Send message"
       },
+      "newThread": {
+        "button": "Send message",
+        "title": "Send message",
+        "subjectLabel": "Subject",
+        "subjectPlaceholder": "What's this about?",
+        "messageLabel": "Message",
+        "messagePlaceholder": "Write your message…",
+        "cancel": "Cancel",
+        "send": "Send",
+        "sending": "Sending…",
+        "close": "Close",
+        "failedToSend": "Failed to send"
+      },
       "checkInNote": {
         "yourNote": "Your note",
         "edit": "Edit",
