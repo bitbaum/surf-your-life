@@ -89,7 +89,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
                 <Row label={t("detail.mainConcern")} value={profile.mainConcern ? formatEnumValue(profile.mainConcern) : undefined} />
                 <Row label={t("detail.occupation")} value={profile.occupation} />
                 <Row label={t("detail.dateOfBirth")} value={profile.dateOfBirth} />
-                <Row label={t("detail.exercise")} value={profile.exerciseFrequency} />
+                <Row label={t("detail.exercise")} value={profile.exerciseFrequency ? formatEnumValue(profile.exerciseFrequency) : undefined} />
                 <Row label={t("detail.previousTherapy")} value={profile.previousTherapy ? t("detail.yes") : t("detail.no")} />
                 <Row label={t("detail.sleepQuality")} value={profile.sleepQuality ? `${profile.sleepQuality}/10` : undefined} />
                 <Row label={t("detail.stressLevel")} value={profile.stressLevel ? `${profile.stressLevel}/10` : undefined} />
@@ -132,7 +132,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
                     <div className="flex flex-wrap gap-3 text-xs text-slate-500 mt-1">
                       <span>{t("detail.energy")}: <strong className="text-slate-700">{ci.energyLevel}/10</strong></span>
                       {ci.sleepHours != null && <span>{t("detail.sleep")}: <strong className="text-slate-700">{ci.sleepHours}h</strong></span>}
-                      {ci.activityLevel && <span>{t("detail.activityLevel")}: <strong className="text-slate-700">{ci.activityLevel}</strong></span>}
+                      {ci.activityLevel && <span>{t("detail.activityLevel")}: <strong className="text-slate-700">{formatEnumValue(ci.activityLevel)}</strong></span>}
                       {ci.sleepQuality != null && <span>{t("detail.sleepQuality")}: <strong className="text-slate-700">{ci.sleepQuality}/5</strong></span>}
                       {ci.pemFlag && (
                         <span className="text-red-600 font-medium">
