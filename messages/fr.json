@@ -848,7 +848,8 @@
         "client": "Client",
         "practitioner": "Praticien",
         "admin": "Admin"
-      }
+      },
+      "errorUpdateRole": "Impossible de mettre à jour le rôle"
     },
     "clients": {
       "searchPlaceholder": "Rechercher par nom ou e-mail...",
@@ -939,6 +940,12 @@
         "saving": "Enregistrement…",
         "cancel": "Annuler"
       },
+      "resetLink": {
+        "button": "Lien de réinitialisation",
+        "generating": "Génération…",
+        "linkExpiry": "Lien de réinitialisation (expire dans 1 heure) :",
+        "copyTitle": "Copier le lien"
+      },
       "sessionPrep": {
         "title": "Préparation de séance",
         "description": "Générez un résumé clinique avant votre séance avec ce client.",
@@ -975,6 +982,10 @@
       "statusNew": "Nouveau",
       "statusContacted": "Contacté",
       "statusDismissed": "Rejeté",
+      "markAsNew": "Marquer comme nouveau",
+      "markAsContacted": "Marquer comme contacté",
+      "markAsDismissed": "Marquer comme rejeté",
+      "currentStatus": "Statut actuel",
       "filterAll": "Tous",
       "updateStatus": "Mettre à jour le statut",
       "title": "Leads",
@@ -1019,7 +1030,8 @@
         "morning": "Matin",
         "afternoon": "Après-midi",
         "flexible": "Flexible"
-      }
+      },
+      "dayNames": ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"]
     },
     "programs": {
       "title": "Programmes",

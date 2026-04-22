@@ -922,6 +922,12 @@
         "saving": "Saving…",
         "cancel": "Cancel"
       },
+      "resetLink": {
+        "button": "Reset password link",
+        "generating": "Generating…",
+        "linkExpiry": "Reset link (expires in 1 hour):",
+        "copyTitle": "Copy link"
+      },
       "sessionPrep": {
         "title": "Session prep",
         "description": "Generate a clinical summary before your session with this client.",
@@ -958,6 +964,10 @@
       "statusNew": "New",
       "statusContacted": "Contacted",
       "statusDismissed": "Dismissed",
+      "markAsNew": "Mark as New",
+      "markAsContacted": "Mark as Contacted",
+      "markAsDismissed": "Mark as Dismissed",
+      "currentStatus": "current status",
       "filterAll": "All",
       "updateStatus": "Update status",
       "title": "Leads",
@@ -1002,7 +1012,8 @@
         "morning": "Morning",
         "afternoon": "Afternoon",
         "flexible": "Flexible"
-      }
+      },
+      "dayNames": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
     },
     "users": {
       "title": "Users",
@@ -1019,7 +1030,8 @@
         "client": "Client",
         "practitioner": "Practitioner",
         "admin": "Admin"
-      }
+      },
+      "errorUpdateRole": "Failed to update role"
     },
     "programs": {
       "title": "Programs",

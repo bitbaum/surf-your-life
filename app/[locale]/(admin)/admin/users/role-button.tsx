@@ -37,14 +37,14 @@ export function RoleButton({ userId, currentRole, canEdit }: RoleButtonProps) {
       })
       const json = await res.json()
       if (!json.success) {
-        setError(json.error ?? "Failed to update role")
+        setError(json.error ?? t("errorUpdateRole"))
         return
       }
       startTransition(() => {
         router.refresh()
       })
     } catch {
-      setError("Failed to update role")
+      setError(t("errorUpdateRole"))
     }
   }
 

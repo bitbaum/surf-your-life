@@ -73,7 +73,7 @@ export default async function BookingCalendarPage({
   const nextWeek = toISO(addDays(weekStart, 7))
   const todayISO = toISO(new Date())
 
-  const DAY_NAMES = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+  const DAY_NAMES = t.raw("dayNames") as string[]
 
   return (
     <div className="max-w-6xl mx-auto">

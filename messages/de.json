@@ -922,6 +922,12 @@
         "saving": "Wird gespeichert…",
         "cancel": "Abbrechen"
       },
+      "resetLink": {
+        "button": "Passwort-Reset-Link",
+        "generating": "Wird erstellt…",
+        "linkExpiry": "Reset-Link (läuft in 1 Stunde ab):",
+        "copyTitle": "Link kopieren"
+      },
       "sessionPrep": {
         "title": "Sitzungsvorbereitung",
         "description": "Erstelle eine klinische Zusammenfassung vor deiner Sitzung mit diesem Klienten.",
@@ -958,6 +964,10 @@
       "statusNew": "Neu",
       "statusContacted": "Kontaktiert",
       "statusDismissed": "Abgelehnt",
+      "markAsNew": "Als neu markieren",
+      "markAsContacted": "Als kontaktiert markieren",
+      "markAsDismissed": "Als abgelehnt markieren",
+      "currentStatus": "Aktueller Status",
       "filterAll": "Alle",
       "updateStatus": "Status aktualisieren",
       "title": "Leads",
@@ -1002,7 +1012,8 @@
         "morning": "Morgen",
         "afternoon": "Nachmittag",
         "flexible": "Flexibel"
-      }
+      },
+      "dayNames": ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"]
     },
     "users": {
       "title": "Benutzer",
@@ -1019,7 +1030,8 @@
         "client": "Klient",
         "practitioner": "Therapeut",
         "admin": "Admin"
-      }
+      },
+      "errorUpdateRole": "Rolle konnte nicht aktualisiert werden"
     },
     "programs": {
       "title": "Programme",
