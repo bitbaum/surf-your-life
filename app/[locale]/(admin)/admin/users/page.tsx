@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { formatDate } from "@/lib/utils"
 import { PAGINATION_DEFAULT } from "@/lib/constants"
+import { ADMIN_ROLE } from "@/lib/domain/auth"
 import { RoleButton } from "./role-button"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { Badge } from "@/components/ui/badge"
@@ -24,7 +25,7 @@ export default async function UsersPage({
   const t = await getTranslations("admin.users")
 
   const session = await auth()
-  const canEdit = session?.user?.role === "admin"
+  const canEdit = session?.user?.role === ADMIN_ROLE
 
   const { page: pageParam } = await searchParams
   const page = Math.max(1, parseInt(pageParam ?? "1") || 1)

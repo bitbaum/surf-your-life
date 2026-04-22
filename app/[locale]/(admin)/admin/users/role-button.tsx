@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
 import { useTranslations } from "next-intl"
-import { CLIENT_ROLE } from "@/lib/domain/auth"
+import { CLIENT_ROLE, PRACTITIONER_ROLE, ADMIN_ROLE } from "@/lib/domain/auth"
 
 type Role = "client" | "practitioner" | "admin"
 
@@ -66,8 +66,8 @@ export function RoleButton({ userId, currentRole, canEdit }: RoleButtonProps) {
         className="text-xs rounded-lg border border-slate-200 px-2 py-1 bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:opacity-50 disabled:pointer-events-none"
       >
         <option value={CLIENT_ROLE}>{t("roles.client")}</option>
-        <option value="practitioner">{t("roles.practitioner")}</option>
-        <option value="admin">{t("roles.admin")}</option>
+        <option value={PRACTITIONER_ROLE}>{t("roles.practitioner")}</option>
+        <option value={ADMIN_ROLE}>{t("roles.admin")}</option>
       </select>
       {error && <p className="text-xs text-red-600">{error}</p>}
     </div>

@@ -3,15 +3,19 @@ import { db } from "@/lib/db"
 import { verificationTokens, users } from "@/lib/db/schema"
 import { and, eq, gt } from "drizzle-orm"
 
-export const STAFF_ROLES = ["admin", "practitioner"] as const
-export type StaffRole = (typeof STAFF_ROLES)[number]
-
+export const ADMIN_ROLE = "admin" as const
+export const PRACTITIONER_ROLE = "practitioner" as const
 export const CLIENT_ROLE = "client" as const
+
+export const STAFF_ROLES = [ADMIN_ROLE, PRACTITIONER_ROLE] as const
+export type StaffRole = (typeof STAFF_ROLES)[number]
+export type AdminRole = typeof ADMIN_ROLE
+export type PractitionerRole = typeof PRACTITIONER_ROLE
 export type ClientRole = typeof CLIENT_ROLE
 
 /** Returns true when a user has staff-level access (admin or practitioner). */
 export function isStaff(role: string | undefined | null): boolean {
-  return role === "admin" || role === "practitioner"
+  return role != null && (STAFF_ROLES as readonly string[]).includes(role)
 }
 
 export const loginSchema = z.object({

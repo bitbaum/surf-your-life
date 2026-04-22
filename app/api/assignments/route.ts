@@ -4,6 +4,7 @@ import { db } from "@/lib/db"
 import { assignments } from "@/lib/db/schema"
 import { and, eq } from "drizzle-orm"
 import { z } from "zod"
+import { isStaff } from "@/lib/domain/auth"
 
 const assignSchema = z.object({
   clientId: z.string().uuid(),
@@ -12,7 +13,7 @@ const assignSchema = z.object({
 
 export async function POST(req: Request) {
   const session = await auth()
-  if (!session?.user?.id || !["admin", "practitioner"].includes(session.user.role ?? "")) {
+  if (!session?.user?.id || !isStaff(session.user.role)) {
     return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
   }
 

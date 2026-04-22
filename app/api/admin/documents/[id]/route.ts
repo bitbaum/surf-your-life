@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
-import { isStaff } from "@/lib/domain/auth"
+import { isStaff, ADMIN_ROLE } from "@/lib/domain/auth"
 import { db } from "@/lib/db"
 import { documents } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
@@ -22,7 +22,7 @@ export async function DELETE(
   }
 
   // Only the author or an admin can delete
-  if (doc.authorId !== session.user.id && session.user.role !== "admin") {
+  if (doc.authorId !== session.user.id && session.user.role !== ADMIN_ROLE) {
     return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 })
   }
 

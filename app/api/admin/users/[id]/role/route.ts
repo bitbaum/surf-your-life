@@ -4,6 +4,7 @@ import { eq } from "drizzle-orm"
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { users, roleEnum } from "@/lib/db/schema"
+import { ADMIN_ROLE } from "@/lib/domain/auth"
 
 const bodySchema = z.object({
   role: z.enum(roleEnum.enumValues),
@@ -17,7 +18,7 @@ export async function PATCH(
   if (!session?.user?.id) {
     return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
   }
-  if (session.user.role !== "admin") {
+  if (session.user.role !== ADMIN_ROLE) {
     return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 })
   }
 

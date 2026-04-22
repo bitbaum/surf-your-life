@@ -4,7 +4,7 @@ import { db } from "@/lib/db"
 import { programs } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { createProgramSchema } from "@/lib/domain/program"
-import { isStaff } from "@/lib/domain/auth"
+import { isStaff, ADMIN_ROLE } from "@/lib/domain/auth"
 
 export async function PATCH(
   req: Request,
@@ -49,7 +49,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await auth()
-  if (!session?.user?.id || session.user.role !== "admin") {
+  if (!session?.user?.id || session.user.role !== ADMIN_ROLE) {
     return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 })
   }
 

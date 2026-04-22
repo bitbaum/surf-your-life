@@ -7,7 +7,7 @@ import { formatDate, formatEnumValue } from "@/lib/utils"
 
 import { Link } from "@/i18n/navigation"
 import { PAGINATION_DEFAULT } from "@/lib/constants"
-import { CLIENT_ROLE } from "@/lib/domain/auth"
+import { CLIENT_ROLE, STAFF_ROLES } from "@/lib/domain/auth"
 import { ResetLinkButton } from "./reset-link-button"
 import { NewThreadButton } from "./new-thread-button"
 import { EnrollProgramButton } from "./enroll-program-button"
@@ -75,7 +75,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
     db
       .select({ id: users.id, name: users.name, email: users.email })
       .from(users)
-      .where(inArray(users.role, ["practitioner", "admin"])),
+      .where(inArray(users.role, STAFF_ROLES)),
   ])
 
   if (!client || client.role !== CLIENT_ROLE) notFound()
