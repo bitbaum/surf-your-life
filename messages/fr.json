@@ -910,7 +910,8 @@
         "cognitive": "Cognitif",
         "physical": "Physique",
         "emotional": "Émotionnel",
-        "social": "Social"
+        "social": "Social",
+        "viewAllCheckIns": "Voir tout →"
       },
       "atRisk": {
         "title": "Clients à risque",
@@ -980,6 +981,11 @@
         "typeUpload": "Téléchargement",
         "noNotes": "Aucune note pour l'instant. Ajoutez-en une après une séance.",
         "error": "Impossible d'enregistrer la note"
+      },
+      "checkIns": {
+        "title": "Check-ins",
+        "description": "Tous les check-ins de {name} · {count} au total",
+        "backLink": "← {name}"
       }
     },
     "leads": {
@@ -1035,7 +1041,15 @@
         "afternoon": "Après-midi",
         "flexible": "Flexible"
       },
-      "dayNames": ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"]
+      "dayNames": [
+        "Lun",
+        "Mar",
+        "Mer",
+        "Jeu",
+        "Ven",
+        "Sam",
+        "Dim"
+      ]
     },
     "programs": {
       "title": "Programmes",

@@ -892,7 +892,8 @@
         "cognitive": "Cognitive",
         "physical": "Physical",
         "emotional": "Emotional",
-        "social": "Social"
+        "social": "Social",
+        "viewAllCheckIns": "View all →"
       },
       "atRisk": {
         "title": "At-Risk Clients",
@@ -962,6 +963,11 @@
         "typeUpload": "Upload",
         "noNotes": "No notes yet. Add one after a session.",
         "error": "Failed to save note"
+      },
+      "checkIns": {
+        "title": "Check-ins",
+        "description": "All check-ins for {name} · {count} total",
+        "backLink": "← {name}"
       }
     },
     "leads": {
@@ -1017,7 +1023,15 @@
         "afternoon": "Afternoon",
         "flexible": "Flexible"
       },
-      "dayNames": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+      "dayNames": [
+        "Mon",
+        "Tue",
+        "Wed",
+        "Thu",
+        "Fri",
+        "Sat",
+        "Sun"
+      ]
     },
     "users": {
       "title": "Users",

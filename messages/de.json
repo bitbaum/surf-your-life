@@ -892,7 +892,8 @@
         "cognitive": "Kognitiv",
         "physical": "Körperlich",
         "emotional": "Emotional",
-        "social": "Sozial"
+        "social": "Sozial",
+        "viewAllCheckIns": "Alle anzeigen →"
       },
       "atRisk": {
         "title": "Gefährdete Klienten",
@@ -962,6 +963,11 @@
         "typeUpload": "Upload",
         "noNotes": "Noch keine Notizen. Fügen Sie nach einer Sitzung eine hinzu.",
         "error": "Notiz konnte nicht gespeichert werden"
+      },
+      "checkIns": {
+        "title": "Check-ins",
+        "description": "Alle Check-ins für {name} · {count} gesamt",
+        "backLink": "← {name}"
       }
     },
     "leads": {
@@ -1017,7 +1023,15 @@
         "afternoon": "Nachmittag",
         "flexible": "Flexibel"
       },
-      "dayNames": ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"]
+      "dayNames": [
+        "Mo",
+        "Di",
+        "Mi",
+        "Do",
+        "Fr",
+        "Sa",
+        "So"
+      ]
     },
     "users": {
       "title": "Benutzer",

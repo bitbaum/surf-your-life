@@ -118,14 +118,24 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
 
         <Card>
           <CardHeader>
-            <CardTitle>
-            {t("detail.checkInsCard")} ({totalCheckIns})
-            {totalCheckIns > PAGINATION_DEFAULT && (
-              <span className="ml-2 text-xs font-normal text-slate-400">
-                {t("detail.showingRecent", { n: PAGINATION_DEFAULT })}
+            <CardTitle className="flex items-center justify-between gap-2">
+              <span>
+                {t("detail.checkInsCard")} ({totalCheckIns})
+                {totalCheckIns > PAGINATION_DEFAULT && (
+                  <span className="ml-2 text-xs font-normal text-slate-400">
+                    {t("detail.showingRecent", { n: PAGINATION_DEFAULT })}
+                  </span>
+                )}
               </span>
-            )}
-          </CardTitle>
+              {totalCheckIns > PAGINATION_DEFAULT && (
+                <Link
+                  href={`/admin/clients/${id}/check-ins`}
+                  className="text-xs font-normal text-teal-600 hover:underline"
+                >
+                  {t("detail.viewAllCheckIns")}
+                </Link>
+              )}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             {clientCheckIns.length > 0 ? (
