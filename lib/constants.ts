@@ -102,6 +102,7 @@ export const AT_RISK_CLIENTS_LIMIT = 5
 export const RECENT_CLIENTS_LIMIT = 8
 export const SERVICES_MAX_LIMIT = 100
 export const DOCUMENTS_PER_CLIENT_LIMIT = PAGINATION_DEFAULT
+export const ADMIN_DASHBOARD_ALERTS_PREVIEW = 10
 
 // SVG chart dimensions (shared by all inline charts)
 export const CHART_W = 800

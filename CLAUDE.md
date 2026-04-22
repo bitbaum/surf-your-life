@@ -2,6 +2,10 @@
 
 # Surf Your Life — Project Standards
 
+## Mission
+
+Surf Your Life is a psychiatry-led clinic in Zürich helping people recover from burnout and Long COVID. The portal exists to give clients a structured way to track their recovery (daily check-ins, symptoms, sleep, techniques) and to give practitioners (Manu and team) the visibility they need to intervene early, run evidence-based programs, and analyze progress — replacing ad-hoc spreadsheets with a purpose-built clinical tool. Success means practitioners spend less time chasing status and more time on high-value clinical work; clients feel accompanied and can see their own progress.
+
 **What this is:** A health portal for burnout/Long-COVID reintegration and longevity. Clients track their wellbeing; practitioners (Manu and team) manage and analyze client progress. AI analysis of structured + unstructured data is a core future feature.
 
 **Stack:** Next.js 16 (App Router) · TypeScript strict · Neon Postgres · Drizzle ORM · pgvector · Auth.js v5 · Tailwind v4 · Vercel

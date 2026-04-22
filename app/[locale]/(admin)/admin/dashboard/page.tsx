@@ -8,7 +8,7 @@ import { PageHeader } from "@/components/ui/page-header"
 import { Link } from "@/i18n/navigation"
 import { formatDate, formatEnumValue } from "@/lib/utils"
 import { Users, ClipboardList, TrendingUp, CalendarClock, MessageSquare, AlertTriangle } from "lucide-react"
-import { SEVEN_DAYS_MS, THIRTY_DAYS_MS, RECENT_CLIENTS_LIMIT, AT_RISK_CLIENTS_LIMIT, DAY_MS } from "@/lib/constants"
+import { SEVEN_DAYS_MS, THIRTY_DAYS_MS, RECENT_CLIENTS_LIMIT, AT_RISK_CLIENTS_LIMIT, DAY_MS, ADMIN_DASHBOARD_ALERTS_PREVIEW } from "@/lib/constants"
 import { AlertList } from "./alert-list"
 
 export default async function AdminDashboardPage({
@@ -32,6 +32,7 @@ export default async function AdminDashboardPage({
     recentClients,
     atRiskCountResult,
     atRiskPreview,
+    unresolvedAlertsCountResult,
     unresolvedAlerts,
   ] = await Promise.all([
     db.select({ count: count() }).from(users).where(eq(users.role, "client")),
@@ -76,10 +77,13 @@ export default async function AdminDashboardPage({
       .having(or(isNull(max(checkIns.createdAt)), lt(max(checkIns.createdAt), sevenDaysAgo)))
       .orderBy(max(checkIns.createdAt))
       .limit(AT_RISK_CLIENTS_LIMIT),
+    // Total unresolved alert count (for accurate header display)
+    db.select({ count: count() }).from(clientAlerts).where(eq(clientAlerts.isResolved, false)),
+    // Preview: most recent N unresolved alerts
     db.query.clientAlerts.findMany({
       where: eq(clientAlerts.isResolved, false),
       orderBy: [desc(clientAlerts.createdAt)],
-      limit: 10,
+      limit: ADMIN_DASHBOARD_ALERTS_PREVIEW,
       with: { client: { columns: { id: true, name: true, email: true } } },
     }),
   ])
@@ -94,6 +98,7 @@ export default async function AdminDashboardPage({
 
   const atRiskCount = atRiskCountResult[0]?.count ?? 0
   const atRiskClients = atRiskPreview
+  const unresolvedAlertsCount = unresolvedAlertsCountResult[0]?.count ?? 0
 
   return (
     <div className="max-w-5xl mx-auto">
@@ -113,13 +118,18 @@ export default async function AdminDashboardPage({
         />
       </div>
 
-      {unresolvedAlerts.length > 0 && (
+      {unresolvedAlertsCount > 0 && (
         <Card className="mb-6 border-red-200">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-red-700">
-              <AlertTriangle className="w-4 h-4" />
-              {t("clinicalAlerts")} ({unresolvedAlerts.length})
-            </CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2 text-red-700">
+                <AlertTriangle className="w-4 h-4" />
+                {t("clinicalAlerts")} ({unresolvedAlertsCount})
+              </CardTitle>
+              <Link href="/admin/alerts" className="text-sm text-red-600 hover:underline">
+                {t("viewAll")} →
+              </Link>
+            </div>
           </CardHeader>
           <CardContent>
             <AlertList alerts={unresolvedAlerts} />
