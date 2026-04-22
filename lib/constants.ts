@@ -221,6 +221,13 @@ export const SESSION_PREP_ALERTS_LIMIT = 5    // recent alerts included in brief
 // Streak calculation
 export const STREAK_LOOKBACK_DAYS = 30  // max days to look back when calculating check-in streaks
 
+// Enrollment status badge classes — used by portal program page and admin enrollment-status component
+export const ENROLLMENT_STATUS_BADGE: Record<string, string> = {
+  active:    "bg-teal-50 text-teal-700 border border-teal-200",
+  paused:    "bg-yellow-50 text-yellow-700 border border-yellow-200",
+  completed: "bg-slate-100 text-slate-600 border border-slate-200",
+}
+
 // Alert severity color config — canonical mapping used by all alert UI components
 // Dot = filled circle indicator; Badge = label pill with border
 export const ALERT_SEVERITY_DOT: Record<string, string> = {

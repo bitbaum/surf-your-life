@@ -4,16 +4,11 @@ import { useState } from "react"
 import { useRouter } from "@/i18n/navigation"
 import { useTranslations } from "next-intl"
 import { programStatusEnum } from "@/lib/db/schema"
+import { ENROLLMENT_STATUS_BADGE } from "@/lib/constants"
 
 interface EnrollmentStatusProps {
   enrollmentId: string
   currentStatus: (typeof programStatusEnum.enumValues)[number]
-}
-
-const STATUS_STYLES = {
-  active: "bg-teal-50 text-teal-700 border border-teal-200",
-  paused: "bg-yellow-50 text-yellow-700 border border-yellow-200",
-  completed: "bg-slate-100 text-slate-600 border border-slate-200",
 }
 
 export function EnrollmentStatus({ enrollmentId, currentStatus }: EnrollmentStatusProps) {
@@ -38,7 +33,7 @@ export function EnrollmentStatus({ enrollmentId, currentStatus }: EnrollmentStat
 
   return (
     <div className="flex items-center gap-2">
-      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_STYLES[status]}`}>
+      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${ENROLLMENT_STATUS_BADGE[status]}`}>
         {t(`status.${status}`)}
       </span>
       {status !== "completed" && (

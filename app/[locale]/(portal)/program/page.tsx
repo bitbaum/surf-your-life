@@ -8,7 +8,7 @@ import { ProgressBar } from "@/components/ui/progress-bar"
 import { PageHeader } from "@/components/ui/page-header"
 import { formatDate, formatEnumValue } from "@/lib/utils"
 import { getTranslations, setRequestLocale } from "next-intl/server"
-import { SEVEN_DAYS_MS } from "@/lib/constants"
+import { SEVEN_DAYS_MS, ENROLLMENT_STATUS_BADGE } from "@/lib/constants"
 import { CheckCircle, Clock, Pause } from "lucide-react"
 import { PhaseTimeline } from "./phase-timeline"
 
@@ -64,11 +64,7 @@ export default async function ProgramPage({ params }: { params: Promise<{ locale
     completed: <CheckCircle className="w-4 h-4 text-slate-500" />,
   }[enrollment.status]
 
-  const statusStyle = {
-    active: "bg-teal-50 text-teal-700 border border-teal-200",
-    paused: "bg-yellow-50 text-yellow-700 border border-yellow-200",
-    completed: "bg-slate-100 text-slate-600 border border-slate-200",
-  }[enrollment.status]
+  const statusStyle = ENROLLMENT_STATUS_BADGE[enrollment.status]
 
   return (
     <div className="max-w-2xl mx-auto">
