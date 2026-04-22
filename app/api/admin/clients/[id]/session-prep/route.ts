@@ -9,7 +9,7 @@ import { isStaff } from "@/lib/domain/auth"
 import { db } from "@/lib/db"
 import { users, checkIns, clientAlerts } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
-import { AI_MODEL_FAST } from "@/lib/constants"
+import { callClaude } from "@/lib/domain/anthropic"
 
 export async function GET(
   _req: Request,
@@ -44,33 +44,13 @@ export async function GET(
     return NextResponse.json({ success: false, error: "Client not found" }, { status: 404 })
   }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY
-  if (!apiKey) {
-    // Graceful degradation: return a rule-based summary without AI
-    return NextResponse.json({
-      success: true,
-      data: { summary: buildRuleBasedSummary(client, recentCheckIns, activeAlerts), aiGenerated: false },
-    })
-  }
-
-  // Build a clinical context string for the AI
   const context = buildClinicalContext(client, recentCheckIns, activeAlerts)
 
-  try {
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({
-        model: AI_MODEL_FAST,
-        max_tokens: 600,
-        messages: [
-          {
-            role: "user",
-            content: `You are a clinical assistant helping a burnout/Long COVID practitioner prepare for a session.
+  const aiSummary = await callClaude({
+    messages: [
+      {
+        role: "user",
+        content: `You are a clinical assistant helping a burnout/Long COVID practitioner prepare for a session.
 Based on the following client data, write a concise pre-session summary (3-5 sentences) covering:
 1. Current trend (improving / stable / declining)
 2. Key signals to address today
@@ -80,26 +60,13 @@ Client data:
 ${context}
 
 Write in a professional, clinical tone. Be specific and actionable.`,
-          },
-        ],
-      }),
-    })
+      },
+    ],
+    maxTokens: 600,
+  })
 
-    if (!response.ok) {
-      throw new Error(`Anthropic API error: ${response.status}`)
-    }
-
-    const data = await response.json()
-    const summary = data.content?.[0]?.text ?? buildRuleBasedSummary(client, recentCheckIns, activeAlerts)
-
-    return NextResponse.json({ success: true, data: { summary, aiGenerated: true } })
-  } catch {
-    // Graceful degradation: fall back to rule-based on AI failure
-    return NextResponse.json({
-      success: true,
-      data: { summary: buildRuleBasedSummary(client, recentCheckIns, activeAlerts), aiGenerated: false },
-    })
-  }
+  const summary = aiSummary ?? buildRuleBasedSummary(client, recentCheckIns, activeAlerts)
+  return NextResponse.json({ success: true, data: { summary, aiGenerated: aiSummary !== null } })
 }
 
 function buildClinicalContext(

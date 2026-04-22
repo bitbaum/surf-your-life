@@ -10,7 +10,7 @@
 import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { z } from "zod"
-import { AI_MODEL_FAST } from "@/lib/constants"
+import { callClaude } from "@/lib/domain/anthropic"
 
 const parseSchema = z.object({
   text: z.string().min(1).max(1000),
@@ -105,9 +105,6 @@ function keywordParse(text: string): ParsedFields {
 // ─── AI parser (to enable: set ANTHROPIC_API_KEY) ────────────────────────────
 
 async function aiParse(text: string): Promise<ParsedFields | null> {
-  const apiKey = process.env.ANTHROPIC_API_KEY
-  if (!apiKey) return null
-
   const prompt = `Extract structured health data from this daily check-in description.
 Return ONLY valid JSON with these optional fields (omit any you're not confident about):
 - mood: "very_low" | "low" | "neutral" | "good" | "excellent"
@@ -123,22 +120,8 @@ Input: "${text.replace(/"/g, '\\"')}"
 JSON only, no explanation:`
 
   try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-      },
-      body: JSON.stringify({
-        model: AI_MODEL_FAST,
-        max_tokens: 200,
-        messages: [{ role: "user", content: prompt }],
-      }),
-    })
-    if (!res.ok) return null
-    const data = await res.json()
-    const raw = data.content?.[0]?.text ?? ""
+    const raw = await callClaude({ messages: [{ role: "user", content: prompt }], maxTokens: 200 })
+    if (!raw) return null
     const jsonMatch = raw.match(/\{[\s\S]*\}/)
     if (!jsonMatch) return null
     return JSON.parse(jsonMatch[0]) as ParsedFields

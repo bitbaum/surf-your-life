@@ -11,7 +11,8 @@
 import { db } from "@/lib/db"
 import { checkIns, medicationLog, functionalAssessments } from "@/lib/db/schema"
 import { eq, desc, isNull, and } from "drizzle-orm"
-import { SEVEN_DAYS_MS, MOOD_SCORE, AI_MODEL_FAST } from "@/lib/constants"
+import { SEVEN_DAYS_MS, MOOD_SCORE } from "@/lib/constants"
+import { callClaude } from "@/lib/domain/anthropic"
 
 const CONTEXT_CHECKINS = 14 // how many recent check-ins to include in context
 
@@ -229,9 +230,6 @@ async function callAnthropicApi(
   context: BuildContextResult,
   history: { role: "user" | "assistant"; content: string }[]
 ): Promise<string | null> {
-  const apiKey = process.env.ANTHROPIC_API_KEY
-  if (!apiKey) return null
-
   const { recent, medications, latestAssessment } = context
 
   // Build check-in summary
@@ -275,31 +273,14 @@ ${medLines}
 Latest functional assessment:
 ${assessmentLines}`
 
-  try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-      },
-      body: JSON.stringify({
-        model: AI_MODEL_FAST,
-        max_tokens: 500,
-        system: systemPrompt,
-        messages: [
-          ...history.slice(-10),
-          { role: "user", content: userMessage },
-        ],
-      }),
-    })
-
-    if (!res.ok) return null
-    const data = await res.json()
-    return data.content?.[0]?.text ?? null
-  } catch {
-    return null
-  }
+  return callClaude({
+    messages: [
+      ...history.slice(-10),
+      { role: "user", content: userMessage },
+    ],
+    system: systemPrompt,
+    maxTokens: 500,
+  })
 }
 
 // ─── Public API ───────────────────────────────────────────────────────────────

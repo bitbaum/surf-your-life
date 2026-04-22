@@ -10,7 +10,8 @@ import { db } from "@/lib/db"
 import { users, checkIns, clientAlerts } from "@/lib/db/schema"
 import { eq, and, gte, desc, inArray, count } from "drizzle-orm"
 import { STAFF_ROLES } from "@/lib/domain/auth"
-import { SEVEN_DAYS_MS, SITE_URL, MOOD_SCORE, MOODS, AI_MODEL_FAST } from "@/lib/constants"
+import { SEVEN_DAYS_MS, SITE_URL, MOOD_SCORE, MOODS } from "@/lib/constants"
+import { callClaude } from "@/lib/domain/anthropic"
 import { sendEmail } from "@/lib/email"
 import { practitionerWeeklyDigestEmail, type PractitionerDigestClientRow } from "@/lib/email/templates"
 
@@ -35,9 +36,6 @@ async function generateDigest(clientName: string, rows: {
   challenges: string | null
   notes: string | null
 }[]): Promise<string | null> {
-  const apiKey = process.env.ANTHROPIC_API_KEY
-  if (!apiKey) return null
-
   const summary = rows.map((r, i) => {
     const parts = [`Day ${i + 1} (${r.createdAt.toLocaleDateString("en-GB")})`]
     if (r.mood) parts.push(`mood=${r.mood}`)
@@ -70,27 +68,7 @@ Write a concise clinical narrative (3-5 sentences) summarising:
 
 Be factual, empathetic, and clinically precise. No bullet points — flowing prose only.`
 
-  try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-      },
-      body: JSON.stringify({
-        model: AI_MODEL_FAST,
-        max_tokens: 300,
-        messages: [{ role: "user", content: prompt }],
-      }),
-    })
-
-    if (!res.ok) return null
-    const data = await res.json()
-    return data.content?.[0]?.text ?? null
-  } catch {
-    return null
-  }
+  return callClaude({ messages: [{ role: "user", content: prompt }], maxTokens: 300 })
 }
 
 export async function GET(req: Request) {
