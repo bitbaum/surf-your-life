@@ -8,7 +8,7 @@ import { Plus, Trash2, BookOpen } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import type { Technique, TechniqueAssignment } from "@/lib/db/schema"
-import { formatEnumValue } from "@/lib/utils"
+import { formatEnumValue, toDateString } from "@/lib/utils"
 import { TECHNIQUE_CATEGORIES } from "@/lib/constants"
 
 type AssignmentWithTechnique = TechniqueAssignment & { technique: Technique }
@@ -38,7 +38,7 @@ export function TechniqueAssignments({ clientId, assignments, allTechniques }: T
     if (!form.techniqueId) return
     setSaving(true)
     try {
-      const today = new Date().toISOString().slice(0, 10)
+      const today = toDateString(new Date())
       const res = await fetch("/api/technique-assignments", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

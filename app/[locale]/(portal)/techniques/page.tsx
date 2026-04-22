@@ -6,6 +6,8 @@ import { getTranslations, setRequestLocale } from "next-intl/server"
 import { PageHeader } from "@/components/ui/page-header"
 import { TechniqueTracker } from "./technique-tracker"
 import type { LogByDate } from "@/lib/domain/techniques"
+import { toDateString } from "@/lib/utils"
+import { DAY_MS } from "@/lib/constants"
 
 export default async function TechniquesPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
@@ -15,10 +17,9 @@ export default async function TechniquesPage({ params }: { params: Promise<{ loc
 
   const t = await getTranslations("portal.techniques")
 
-  const today = new Date().toISOString().slice(0, 10)
+  const today = toDateString(new Date())
   // Fetch logs for debt window (14 days)
-  const nowMs = Date.now() // eslint-disable-line react-hooks/purity -- server component
-  const since = new Date(nowMs - 14 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10)
+  const since = toDateString(new Date(Date.now() - 14 * DAY_MS))
 
   const [assignments, logs] = await Promise.all([
     db.query.techniqueAssignments.findMany({

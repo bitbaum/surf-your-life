@@ -1,5 +1,6 @@
 import { z } from "zod"
 import { techniqueCategoryEnum, techniqueDifficultyEnum } from "@/lib/db/schema"
+import { toDateString } from "@/lib/utils"
 import {
   TECHNIQUE_DEFAULT_FREQUENCY,
   TECHNIQUE_DEFAULT_MAX_DEBT_DAYS,
@@ -111,5 +112,5 @@ export function computeTechniqueDebt(
 function offsetDate(isoDate: string, days: number): string {
   const d = new Date(isoDate)
   d.setDate(d.getDate() + days)
-  return d.toISOString().slice(0, 10)
+  return toDateString(d)
 }

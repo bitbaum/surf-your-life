@@ -3,6 +3,7 @@ import { db } from "@/lib/db"
 import { techniqueLogs, techniqueAssignments } from "@/lib/db/schema"
 import { eq, and, gte } from "drizzle-orm"
 import { logTechniqueSchema } from "@/lib/domain/techniques"
+import { toDateString } from "@/lib/utils"
 
 export async function GET(req: Request) {
   const session = await auth()
@@ -13,7 +14,7 @@ export async function GET(req: Request) {
   const since = searchParams.get("since") ?? (() => {
     const d = new Date()
     d.setDate(d.getDate() - 14)
-    return d.toISOString().slice(0, 10)
+    return toDateString(d)
   })()
 
   const rows = await db.query.techniqueLogs.findMany({

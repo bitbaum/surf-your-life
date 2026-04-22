@@ -7,6 +7,7 @@ import { Plus, Square, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 import { AddMedicationForm } from "./add-medication-form"
 import { MedicationHistoricalList } from "./medication-historical-list"
+import { toDateString } from "@/lib/utils"
 
 type Medication = {
   id: string
@@ -31,7 +32,7 @@ export function MedicationManager({ medications: initial }: Props) {
   const [stopping, setStopping] = useState<string | null>(null)
   const [deleting, setDeleting] = useState<string | null>(null)
 
-  const today = new Date().toISOString().slice(0, 10)
+  const today = toDateString(new Date())
   const current = meds.filter((m) => !m.endDate || m.endDate > today)
   const historical = meds.filter((m) => m.endDate && m.endDate <= today)
 
