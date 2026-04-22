@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { CheckCircle, X, Clock, Cpu, Building2, Stethoscope } from "lucide-react"
 import type { Service } from "@/lib/db/schema"
+import { toDateString } from "@/lib/utils"
 
 const CATEGORY_ICONS = {
   machine: Cpu,
@@ -34,7 +35,7 @@ export function BookingGrid({ services }: { services: Service[] }) {
   const [error, setError] = useState<string | null>(null)
 
   function openModal(service: Service) {
-    const today = new Date().toISOString().split("T")[0]
+    const today = toDateString(new Date())
     setForm({ preferredDate: today, preferredTime: "flexible", notes: "" })
     setSubmitted(false)
     setError(null)
@@ -136,7 +137,7 @@ export function BookingGrid({ services }: { services: Service[] }) {
                   <input
                     type="date"
                     required
-                    min={new Date().toISOString().split("T")[0]}
+                    min={toDateString(new Date())}
                     value={form.preferredDate}
                     onChange={(e) => setForm((f) => ({ ...f, preferredDate: e.target.value }))}
                     className="h-10 w-full rounded-lg border border-slate-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"

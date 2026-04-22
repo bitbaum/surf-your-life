@@ -179,6 +179,10 @@ export const TECHNIQUE_DEFAULT_FREQUENCY = 1
 export const TECHNIQUE_DEFAULT_SAFETY_CAP = 150 // 1.5×
 export const TECHNIQUE_DEFAULT_MAX_DEBT_DAYS = 7 // debt older than 7 days is forgiven
 
+// AI chat limits
+export const AI_CHAT_HISTORY_LIMIT = 20  // messages sent as context to AI
+export const AI_CHAT_MAX_LENGTH = 1000   // max user message character length
+
 // Alert generation thresholds
 export const ALERT_ENERGY_DECLINE_THRESHOLD = 3  // drop of ≥3 over last 3 check-ins
 export const ALERT_FATIGUE_SPIKE_THRESHOLD = 8   // fatigue ≥ 8

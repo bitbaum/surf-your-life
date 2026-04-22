@@ -10,6 +10,7 @@ import { db } from "@/lib/db"
 import { users, checkIns, clientAlerts } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
 import { callClaude } from "@/lib/domain/anthropic"
+import { toDateString } from "@/lib/utils"
 
 export async function GET(
   _req: Request,
@@ -86,7 +87,7 @@ function buildClinicalContext(
   if (recentCheckIns.length > 0) {
     lines.push(`\nLast ${recentCheckIns.length} check-ins:`)
     for (const ci of recentCheckIns.slice(0, 7)) {
-      const date = ci.createdAt.toISOString().split("T")[0]
+      const date = toDateString(ci.createdAt)
       const pem = ci.pemFlag ? ` | PEM${ci.pemSeverity ? ` ${ci.pemSeverity}/10` : ""}` : ""
       const fatigue = ci.symptomFatigue != null ? ` | fatigue ${ci.symptomFatigue}` : ""
       const stress = ci.stressLevel != null ? ` | stress ${ci.stressLevel}` : ""

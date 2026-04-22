@@ -4,7 +4,7 @@ import { and, gte, lte, ne } from "drizzle-orm"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { Link } from "@/i18n/navigation"
 import { PageHeader } from "@/components/ui/page-header"
-import { formatDate } from "@/lib/utils"
+import { formatDate, toDateString } from "@/lib/utils"
 
 // Returns the Monday of the ISO week containing `date`
 function startOfWeek(date: Date): Date {
@@ -22,9 +22,6 @@ function addDays(date: Date, n: number): Date {
   return d
 }
 
-function toISO(date: Date): string {
-  return date.toISOString().split("T")[0]
-}
 
 const STATUS_STYLES: Record<string, string> = {
   pending: "bg-amber-50 border-amber-200 text-amber-900",
@@ -50,8 +47,8 @@ export default async function BookingCalendarPage({
 
   const weekBookings = await db.query.bookings.findMany({
     where: and(
-      gte(bookings.preferredDate, toISO(weekStart)),
-      lte(bookings.preferredDate, toISO(weekEnd)),
+      gte(bookings.preferredDate, toDateString(weekStart)),
+      lte(bookings.preferredDate, toDateString(weekEnd)),
       ne(bookings.status, "cancelled"),
     ),
     with: { user: true, service: true },
@@ -61,7 +58,7 @@ export default async function BookingCalendarPage({
   // Group by date
   const byDate = new Map<string, typeof weekBookings>()
   for (let i = 0; i < 7; i++) {
-    byDate.set(toISO(addDays(weekStart, i)), [])
+    byDate.set(toDateString(addDays(weekStart, i)), [])
   }
   for (const b of weekBookings) {
     if (b.preferredDate) {
@@ -69,9 +66,9 @@ export default async function BookingCalendarPage({
     }
   }
 
-  const prevWeek = toISO(addDays(weekStart, -7))
-  const nextWeek = toISO(addDays(weekStart, 7))
-  const todayISO = toISO(new Date())
+  const prevWeek = toDateString(addDays(weekStart, -7))
+  const nextWeek = toDateString(addDays(weekStart, 7))
+  const todayISO = toDateString(new Date())
 
   const DAY_NAMES = t.raw("dayNames") as string[]
 

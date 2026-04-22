@@ -7,7 +7,7 @@ import { users, verificationTokens } from "@/lib/db/schema"
 import { auth } from "@/lib/auth"
 import { sendEmail } from "@/lib/email"
 import { verificationEmail } from "@/lib/email/templates"
-import { SITE_URL, BRAND_NAME } from "@/lib/constants"
+import { SITE_URL, BRAND_NAME, DAY_MS } from "@/lib/constants"
 
 // POST /api/auth/verify-email — consume token and mark email as verified
 const verifySchema = z.object({
@@ -61,7 +61,7 @@ export async function PUT() {
   await db.delete(verificationTokens).where(eq(verificationTokens.identifier, email))
 
   const token = crypto.randomBytes(32).toString("hex")
-  const expires = new Date(Date.now() + 24 * 60 * 60 * 1000)
+  const expires = new Date(Date.now() + DAY_MS)
   await db.insert(verificationTokens).values({ identifier: email, token, expires })
 
   const verifyUrl = `${SITE_URL}/verify-email?token=${token}&email=${encodeURIComponent(email)}`

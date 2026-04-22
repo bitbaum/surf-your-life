@@ -4,10 +4,8 @@ import { db } from "@/lib/db"
 import { aiMessages } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
 import { generateAiReply } from "@/lib/domain/ai-chat"
+import { AI_CHAT_HISTORY_LIMIT, AI_CHAT_MAX_LENGTH } from "@/lib/constants"
 import { z } from "zod"
-
-const AI_CHAT_HISTORY_LIMIT = 20 // messages sent as context to AI
-const AI_CHAT_MAX_LENGTH = 1000 // max user message length
 
 const messageSchema = z.object({
   content: z.string().min(1).max(AI_CHAT_MAX_LENGTH),

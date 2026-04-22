@@ -18,3 +18,9 @@ export function formatDate(date: Date | string): string {
 export function formatEnumValue(value: string): string {
   return value.replace(/_/g, " ").replace(/^\w/, (c) => c.toUpperCase())
 }
+
+// Returns the date portion of a Date as an ISO string "YYYY-MM-DD".
+// Use for date inputs and day-level comparisons (avoids duplicating .toISOString().split("T")[0]).
+export function toDateString(date: Date): string {
+  return date.toISOString().split("T")[0]
+}

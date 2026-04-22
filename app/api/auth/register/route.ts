@@ -7,7 +7,7 @@ import { users, profiles, verificationTokens } from "@/lib/db/schema"
 import { registerSchema, resolveRole, STAFF_ROLES } from "@/lib/domain/auth"
 import { sendEmail } from "@/lib/email"
 import { welcomeEmail, newUserAlertEmail, verificationEmail } from "@/lib/email/templates"
-import { SITE_URL, BRAND_NAME } from "@/lib/constants"
+import { SITE_URL, BRAND_NAME, DAY_MS } from "@/lib/constants"
 import { checkRateLimit, ipKey } from "@/lib/rate-limit"
 
 export async function POST(req: Request) {
@@ -62,7 +62,7 @@ export async function POST(req: Request) {
     // Verification email — create a 24h token and send
     (async () => {
       const token = crypto.randomBytes(32).toString("hex")
-      const expires = new Date(Date.now() + 24 * 60 * 60 * 1000)
+      const expires = new Date(Date.now() + DAY_MS)
       await db.insert(verificationTokens).values({ identifier: email, token, expires })
       const verifyUrl = `${baseUrl}/verify-email?token=${token}&email=${encodeURIComponent(email)}`
       await sendEmail({
