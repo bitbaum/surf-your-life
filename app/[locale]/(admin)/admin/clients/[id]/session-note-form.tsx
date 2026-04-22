@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
-import { DOC_TYPE_I18N_KEYS, DOC_TYPE_BADGE_CLASSES } from "@/lib/constants"
+import { DOC_TYPE_I18N_KEYS, DOC_TYPE_BADGE_CLASSES, FIELD_MAX_TITLE } from "@/lib/constants"
 
 interface Props {
   clientId: string
@@ -53,7 +53,7 @@ export function SessionNoteForm({ clientId, onSaved, onCancel }: Props) {
         <label className="text-xs font-medium text-slate-500 uppercase tracking-wide block mb-1">
           {t("titleLabel")} <span className="text-slate-400 font-normal normal-case">{t("optional")}</span>
         </label>
-        <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder={t("titlePlaceholder")} maxLength={200}
+        <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder={t("titlePlaceholder")} maxLength={FIELD_MAX_TITLE}
           className="h-9 w-full rounded-lg border border-slate-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500" />
       </div>
       <div>

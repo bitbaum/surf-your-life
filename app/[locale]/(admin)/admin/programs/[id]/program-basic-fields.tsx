@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl"
 import { Input } from "@/components/ui/input"
-import { MAIN_CONCERNS } from "@/lib/constants"
+import { MAIN_CONCERNS, FIELD_MAX_TITLE, FIELD_MAX_LONG } from "@/lib/constants"
 import { formatEnumValue } from "@/lib/utils"
 
 interface FormState {
@@ -30,7 +30,7 @@ export function ProgramBasicFields({ form, onChange }: Props) {
           value={form.title}
           onChange={(e) => onChange("title", e.target.value)}
           required
-          maxLength={200}
+          maxLength={FIELD_MAX_TITLE}
         />
       </div>
 
@@ -40,7 +40,7 @@ export function ProgramBasicFields({ form, onChange }: Props) {
           id="edit-description"
           value={form.description}
           onChange={(e) => onChange("description", e.target.value)}
-          maxLength={2000}
+          maxLength={FIELD_MAX_LONG}
           rows={3}
           className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 resize-none"
         />

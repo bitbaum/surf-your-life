@@ -4,7 +4,7 @@ import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { useRouter } from "@/i18n/navigation"
 import { Button } from "@/components/ui/button"
-import { CAPACITY_SCALE, ASSESSMENT_DIMENSIONS } from "@/lib/constants"
+import { CAPACITY_SCALE, ASSESSMENT_DIMENSIONS, FIELD_MAX_LONG } from "@/lib/constants"
 
 export function NewAssessmentForm({ onDone }: { onDone: () => void }) {
   const t = useTranslations("portal.assessments")
@@ -113,7 +113,7 @@ export function NewAssessmentForm({ onDone }: { onDone: () => void }) {
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           placeholder={t("notesPlaceholder")}
-          maxLength={2000}
+          maxLength={FIELD_MAX_LONG}
           rows={3}
           className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 resize-none"
         />

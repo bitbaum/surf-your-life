@@ -224,6 +224,16 @@ export const DOC_TYPE_BADGE_CLASSES: Record<string, string> = {
   upload: "bg-slate-100 text-slate-600 border-slate-200",
 }
 
+// Form field max lengths — import these instead of hardcoding numbers in components
+export const FIELD_MAX_TITLE = 200          // short single-line fields: title, subject, name
+export const FIELD_MAX_SHORT = 100          // very short fields: dose, frequency
+export const FIELD_MAX_NOTES = 500          // brief notes / short description
+export const TECHNIQUE_NAME_MAX = 120       // technique name (tighter than generic title)
+export const FIELD_MAX_MEDIUM = 1000        // medium text areas: NLP entry, AI chat message
+export const FIELD_MAX_LONG = 2000          // long descriptions, instructions, goals
+export const FIELD_MAX_JOURNAL = 3000       // check-in journal / reflection
+export const FIELD_MAX_MESSAGE = 5000       // message body text
+
 // Assessment capacity dimensions (ordered: overall first, then sub-dimensions)
 export const ASSESSMENT_DIMENSIONS = [
   { key: "overallCapacity",   required: true },

@@ -7,6 +7,7 @@ import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import type { Technique } from "@/lib/db/schema"
 import { toDateString } from "@/lib/utils"
+import { FIELD_MAX_TITLE } from "@/lib/constants"
 
 interface Props {
   clientId: string
@@ -83,7 +84,7 @@ export function TechniqueAssignForm({ clientId, available, categoryEmoji, onSave
         <label className="block text-xs font-medium text-slate-700 mb-1">{t("fieldNotes")}</label>
         <input
           type="text"
-          maxLength={200}
+          maxLength={FIELD_MAX_TITLE}
           placeholder={t("notesPlaceholder")}
           value={form.notes}
           onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}

@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { toast } from "sonner"
+import { FIELD_MAX_TITLE, FIELD_MAX_SHORT, FIELD_MAX_NOTES } from "@/lib/constants"
 
 interface Props {
   onSaved: () => void
@@ -52,15 +53,15 @@ export function AddMedicationForm({ onSaved, onCancel }: Props) {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label className="text-xs font-medium text-slate-600 block mb-1">{t("fieldName")} *</label>
-          <Input value={form.medicationName} onChange={(e) => setForm((f) => ({ ...f, medicationName: e.target.value }))} placeholder={t("fieldNamePlaceholder")} required maxLength={200} />
+          <Input value={form.medicationName} onChange={(e) => setForm((f) => ({ ...f, medicationName: e.target.value }))} placeholder={t("fieldNamePlaceholder")} required maxLength={FIELD_MAX_TITLE} />
         </div>
         <div>
           <label className="text-xs font-medium text-slate-600 block mb-1">{t("fieldDose")}</label>
-          <Input value={form.dose} onChange={(e) => setForm((f) => ({ ...f, dose: e.target.value }))} placeholder={t("fieldDosePlaceholder")} maxLength={100} />
+          <Input value={form.dose} onChange={(e) => setForm((f) => ({ ...f, dose: e.target.value }))} placeholder={t("fieldDosePlaceholder")} maxLength={FIELD_MAX_SHORT} />
         </div>
         <div>
           <label className="text-xs font-medium text-slate-600 block mb-1">{t("fieldFrequency")}</label>
-          <Input value={form.frequency} onChange={(e) => setForm((f) => ({ ...f, frequency: e.target.value }))} placeholder={t("fieldFrequencyPlaceholder")} maxLength={100} />
+          <Input value={form.frequency} onChange={(e) => setForm((f) => ({ ...f, frequency: e.target.value }))} placeholder={t("fieldFrequencyPlaceholder")} maxLength={FIELD_MAX_SHORT} />
         </div>
         <div>
           <label className="text-xs font-medium text-slate-600 block mb-1">{t("fieldStartDate")}</label>
@@ -69,7 +70,7 @@ export function AddMedicationForm({ onSaved, onCancel }: Props) {
       </div>
       <div>
         <label className="text-xs font-medium text-slate-600 block mb-1">{t("fieldNotes")}</label>
-        <Input value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} placeholder={t("fieldNotesPlaceholder")} maxLength={500} />
+        <Input value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} placeholder={t("fieldNotesPlaceholder")} maxLength={FIELD_MAX_NOTES} />
       </div>
       {error && <p className="text-xs text-red-600">{error}</p>}
       <div className="flex gap-2">

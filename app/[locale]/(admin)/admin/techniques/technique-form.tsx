@@ -4,7 +4,7 @@ import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
-import { TECHNIQUE_CATEGORIES, TECHNIQUE_DIFFICULTIES } from "@/lib/constants"
+import { TECHNIQUE_CATEGORIES, TECHNIQUE_DIFFICULTIES, TECHNIQUE_NAME_MAX, FIELD_MAX_NOTES, FIELD_MAX_LONG } from "@/lib/constants"
 import type { Technique } from "@/lib/db/schema"
 import { X } from "lucide-react"
 
@@ -77,7 +77,7 @@ export function TechniqueForm({ technique, onClose, onSaved }: TechniqueFormProp
             <input
               {...field("name")}
               required
-              maxLength={120}
+              maxLength={TECHNIQUE_NAME_MAX}
               className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
           </div>
@@ -114,7 +114,7 @@ export function TechniqueForm({ technique, onClose, onSaved }: TechniqueFormProp
             <textarea
               {...field("description")}
               rows={2}
-              maxLength={500}
+              maxLength={FIELD_MAX_NOTES}
               className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 resize-none"
             />
           </div>
@@ -124,7 +124,7 @@ export function TechniqueForm({ technique, onClose, onSaved }: TechniqueFormProp
             <textarea
               {...field("instructions")}
               rows={4}
-              maxLength={2000}
+              maxLength={FIELD_MAX_LONG}
               placeholder={t("instructionsPlaceholder")}
               className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 resize-none"
             />

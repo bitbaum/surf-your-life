@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Sparkles, Loader2 } from "lucide-react"
+import { FIELD_MAX_MEDIUM } from "@/lib/constants"
 
 export type ParsedFill = {
   mood?: string
@@ -63,7 +64,7 @@ export function NlpEntry({ onFill }: Props) {
           onChange={(e) => setText(e.target.value)}
           placeholder={t("nlpPlaceholder")}
           rows={2}
-          maxLength={1000}
+          maxLength={FIELD_MAX_MEDIUM}
           className="w-full rounded-lg border border-violet-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 resize-none"
         />
         <div className="flex items-center gap-3">

@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
+import { FIELD_MAX_TITLE, FIELD_MAX_MESSAGE } from "@/lib/constants"
 
 export function NewMessageForm() {
   const t = useTranslations("messages")
@@ -43,7 +44,7 @@ export function NewMessageForm() {
           placeholder={t("subjectPlaceholder")}
           required
           disabled={sending}
-          maxLength={200}
+          maxLength={FIELD_MAX_TITLE}
           className="rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:opacity-50"
         />
       </div>
@@ -57,7 +58,7 @@ export function NewMessageForm() {
           rows={5}
           required
           disabled={sending}
-          maxLength={5000}
+          maxLength={FIELD_MAX_MESSAGE}
           className="rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 resize-none disabled:opacity-50"
         />
       </div>
