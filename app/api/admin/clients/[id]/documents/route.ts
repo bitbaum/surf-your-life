@@ -2,13 +2,13 @@ import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { isStaff } from "@/lib/domain/auth"
 import { db } from "@/lib/db"
-import { documents } from "@/lib/db/schema"
+import { documents, documentTypeEnum } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
 import { z } from "zod"
 import { DOCUMENTS_PER_CLIENT_LIMIT } from "@/lib/constants"
 
 const createDocSchema = z.object({
-  type: z.enum(["session_note", "assessment", "report"]),
+  type: z.enum(documentTypeEnum.enumValues),
   title: z.string().max(200).optional(),
   content: z.string().min(1).max(10000),
 })

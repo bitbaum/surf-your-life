@@ -3,10 +3,10 @@ import { z } from "zod"
 import { eq } from "drizzle-orm"
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
-import { users } from "@/lib/db/schema"
+import { users, roleEnum } from "@/lib/db/schema"
 
 const bodySchema = z.object({
-  role: z.enum(["client", "practitioner", "admin"]),
+  role: z.enum(roleEnum.enumValues),
 })
 
 export async function PATCH(

@@ -2,12 +2,12 @@ import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { isStaff } from "@/lib/domain/auth"
 import { db } from "@/lib/db"
-import { leads } from "@/lib/db/schema"
+import { leads, leadStatusEnum } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { z } from "zod"
 
 const patchSchema = z.object({
-  status: z.enum(["new", "contacted", "dismissed"]),
+  status: z.enum(leadStatusEnum.enumValues),
 })
 
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
