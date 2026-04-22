@@ -12,6 +12,7 @@ export type StaffRole = (typeof STAFF_ROLES)[number]
 export type AdminRole = typeof ADMIN_ROLE
 export type PractitionerRole = typeof PRACTITIONER_ROLE
 export type ClientRole = typeof CLIENT_ROLE
+export type AppRole = AdminRole | PractitionerRole | ClientRole
 
 /** Returns true when a user has staff-level access (admin or practitioner). */
 export function isStaff(role: string | undefined | null): boolean {
@@ -31,7 +32,7 @@ export const registerSchema = z.object({
 export type LoginInput = z.infer<typeof loginSchema>
 export type RegisterInput = z.infer<typeof registerSchema>
 
-export function resolveRole(email: string): "admin" | "client" {
+export function resolveRole(email: string): AdminRole | ClientRole {
   const adminEmails = (process.env.ADMIN_EMAILS ?? "")
     .split(",")
     .map((e) => e.trim().toLowerCase())

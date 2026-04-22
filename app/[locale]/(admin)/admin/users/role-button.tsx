@@ -3,11 +3,9 @@
 import { useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
 import { useTranslations } from "next-intl"
-import { CLIENT_ROLE, PRACTITIONER_ROLE, ADMIN_ROLE } from "@/lib/domain/auth"
+import { CLIENT_ROLE, PRACTITIONER_ROLE, ADMIN_ROLE, type AppRole } from "@/lib/domain/auth"
 
-type Role = "client" | "practitioner" | "admin"
-
-const ROLE_BADGE: Record<Role, string> = {
+const ROLE_BADGE: Record<AppRole, string> = {
   admin: "bg-teal-50 text-teal-700",
   practitioner: "bg-blue-50 text-blue-600",
   client: "bg-slate-100 text-slate-600",
@@ -16,7 +14,7 @@ const ROLE_BADGE: Record<Role, string> = {
 
 interface RoleButtonProps {
   userId: string
-  currentRole: Role
+  currentRole: AppRole
   canEdit: boolean
 }
 
@@ -26,7 +24,7 @@ export function RoleButton({ userId, currentRole, canEdit }: RoleButtonProps) {
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
 
-  async function handleChange(newRole: Role) {
+  async function handleChange(newRole: AppRole) {
     if (newRole === currentRole) return
     setError(null)
 
@@ -62,7 +60,7 @@ export function RoleButton({ userId, currentRole, canEdit }: RoleButtonProps) {
       <select
         defaultValue={currentRole}
         disabled={isPending}
-        onChange={(e) => handleChange(e.target.value as Role)}
+        onChange={(e) => handleChange(e.target.value as AppRole)}
         className="text-xs rounded-lg border border-slate-200 px-2 py-1 bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:opacity-50 disabled:pointer-events-none"
       >
         <option value={CLIENT_ROLE}>{t("roles.client")}</option>

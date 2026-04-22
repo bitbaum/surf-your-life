@@ -6,7 +6,7 @@ import bcrypt from "bcryptjs"
 import { eq } from "drizzle-orm"
 import { db } from "@/lib/db"
 import { users } from "@/lib/db/schema"
-import { loginSchema, resolveRole, CLIENT_ROLE } from "@/lib/domain/auth"
+import { loginSchema, resolveRole, CLIENT_ROLE, type AppRole } from "@/lib/domain/auth"
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: DrizzleAdapter(db),
@@ -63,7 +63,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
     session({ session, token }) {
       session.user.id = token.id as string
-      session.user.role = token.role as "admin" | "practitioner" | "client"
+      session.user.role = token.role as AppRole
       session.user.emailVerified = (token.emailVerified as Date | null | undefined) ?? null
       return session
     },
