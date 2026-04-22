@@ -14,9 +14,14 @@ import {
   PROFILE_COMPLETION_FIELDS,
   RECENT_CHECK_INS_LIMIT,
   THIRTY_DAYS_MS,
-  DAY_MS,
   SEVEN_DAYS_MS,
 } from "@/lib/constants"
+import {
+  computeStreak,
+  computeProgramProgress,
+  detectMilestone,
+  computeInsightKey,
+} from "@/lib/domain/check-in"
 import { WellnessTrendChart } from "./wellness-trend-chart"
 import { SleepChart } from "./sleep-chart"
 import { SymptomsChart } from "./symptoms-chart"
@@ -93,67 +98,31 @@ export default async function DashboardPage() {
   const completionPct = Math.round((completedFields / PROFILE_COMPLETION_FIELDS.length) * 100)
 
   // Current streak: consecutive days with a check-in ending today/yesterday
-  const streak = (() => {
-    if (recentCheckIns.length === 0) return 0
-    const days = recentCheckIns.map((ci) => {
-      const d = new Date(ci.createdAt)
-      return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime()
-    })
-    const unique = [...new Set(days)].sort((a, b) => b - a)
-    const today = new Date()
-    const todayMs = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime()
-    let s = 0
-    let expected = todayMs
-    // Allow streak to start from yesterday if not yet checked in today
-    if (unique[0] !== todayMs && unique[0] !== todayMs - DAY_MS) return 0
-    if (unique[0] === todayMs - DAY_MS) expected = todayMs - DAY_MS
-    for (const d of unique) {
-      if (d === expected) { s++; expected -= DAY_MS }
-      else break
-    }
-    return s
-  })()
+  const streak = computeStreak(recentCheckIns.map((ci) => new Date(ci.createdAt)))
 
   const hasSymptomData = trendCheckIns.some(
     (c) => c.symptomFatigue != null || c.symptomBrainFog != null || c.symptomPain != null || c.stressLevel != null
   )
 
   // Programme progress — current week and active phase
-  type PhaseEntry = { week: number; title: string; guidance: string }
-  const programProgress = (() => {
-    if (!activeEnrollment?.startDate) return null
-    const startMs = activeEnrollment.startDate.getTime()
-    const currentWeek = Math.floor((Date.now() - startMs) / (7 * DAY_MS)) + 1 // eslint-disable-line react-hooks/purity -- server component
-    const totalWeeks = activeEnrollment.program.durationWeeks ?? 0
-    if (currentWeek < 1 || (totalWeeks > 0 && currentWeek > totalWeeks)) return null
-    const phases = activeEnrollment.program.phaseConfig as PhaseEntry[] | null
-    const currentPhase = phases?.find((p) => p.week === currentWeek) ?? null
-    return { currentWeek, totalWeeks, currentPhase, programTitle: activeEnrollment.program.title }
-  })()
+  const programProgress = activeEnrollment ? computeProgramProgress(activeEnrollment) : null
 
-  // Milestone detection — check-in count milestones and streak milestones
-  const CHECKIN_MILESTONES = [10, 25, 50, 100, 250, 500]
-  const STREAK_MILESTONES = [7, 14, 30, 60, 100]
-  const checkInMilestone = CHECKIN_MILESTONES.find((m) => totalCheckIns === m)
-  const streakMilestone = STREAK_MILESTONES.find((m) => streak === m)
-  const milestone = checkInMilestone
-    ? t("milestoneCheckIns", { n: checkInMilestone })
-    : streakMilestone
-    ? t("milestoneStreak", { n: streakMilestone })
+  // Milestone detection
+  const milestoneHit = detectMilestone(totalCheckIns, streak)
+  const milestone = milestoneHit
+    ? milestoneHit.type === "checkins"
+      ? t("milestoneCheckIns", { n: milestoneHit.n })
+      : t("milestoneStreak", { n: milestoneHit.n })
     : null
 
-  // Rule-based insight: simple trend text based on recent check-ins
-  const insight = (() => {
-    if (recentCheckIns.length < 3) return null
-    const last3Energy = recentCheckIns.slice(0, 3).map((ci) => ci.energyLevel)
-    const trend = last3Energy[0] - last3Energy[2]
-    if (trend >= 2) return t("insightEnergyUp")
-    if (trend <= -2) return t("insightEnergyDown")
-    const sevenDaysAgo = new Date(Date.now() - SEVEN_DAYS_MS) // eslint-disable-line react-hooks/purity -- server component
-    const weekCheckIns = trendCheckIns.filter((ci) => ci.createdAt >= sevenDaysAgo)
-    if (weekCheckIns.length >= 5) return t("insightConsistent")
-    return null
-  })()
+  // Rule-based insight
+  const sevenDaysAgo = new Date(Date.now() - SEVEN_DAYS_MS) // eslint-disable-line react-hooks/purity -- server component
+  const weekCheckInCount = trendCheckIns.filter((ci) => ci.createdAt >= sevenDaysAgo).length
+  const insightKey = computeInsightKey(
+    recentCheckIns.slice(0, 3).map((ci) => ci.energyLevel),
+    weekCheckInCount
+  )
+  const insight = insightKey ? t(insightKey) : null
 
   const firstName = session.user.name?.split(" ")[0] ?? session.user.email?.split("@")[0] ?? ""
 
