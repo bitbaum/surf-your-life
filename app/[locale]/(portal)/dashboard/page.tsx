@@ -29,7 +29,8 @@ export default async function DashboardPage() {
 
   const t = await getTranslations("portal.dashboard")
 
-  const thirtyDaysAgo = new Date(Date.now() - THIRTY_DAYS_MS)
+  const nowMs = Date.now() // eslint-disable-line react-hooks/purity -- server component
+  const thirtyDaysAgo = new Date(nowMs - THIRTY_DAYS_MS)
 
   const [profile, recentCheckIns, trendCheckIns, totalResult, dbUser, activeEnrollment] = await Promise.all([
     db.query.profiles.findFirst({ where: eq(profiles.userId, session.user.id) }),
@@ -122,7 +123,7 @@ export default async function DashboardPage() {
   const programProgress = (() => {
     if (!activeEnrollment?.startDate) return null
     const startMs = activeEnrollment.startDate.getTime()
-    const currentWeek = Math.floor((Date.now() - startMs) / (7 * DAY_MS)) + 1
+    const currentWeek = Math.floor((Date.now() - startMs) / (7 * DAY_MS)) + 1 // eslint-disable-line react-hooks/purity -- server component
     const totalWeeks = activeEnrollment.program.durationWeeks ?? 0
     if (currentWeek < 1 || (totalWeeks > 0 && currentWeek > totalWeeks)) return null
     const phases = activeEnrollment.program.phaseConfig as PhaseEntry[] | null
@@ -148,7 +149,7 @@ export default async function DashboardPage() {
     const trend = last3Energy[0] - last3Energy[2]
     if (trend >= 2) return t("insightEnergyUp")
     if (trend <= -2) return t("insightEnergyDown")
-    const sevenDaysAgo = new Date(Date.now() - SEVEN_DAYS_MS)
+    const sevenDaysAgo = new Date(Date.now() - SEVEN_DAYS_MS) // eslint-disable-line react-hooks/purity -- server component
     const weekCheckIns = trendCheckIns.filter((ci) => ci.createdAt >= sevenDaysAgo)
     if (weekCheckIns.length >= 5) return t("insightConsistent")
     return null

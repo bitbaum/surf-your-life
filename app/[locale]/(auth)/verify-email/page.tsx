@@ -12,16 +12,13 @@ function VerifyContent() {
   const searchParams = useSearchParams()
   const token = searchParams.get("token") ?? ""
   const email = searchParams.get("email") ?? ""
+  const hasParams = Boolean(token && email)
 
-  const [status, setStatus] = useState<"loading" | "success" | "error">("loading")
-  const [errorMsg, setErrorMsg] = useState("")
+  const [status, setStatus] = useState<"loading" | "success" | "error">(hasParams ? "loading" : "error")
+  const [errorMsg, setErrorMsg] = useState(hasParams ? "" : t("invalid"))
 
   useEffect(() => {
-    if (!token || !email) {
-      setStatus("error")
-      setErrorMsg(t("invalid"))
-      return
-    }
+    if (!hasParams) return
 
     fetch("/api/auth/verify-email", {
       method: "POST",
@@ -41,7 +38,7 @@ function VerifyContent() {
         setErrorMsg(t("invalid"))
         setStatus("error")
       })
-  }, [token, email, t])
+  }, [hasParams, token, email, t])
 
   if (status === "loading") {
     return (

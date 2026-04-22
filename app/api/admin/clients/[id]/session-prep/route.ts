@@ -7,8 +7,7 @@ import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { users, checkIns, clientAlerts } from "@/lib/db/schema"
-import { eq, desc, gte } from "drizzle-orm"
-import { THIRTY_DAYS_MS } from "@/lib/constants"
+import { eq, desc } from "drizzle-orm"
 
 export async function GET(
   _req: Request,

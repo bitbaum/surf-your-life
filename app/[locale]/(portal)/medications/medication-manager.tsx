@@ -6,7 +6,6 @@ import { useRouter } from "@/i18n/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Plus, Square, Trash2, ChevronDown, ChevronUp } from "lucide-react"
-import { formatDate } from "@/lib/utils"
 import { toast } from "sonner"
 
 type Medication = {

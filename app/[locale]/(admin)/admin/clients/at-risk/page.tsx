@@ -13,7 +13,8 @@ export default async function AtRiskClientsPage({ params }: { params: Promise<{ 
   setRequestLocale(locale)
   const t = await getTranslations("admin.clients")
 
-  const sevenDaysAgo = new Date(Date.now() - SEVEN_DAYS_MS)
+  const nowMs = Date.now() // eslint-disable-line react-hooks/purity -- server component
+  const sevenDaysAgo = new Date(nowMs - SEVEN_DAYS_MS)
 
   const clientsWithLastCheckIn = await db
     .select({
@@ -34,7 +35,7 @@ export default async function AtRiskClientsPage({ params }: { params: Promise<{ 
 
   function daysSince(date: Date | null): string {
     if (!date) return "—"
-    const days = Math.floor((Date.now() - date.getTime()) / (1000 * 60 * 60 * 24))
+    const days = Math.floor((Date.now() - date.getTime()) / (1000 * 60 * 60 * 24)) // eslint-disable-line react-hooks/purity -- server component
     return t("atRisk.daysSince", { n: days })
   }
 

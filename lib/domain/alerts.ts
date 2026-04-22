@@ -43,7 +43,7 @@ export async function generateAlerts(clientId: string, newCheckInId: string): Pr
     // ─── Rule 1: Energy decline ────────────────────────────────────────────────
     // If the last 3 check-ins show a total energy drop of ≥ threshold, flag it.
     if (recent.length >= 3) {
-      const [latest, prev1, prev2] = recent
+      const [latest, , prev2] = recent
       const drop = prev2.energyLevel - latest.energyLevel
       if (drop >= ALERT_ENERGY_DECLINE_THRESHOLD) {
         const alreadyExists = await db.query.clientAlerts.findFirst({

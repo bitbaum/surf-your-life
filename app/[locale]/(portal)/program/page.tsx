@@ -45,8 +45,9 @@ export default async function ProgramPage({ params }: { params: Promise<{ locale
   const { program } = enrollment
 
   // Calculate progress if start date is set
+  const nowMs = Date.now() // eslint-disable-line react-hooks/purity -- server component
   const weeksCompleted = enrollment.startDate
-    ? Math.floor((Date.now() - new Date(enrollment.startDate).getTime()) / SEVEN_DAYS_MS)
+    ? Math.floor((nowMs - new Date(enrollment.startDate).getTime()) / SEVEN_DAYS_MS)
     : null
   const currentWeek =
     weeksCompleted !== null && program.durationWeeks

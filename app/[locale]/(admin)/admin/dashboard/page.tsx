@@ -20,8 +20,9 @@ export default async function AdminDashboardPage({
   setRequestLocale(locale)
   const t = await getTranslations("admin.dashboard")
 
-  const thirtyDaysAgo = new Date(Date.now() - THIRTY_DAYS_MS)
-  const sevenDaysAgo = new Date(Date.now() - SEVEN_DAYS_MS)
+  const nowMs = Date.now() // eslint-disable-line react-hooks/purity -- server component
+  const thirtyDaysAgo = new Date(nowMs - THIRTY_DAYS_MS)
+  const sevenDaysAgo = new Date(nowMs - SEVEN_DAYS_MS)
 
   const [
     clientCountResult,
@@ -131,7 +132,7 @@ export default async function AdminDashboardPage({
             <div className="flex flex-col divide-y divide-slate-100">
               {atRiskClients.map((client) => {
                 const daysAgo = client.lastCheckIn
-                  ? Math.floor((Date.now() - client.lastCheckIn.getTime()) / DAY_MS)
+                  ? Math.floor((Date.now() - client.lastCheckIn.getTime()) / DAY_MS) // eslint-disable-line react-hooks/purity -- server component
                   : null
                 return (
                   <Link

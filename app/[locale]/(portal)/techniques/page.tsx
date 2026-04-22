@@ -17,7 +17,8 @@ export default async function TechniquesPage({ params }: { params: Promise<{ loc
 
   const today = new Date().toISOString().slice(0, 10)
   // Fetch logs for debt window (14 days)
-  const since = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10)
+  const nowMs = Date.now() // eslint-disable-line react-hooks/purity -- server component
+  const since = new Date(nowMs - 14 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10)
 
   const [assignments, logs] = await Promise.all([
     db.query.techniqueAssignments.findMany({
