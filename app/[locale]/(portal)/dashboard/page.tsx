@@ -5,10 +5,7 @@ import { eq, desc, asc, and, gte, count } from "drizzle-orm"
 import { getTranslations } from "next-intl/server"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { StatCard } from "@/components/ui/stat-card"
-import { Button } from "@/components/ui/button"
-import { Link } from "@/i18n/navigation"
-import { formatDate } from "@/lib/utils"
-import { ClipboardList, TrendingUp, Flame, CheckCircle2 } from "lucide-react"
+import { ClipboardList, TrendingUp, Flame } from "lucide-react"
 import {
   ONBOARDING_REQUIRED_FIELDS,
   PROFILE_COMPLETION_FIELDS,
@@ -22,11 +19,10 @@ import {
   detectMilestone,
   computeInsightKey,
 } from "@/lib/domain/check-in"
-import { WellnessTrendChart } from "./wellness-trend-chart"
-import { SleepChart } from "./sleep-chart"
-import { SymptomsChart } from "./symptoms-chart"
 import { EmailVerificationBanner } from "@/components/portal/EmailVerificationBanner"
 import { ProgressBar } from "@/components/ui/progress-bar"
+import { DashboardBanners } from "./dashboard-banners"
+import { DashboardCharts } from "./dashboard-charts"
 
 export default async function DashboardPage() {
   const session = await auth()
@@ -78,13 +74,11 @@ export default async function DashboardPage() {
 
   const totalCheckIns = totalResult[0]?.value ?? 0
 
-  // Has the user already checked in today?
   const todayStart = new Date()
   todayStart.setHours(0, 0, 0, 0)
   const checkedInToday = recentCheckIns.length > 0 &&
     new Date(recentCheckIns[0].createdAt) >= todayStart
 
-  // Time-of-day greeting
   const hour = new Date().getHours()
   const greetingKey = hour < 12 ? "greetingMorning" : hour < 17 ? "greetingAfternoon" : "greetingEvening"
 
@@ -97,17 +91,14 @@ export default async function DashboardPage() {
   ).length
   const completionPct = Math.round((completedFields / PROFILE_COMPLETION_FIELDS.length) * 100)
 
-  // Current streak: consecutive days with a check-in ending today/yesterday
   const streak = computeStreak(recentCheckIns.map((ci) => new Date(ci.createdAt)))
 
   const hasSymptomData = trendCheckIns.some(
     (c) => c.symptomFatigue != null || c.symptomBrainFog != null || c.symptomPain != null || c.stressLevel != null
   )
 
-  // Programme progress — current week and active phase
   const programProgress = activeEnrollment ? computeProgramProgress(activeEnrollment) : null
 
-  // Milestone detection
   const milestoneHit = detectMilestone(totalCheckIns, streak)
   const milestone = milestoneHit
     ? milestoneHit.type === "checkins"
@@ -115,7 +106,6 @@ export default async function DashboardPage() {
       : t("milestoneStreak", { n: milestoneHit.n })
     : null
 
-  // Rule-based insight
   const sevenDaysAgo = new Date(Date.now() - SEVEN_DAYS_MS) // eslint-disable-line react-hooks/purity -- server component
   const weekCheckInCount = trendCheckIns.filter((ci) => ci.createdAt >= sevenDaysAgo).length
   const insightKey = computeInsightKey(
@@ -137,53 +127,12 @@ export default async function DashboardPage() {
 
       {!dbUser?.emailVerified && <EmailVerificationBanner />}
 
-      {milestone && (
-        <div className="mb-6 rounded-xl bg-amber-50 border border-amber-200 p-4 flex items-center gap-3">
-          <span className="text-2xl">🎉</span>
-          <div>
-            <p className="font-semibold text-amber-900 text-sm">{t("milestoneTitle")}</p>
-            <p className="text-xs text-amber-700 mt-0.5">{milestone}</p>
-          </div>
-        </div>
-      )}
-
-      {!isOnboarded && (
-        <div className="mb-6 rounded-xl bg-teal-50 border border-teal-200 p-4">
-          <div className="flex items-center justify-between gap-4 mb-3">
-            <div>
-              <p className="font-medium text-teal-900 text-sm">{t("completeProfile")}</p>
-              <p className="text-xs text-teal-700 mt-0.5">
-                {t("completeProfileBody", { pct: completionPct })}
-              </p>
-            </div>
-            <Link href="/profile">
-              <Button size="sm">{t("completeProfileCta")}</Button>
-            </Link>
-          </div>
-          <ProgressBar value={completionPct} size="sm" track="teal" />
-        </div>
-      )}
-
-      {/* Today's check-in status banner */}
-      {checkedInToday ? (
-        <div className="mb-6 rounded-xl bg-teal-50 border border-teal-200 p-4 flex items-center gap-3">
-          <CheckCircle2 className="w-5 h-5 text-teal-600 flex-shrink-0" />
-          <div>
-            <p className="text-sm font-semibold text-teal-900">{t("checkedInTodayTitle")}</p>
-            <p className="text-xs text-teal-700 mt-0.5">{t("checkedInTodayBody")}</p>
-          </div>
-        </div>
-      ) : (
-        <div className="mb-6 rounded-xl border border-slate-200 bg-white shadow-sm p-4 flex items-center justify-between gap-4">
-          <div>
-            <p className="text-sm font-semibold text-slate-800">{t("readyTitle")}</p>
-            <p className="text-xs text-slate-400 mt-0.5">{t("readySubtitle")}</p>
-          </div>
-          <Link href="/check-in">
-            <Button size="sm">{t("checkIn")}</Button>
-          </Link>
-        </div>
-      )}
+      <DashboardBanners
+        milestone={milestone}
+        isOnboarded={isOnboarded}
+        completionPct={completionPct}
+        checkedInToday={checkedInToday}
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <StatCard label={t("totalCheckIns")} value={totalCheckIns} icon={ClipboardList} color="teal" />
@@ -232,71 +181,12 @@ export default async function DashboardPage() {
         </Card>
       )}
 
-      {trendCheckIns.length >= 2 && (
-        <Card className="mb-6">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle>{t("wellnessTrend")}</CardTitle>
-                <p className="text-xs text-slate-400 mt-0.5">{t("wellnessTrendSubtitle")}</p>
-              </div>
-              <Link href="/check-ins" className="text-sm text-teal-600 hover:underline shrink-0">
-                {t("viewAll")}
-              </Link>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <WellnessTrendChart data={trendCheckIns} />
-          </CardContent>
-        </Card>
-      )}
-
-      {trendCheckIns.filter((c) => c.sleepHours != null).length >= 2 && (
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>{t("sleepTrend")}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <SleepChart data={trendCheckIns} />
-            <div className="flex items-center justify-between mt-2 text-xs text-slate-400">
-              <span>{formatDate(trendCheckIns[0].createdAt)}</span>
-              <span>{formatDate(trendCheckIns[trendCheckIns.length - 1].createdAt)}</span>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {hasSymptomData && trendCheckIns.length >= 2 && (
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>{t("symptomsTitle")}</CardTitle>
-            <p className="text-xs text-slate-400 mt-0.5">{t("symptomsSubtitle")}</p>
-          </CardHeader>
-          <CardContent>
-            <SymptomsChart data={trendCheckIns} />
-          </CardContent>
-        </Card>
-      )}
-
-      {insight && (
-        <Card className="mb-6 bg-teal-50 border-teal-200">
-          <CardContent className="pt-5 flex items-start gap-3">
-            <span className="text-xl">💡</span>
-            <div>
-              <p className="text-sm font-medium text-teal-900">{t("insightTitle")}</p>
-              <p className="text-sm text-teal-700 mt-0.5">{insight}</p>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {recentCheckIns.length > 0 && (
-        <div className="flex justify-center">
-          <Link href="/check-ins" className="text-sm text-slate-400 hover:text-teal-600 transition-colors">
-            {t("viewAll")}
-          </Link>
-        </div>
-      )}
+      <DashboardCharts
+        trendCheckIns={trendCheckIns}
+        hasSymptomData={hasSymptomData}
+        insight={insight}
+        hasRecentCheckIns={recentCheckIns.length > 0}
+      />
     </div>
   )
 }
