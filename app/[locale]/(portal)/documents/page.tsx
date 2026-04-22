@@ -10,7 +10,7 @@ import { Pagination } from "@/components/ui/pagination"
 import { formatDate } from "@/lib/utils"
 import { FileText } from "lucide-react"
 import { getTranslations, setRequestLocale } from "next-intl/server"
-
+import { AddDocumentButton } from "./add-document-button"
 
 export default async function DocumentsPage({
   params,
@@ -37,7 +37,7 @@ export default async function DocumentsPage({
       orderBy: [desc(documents.createdAt)],
       limit: PAGINATION_DEFAULT,
       offset,
-      with: { author: { columns: { name: true } } },
+      with: { author: { columns: { name: true, id: true } } },
     }),
     db.select({ value: count() }).from(documents).where(whereClause),
   ])
@@ -54,10 +54,11 @@ export default async function DocumentsPage({
 
   return (
     <div className="max-w-2xl mx-auto">
-      <PageHeader
-        title={t("title")}
-        description={t("subtitle")}
-      />
+      <PageHeader title={t("title")} description={t("subtitle")} />
+
+      <div className="mb-4">
+        <AddDocumentButton />
+      </div>
 
       {docs.length === 0 ? (
         <Card>
@@ -82,8 +83,10 @@ export default async function DocumentsPage({
                         {TYPE_LABELS[doc.type] ?? doc.type}
                       </span>
                       <span className="text-xs text-slate-400">{formatDate(doc.createdAt)}</span>
-                      {doc.author?.name && (
-                        <span className="text-xs text-slate-400">· {t("by")} {doc.author.name}</span>
+                      {doc.author && (
+                        <span className="text-xs text-slate-400">
+                          · {doc.author.id === session.user.id ? t("byYou") : `${t("by")} ${doc.author.name}`}
+                        </span>
                       )}
                     </div>
                     <p className="text-sm font-medium text-slate-800">{doc.title}</p>

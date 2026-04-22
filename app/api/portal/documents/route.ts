@@ -3,7 +3,13 @@ import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { documents } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
-import { DOCUMENTS_PER_CLIENT_LIMIT } from "@/lib/constants"
+import { z } from "zod"
+import { DOCUMENTS_PER_CLIENT_LIMIT, DOCUMENT_UPLOAD_MAX_CONTENT, DOCUMENT_UPLOAD_MAX_TITLE } from "@/lib/constants"
+
+const uploadSchema = z.object({
+  title: z.string().max(DOCUMENT_UPLOAD_MAX_TITLE).optional(),
+  content: z.string().min(1).max(DOCUMENT_UPLOAD_MAX_CONTENT),
+})
 
 export async function GET() {
   const session = await auth()
@@ -19,4 +25,33 @@ export async function GET() {
   })
 
   return NextResponse.json({ success: true, data: docs })
+}
+
+export async function POST(req: Request) {
+  const session = await auth()
+  if (!session?.user?.id) {
+    return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
+  }
+
+  const body = await req.json()
+  const parsed = uploadSchema.safeParse(body)
+  if (!parsed.success) {
+    return NextResponse.json({ success: false, error: "Invalid input" }, { status: 400 })
+  }
+
+  const { content } = parsed.data
+  const title =
+    parsed.data.title?.trim() ||
+    `Upload – ${new Date().toLocaleDateString("en-GB", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    })}`
+
+  const [doc] = await db
+    .insert(documents)
+    .values({ userId: session.user.id, authorId: session.user.id, type: "upload", title, content })
+    .returning({ id: documents.id })
+
+  return NextResponse.json({ success: true, data: { id: doc.id } }, { status: 201 })
 }

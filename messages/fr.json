@@ -735,14 +735,25 @@
     },
     "documents": {
       "title": "Documents",
-      "subtitle": "Notes et rapports que votre équipe soignante a partagés avec vous",
+      "subtitle": "Notes et rapports de votre équipe soignante, et documents que vous avez partagés",
       "empty": "Aucun document pour l'instant",
-      "emptySubtext": "Votre praticien ajoutera ici des notes de séance et des rapports après vos séances",
+      "emptySubtext": "Votre praticien ajoutera ici des notes de séance et des rapports. Vous pouvez aussi partager des notes avec votre équipe.",
       "by": "par",
+      "byYou": "par vous",
       "type_session_note": "Note de séance",
       "type_assessment": "Évaluation",
       "type_report": "Rapport",
-      "type_upload": "Téléchargement"
+      "type_upload": "Votre dépôt",
+      "addDocument": "Ajouter un document",
+      "formTitle": "Partager un document avec votre équipe",
+      "fieldTitle": "Titre (facultatif)",
+      "fieldTitlePlaceholder": "ex. Résultats de laboratoire jan 2025",
+      "fieldContent": "Contenu",
+      "fieldContentPlaceholder": "Collez ou rédigez le contenu à partager...",
+      "submit": "Soumettre",
+      "cancel": "Annuler",
+      "submitError": "Impossible de soumettre le document. Veuillez réessayer.",
+      "submitSuccess": "Document partagé avec votre équipe soignante."
     }
   },
   "sidebar": {

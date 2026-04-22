@@ -735,14 +735,25 @@
     },
     "documents": {
       "title": "Documents",
-      "subtitle": "Notes and reports your care team has shared with you",
+      "subtitle": "Notes and reports from your care team, and documents you've shared with them",
       "empty": "No documents yet",
-      "emptySubtext": "Your practitioner will add session notes and reports here after your sessions",
+      "emptySubtext": "Your practitioner will add session notes and reports here. You can also share notes with your team.",
       "by": "by",
+      "byYou": "by you",
       "type_session_note": "Session note",
       "type_assessment": "Assessment",
       "type_report": "Report",
-      "type_upload": "Upload"
+      "type_upload": "Your upload",
+      "addDocument": "Add document",
+      "formTitle": "Share a document with your care team",
+      "fieldTitle": "Title (optional)",
+      "fieldTitlePlaceholder": "e.g. Lab results Jan 2025",
+      "fieldContent": "Content",
+      "fieldContentPlaceholder": "Paste or write the content you'd like to share...",
+      "submit": "Submit",
+      "cancel": "Cancel",
+      "submitError": "Could not submit document. Please try again.",
+      "submitSuccess": "Document shared with your care team."
     }
   },
   "sidebar": {
