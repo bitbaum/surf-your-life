@@ -6,7 +6,7 @@ import { db } from "@/lib/db"
 import { users } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { checkRateLimit, ipKey } from "@/lib/rate-limit"
-import { API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED, PASSWORD_MIN_LENGTH } from "@/lib/constants"
+import { API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED, BCRYPT_SALT_ROUNDS, PASSWORD_MIN_LENGTH } from "@/lib/constants"
 
 const changePasswordSchema = z.object({
   currentPassword: z.string().min(1),
@@ -52,7 +52,7 @@ export async function POST(req: Request) {
     )
   }
 
-  const hashed = await bcrypt.hash(parsed.data.newPassword, 12)
+  const hashed = await bcrypt.hash(parsed.data.newPassword, BCRYPT_SALT_ROUNDS)
   await db.update(users).set({ password: hashed }).where(eq(users.id, session.user.id))
 
   return NextResponse.json({ success: true })

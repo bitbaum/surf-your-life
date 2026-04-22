@@ -5,7 +5,7 @@ import { users, passwordResetTokens } from "@/lib/db/schema"
 import { eq, and, gt, isNull } from "drizzle-orm"
 import bcrypt from "bcryptjs"
 import { checkRateLimit, ipKey } from "@/lib/rate-limit"
-import { API_ERR_INVALID_INPUT, PASSWORD_MIN_LENGTH } from "@/lib/constants"
+import { API_ERR_INVALID_INPUT, BCRYPT_SALT_ROUNDS, PASSWORD_MIN_LENGTH } from "@/lib/constants"
 
 const schema = z.object({
   token: z.string().min(1),
@@ -42,7 +42,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: false, error: "Invalid or expired token" }, { status: 400 })
   }
 
-  const hash = await bcrypt.hash(password, 12)
+  const hash = await bcrypt.hash(password, BCRYPT_SALT_ROUNDS)
 
   await Promise.all([
     db.update(users).set({ password: hash }).where(eq(users.id, resetToken.userId)),

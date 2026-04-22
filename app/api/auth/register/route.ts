@@ -7,7 +7,7 @@ import { users, profiles, verificationTokens } from "@/lib/db/schema"
 import { registerSchema, resolveRole, STAFF_ROLES } from "@/lib/domain/auth"
 import { sendEmail } from "@/lib/email"
 import { welcomeEmail, newUserAlertEmail, verificationEmail } from "@/lib/email/templates"
-import { SITE_URL, DAY_MS , API_ERR_INVALID_INPUT } from "@/lib/constants"
+import { SITE_URL, DAY_MS, API_ERR_INVALID_INPUT, BCRYPT_SALT_ROUNDS } from "@/lib/constants"
 import { EMAIL_SUBJECT_VERIFY, EMAIL_SUBJECT_WELCOME } from "@/lib/email/subjects"
 import { checkRateLimit, ipKey } from "@/lib/rate-limit"
 
@@ -43,7 +43,7 @@ export async function POST(req: Request) {
   // Bootstrap: emails listed in ADMIN_EMAILS get admin role automatically on signup
   const role = resolveRole(email)
 
-  const hashed = await bcrypt.hash(password, 12)
+  const hashed = await bcrypt.hash(password, BCRYPT_SALT_ROUNDS)
   const [user] = await db
     .insert(users)
     .values({ email, password: hashed, role })

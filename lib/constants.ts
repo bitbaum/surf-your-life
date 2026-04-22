@@ -92,6 +92,7 @@ export const PRACTITIONER_NOTE_MAX_LENGTH = 1000
 
 // Authentication constraints
 export const PASSWORD_MIN_LENGTH = 8
+export const BCRYPT_SALT_ROUNDS = 12
 
 // Standard API error message strings — used in all route handlers for consistent responses
 export const API_ERR_UNAUTHORIZED = "Unauthorized"
