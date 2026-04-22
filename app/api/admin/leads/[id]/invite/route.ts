@@ -24,10 +24,12 @@ export async function POST(
   const baseUrl = process.env.AUTH_URL ?? "https://surf-your-life.ch"
   const registerUrl = `${baseUrl}/register?email=${encodeURIComponent(lead.email)}`
 
+  const practitionerName = session.user.name ?? "Your practitioner"
+
   await sendEmail({
     to: lead.email,
     subject: "Your invitation to Surf Your Life",
-    html: inviteEmail({ name: lead.name, registerUrl }),
+    html: inviteEmail({ name: lead.name, registerUrl, practitionerName }),
   })
 
   await db.update(leads).set({ status: "contacted" }).where(eq(leads.id, id))

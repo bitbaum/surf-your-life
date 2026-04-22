@@ -310,10 +310,10 @@ export function newMessageEmail(data: NewMessageData): string {
 
 // ─── Lead invite ─────────────────────────────────────────────────────────────
 
-type InviteEmailData = { name: string; registerUrl: string }
+type InviteEmailData = { name: string; registerUrl: string; practitionerName: string }
 
 export function inviteEmail(data: InviteEmailData): string {
-  const { name, registerUrl } = data
+  const { name, registerUrl, practitionerName } = data
   return `
 <!DOCTYPE html>
 <html>
@@ -326,7 +326,7 @@ export function inviteEmail(data: InviteEmailData): string {
 <body>
   <div class="header">
     <h1 style="margin:0;font-size:20px;">Your invitation to Surf Your Life</h1>
-    <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">Personal message from Manu</p>
+    <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">Personal message from ${practitionerName}</p>
   </div>
   <p>Hi ${name},</p>
   <p>Thank you for reaching out. I have reviewed your situation and I would like to personally invite you to join the Surf Your Life portal.</p>
@@ -335,7 +335,7 @@ export function inviteEmail(data: InviteEmailData): string {
   <a href="${registerUrl}" class="cta">Create my account</a>
   <p style="margin-top:24px;font-size:13px;color:#64748b;">If you have any questions before registering, simply reply to this email.</p>
   <p style="margin-top:24px;font-size:13px;color:#64748b;">Looking forward to working with you.</p>
-  <p style="font-size:13px;color:#64748b;margin-top:4px;"><strong>Manu</strong><br>Surf Your Life · Zollikerstrasse 183, 8008 Zürich</p>
+  <p style="font-size:13px;color:#64748b;margin-top:4px;"><strong>${practitionerName}</strong><br>Surf Your Life · Zollikerstrasse 183, 8008 Zürich</p>
 </body>
 </html>
   `.trim()
