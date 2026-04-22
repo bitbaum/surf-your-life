@@ -1,7 +1,7 @@
 "use client"
 import { useTranslations } from "next-intl"
 import { MAIN_CONCERNS } from "@/lib/constants"
-import type { FormState } from "../profile-form"
+import type { FormState } from "../profile-form.helpers"
 
 export function StepChallenges({
   form,

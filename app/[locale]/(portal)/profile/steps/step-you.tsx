@@ -1,7 +1,7 @@
 "use client"
 import { useTranslations, useLocale } from "next-intl"
 import { Input } from "@/components/ui/input"
-import type { FormState } from "../profile-form"
+import type { FormState } from "../profile-form.helpers"
 
 function getMonthNames(locale: string) {
   return Array.from({ length: 12 }, (_, i) =>

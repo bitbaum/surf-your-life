@@ -1,7 +1,7 @@
 "use client"
 import { useTranslations } from "next-intl"
 import { Input } from "@/components/ui/input"
-import type { FormState } from "../profile-form"
+import type { FormState } from "../profile-form.helpers"
 
 const textareaClass =
   "w-full rounded-lg border border-slate-200 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"

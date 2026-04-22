@@ -1,7 +1,7 @@
 "use client"
 import { useTranslations } from "next-intl"
 import { Input } from "@/components/ui/input"
-import type { FormState } from "../profile-form"
+import type { FormState } from "../profile-form.helpers"
 
 function SliderField({
   label,
