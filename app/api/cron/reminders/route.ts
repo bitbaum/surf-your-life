@@ -9,7 +9,7 @@ import { users, checkIns } from "@/lib/db/schema"
 import { eq, and, gte, desc } from "drizzle-orm"
 import { sendEmail } from "@/lib/email"
 import { checkInReminderEmail } from "@/lib/email/templates"
-import { SITE_URL, DAY_MS, STREAK_LOOKBACK_DAYS } from "@/lib/constants"
+import { SITE_URL, DAY_MS, STREAK_LOOKBACK_DAYS , API_ERR_UNAUTHORIZED } from "@/lib/constants"
 import { generateMissedCheckInAlerts } from "@/lib/domain/alerts"
 import { CLIENT_ROLE } from "@/lib/domain/auth"
 
@@ -17,7 +17,7 @@ export async function GET(req: Request) {
   // Vercel cron authentication — only allow requests from Vercel cron
   const authHeader = req.headers.get("authorization")
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    return NextResponse.json({ error: API_ERR_UNAUTHORIZED }, { status: 401 })
   }
 
   const startOfToday = new Date()

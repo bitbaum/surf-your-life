@@ -7,13 +7,13 @@ import { practitionerNoteSchema } from "@/lib/domain/profile"
 import { eq } from "drizzle-orm"
 import { sendEmail } from "@/lib/email"
 import { practitionerNoteEmail } from "@/lib/email/templates"
-import { SITE_URL } from "@/lib/constants"
+import { SITE_URL , API_ERR_FORBIDDEN, API_ERR_INVALID_INPUT, API_ERR_NOT_FOUND, API_ERR_UNAUTHORIZED } from "@/lib/constants"
 
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth()
-  if (!session) return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
+  if (!session) return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
   if (!isStaff(session.user.role)) {
-    return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 })
+    return NextResponse.json({ success: false, error: API_ERR_FORBIDDEN }, { status: 403 })
   }
 
   const { id } = await params
@@ -21,12 +21,12 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   const existing = await db.query.checkIns.findFirst({
     where: eq(checkIns.id, id),
   })
-  if (!existing) return NextResponse.json({ success: false, error: "Not found" }, { status: 404 })
+  if (!existing) return NextResponse.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
 
   const body = await req.json()
   const parsed = practitionerNoteSchema.safeParse(body)
   if (!parsed.success) {
-    return NextResponse.json({ success: false, error: "Invalid input" }, { status: 400 })
+    return NextResponse.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })
   }
 
   const [updated] = await db

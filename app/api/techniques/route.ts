@@ -4,10 +4,11 @@ import { db } from "@/lib/db"
 import { techniques } from "@/lib/db/schema"
 import { eq, asc } from "drizzle-orm"
 import { createTechniqueSchema } from "@/lib/domain/techniques"
+import { API_ERR_FORBIDDEN, API_ERR_UNAUTHORIZED } from "@/lib/constants"
 
 export async function GET() {
   const session = await auth()
-  if (!session) return Response.json({ success: false, error: "Unauthorized" }, { status: 401 })
+  if (!session) return Response.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
 
   const rows = await db.query.techniques.findMany({
     where: eq(techniques.isActive, true),
@@ -19,9 +20,9 @@ export async function GET() {
 
 export async function POST(req: Request) {
   const session = await auth()
-  if (!session) return Response.json({ success: false, error: "Unauthorized" }, { status: 401 })
+  if (!session) return Response.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
   if (!isStaff(session.user.role)) {
-    return Response.json({ success: false, error: "Forbidden" }, { status: 403 })
+    return Response.json({ success: false, error: API_ERR_FORBIDDEN }, { status: 403 })
   }
 
   const body = await req.json()

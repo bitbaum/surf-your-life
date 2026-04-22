@@ -4,6 +4,7 @@ import { isStaff } from "@/lib/domain/auth"
 import { db } from "@/lib/db"
 import { clientAlerts } from "@/lib/db/schema"
 import { eq, and } from "drizzle-orm"
+import { API_ERR_FORBIDDEN } from "@/lib/constants"
 
 export async function PATCH(
   _req: Request,
@@ -12,7 +13,7 @@ export async function PATCH(
   const { id } = await params
   const session = await auth()
   if (!session?.user?.id || !isStaff(session.user.role)) {
-    return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 })
+    return NextResponse.json({ success: false, error: API_ERR_FORBIDDEN }, { status: 403 })
   }
 
   const result = await db

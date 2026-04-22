@@ -16,6 +16,7 @@ import {
   accounts,
 } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
+import { API_ERR_UNAUTHORIZED } from "@/lib/constants"
 
 const deleteSchema = z.object({
   password: z.string().min(1),
@@ -24,7 +25,7 @@ const deleteSchema = z.object({
 export async function DELETE(req: Request) {
   const session = await auth()
   if (!session?.user?.id) {
-    return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
+    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
   }
 
   const body = await req.json()

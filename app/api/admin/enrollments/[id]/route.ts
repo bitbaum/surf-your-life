@@ -5,11 +5,12 @@ import { programEnrollments } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { updateEnrollmentSchema } from "@/lib/domain/program"
 import { isStaff } from "@/lib/domain/auth"
+import { API_ERR_FORBIDDEN, API_ERR_INVALID_INPUT } from "@/lib/constants"
 
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth()
   if (!session?.user?.id || !isStaff(session.user.role)) {
-    return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 })
+    return NextResponse.json({ success: false, error: API_ERR_FORBIDDEN }, { status: 403 })
   }
 
   const { id } = await params
@@ -17,7 +18,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   const body = await req.json()
   const parsed = updateEnrollmentSchema.safeParse(body)
   if (!parsed.success) {
-    return NextResponse.json({ success: false, error: "Invalid input" }, { status: 400 })
+    return NextResponse.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })
   }
 
   const enrollment = await db.query.programEnrollments.findFirst({
@@ -41,7 +42,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth()
   if (!session?.user?.id || !isStaff(session.user.role)) {
-    return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 })
+    return NextResponse.json({ success: false, error: API_ERR_FORBIDDEN }, { status: 403 })
   }
 
   const { id } = await params

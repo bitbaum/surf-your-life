@@ -4,12 +4,12 @@ import { db } from "@/lib/db"
 import { medicationLog } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
 import { medicationEntrySchema } from "@/lib/domain/clinical"
-import { PAGINATION_DEFAULT } from "@/lib/constants"
+import { PAGINATION_DEFAULT , API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED } from "@/lib/constants"
 
 export async function GET() {
   const session = await auth()
   if (!session?.user?.id) {
-    return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
+    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
   }
 
   const data = await db.query.medicationLog.findMany({
@@ -24,13 +24,13 @@ export async function GET() {
 export async function POST(req: Request) {
   const session = await auth()
   if (!session?.user?.id) {
-    return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
+    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
   }
 
   const body = await req.json()
   const parsed = medicationEntrySchema.safeParse(body)
   if (!parsed.success) {
-    return NextResponse.json({ success: false, error: "Invalid input" }, { status: 400 })
+    return NextResponse.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })
   }
 
   const [created] = await db

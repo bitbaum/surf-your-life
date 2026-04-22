@@ -4,10 +4,11 @@ import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { profiles, users } from "@/lib/db/schema"
 import { profileSchema } from "@/lib/domain/profile"
+import { API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED } from "@/lib/constants"
 
 export async function GET() {
   const session = await auth()
-  if (!session) return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
+  if (!session) return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
 
   const profile = await db.query.profiles.findFirst({
     where: eq(profiles.userId, session.user.id),
@@ -18,12 +19,12 @@ export async function GET() {
 
 export async function PUT(req: Request) {
   const session = await auth()
-  if (!session) return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
+  if (!session) return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
 
   const body = await req.json()
   const parsed = profileSchema.safeParse(body)
   if (!parsed.success) {
-    return NextResponse.json({ success: false, error: "Invalid input" }, { status: 400 })
+    return NextResponse.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })
   }
 
   const { name, ...profileData } = parsed.data

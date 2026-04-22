@@ -6,7 +6,7 @@ import { db } from "@/lib/db"
 import { documents, documentTypeEnum } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
 import { z } from "zod"
-import { DOCUMENTS_PER_CLIENT_LIMIT } from "@/lib/constants"
+import { DOCUMENTS_PER_CLIENT_LIMIT , API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED } from "@/lib/constants"
 import { embedDocument } from "@/lib/domain/embeddings"
 
 const createDocSchema = z.object({
@@ -21,7 +21,7 @@ export async function GET(
 ) {
   const session = await auth()
   if (!session?.user || !isStaff(session.user.role)) {
-    return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
+    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
   }
 
   const { id: clientId } = await params
@@ -42,7 +42,7 @@ export async function POST(
 ) {
   const session = await auth()
   if (!session?.user || !isStaff(session.user.role)) {
-    return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
+    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
   }
 
   const { id: clientId } = await params
@@ -50,7 +50,7 @@ export async function POST(
   const body = await req.json()
   const parsed = createDocSchema.safeParse(body)
   if (!parsed.success) {
-    return NextResponse.json({ success: false, error: "Invalid input" }, { status: 400 })
+    return NextResponse.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })
   }
 
   const { type, content } = parsed.data

@@ -4,6 +4,7 @@ import { db } from "@/lib/db"
 import { medicationLog } from "@/lib/db/schema"
 import { eq, and } from "drizzle-orm"
 import { z } from "zod"
+import { API_ERR_INVALID_INPUT, API_ERR_NOT_FOUND, API_ERR_UNAUTHORIZED } from "@/lib/constants"
 
 const patchSchema = z.object({
   endDate: z.string().optional().nullable(), // YYYY-MM-DD or null to clear
@@ -16,13 +17,13 @@ export async function PATCH(
   const { id } = await params
   const session = await auth()
   if (!session?.user?.id) {
-    return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
+    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
   }
 
   const body = await req.json()
   const parsed = patchSchema.safeParse(body)
   if (!parsed.success) {
-    return NextResponse.json({ success: false, error: "Invalid input" }, { status: 400 })
+    return NextResponse.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })
   }
 
   const result = await db
@@ -32,7 +33,7 @@ export async function PATCH(
     .returning({ id: medicationLog.id })
 
   if (result.length === 0) {
-    return NextResponse.json({ success: false, error: "Not found" }, { status: 404 })
+    return NextResponse.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
   }
 
   return NextResponse.json({ success: true })
@@ -45,7 +46,7 @@ export async function DELETE(
   const { id } = await params
   const session = await auth()
   if (!session?.user?.id) {
-    return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
+    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
   }
 
   await db

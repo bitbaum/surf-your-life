@@ -90,6 +90,12 @@ export const AI_MODEL_FAST = "claude-haiku-4-5-20251001"
 // Practitioner note on check-ins
 export const PRACTITIONER_NOTE_MAX_LENGTH = 1000
 
+// Standard API error message strings — used in all route handlers for consistent responses
+export const API_ERR_UNAUTHORIZED = "Unauthorized"
+export const API_ERR_FORBIDDEN = "Forbidden"
+export const API_ERR_NOT_FOUND = "Not found"
+export const API_ERR_INVALID_INPUT = "Invalid input"
+
 // Time constants (milliseconds)
 export const HOUR_MS = 60 * 60 * 1000
 export const DAY_MS = 24 * HOUR_MS

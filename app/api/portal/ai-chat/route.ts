@@ -4,7 +4,7 @@ import { db } from "@/lib/db"
 import { aiMessages } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
 import { generateAiReply } from "@/lib/domain/ai-chat"
-import { AI_CHAT_HISTORY_LIMIT, AI_CHAT_MAX_LENGTH } from "@/lib/constants"
+import { AI_CHAT_HISTORY_LIMIT, AI_CHAT_MAX_LENGTH , API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED } from "@/lib/constants"
 import { z } from "zod"
 
 const messageSchema = z.object({
@@ -14,7 +14,7 @@ const messageSchema = z.object({
 export async function GET(req: Request) {
   const session = await auth()
   if (!session?.user?.id) {
-    return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
+    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
   }
 
   const { searchParams } = new URL(req.url)
@@ -33,13 +33,13 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   const session = await auth()
   if (!session?.user?.id) {
-    return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
+    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
   }
 
   const body = await req.json()
   const parsed = messageSchema.safeParse(body)
   if (!parsed.success) {
-    return NextResponse.json({ success: false, error: "Invalid input" }, { status: 400 })
+    return NextResponse.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })
   }
 
   // Save user message

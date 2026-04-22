@@ -6,13 +6,13 @@ import { users, verificationTokens } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { sendEmail } from "@/lib/email"
 import { verificationEmail } from "@/lib/email/templates"
-import { SITE_URL, DAY_MS } from "@/lib/constants"
+import { SITE_URL, DAY_MS , API_ERR_UNAUTHORIZED } from "@/lib/constants"
 import { EMAIL_SUBJECT_VERIFY } from "@/lib/email/subjects"
 
 export async function POST() {
   const session = await auth()
   if (!session?.user?.id) {
-    return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
+    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
   }
 
   const user = await db.query.users.findFirst({

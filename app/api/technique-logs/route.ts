@@ -4,10 +4,11 @@ import { techniqueLogs, techniqueAssignments } from "@/lib/db/schema"
 import { eq, and, gte } from "drizzle-orm"
 import { logTechniqueSchema } from "@/lib/domain/techniques"
 import { toDateString } from "@/lib/utils"
+import { API_ERR_UNAUTHORIZED } from "@/lib/constants"
 
 export async function GET(req: Request) {
   const session = await auth()
-  if (!session) return Response.json({ success: false, error: "Unauthorized" }, { status: 401 })
+  if (!session) return Response.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
 
   const { searchParams } = new URL(req.url)
   // Default to last 14 days so debt can be computed client-side
@@ -30,7 +31,7 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   const session = await auth()
-  if (!session) return Response.json({ success: false, error: "Unauthorized" }, { status: 401 })
+  if (!session) return Response.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
 
   const body = await req.json()
   const result = logTechniqueSchema.safeParse(body)

@@ -6,7 +6,7 @@ import { eq } from "drizzle-orm"
 import { sendEmail } from "@/lib/email"
 import { inviteEmail } from "@/lib/email/templates"
 import { NextRequest, NextResponse } from "next/server"
-import { SITE_URL, BRAND_NAME } from "@/lib/constants"
+import { SITE_URL, BRAND_NAME , API_ERR_UNAUTHORIZED } from "@/lib/constants"
 
 export async function POST(
   _req: NextRequest,
@@ -14,7 +14,7 @@ export async function POST(
 ) {
   const session = await auth()
   if (!session?.user || !isStaff(session.user.role)) {
-    return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
+    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
   }
 
   const { id } = await params

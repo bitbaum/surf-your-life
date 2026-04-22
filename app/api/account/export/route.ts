@@ -10,11 +10,12 @@ import {
   threadMessages,
 } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
+import { API_ERR_UNAUTHORIZED } from "@/lib/constants"
 
 export async function GET() {
   const session = await auth()
   if (!session?.user?.id) {
-    return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
+    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
   }
 
   const userId = session.user.id

@@ -11,6 +11,7 @@ import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { z } from "zod"
 import { callClaude } from "@/lib/domain/anthropic"
+import { API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED } from "@/lib/constants"
 
 const parseSchema = z.object({
   text: z.string().min(1).max(1000),
@@ -135,13 +136,13 @@ JSON only, no explanation:`
 export async function POST(req: Request) {
   const session = await auth()
   if (!session?.user?.id) {
-    return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
+    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
   }
 
   const body = await req.json()
   const parsed = parseSchema.safeParse(body)
   if (!parsed.success) {
-    return NextResponse.json({ success: false, error: "Invalid input" }, { status: 400 })
+    return NextResponse.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })
   }
 
   const fields = (await aiParse(parsed.data.text)) ?? keywordParse(parsed.data.text)

@@ -5,14 +5,14 @@ import { bookings, services, users } from "@/lib/db/schema"
 import { and, eq, desc, inArray } from "drizzle-orm"
 import { createBookingSchema } from "@/lib/domain/booking"
 import { STAFF_ROLES } from "@/lib/domain/auth"
-import { PAGINATION_DEFAULT } from "@/lib/constants"
+import { PAGINATION_DEFAULT , API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED } from "@/lib/constants"
 import { sendEmail } from "@/lib/email"
 import { bookingNotificationEmail, bookingRequestEmail } from "@/lib/email/templates"
 
 export async function GET() {
   const session = await auth()
   if (!session?.user?.id) {
-    return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
+    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
   }
 
   const data = await db.query.bookings.findMany({
@@ -28,13 +28,13 @@ export async function GET() {
 export async function POST(req: Request) {
   const session = await auth()
   if (!session?.user?.id) {
-    return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
+    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
   }
 
   const body = await req.json()
   const parsed = createBookingSchema.safeParse(body)
   if (!parsed.success) {
-    return NextResponse.json({ success: false, error: "Invalid input" }, { status: 400 })
+    return NextResponse.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })
   }
 
   const service = await db.query.services.findFirst({

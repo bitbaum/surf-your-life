@@ -2,12 +2,13 @@ import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { leads } from "@/lib/db/schema"
 import { contactSchema } from "@/lib/domain/lead"
+import { API_ERR_INVALID_INPUT } from "@/lib/constants"
 
 export async function POST(req: Request) {
   const body = await req.json()
   const parsed = contactSchema.safeParse(body)
   if (!parsed.success) {
-    return NextResponse.json({ success: false, error: "Invalid input" }, { status: 400 })
+    return NextResponse.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })
   }
 
   await db.insert(leads).values({

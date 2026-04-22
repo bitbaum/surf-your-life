@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { users, roleEnum } from "@/lib/db/schema"
 import { ADMIN_ROLE } from "@/lib/domain/auth"
+import { API_ERR_FORBIDDEN, API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED } from "@/lib/constants"
 
 const bodySchema = z.object({
   role: z.enum(roleEnum.enumValues),
@@ -16,10 +17,10 @@ export async function PATCH(
 ) {
   const session = await auth()
   if (!session?.user?.id) {
-    return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
+    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
   }
   if (session.user.role !== ADMIN_ROLE) {
-    return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 })
+    return NextResponse.json({ success: false, error: API_ERR_FORBIDDEN }, { status: 403 })
   }
 
   const { id } = await params
@@ -35,7 +36,7 @@ export async function PATCH(
   const parsed = bodySchema.safeParse(body)
   if (!parsed.success) {
     return NextResponse.json(
-      { success: false, error: "Invalid input", details: parsed.error.flatten() },
+      { success: false, error: API_ERR_INVALID_INPUT, details: parsed.error.flatten() },
       { status: 400 }
     )
   }

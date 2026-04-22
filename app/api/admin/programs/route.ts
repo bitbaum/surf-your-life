@@ -5,11 +5,12 @@ import { programs, programEnrollments } from "@/lib/db/schema"
 import { desc, count, eq } from "drizzle-orm"
 import { createProgramSchema } from "@/lib/domain/program"
 import { isStaff } from "@/lib/domain/auth"
+import { API_ERR_FORBIDDEN, API_ERR_INVALID_INPUT } from "@/lib/constants"
 
 export async function GET() {
   const session = await auth()
   if (!session?.user?.id || !isStaff(session.user.role)) {
-    return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 })
+    return NextResponse.json({ success: false, error: API_ERR_FORBIDDEN }, { status: 403 })
   }
 
   const rows = await db
@@ -33,13 +34,13 @@ export async function GET() {
 export async function POST(req: Request) {
   const session = await auth()
   if (!session?.user?.id || !isStaff(session.user.role)) {
-    return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 })
+    return NextResponse.json({ success: false, error: API_ERR_FORBIDDEN }, { status: 403 })
   }
 
   const body = await req.json()
   const parsed = createProgramSchema.safeParse(body)
   if (!parsed.success) {
-    return NextResponse.json({ success: false, error: "Invalid input" }, { status: 400 })
+    return NextResponse.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })
   }
 
   const [program] = await db

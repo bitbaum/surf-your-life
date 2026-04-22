@@ -5,6 +5,7 @@ import { programs } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { createProgramSchema } from "@/lib/domain/program"
 import { isStaff, ADMIN_ROLE } from "@/lib/domain/auth"
+import { API_ERR_FORBIDDEN, API_ERR_INVALID_INPUT, API_ERR_NOT_FOUND } from "@/lib/constants"
 
 export async function PATCH(
   req: Request,
@@ -12,20 +13,20 @@ export async function PATCH(
 ) {
   const session = await auth()
   if (!session?.user?.id || !isStaff(session.user.role)) {
-    return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 })
+    return NextResponse.json({ success: false, error: API_ERR_FORBIDDEN }, { status: 403 })
   }
 
   const { id } = await params
 
   const existing = await db.query.programs.findFirst({ where: eq(programs.id, id) })
   if (!existing) {
-    return NextResponse.json({ success: false, error: "Not found" }, { status: 404 })
+    return NextResponse.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
   }
 
   const body = await req.json()
   const parsed = createProgramSchema.safeParse(body)
   if (!parsed.success) {
-    return NextResponse.json({ success: false, error: "Invalid input" }, { status: 400 })
+    return NextResponse.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })
   }
 
   await db
@@ -50,7 +51,7 @@ export async function DELETE(
 ) {
   const session = await auth()
   if (!session?.user?.id || session.user.role !== ADMIN_ROLE) {
-    return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 })
+    return NextResponse.json({ success: false, error: API_ERR_FORBIDDEN }, { status: 403 })
   }
 
   const { id } = await params

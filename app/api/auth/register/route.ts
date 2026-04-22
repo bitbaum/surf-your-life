@@ -7,7 +7,7 @@ import { users, profiles, verificationTokens } from "@/lib/db/schema"
 import { registerSchema, resolveRole, STAFF_ROLES } from "@/lib/domain/auth"
 import { sendEmail } from "@/lib/email"
 import { welcomeEmail, newUserAlertEmail, verificationEmail } from "@/lib/email/templates"
-import { SITE_URL, DAY_MS } from "@/lib/constants"
+import { SITE_URL, DAY_MS , API_ERR_INVALID_INPUT } from "@/lib/constants"
 import { EMAIL_SUBJECT_VERIFY, EMAIL_SUBJECT_WELCOME } from "@/lib/email/subjects"
 import { checkRateLimit, ipKey } from "@/lib/rate-limit"
 
@@ -25,7 +25,7 @@ export async function POST(req: Request) {
 
   if (!parsed.success) {
     return NextResponse.json(
-      { success: false, error: "Invalid input", details: parsed.error.flatten() },
+      { success: false, error: API_ERR_INVALID_INPUT, details: parsed.error.flatten() },
       { status: 400 }
     )
   }

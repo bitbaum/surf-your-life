@@ -12,7 +12,7 @@ import { users, checkIns, clientAlerts } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
 import { callClaude } from "@/lib/domain/anthropic"
 import { toDateString } from "@/lib/utils"
-import { SESSION_PREP_CHECKIN_LIMIT, SESSION_PREP_ALERTS_LIMIT } from "@/lib/constants"
+import { SESSION_PREP_CHECKIN_LIMIT, SESSION_PREP_ALERTS_LIMIT , API_ERR_UNAUTHORIZED } from "@/lib/constants"
 
 export async function GET(
   _req: Request,
@@ -20,7 +20,7 @@ export async function GET(
 ) {
   const session = await auth()
   if (!session?.user || !isStaff(session.user.role)) {
-    return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
+    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
   }
 
   const { id: clientId } = await params

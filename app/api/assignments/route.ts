@@ -5,6 +5,7 @@ import { assignments } from "@/lib/db/schema"
 import { and, eq } from "drizzle-orm"
 import { z } from "zod"
 import { isStaff } from "@/lib/domain/auth"
+import { API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED } from "@/lib/constants"
 
 const assignSchema = z.object({
   clientId: z.string().uuid(),
@@ -14,13 +15,13 @@ const assignSchema = z.object({
 export async function POST(req: Request) {
   const session = await auth()
   if (!session?.user?.id || !isStaff(session.user.role)) {
-    return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
+    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
   }
 
   const body = await req.json()
   const parsed = assignSchema.safeParse(body)
   if (!parsed.success) {
-    return NextResponse.json({ success: false, error: "Invalid input" }, { status: 400 })
+    return NextResponse.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })
   }
 
   const { clientId, practitionerId } = parsed.data

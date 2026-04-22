@@ -6,10 +6,11 @@ import { checkInSchema } from "@/lib/domain/profile"
 import { generateAlerts } from "@/lib/domain/alerts"
 import { embedCheckIn } from "@/lib/domain/embeddings"
 import { eq, and, gte } from "drizzle-orm"
+import { API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED } from "@/lib/constants"
 
 export async function POST(req: Request) {
   const session = await auth()
-  if (!session) return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
+  if (!session) return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
 
   // Prevent duplicate check-ins on the same calendar day
   const startOfDay = new Date()
@@ -27,7 +28,7 @@ export async function POST(req: Request) {
   const body = await req.json()
   const parsed = checkInSchema.safeParse(body)
   if (!parsed.success) {
-    return NextResponse.json({ success: false, error: "Invalid input" }, { status: 400 })
+    return NextResponse.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })
   }
 
   const [created] = await db

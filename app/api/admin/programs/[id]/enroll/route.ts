@@ -5,11 +5,12 @@ import { programs, programEnrollments, users } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { enrollClientSchema } from "@/lib/domain/program"
 import { isStaff, CLIENT_ROLE } from "@/lib/domain/auth"
+import { API_ERR_FORBIDDEN, API_ERR_INVALID_INPUT } from "@/lib/constants"
 
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth()
   if (!session?.user?.id || !isStaff(session.user.role)) {
-    return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 })
+    return NextResponse.json({ success: false, error: API_ERR_FORBIDDEN }, { status: 403 })
   }
 
   const { id: programId } = await params
@@ -22,7 +23,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   const body = await req.json()
   const parsed = enrollClientSchema.safeParse(body)
   if (!parsed.success) {
-    return NextResponse.json({ success: false, error: "Invalid input" }, { status: 400 })
+    return NextResponse.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })
   }
 
   const client = await db.query.users.findFirst({ where: eq(users.id, parsed.data.clientId) })

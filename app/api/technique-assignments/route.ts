@@ -4,10 +4,11 @@ import { db } from "@/lib/db"
 import { techniqueAssignments } from "@/lib/db/schema"
 import { eq, and } from "drizzle-orm"
 import { createAssignmentSchema } from "@/lib/domain/techniques"
+import { API_ERR_FORBIDDEN, API_ERR_UNAUTHORIZED } from "@/lib/constants"
 
 export async function GET(req: Request) {
   const session = await auth()
-  if (!session) return Response.json({ success: false, error: "Unauthorized" }, { status: 401 })
+  if (!session) return Response.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
 
   const { searchParams } = new URL(req.url)
   const clientId = searchParams.get("clientId")
@@ -32,9 +33,9 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   const session = await auth()
-  if (!session) return Response.json({ success: false, error: "Unauthorized" }, { status: 401 })
+  if (!session) return Response.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
   if (!isStaff(session.user.role)) {
-    return Response.json({ success: false, error: "Forbidden" }, { status: 403 })
+    return Response.json({ success: false, error: API_ERR_FORBIDDEN }, { status: 403 })
   }
 
   const body = await req.json()

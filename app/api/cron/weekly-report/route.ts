@@ -9,13 +9,13 @@ import { users, checkIns } from "@/lib/db/schema"
 import { eq, and, gte } from "drizzle-orm"
 import { sendEmail } from "@/lib/email"
 import { weeklyReportEmail } from "@/lib/email/templates"
-import { SITE_URL, SEVEN_DAYS_MS, MOOD_SCORE, MOODS } from "@/lib/constants"
+import { SITE_URL, SEVEN_DAYS_MS, MOOD_SCORE, MOODS , API_ERR_UNAUTHORIZED } from "@/lib/constants"
 import { CLIENT_ROLE } from "@/lib/domain/auth"
 
 export async function GET(req: Request) {
   const authHeader = req.headers.get("authorization")
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    return NextResponse.json({ error: API_ERR_UNAUTHORIZED }, { status: 401 })
   }
 
   const sevenDaysAgo = new Date(Date.now() - SEVEN_DAYS_MS)

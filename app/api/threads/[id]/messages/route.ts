@@ -4,20 +4,20 @@ import { db } from "@/lib/db"
 import { threads, threadMessages } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { sendMessageSchema, notifyMessageParty } from "@/lib/domain/messaging"
-import { SITE_URL } from "@/lib/constants"
+import { SITE_URL , API_ERR_FORBIDDEN, API_ERR_NOT_FOUND, API_ERR_UNAUTHORIZED } from "@/lib/constants"
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth()
-  if (!session) return Response.json({ success: false, error: "Unauthorized" }, { status: 401 })
+  if (!session) return Response.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
 
   const { id } = await params
   const isAdmin = isStaff(session.user.role)
 
   const thread = await db.query.threads.findFirst({ where: eq(threads.id, id) })
-  if (!thread) return Response.json({ success: false, error: "Not found" }, { status: 404 })
+  if (!thread) return Response.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
 
   if (!isAdmin && thread.clientId !== session.user.id) {
-    return Response.json({ success: false, error: "Forbidden" }, { status: 403 })
+    return Response.json({ success: false, error: API_ERR_FORBIDDEN }, { status: 403 })
   }
 
   const body = await request.json().catch(() => null)
