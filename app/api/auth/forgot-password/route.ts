@@ -7,7 +7,7 @@ import { randomBytes } from "crypto"
 import { checkRateLimit, ipKey } from "@/lib/rate-limit"
 import { sendEmail } from "@/lib/email"
 import { passwordResetEmail } from "@/lib/email/templates"
-import { BRAND_NAME } from "@/lib/constants"
+import { EMAIL_SUBJECT_RESET_PASSWORD } from "@/lib/email/subjects"
 
 const schema = z.object({ email: z.string().email() })
 
@@ -50,7 +50,7 @@ export async function POST(req: Request) {
     const resetUrl = `${proto}://${host}/reset-password?token=${token}`
     await sendEmail({
       to: email,
-      subject: `Reset your ${BRAND_NAME} password`,
+      subject: EMAIL_SUBJECT_RESET_PASSWORD,
       html: passwordResetEmail({ resetUrl }),
     })
   }

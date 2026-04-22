@@ -7,7 +7,8 @@ import { users, verificationTokens } from "@/lib/db/schema"
 import { auth } from "@/lib/auth"
 import { sendEmail } from "@/lib/email"
 import { verificationEmail } from "@/lib/email/templates"
-import { SITE_URL, BRAND_NAME, DAY_MS } from "@/lib/constants"
+import { SITE_URL, DAY_MS } from "@/lib/constants"
+import { EMAIL_SUBJECT_VERIFY } from "@/lib/email/subjects"
 
 // POST /api/auth/verify-email — consume token and mark email as verified
 const verifySchema = z.object({
@@ -67,7 +68,7 @@ export async function PUT() {
   const verifyUrl = `${SITE_URL}/verify-email?token=${token}&email=${encodeURIComponent(email)}`
   await sendEmail({
     to: email,
-    subject: `Verify your email — ${BRAND_NAME}`,
+    subject: EMAIL_SUBJECT_VERIFY,
     html: verificationEmail({ email, verifyUrl }),
   }).catch(e => console.error("[verify-email] resend failed", e))
 

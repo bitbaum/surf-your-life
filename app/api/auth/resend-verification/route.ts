@@ -6,7 +6,8 @@ import { users, verificationTokens } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { sendEmail } from "@/lib/email"
 import { verificationEmail } from "@/lib/email/templates"
-import { SITE_URL, BRAND_NAME, DAY_MS } from "@/lib/constants"
+import { SITE_URL, DAY_MS } from "@/lib/constants"
+import { EMAIL_SUBJECT_VERIFY } from "@/lib/email/subjects"
 
 export async function POST() {
   const session = await auth()
@@ -45,7 +46,7 @@ export async function POST() {
 
   void sendEmail({
     to: email,
-    subject: `Verify your email — ${BRAND_NAME}`,
+    subject: EMAIL_SUBJECT_VERIFY,
     html: verificationEmail({ email, verifyUrl }),
   }).catch((e) => console.error("[resend-verification]", e))
 
