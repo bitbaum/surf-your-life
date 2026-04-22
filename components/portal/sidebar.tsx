@@ -17,7 +17,6 @@ import {
   CalendarPlus,
   LogOut,
   Waves,
-  Menu,
   X,
   MessageSquare,
   Settings,
