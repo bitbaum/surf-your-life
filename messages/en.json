@@ -494,7 +494,8 @@
       "yesDelete": "Yes, delete",
       "actionCancel": "Cancel",
       "editAction": "Edit",
-      "deleteAction": "Delete"
+      "deleteAction": "Delete",
+      "editSymptomsEnable": "Track"
     },
     "profile": {
       "title": "Your profile",

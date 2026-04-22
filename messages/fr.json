@@ -494,7 +494,8 @@
       "yesDelete": "Oui, supprimer",
       "actionCancel": "Annuler",
       "editAction": "Modifier",
-      "deleteAction": "Supprimer"
+      "deleteAction": "Supprimer",
+      "editSymptomsEnable": "Saisir"
     },
     "profile": {
       "title": "Votre profil",

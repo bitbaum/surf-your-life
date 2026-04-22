@@ -218,37 +218,47 @@ export function EditCheckInModal({ checkIn, checkInId, onSave, onCancel }: EditC
         </label>
       </div>
 
-      {(checkIn.symptomFatigue != null || checkIn.symptomBrainFog != null || checkIn.symptomPain != null || checkIn.stressLevel != null) && (
-        <div>
-          <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">
-            {t("editSymptomsLabel")} <span className="text-slate-400 font-normal normal-case">{t("editOptional")}</span>
-          </p>
-          <p className="text-xs text-slate-400 mb-3">{t("editSymptomsHint")}</p>
-          <div className="flex flex-col gap-3">
-            {([
-              { key: "symptomFatigue" as const, label: tCheckIn("symptomFatigue"), value: symptomFatigue, set: setSymptomFatigue },
-              { key: "symptomBrainFog" as const, label: tCheckIn("symptomBrainFog"), value: symptomBrainFog, set: setSymptomBrainFog },
-              { key: "symptomPain" as const, label: tCheckIn("symptomPain"), value: symptomPain, set: setSymptomPain },
-              { key: "stressLevel" as const, label: tCheckIn("stressLevel"), value: stressLevel, set: setStressLevel },
-            ] as const).filter(({ key }) => checkIn[key] != null).map(({ label, value, set }) => (
-              <div key={label}>
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs text-slate-600">{label}</span>
-                  <span className="text-xs font-medium text-slate-700">{value ?? "—"}/10</span>
-                </div>
+      <div>
+        <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">
+          {t("editSymptomsLabel")} <span className="text-slate-400 font-normal normal-case">{t("editOptional")}</span>
+        </p>
+        <p className="text-xs text-slate-400 mb-3">{t("editSymptomsHint")}</p>
+        <div className="flex flex-col gap-3">
+          {([
+            { label: tCheckIn("symptomFatigue"), value: symptomFatigue, set: setSymptomFatigue },
+            { label: tCheckIn("symptomBrainFog"), value: symptomBrainFog, set: setSymptomBrainFog },
+            { label: tCheckIn("symptomPain"), value: symptomPain, set: setSymptomPain },
+            { label: tCheckIn("stressLevel"), value: stressLevel, set: setStressLevel },
+          ]).map(({ label, value, set }) => (
+            <div key={label}>
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs text-slate-600">{label}</span>
+                {value != null ? (
+                  <span className="text-xs font-medium text-slate-700">{value}/10</span>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => set(SYMPTOM_SCALE.default)}
+                    className="text-xs text-teal-600 hover:underline"
+                  >
+                    {t("editSymptomsEnable")}
+                  </button>
+                )}
+              </div>
+              {value != null && (
                 <input
                   type="range"
                   min={SYMPTOM_SCALE.min}
                   max={SYMPTOM_SCALE.max}
-                  value={value ?? SYMPTOM_SCALE.default}
+                  value={value}
                   onChange={(e) => set(parseInt(e.target.value))}
                   className="w-full accent-teal-600"
                 />
-              </div>
-            ))}
-          </div>
+              )}
+            </div>
+          ))}
         </div>
-      )}
+      </div>
 
       {checkIn.journalEntry != null && (
         <div>
