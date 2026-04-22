@@ -11,6 +11,7 @@ import { users, checkIns, clientAlerts } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
 import { callClaude } from "@/lib/domain/anthropic"
 import { toDateString } from "@/lib/utils"
+import { SESSION_PREP_CHECKIN_LIMIT, SESSION_PREP_ALERTS_LIMIT } from "@/lib/constants"
 
 export async function GET(
   _req: Request,
@@ -32,12 +33,12 @@ export async function GET(
     db.query.checkIns.findMany({
       where: eq(checkIns.userId, clientId),
       orderBy: [desc(checkIns.createdAt)],
-      limit: 10,
+      limit: SESSION_PREP_CHECKIN_LIMIT,
     }),
     db.query.clientAlerts.findMany({
       where: eq(clientAlerts.clientId, clientId),
       orderBy: [desc(clientAlerts.createdAt)],
-      limit: 5,
+      limit: SESSION_PREP_ALERTS_LIMIT,
     }),
   ])
 

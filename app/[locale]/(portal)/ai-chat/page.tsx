@@ -6,6 +6,7 @@ import { eq, desc } from "drizzle-orm"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChatInterface } from "./chat-interface"
 import { getTranslations, setRequestLocale } from "next-intl/server"
+import { AI_CHAT_DISPLAY_LIMIT } from "@/lib/constants"
 
 export default async function AiChatPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
@@ -18,7 +19,7 @@ export default async function AiChatPage({ params }: { params: Promise<{ locale:
   const history = await db.query.aiMessages.findMany({
     where: eq(aiMessages.userId, session.user.id),
     orderBy: [desc(aiMessages.createdAt)],
-    limit: 50,
+    limit: AI_CHAT_DISPLAY_LIMIT,
     columns: { id: true, role: true, content: true, createdAt: true },
   })
 

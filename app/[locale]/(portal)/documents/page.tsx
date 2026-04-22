@@ -3,7 +3,7 @@ import { redirect } from "next/navigation"
 import { db } from "@/lib/db"
 import { documents } from "@/lib/db/schema"
 import { eq, desc, count } from "drizzle-orm"
-import { PAGINATION_DEFAULT } from "@/lib/constants"
+import { PAGINATION_DEFAULT, DOC_TYPE_BADGE_CLASSES } from "@/lib/constants"
 import { Card, CardContent } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { Pagination } from "@/components/ui/pagination"
@@ -11,12 +11,6 @@ import { formatDate } from "@/lib/utils"
 import { FileText } from "lucide-react"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 
-const TYPE_BADGE: Record<string, string> = {
-  session_note: "bg-teal-50 text-teal-700 border-teal-200",
-  assessment:   "bg-violet-50 text-violet-700 border-violet-200",
-  report:       "bg-blue-50 text-blue-700 border-blue-200",
-  upload:       "bg-slate-100 text-slate-600 border-slate-200",
-}
 
 export default async function DocumentsPage({
   params,
@@ -51,9 +45,11 @@ export default async function DocumentsPage({
   const total = totalResult[0]?.value ?? 0
   const totalPages = Math.ceil(total / PAGINATION_DEFAULT)
 
-  const typeLabel = (type: string) => {
-    const key = `type_${type}` as Parameters<typeof t>[0]
-    return t(key)
+  const TYPE_LABELS: Record<string, string> = {
+    session_note: t("type_session_note"),
+    assessment:   t("type_assessment"),
+    report:       t("type_report"),
+    upload:       t("type_upload"),
   }
 
   return (
@@ -82,8 +78,8 @@ export default async function DocumentsPage({
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-2 mb-1">
-                      <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${TYPE_BADGE[doc.type] ?? TYPE_BADGE.upload}`}>
-                        {typeLabel(doc.type)}
+                      <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${DOC_TYPE_BADGE_CLASSES[doc.type] ?? DOC_TYPE_BADGE_CLASSES.upload}`}>
+                        {TYPE_LABELS[doc.type] ?? doc.type}
                       </span>
                       <span className="text-xs text-slate-400">{formatDate(doc.createdAt)}</span>
                       {doc.author?.name && (

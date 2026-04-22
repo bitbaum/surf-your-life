@@ -180,8 +180,16 @@ export const TECHNIQUE_DEFAULT_SAFETY_CAP = 150 // 1.5×
 export const TECHNIQUE_DEFAULT_MAX_DEBT_DAYS = 7 // debt older than 7 days is forgiven
 
 // AI chat limits
-export const AI_CHAT_HISTORY_LIMIT = 20  // messages sent as context to AI
-export const AI_CHAT_MAX_LENGTH = 1000   // max user message character length
+export const AI_CHAT_HISTORY_LIMIT = 20   // messages sent as context to AI
+export const AI_CHAT_DISPLAY_LIMIT = 50   // messages loaded for display in the chat UI
+export const AI_CHAT_MAX_LENGTH = 1000    // max user message character length
+
+// Session prep (AI pre-session briefing)
+export const SESSION_PREP_CHECKIN_LIMIT = 10  // recent check-ins included in briefing
+export const SESSION_PREP_ALERTS_LIMIT = 5    // recent alerts included in briefing
+
+// Streak calculation
+export const STREAK_LOOKBACK_DAYS = 30  // max days to look back when calculating check-in streaks
 
 // Alert generation thresholds
 export const ALERT_ENERGY_DECLINE_THRESHOLD = 3  // drop of ≥3 over last 3 check-ins
@@ -210,7 +218,7 @@ export const DOC_TYPE_BADGE_CLASSES: Record<string, string> = {
   assessment: "bg-violet-50 text-violet-700 border-violet-200",
   report: "bg-blue-50 text-blue-700 border-blue-200",
   session_note: "bg-teal-50 text-teal-700 border-teal-200",
-  upload: "bg-teal-50 text-teal-700 border-teal-200",
+  upload: "bg-slate-100 text-slate-600 border-slate-200",
 }
 
 // Assessment capacity dimensions (ordered: overall first, then sub-dimensions)

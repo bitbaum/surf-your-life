@@ -9,7 +9,7 @@ import { users, checkIns } from "@/lib/db/schema"
 import { eq, and, gte, desc } from "drizzle-orm"
 import { sendEmail } from "@/lib/email"
 import { checkInReminderEmail } from "@/lib/email/templates"
-import { SITE_URL, DAY_MS } from "@/lib/constants"
+import { SITE_URL, DAY_MS, STREAK_LOOKBACK_DAYS } from "@/lib/constants"
 
 export async function GET(req: Request) {
   // Vercel cron authentication — only allow requests from Vercel cron
@@ -48,7 +48,7 @@ export async function GET(req: Request) {
     const recentCheckIns = await db.query.checkIns.findMany({
       where: eq(checkIns.userId, client.id),
       orderBy: [desc(checkIns.createdAt)],
-      limit: 30,
+      limit: STREAK_LOOKBACK_DAYS,
       columns: { createdAt: true },
     })
 
