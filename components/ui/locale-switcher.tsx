@@ -1,7 +1,7 @@
 "use client"
 
 import { useRef, useState, useEffect } from "react"
-import { useLocale } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import { usePathname, useRouter } from "@/i18n/navigation"
 import { routing } from "@/i18n/routing"
 import { Globe, Check } from "lucide-react"
@@ -20,6 +20,7 @@ interface LocaleSwitcherProps {
 }
 
 export function LocaleSwitcher({ dark, direction = "up" }: LocaleSwitcherProps) {
+  const t = useTranslations("ui")
   const locale = useLocale()
   const router = useRouter()
   const pathname = usePathname()
@@ -52,7 +53,7 @@ export function LocaleSwitcher({ dark, direction = "up" }: LocaleSwitcherProps) 
             ? "text-slate-400 hover:text-slate-200 hover:bg-slate-800"
             : "text-slate-500 hover:text-slate-700 hover:bg-slate-100"
         )}
-        aria-label="Switch language"
+        aria-label={t("switchLanguage")}
         aria-expanded={open}
         aria-haspopup="listbox"
       >

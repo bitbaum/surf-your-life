@@ -1239,5 +1239,8 @@
     "previous": "← Précédent",
     "next": "Suivant →",
     "pageOf": "Page {page} sur {total}"
+  },
+  "ui": {
+    "switchLanguage": "Changer de langue"
   }
 }
