@@ -11,10 +11,9 @@
 import { db } from "@/lib/db"
 import { checkIns, medicationLog, functionalAssessments } from "@/lib/db/schema"
 import { eq, desc, isNull, and } from "drizzle-orm"
-import { SEVEN_DAYS_MS, MOOD_SCORE } from "@/lib/constants"
+import { SEVEN_DAYS_MS, MOOD_SCORE, AI_CONTEXT_CHECKINS } from "@/lib/constants"
 import { callClaude } from "@/lib/domain/anthropic"
 
-const CONTEXT_CHECKINS = 14 // how many recent check-ins to include in context
 
 // ─── Context builder ─────────────────────────────────────────────────────────
 
@@ -23,7 +22,7 @@ async function buildContext(userId: string) {
     db.query.checkIns.findMany({
       where: eq(checkIns.userId, userId),
       orderBy: [desc(checkIns.createdAt)],
-      limit: CONTEXT_CHECKINS,
+      limit: AI_CONTEXT_CHECKINS,
       columns: {
         createdAt: true,
         mood: true,

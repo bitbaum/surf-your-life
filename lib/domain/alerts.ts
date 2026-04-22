@@ -12,14 +12,14 @@ import {
   ALERT_FATIGUE_SPIKE_THRESHOLD,
   ALERT_STRESS_SPIKE_THRESHOLD,
   ALERT_PEM_CLUSTER_COUNT,
+  ALERT_ORTHOSTATIC_CLUSTER_COUNT,
   SEVEN_DAYS_MS,
   MOOD_SCORE,
+  SITE_URL,
+  DAY_MS,
 } from "@/lib/constants"
 import { sendEmail } from "@/lib/email"
 import { practitionerAlertEmail } from "@/lib/email/templates"
-import { SITE_URL, DAY_MS } from "@/lib/constants"
-
-const ALERT_ORTHOSTATIC_CLUSTER_COUNT = 2 // ≥2 episodes in 7 days triggers alert
 
 type AlertInsert = typeof clientAlerts.$inferInsert
 

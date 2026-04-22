@@ -189,6 +189,10 @@ export const ALERT_FATIGUE_SPIKE_THRESHOLD = 8   // fatigue ≥ 8
 export const ALERT_STRESS_SPIKE_THRESHOLD = 8    // stress ≥ 8
 export const ALERT_MISSED_CHECKINS_DAYS = 5      // no check-in in 5+ days
 export const ALERT_PEM_CLUSTER_COUNT = 2         // 2+ PEM flags in last 7 days
+export const ALERT_ORTHOSTATIC_CLUSTER_COUNT = 2 // 2+ orthostatic episodes in last 7 days
+
+// AI context limits
+export const AI_CONTEXT_CHECKINS = 14  // recent check-ins included as AI context
 
 // AI digest thresholds
 export const AI_DIGEST_MIN_CHECKINS = 3  // minimum check-ins in window to generate AI digest
