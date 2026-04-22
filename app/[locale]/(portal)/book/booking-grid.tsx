@@ -2,11 +2,11 @@
 
 import { useState } from "react"
 import { useTranslations } from "next-intl"
-import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { CheckCircle, X, Clock, Cpu, Building2, Stethoscope } from "lucide-react"
+import { Clock, Cpu, Building2, Stethoscope } from "lucide-react"
 import type { Service } from "@/lib/db/schema"
 import { toDateString } from "@/lib/utils"
+import { BookingModal } from "./booking-modal"
 
 const CATEGORY_ICONS = {
   machine: Cpu,
@@ -35,15 +35,10 @@ export function BookingGrid({ services }: { services: Service[] }) {
   const [error, setError] = useState<string | null>(null)
 
   function openModal(service: Service) {
-    const today = toDateString(new Date())
-    setForm({ preferredDate: today, preferredTime: "flexible", notes: "" })
+    setForm({ preferredDate: toDateString(new Date()), preferredTime: "flexible", notes: "" })
     setSubmitted(false)
     setError(null)
     setSelected(service)
-  }
-
-  function closeModal() {
-    setSelected(null)
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -110,81 +105,16 @@ export function BookingGrid({ services }: { services: Service[] }) {
       </div>
 
       {selected && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onClick={closeModal} />
-          <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-md p-6 flex flex-col gap-5">
-            <div className="flex items-start justify-between">
-              <div>
-                <h2 className="text-lg font-bold text-slate-900">{selected.name}</h2>
-                <p className="text-sm text-slate-500 mt-0.5">{t("subtitle")}</p>
-              </div>
-              <button onClick={closeModal} className="p-1.5 rounded-lg hover:bg-slate-100 transition-colors">
-                <X className="w-4 h-4 text-slate-500" />
-              </button>
-            </div>
-
-            {submitted ? (
-              <div className="flex flex-col items-center gap-3 py-6 text-center">
-                <CheckCircle className="w-10 h-10 text-teal-500" />
-                <p className="font-semibold text-slate-900">{t("successTitle")}</p>
-                <p className="text-sm text-slate-500">{t("successBody")}</p>
-                <Button variant="outline" onClick={closeModal} className="mt-2">{t("cancel")}</Button>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                <div>
-                  <label className="text-sm font-medium text-slate-700 block mb-1.5">{t("preferredDate")}</label>
-                  <input
-                    type="date"
-                    required
-                    min={toDateString(new Date())}
-                    value={form.preferredDate}
-                    onChange={(e) => setForm((f) => ({ ...f, preferredDate: e.target.value }))}
-                    className="h-10 w-full rounded-lg border border-slate-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-slate-700 block mb-1.5">{t("preferredTime")}</label>
-                  <div className="flex gap-2">
-                    {(["morning", "afternoon", "flexible"] as const).map((opt) => (
-                      <button
-                        key={opt}
-                        type="button"
-                        onClick={() => setForm((f) => ({ ...f, preferredTime: opt }))}
-                        className={`flex-1 py-2 rounded-lg text-xs font-medium border-2 transition-all ${
-                          form.preferredTime === opt
-                            ? "border-teal-500 bg-teal-50 text-teal-700"
-                            : "border-slate-200 text-slate-600 hover:border-slate-300"
-                        }`}
-                      >
-                        {t(opt as Parameters<typeof t>[0])}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-slate-700 block mb-1.5">
-                    {t("notes")} <span className="text-slate-400 font-normal">{t("notesOptional")}</span>
-                  </label>
-                  <textarea
-                    value={form.notes}
-                    onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
-                    rows={3}
-                    placeholder={t("notesPlaceholder")}
-                    className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
-                  />
-                </div>
-                <div className="flex gap-3 pt-1">
-                  <Button type="button" variant="outline" onClick={closeModal} className="flex-1">{t("cancel")}</Button>
-                  <Button type="submit" disabled={loading} className="flex-1">
-                    {loading ? t("submitting") : t("submitBooking")}
-                  </Button>
-                </div>
-                {error && <p className="text-sm text-red-600 mt-2">{error}</p>}
-              </form>
-            )}
-          </div>
-        </div>
+        <BookingModal
+          selected={selected}
+          form={form}
+          setForm={setForm}
+          loading={loading}
+          submitted={submitted}
+          error={error}
+          onClose={() => setSelected(null)}
+          onSubmit={handleSubmit}
+        />
       )}
     </>
   )
