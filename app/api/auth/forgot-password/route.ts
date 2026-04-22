@@ -7,6 +7,7 @@ import { randomBytes } from "crypto"
 import { checkRateLimit, ipKey } from "@/lib/rate-limit"
 import { sendEmail } from "@/lib/email"
 import { passwordResetEmail } from "@/lib/email/templates"
+import { HOUR_MS } from "@/lib/constants"
 import { EMAIL_SUBJECT_RESET_PASSWORD } from "@/lib/email/subjects"
 
 const schema = z.object({ email: z.string().email() })
@@ -33,7 +34,7 @@ export async function POST(req: Request) {
 
   if (user) {
     const token = randomBytes(32).toString("hex")
-    const expiresAt = new Date(Date.now() + 1000 * 60 * 60) // 1 hour
+    const expiresAt = new Date(Date.now() + HOUR_MS)
 
     // Invalidate any existing tokens, then insert a fresh one
     await db

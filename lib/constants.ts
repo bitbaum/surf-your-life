@@ -91,7 +91,8 @@ export const AI_MODEL_FAST = "claude-haiku-4-5-20251001"
 export const PRACTITIONER_NOTE_MAX_LENGTH = 1000
 
 // Time constants (milliseconds)
-export const DAY_MS = 24 * 60 * 60 * 1000
+export const HOUR_MS = 60 * 60 * 1000
+export const DAY_MS = 24 * HOUR_MS
 export const SEVEN_DAYS_MS = 7 * DAY_MS
 export const THIRTY_DAYS_MS = 30 * DAY_MS
 export const NINETY_DAYS_MS = 90 * DAY_MS

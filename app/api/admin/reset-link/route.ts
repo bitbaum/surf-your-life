@@ -4,7 +4,7 @@ import { db } from "@/lib/db"
 import { passwordResetTokens } from "@/lib/db/schema"
 import { randomBytes } from "crypto"
 import { z } from "zod"
-import { SITE_URL } from "@/lib/constants"
+import { SITE_URL, HOUR_MS } from "@/lib/constants"
 import { CLIENT_ROLE } from "@/lib/domain/auth"
 
 const schema = z.object({ userId: z.string().uuid() })
@@ -20,7 +20,7 @@ export async function POST(req: Request) {
   if (!parsed.success) return NextResponse.json({ success: false, error: "Invalid input" }, { status: 400 })
 
   const token = randomBytes(32).toString("hex")
-  const expiresAt = new Date(Date.now() + 1000 * 60 * 60) // 1 hour
+  const expiresAt = new Date(Date.now() + HOUR_MS)
 
   await db.insert(passwordResetTokens).values({
     userId: parsed.data.userId,
