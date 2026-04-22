@@ -14,13 +14,13 @@ import { CheckInNote } from "./check-in-note"
 import { SessionPrep } from "./session-prep"
 import { SessionNotes } from "./session-notes"
 import { TechniqueAssignments } from "./technique-assignments"
+import { EnrollmentStatus } from "../../programs/[id]/enrollment-status"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 
 export default async function ClientDetailPage({ params }: { params: Promise<{ locale: string; id: string }> }) {
   const { locale, id } = await params
   setRequestLocale(locale)
   const t = await getTranslations("admin.clients")
-  const tPrograms = await getTranslations("admin.programs")
 
   const [client, clientCheckIns, checkInCountResult, allPrograms, activeEnrollment, currentMedications, latestAssessment, clientAssignments, allTechniques] = await Promise.all([
     db.query.users.findFirst({
@@ -302,15 +302,10 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
                     <p className="text-slate-500 mt-2 italic">{activeEnrollment.notes}</p>
                   )}
                 </div>
-                <span className={`text-xs px-2 py-0.5 rounded-full font-medium flex-shrink-0 ${
-                  activeEnrollment.status === "active"
-                    ? "bg-teal-50 text-teal-700 border border-teal-200"
-                    : activeEnrollment.status === "paused"
-                    ? "bg-yellow-50 text-yellow-700 border border-yellow-200"
-                    : "bg-slate-100 text-slate-600 border border-slate-200"
-                }`}>
-                  {tPrograms(`status.${activeEnrollment.status}`)}
-                </span>
+                <EnrollmentStatus
+                  enrollmentId={activeEnrollment.id}
+                  currentStatus={activeEnrollment.status}
+                />
               </div>
             </CardContent>
           </Card>
