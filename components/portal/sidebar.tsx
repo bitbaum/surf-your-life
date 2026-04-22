@@ -1,174 +1,32 @@
 "use client"
 
 import { useState } from "react"
-import { usePathname, Link } from "@/i18n/navigation"
+import { Link } from "@/i18n/navigation"
 import { useTranslations } from "next-intl"
-import { signOut } from "next-auth/react"
 import { cn } from "@/lib/utils"
 import { isStaff } from "@/lib/domain/auth"
 import { BRAND_NAME } from "@/lib/constants"
-import { LocaleSwitcher } from "@/components/ui/locale-switcher"
+import { Waves, X } from "lucide-react"
 import { SidebarMobileBar } from "./sidebar-mobile-bar"
-import {
-  LayoutDashboard,
-  User,
-  ClipboardList,
-  History,
-  CalendarPlus,
-  LogOut,
-  Waves,
-  X,
-  MessageSquare,
-  Settings,
-  BookOpen,
-  Bot,
-  Activity,
-  Pill,
-  ShieldCheck,
-  TrendingUp,
-  Sparkles,
-  FileText,
-} from "lucide-react"
+import { PortalSidebarNav } from "./sidebar-nav"
+import { PortalSidebarBottom } from "./sidebar-bottom"
 
 interface PortalSidebarProps {
   role?: string
 }
 
-const NAV_GROUPS = [
-  {
-    labelKey: "groupToday" as const,
-    items: [
-      { href: "/dashboard", labelKey: "dashboard" as const, icon: LayoutDashboard },
-    ],
-  },
-  {
-    labelKey: "groupTrack" as const,
-    items: [
-      { href: "/check-ins", labelKey: "history" as const, icon: History },
-      { href: "/assessments", labelKey: "assessments" as const, icon: Activity },
-      { href: "/progress", labelKey: "progress" as const, icon: TrendingUp },
-      { href: "/medications", labelKey: "medications" as const, icon: Pill },
-      { href: "/techniques", labelKey: "techniques" as const, icon: Sparkles },
-    ],
-  },
-  {
-    labelKey: "groupCare" as const,
-    items: [
-      { href: "/program", labelKey: "program" as const, icon: BookOpen },
-      { href: "/ai-chat", labelKey: "aiChat" as const, icon: Bot },
-      { href: "/messages", labelKey: "messages" as const, icon: MessageSquare },
-      { href: "/book", labelKey: "book" as const, icon: CalendarPlus },
-      { href: "/documents", labelKey: "documents" as const, icon: FileText },
-    ],
-  },
-]
-
-const BOTTOM_ITEMS = [
-  { href: "/profile", labelKey: "profile" as const, icon: User },
-  { href: "/settings", labelKey: "settings" as const, icon: Settings },
-]
-
 export function PortalSidebar({ role }: PortalSidebarProps) {
   const t = useTranslations("sidebar")
-  const pathname = usePathname()
   const [open, setOpen] = useState(false)
-
-  const isActive = (href: string) =>
-    pathname === href ||
-    (href !== "/dashboard" && pathname.startsWith(href))
-
-  const navLink = (href: string, label: string, Icon: React.ElementType) => (
-    <Link
-      key={href}
-      href={href}
-      onClick={() => setOpen(false)}
-      className={cn(
-        "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
-        isActive(href)
-          ? "bg-teal-50 text-teal-700"
-          : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-      )}
-    >
-      <Icon className="w-4 h-4" />
-      {label}
-    </Link>
-  )
-
+  const close = () => setOpen(false)
   const isAdminUser = isStaff(role)
-
-  const logo = (
-    <Link href="/dashboard" className="flex items-center gap-2 px-2 mb-6" onClick={() => setOpen(false)}>
-      <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-teal-600">
-        <Waves className="w-4 h-4 text-white" />
-      </div>
-      <span className="font-semibold text-slate-900">{BRAND_NAME}</span>
-    </Link>
-  )
-
-  const nav = (
-    <nav className="flex flex-col flex-1 gap-4">
-      {/* Check-in CTA — primary daily action */}
-      <Link
-        href="/check-in"
-        onClick={() => setOpen(false)}
-        className={cn(
-          "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold transition-colors",
-          isActive("/check-in")
-            ? "bg-teal-600 text-white"
-            : "bg-teal-600 text-white hover:bg-teal-700"
-        )}
-      >
-        <ClipboardList className="w-4 h-4" />
-        {t("checkIn")}
-      </Link>
-
-      {NAV_GROUPS.map((group) => (
-        <div key={group.labelKey}>
-          <p className="px-3 mb-1 text-[10px] font-semibold uppercase tracking-widest text-slate-400">
-            {t(group.labelKey)}
-          </p>
-          <div className="flex flex-col gap-0.5">
-            {group.items.map(({ href, labelKey, icon }) => navLink(href, t(labelKey), icon))}
-          </div>
-        </div>
-      ))}
-    </nav>
-  )
-
-  const bottom = (
-    <div className="flex flex-col gap-1 pt-4 border-t border-slate-100">
-      {BOTTOM_ITEMS.map(({ href, labelKey, icon }) => navLink(href, t(labelKey), icon))}
-
-      {isAdminUser && (
-        <Link
-          href="/admin/dashboard"
-          onClick={() => setOpen(false)}
-          className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-teal-700 hover:bg-teal-50 transition-colors"
-        >
-          <ShieldCheck className="w-4 h-4" />
-          {t("adminArea")}
-        </Link>
-      )}
-
-      <div className="flex items-center justify-between px-3 py-2">
-        <LocaleSwitcher />
-        <button
-          onClick={() => signOut({ callbackUrl: "/login" })}
-          className="flex items-center gap-2 text-sm font-medium text-slate-400 hover:text-slate-700 transition-colors"
-          title={t("signOut")}
-        >
-          <LogOut className="w-4 h-4" />
-        </button>
-      </div>
-    </div>
-  )
 
   return (
     <>
       <SidebarMobileBar onOpenMenu={() => setOpen(true)} />
 
       {open && (
-        <div className="md:hidden fixed inset-0 z-50 bg-black/40" onClick={() => setOpen(false)} />
+        <div className="md:hidden fixed inset-0 z-50 bg-black/40" onClick={close} />
       )}
 
       <aside
@@ -180,7 +38,7 @@ export function PortalSidebar({ role }: PortalSidebarProps) {
       >
         <div className="md:hidden flex justify-end mb-4">
           <button
-            onClick={() => setOpen(false)}
+            onClick={close}
             className="p-1.5 rounded-lg hover:bg-slate-100 transition-colors"
             aria-label={t("closeMenu")}
           >
@@ -188,9 +46,15 @@ export function PortalSidebar({ role }: PortalSidebarProps) {
           </button>
         </div>
 
-        {logo}
-        {nav}
-        {bottom}
+        <Link href="/dashboard" className="flex items-center gap-2 px-2 mb-6" onClick={close}>
+          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-teal-600">
+            <Waves className="w-4 h-4 text-white" />
+          </div>
+          <span className="font-semibold text-slate-900">{BRAND_NAME}</span>
+        </Link>
+
+        <PortalSidebarNav onClose={close} />
+        <PortalSidebarBottom isAdminUser={isAdminUser} onClose={close} />
       </aside>
     </>
   )
