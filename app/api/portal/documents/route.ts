@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { documents } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
+import { DOCUMENTS_PER_CLIENT_LIMIT } from "@/lib/constants"
 
 export async function GET() {
   const session = await auth()
@@ -13,6 +14,7 @@ export async function GET() {
   const docs = await db.query.documents.findMany({
     where: eq(documents.userId, session.user.id),
     orderBy: [desc(documents.createdAt)],
+    limit: DOCUMENTS_PER_CLIENT_LIMIT,
     with: { author: { columns: { name: true } } },
   })
 

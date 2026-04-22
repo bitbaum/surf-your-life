@@ -100,6 +100,8 @@ export const RECENT_CHECK_INS_LIMIT = 5
 export const WELLNESS_CHART_WINDOW_DAYS = 30
 export const AT_RISK_CLIENTS_LIMIT = 5
 export const RECENT_CLIENTS_LIMIT = 8
+export const SERVICES_MAX_LIMIT = 100
+export const DOCUMENTS_PER_CLIENT_LIMIT = PAGINATION_DEFAULT
 
 // SVG chart dimensions (shared by all inline charts)
 export const CHART_W = 800

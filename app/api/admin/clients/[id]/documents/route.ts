@@ -5,6 +5,7 @@ import { db } from "@/lib/db"
 import { documents } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
 import { z } from "zod"
+import { DOCUMENTS_PER_CLIENT_LIMIT } from "@/lib/constants"
 
 const createDocSchema = z.object({
   type: z.enum(["session_note", "assessment", "report"]),
@@ -26,6 +27,7 @@ export async function GET(
   const docs = await db.query.documents.findMany({
     where: eq(documents.userId, clientId),
     orderBy: [desc(documents.createdAt)],
+    limit: DOCUMENTS_PER_CLIENT_LIMIT,
     with: { author: { columns: { name: true } } },
   })
 

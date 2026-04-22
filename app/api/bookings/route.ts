@@ -5,6 +5,7 @@ import { bookings, services, users } from "@/lib/db/schema"
 import { and, eq, desc, inArray } from "drizzle-orm"
 import { createBookingSchema } from "@/lib/domain/booking"
 import { STAFF_ROLES } from "@/lib/domain/auth"
+import { PAGINATION_DEFAULT } from "@/lib/constants"
 import { sendEmail } from "@/lib/email"
 import { bookingNotificationEmail, bookingRequestEmail } from "@/lib/email/templates"
 
@@ -17,6 +18,7 @@ export async function GET() {
   const data = await db.query.bookings.findMany({
     where: eq(bookings.userId, session.user.id),
     orderBy: [desc(bookings.createdAt)],
+    limit: PAGINATION_DEFAULT,
     with: { service: true },
   })
 
