@@ -1,12 +1,12 @@
 import { db } from "@/lib/db"
 import { users, checkIns } from "@/lib/db/schema"
-import { eq, max } from "drizzle-orm"
+import { eq, max, or, isNull, lt } from "drizzle-orm"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { Link } from "@/i18n/navigation"
 import { formatDate } from "@/lib/utils"
 import { getTranslations, setRequestLocale } from "next-intl/server"
-import { SEVEN_DAYS_MS } from "@/lib/constants"
+import { SEVEN_DAYS_MS, DAY_MS } from "@/lib/constants"
 
 export default async function AtRiskClientsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
@@ -16,7 +16,7 @@ export default async function AtRiskClientsPage({ params }: { params: Promise<{ 
   const nowMs = Date.now() // eslint-disable-line react-hooks/purity -- server component
   const sevenDaysAgo = new Date(nowMs - SEVEN_DAYS_MS)
 
-  const clientsWithLastCheckIn = await db
+  const atRisk = await db
     .select({
       id: users.id,
       name: users.name,
@@ -28,14 +28,16 @@ export default async function AtRiskClientsPage({ params }: { params: Promise<{ 
     .leftJoin(checkIns, eq(checkIns.userId, users.id))
     .where(eq(users.role, "client"))
     .groupBy(users.id, users.name, users.email, users.createdAt)
-
-  const atRisk = clientsWithLastCheckIn.filter(
-    (c) => c.lastCheckIn === null || c.lastCheckIn < sevenDaysAgo
-  )
+    .having(
+      or(
+        isNull(max(checkIns.createdAt)),
+        lt(max(checkIns.createdAt), sevenDaysAgo)
+      )
+    )
 
   function daysSince(date: Date | null): string {
     if (!date) return "—"
-    const days = Math.floor((Date.now() - date.getTime()) / (1000 * 60 * 60 * 24)) // eslint-disable-line react-hooks/purity -- server component
+    const days = Math.floor((nowMs - date.getTime()) / DAY_MS)
     return t("atRisk.daysSince", { n: days })
   }
 
