@@ -210,7 +210,8 @@ export const HEIGHT_CM = { min: 50, max: 300 } as const
 export const WEIGHT_KG = { min: 20, max: 500 } as const
 
 // AI chat limits
-export const AI_CHAT_HISTORY_LIMIT = 20   // messages sent as context to AI
+export const AI_CHAT_HISTORY_LIMIT = 20   // messages fetched from DB for the AI context window
+export const AI_CHAT_CONTEXT_WINDOW = 10  // messages actually sent to Claude (tail of history)
 export const AI_CHAT_DISPLAY_LIMIT = 50   // messages loaded for display in the chat UI
 export const AI_CHAT_MAX_LENGTH = 1000    // max user message character length
 

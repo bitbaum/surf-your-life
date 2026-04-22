@@ -11,7 +11,7 @@
 import { db } from "@/lib/db"
 import { checkIns, medicationLog, functionalAssessments } from "@/lib/db/schema"
 import { eq, desc, isNull, and } from "drizzle-orm"
-import { SEVEN_DAYS_MS, MOOD_SCORE, AI_CONTEXT_CHECKINS } from "@/lib/constants"
+import { SEVEN_DAYS_MS, MOOD_SCORE, AI_CONTEXT_CHECKINS, AI_CHAT_CONTEXT_WINDOW } from "@/lib/constants"
 import { callClaude } from "@/lib/domain/anthropic"
 import { semanticCheckInSearch } from "@/lib/domain/embeddings"
 
@@ -281,7 +281,7 @@ ${assessmentLines}`
 
   return callClaude({
     messages: [
-      ...history.slice(-10),
+      ...history.slice(-AI_CHAT_CONTEXT_WINDOW),
       { role: "user", content: userMessage },
     ],
     system: systemPrompt,
