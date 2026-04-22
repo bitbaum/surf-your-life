@@ -3,8 +3,13 @@
 import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
-import { MOODS, ENERGY_SCALE, SLEEP_HOURS, SLEEP_QUALITY_OPTIONS, ACTIVITY_LEVELS, SYMPTOM_SCALE } from "@/lib/constants"
+import { ENERGY_SCALE } from "@/lib/constants"
 import type { CheckIn } from "@/lib/db/schema"
+import { EditMoodPicker } from "./edit-mood-picker"
+import { EditSleepSection } from "./edit-sleep-section"
+import { EditActivityPemSection } from "./edit-activity-pem-section"
+import { EditSymptomsSection } from "./edit-symptoms-section"
+import { EditTextFields } from "./edit-text-fields"
 
 interface EditCheckInModalProps {
   checkIn: CheckIn
@@ -15,14 +20,7 @@ interface EditCheckInModalProps {
 
 export function EditCheckInModal({ checkIn, checkInId, onSave, onCancel }: EditCheckInModalProps) {
   const t = useTranslations("portal.checkIns")
-  const tCheckIn = useTranslations("portal.checkIn")
-  const moodLabels: Record<string, string> = {
-    very_low: tCheckIn("moodVeryLow"),
-    low: tCheckIn("moodLow"),
-    neutral: tCheckIn("moodNeutral"),
-    good: tCheckIn("moodGood"),
-    excellent: tCheckIn("moodExcellent"),
-  }
+
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState("")
   const [mood, setMood] = useState(checkIn.mood)
@@ -34,10 +32,10 @@ export function EditCheckInModal({ checkIn, checkInId, onSave, onCancel }: EditC
   const [pemSeverity, setPemSeverity] = useState(checkIn.pemSeverity ?? 5)
   const [orthostaticSymptoms, setOrthostaticSymptoms] = useState<boolean | null>(checkIn.orthostaticSymptoms ?? null)
   const [journalEntry, setJournalEntry] = useState(checkIn.journalEntry ?? "")
-  const [symptomFatigue, setSymptomFatigue] = useState<number | null>(checkIn.symptomFatigue ?? null)
-  const [symptomBrainFog, setSymptomBrainFog] = useState<number | null>(checkIn.symptomBrainFog ?? null)
-  const [symptomPain, setSymptomPain] = useState<number | null>(checkIn.symptomPain ?? null)
-  const [stressLevel, setStressLevel] = useState<number | null>(checkIn.stressLevel ?? null)
+  const [fatigue, setFatigue] = useState<number | null>(checkIn.symptomFatigue ?? null)
+  const [brainFog, setBrainFog] = useState<number | null>(checkIn.symptomBrainFog ?? null)
+  const [pain, setPain] = useState<number | null>(checkIn.symptomPain ?? null)
+  const [stress, setStress] = useState<number | null>(checkIn.stressLevel ?? null)
   const [wins, setWins] = useState(checkIn.wins ?? "")
   const [challenges, setChallenges] = useState(checkIn.challenges ?? "")
   const [notes, setNotes] = useState(checkIn.notes ?? "")
@@ -59,10 +57,10 @@ export function EditCheckInModal({ checkIn, checkInId, onSave, onCancel }: EditC
         pemSeverity: pemFlag ? pemSeverity : null,
         orthostaticSymptoms,
         journalEntry: journalEntry || null,
-        symptomFatigue,
-        symptomBrainFog,
-        symptomPain,
-        stressLevel,
+        symptomFatigue: fatigue,
+        symptomBrainFog: brainFog,
+        symptomPain: pain,
+        stressLevel: stress,
         wins: wins || undefined,
         challenges: challenges || undefined,
         notes: notes || undefined,
@@ -79,26 +77,7 @@ export function EditCheckInModal({ checkIn, checkInId, onSave, onCancel }: EditC
 
   return (
     <form onSubmit={handleSave} className="mt-4 flex flex-col gap-4 border-t border-slate-100 pt-4">
-      <div>
-        <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">{t("editMood")}</p>
-        <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
-          {MOODS.map((m) => (
-            <button
-              key={m.value}
-              type="button"
-              onClick={() => setMood(m.value)}
-              className={`flex flex-col items-center gap-1 p-2 rounded-xl border-2 transition-all ${
-                mood === m.value
-                  ? "border-teal-500 bg-teal-50"
-                  : "border-slate-200 hover:border-slate-300"
-              }`}
-            >
-              <span className="text-xl">{m.emoji}</span>
-              <span className="text-xs text-slate-600">{moodLabels[m.value]}</span>
-            </button>
-          ))}
-        </div>
-      </div>
+      <EditMoodPicker mood={mood} onChange={(v) => setMood(v as typeof mood)} />
 
       <div>
         <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">
@@ -118,92 +97,8 @@ export function EditCheckInModal({ checkIn, checkInId, onSave, onCancel }: EditC
         </div>
       </div>
 
-      <div>
-        <label className="text-xs font-medium text-slate-500 uppercase tracking-wide block mb-1.5">
-          {t("editSleepLabel")} <span className="text-slate-400 font-normal normal-case">{t("editOptional")}</span>
-        </label>
-        <input
-          type="number"
-          min={SLEEP_HOURS.min}
-          max={SLEEP_HOURS.max}
-          value={sleep}
-          onChange={(e) => setSleep(e.target.value)}
-          placeholder={t("editSleepPlaceholder")}
-          className="h-9 w-28 rounded-lg border border-slate-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
-        />
-      </div>
-
-      <div>
-        <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">
-          {t("editSleepQualityLabel")} <span className="text-slate-400 font-normal normal-case">{t("editOptional")}</span>
-        </p>
-        <div className="flex gap-2 flex-wrap">
-          {SLEEP_QUALITY_OPTIONS.map((opt) => (
-            <button
-              key={opt.value}
-              type="button"
-              onClick={() => setSleepQuality(sleepQuality === opt.value ? null : opt.value)}
-              className={`flex flex-col items-center gap-1 p-2 rounded-xl border-2 transition-all min-w-[52px] ${
-                sleepQuality === opt.value
-                  ? "border-teal-500 bg-teal-50"
-                  : "border-slate-200 hover:border-slate-300"
-              }`}
-            >
-              <span className="text-lg">{opt.emoji}</span>
-              <span className="text-xs text-slate-600">{tCheckIn(opt.labelKey as Parameters<typeof tCheckIn>[0])}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div>
-        <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">
-          {t("editActivityLabel")} <span className="text-slate-400 font-normal normal-case">{t("editOptional")}</span>
-        </p>
-        <div className="flex gap-2 flex-wrap">
-          {ACTIVITY_LEVELS.map((lvl) => (
-            <button
-              key={lvl.value}
-              type="button"
-              onClick={() => setActivityLevel(activityLevel === lvl.value ? null : lvl.value)}
-              className={`flex flex-col items-center gap-1 p-2 rounded-xl border-2 transition-all min-w-[56px] ${
-                activityLevel === lvl.value
-                  ? "border-teal-500 bg-teal-50"
-                  : "border-slate-200 hover:border-slate-300"
-              }`}
-            >
-              <span className="text-lg">{lvl.emoji}</span>
-              <span className="text-xs text-slate-600">{tCheckIn(lvl.labelKey as Parameters<typeof tCheckIn>[0])}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div>
-        <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">{t("editPemLabel")}</p>
-        <label className="flex items-center gap-2 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={pemFlag}
-            onChange={(e) => setPemFlag(e.target.checked)}
-            className="rounded border-slate-300 accent-teal-600"
-          />
-          <span className="text-sm text-slate-700">{t("editPemFlagLabel")}</span>
-        </label>
-        {pemFlag && (
-          <div className="mt-3">
-            <p className="text-xs text-slate-500 mb-1">{t("editPemSeverityLabel")}: {pemSeverity}/10</p>
-            <input
-              type="range"
-              min={1}
-              max={10}
-              value={pemSeverity}
-              onChange={(e) => setPemSeverity(parseInt(e.target.value))}
-              className="w-full accent-teal-600"
-            />
-          </div>
-        )}
-      </div>
+      <EditSleepSection sleep={sleep} setSleep={setSleep} sleepQuality={sleepQuality} setSleepQuality={setSleepQuality} />
+      <EditActivityPemSection activityLevel={activityLevel} setActivityLevel={setActivityLevel} pemFlag={pemFlag} setPemFlag={setPemFlag} pemSeverity={pemSeverity} setPemSeverity={setPemSeverity} />
 
       <div>
         <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">{t("editOrthostaticLabel")}</p>
@@ -218,104 +113,8 @@ export function EditCheckInModal({ checkIn, checkInId, onSave, onCancel }: EditC
         </label>
       </div>
 
-      <div>
-        <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">
-          {t("editSymptomsLabel")} <span className="text-slate-400 font-normal normal-case">{t("editOptional")}</span>
-        </p>
-        <p className="text-xs text-slate-400 mb-3">{t("editSymptomsHint")}</p>
-        <div className="flex flex-col gap-3">
-          {([
-            { label: tCheckIn("symptomFatigue"), value: symptomFatigue, set: setSymptomFatigue },
-            { label: tCheckIn("symptomBrainFog"), value: symptomBrainFog, set: setSymptomBrainFog },
-            { label: tCheckIn("symptomPain"), value: symptomPain, set: setSymptomPain },
-            { label: tCheckIn("stressLevel"), value: stressLevel, set: setStressLevel },
-          ]).map(({ label, value, set }) => (
-            <div key={label}>
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-xs text-slate-600">{label}</span>
-                {value != null ? (
-                  <span className="text-xs font-medium text-slate-700">{value}/10</span>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => set(SYMPTOM_SCALE.default)}
-                    className="text-xs text-teal-600 hover:underline"
-                  >
-                    {t("editSymptomsEnable")}
-                  </button>
-                )}
-              </div>
-              {value != null && (
-                <input
-                  type="range"
-                  min={SYMPTOM_SCALE.min}
-                  max={SYMPTOM_SCALE.max}
-                  value={value}
-                  onChange={(e) => set(parseInt(e.target.value))}
-                  className="w-full accent-teal-600"
-                />
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {checkIn.journalEntry != null && (
-        <div>
-          <label className="text-xs font-medium text-slate-500 uppercase tracking-wide block mb-1.5">
-            {t("editJournalLabel")} <span className="text-slate-400 font-normal normal-case">{t("editOptional")}</span>
-          </label>
-          <textarea
-            value={journalEntry}
-            onChange={(e) => setJournalEntry(e.target.value)}
-            rows={4}
-            maxLength={3000}
-            className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
-          />
-        </div>
-      )}
-
-      {checkIn.journalEntry == null && (
-        <div>
-          <label className="text-xs font-medium text-slate-500 uppercase tracking-wide block mb-1.5">
-            {t("editWinsLabel")} <span className="text-slate-400 font-normal normal-case">{t("editOptional")}</span>
-          </label>
-          <textarea
-            value={wins}
-            onChange={(e) => setWins(e.target.value)}
-            rows={2}
-            className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
-          />
-        </div>
-      )}
-
-      {checkIn.journalEntry == null && (
-        <>
-          <div>
-            <label className="text-xs font-medium text-slate-500 uppercase tracking-wide block mb-1.5">
-              {t("editChallengesLabel")} <span className="text-slate-400 font-normal normal-case">{t("editOptional")}</span>
-            </label>
-            <textarea
-              value={challenges}
-              onChange={(e) => setChallenges(e.target.value)}
-              rows={2}
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
-            />
-          </div>
-
-          <div>
-            <label className="text-xs font-medium text-slate-500 uppercase tracking-wide block mb-1.5">
-              {t("editNotesLabel")} <span className="text-slate-400 font-normal normal-case">{t("editOptional")}</span>
-            </label>
-            <textarea
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              rows={3}
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
-            />
-          </div>
-        </>
-      )}
+      <EditSymptomsSection fatigue={fatigue} setFatigue={setFatigue} brainFog={brainFog} setBrainFog={setBrainFog} pain={pain} setPain={setPain} stress={stress} setStress={setStress} />
+      <EditTextFields hasJournal={checkIn.journalEntry != null} journalEntry={journalEntry} setJournalEntry={setJournalEntry} wins={wins} setWins={setWins} challenges={challenges} setChallenges={setChallenges} notes={notes} setNotes={setNotes} />
 
       {error && <p className="text-sm text-red-600">{error}</p>}
 
