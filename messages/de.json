@@ -846,6 +846,7 @@
       "columnEmail": "E-Mail",
       "columnConcern": "Anliegen",
       "columnJoined": "Beigetreten",
+      "columnLastCheckIn": "Letztes Check-in",
       "noResults": "Keine Klienten entsprechen der Suche",
       "noClients": "Noch keine Klienten",
       "atRiskLink": "Gefährdete Klienten →",

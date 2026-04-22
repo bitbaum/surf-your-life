@@ -1,6 +1,6 @@
 import { db } from "@/lib/db"
-import { users } from "@/lib/db/schema"
-import { eq, desc, count, or, ilike, and } from "drizzle-orm"
+import { users, checkIns, profiles } from "@/lib/db/schema"
+import { eq, desc, count, or, ilike, and, max } from "drizzle-orm"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { Link } from "@/i18n/navigation"
@@ -37,13 +37,23 @@ export default async function ClientsPage({
   const whereClause = searchFilter ? and(roleFilter, searchFilter) : roleFilter
 
   const [clients, totalResult] = await Promise.all([
-    db.query.users.findMany({
-      where: whereClause,
-      orderBy: [desc(users.createdAt)],
-      limit: PAGINATION_DEFAULT,
-      offset,
-      with: { profile: true },
-    }),
+    db
+      .select({
+        id: users.id,
+        name: users.name,
+        email: users.email,
+        createdAt: users.createdAt,
+        mainConcern: profiles.mainConcern,
+        lastCheckIn: max(checkIns.createdAt),
+      })
+      .from(users)
+      .leftJoin(profiles, eq(profiles.userId, users.id))
+      .leftJoin(checkIns, eq(checkIns.userId, users.id))
+      .where(whereClause)
+      .groupBy(users.id, users.name, users.email, users.createdAt, profiles.mainConcern)
+      .orderBy(desc(users.createdAt))
+      .limit(PAGINATION_DEFAULT)
+      .offset(offset),
     db.select({ count: count() }).from(users).where(whereClause),
   ])
 
@@ -85,6 +95,7 @@ export default async function ClientsPage({
                 <th className="text-left py-2 font-medium text-slate-500">{t("columnName")}</th>
                 <th className="text-left py-2 font-medium text-slate-500">{t("columnEmail")}</th>
                 <th className="text-left py-2 font-medium text-slate-500">{t("columnConcern")}</th>
+                <th className="text-left py-2 font-medium text-slate-500">{t("columnLastCheckIn")}</th>
                 <th className="text-left py-2 font-medium text-slate-500">{t("columnJoined")}</th>
                 <th />
               </tr>
@@ -95,7 +106,10 @@ export default async function ClientsPage({
                   <td className="py-3 font-medium text-slate-800">{client.name ?? "—"}</td>
                   <td className="py-3 text-slate-600">{client.email}</td>
                   <td className="py-3 text-slate-500">
-                    {client.profile?.mainConcern ? formatEnumValue(client.profile.mainConcern) : "—"}
+                    {client.mainConcern ? formatEnumValue(client.mainConcern) : "—"}
+                  </td>
+                  <td className="py-3 text-slate-500">
+                    {client.lastCheckIn ? formatDate(client.lastCheckIn) : <span className="text-slate-300">—</span>}
                   </td>
                   <td className="py-3 text-slate-400">{formatDate(client.createdAt)}</td>
                   <td className="py-3 text-right">
@@ -110,7 +124,7 @@ export default async function ClientsPage({
               ))}
               {clients.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="py-8 text-center text-slate-400">
+                  <td colSpan={6} className="py-8 text-center text-slate-400">
                     {q ? t("noResults") : t("noClients")}
                   </td>
                 </tr>

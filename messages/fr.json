@@ -864,6 +864,7 @@
       "columnEmail": "E-mail",
       "columnConcern": "Problématique",
       "columnJoined": "Inscrit le",
+      "columnLastCheckIn": "Dernier check-in",
       "noResults": "Aucun client ne correspond à la recherche",
       "noClients": "Aucun client pour l'instant",
       "atRiskLink": "Clients à risque →",

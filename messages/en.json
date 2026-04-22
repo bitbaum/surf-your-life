@@ -846,6 +846,7 @@
       "columnEmail": "Email",
       "columnConcern": "Concern",
       "columnJoined": "Joined",
+      "columnLastCheckIn": "Last check-in",
       "noResults": "No clients match your search",
       "noClients": "No clients yet",
       "atRiskLink": "At-risk clients →",
