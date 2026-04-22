@@ -1,5 +1,5 @@
 import type { Service } from "@/lib/db/schema"
-import { COMPANY_ADDRESS, SITE_URL } from "@/lib/constants"
+import { BRAND_NAME, COMPANY_ADDRESS, SITE_URL } from "@/lib/constants"
 
 // ─── Verification email ───────────────────────────────────────────────────────
 
@@ -19,7 +19,7 @@ export function verificationEmail(data: VerificationEmailData): string {
 <body>
   <div class="header">
     <h1 style="margin:0;font-size:20px;">Verify your email address</h1>
-    <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">Surf Your Life</p>
+    <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">${BRAND_NAME}</p>
   </div>
   <p>Hello,</p>
   <p>Thank you for registering. Please verify your email address by clicking the button below. This link expires in 24 hours.</p>
@@ -49,7 +49,7 @@ export function passwordResetEmail(data: PasswordResetEmailData): string {
 <body>
   <div class="header">
     <h1 style="margin:0;font-size:20px;">Reset your password</h1>
-    <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">Surf Your Life</p>
+    <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">${BRAND_NAME}</p>
   </div>
   <p>Hello,</p>
   <p>We received a request to reset your password. Click the button below — the link expires in 1 hour.</p>
@@ -91,7 +91,7 @@ export function bookingRequestEmail(data: BookingRequestData): string {
 <body>
   <div class="header">
     <h1 style="margin:0;font-size:18px;">Booking request received</h1>
-    <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">Surf Your Life Portal</p>
+    <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">${BRAND_NAME} Portal</p>
   </div>
   <p>${greeting}</p>
   <p>We received your booking request for <strong>${serviceName}</strong>. We'll confirm within 24 hours.</p>
@@ -127,7 +127,7 @@ export function welcomeEmail(data: WelcomeEmailData): string {
 </style></head>
 <body>
   <div class="header">
-    <h1 style="margin:0;font-size:20px;">Welcome to Surf Your Life</h1>
+    <h1 style="margin:0;font-size:20px;">Welcome to ${BRAND_NAME}</h1>
     <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">Your program starts here</p>
   </div>
 
@@ -135,7 +135,7 @@ export function welcomeEmail(data: WelcomeEmailData): string {
 
   <p>Thank you for registering. You have taken the first step toward reclaiming your health and energy.</p>
 
-  <p><strong>About Surf Your Life</strong></p>
+  <p><strong>About ${BRAND_NAME}</strong></p>
   <p>We are a psychiatry-led clinic in Zürich specialising in burnout recovery, Long COVID reintegration, and midlife reinvention. Our approach is different: we start with the biology — sleep, nervous system regulation, and physical recovery — before moving to psychological and reintegration work. No coaching before the body is ready.</p>
 
   <p>Your next step is to complete your profile so we can begin tailoring your programme. It takes about 5 minutes and helps us understand your situation before your initial assessment.</p>
@@ -232,7 +232,7 @@ export function bookingStatusEmail(data: BookingStatusData): string {
 <body>
   <div class="header">
     <h1 style="margin:0;font-size:18px;">${headingText}</h1>
-    <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">Surf Your Life Portal</p>
+    <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">${BRAND_NAME} Portal</p>
   </div>
 
   <p>${greeting}</p>
@@ -280,7 +280,7 @@ export function newMessageEmail(data: NewMessageData): string {
 <body>
   <div class="header">
     <h1 style="margin:0;font-size:18px;">New Message</h1>
-    <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">Surf Your Life Portal</p>
+    <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">${BRAND_NAME} Portal</p>
   </div>
 
   <p>You have received a new message.</p>
@@ -326,11 +326,11 @@ export function inviteEmail(data: InviteEmailData): string {
 </style></head>
 <body>
   <div class="header">
-    <h1 style="margin:0;font-size:20px;">Your invitation to Surf Your Life</h1>
+    <h1 style="margin:0;font-size:20px;">Your invitation to ${BRAND_NAME}</h1>
     <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">Personal message from ${practitionerName}</p>
   </div>
   <p>Hi ${name},</p>
-  <p>Thank you for reaching out. I have reviewed your situation and I would like to personally invite you to join the Surf Your Life portal.</p>
+  <p>Thank you for reaching out. I have reviewed your situation and I would like to personally invite you to join the ${BRAND_NAME} portal.</p>
   <p>The portal is where we work together — you will be able to track your progress, access your personalised program, and stay in touch with me directly.</p>
   <p>Your first step is to create an account. It only takes a minute:</p>
   <a href="${registerUrl}" class="cta">Create my account</a>
@@ -373,7 +373,7 @@ export function bookingNotificationEmail(data: BookingNotificationData): string 
 <body>
   <div class="header">
     <h1 style="margin:0;font-size:18px;">New Booking Request</h1>
-    <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">Surf Your Life Portal</p>
+    <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">${BRAND_NAME} Portal</p>
   </div>
 
   <p>A new booking request has been submitted and requires confirmation.</p>
@@ -429,7 +429,7 @@ export function practitionerNoteEmail(data: PractitionerNoteEmailData): string {
 <body>
   <div class="header">
     <h1 style="margin:0;font-size:20px;">A note from your practitioner</h1>
-    <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">Surf Your Life</p>
+    <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">${BRAND_NAME}</p>
   </div>
   <p>Hello ${clientName},</p>
   <p>Your practitioner left a note on your check-in from <strong>${dateStr}</strong>:</p>
@@ -595,7 +595,7 @@ export function checkInReminderEmail(data: CheckInReminderData): string {
 <body>
   <div class="header">
     <h1 style="margin:0;font-size:20px;">Time for your daily check-in</h1>
-    <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">Surf Your Life</p>
+    <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">${BRAND_NAME}</p>
   </div>
   <p>Hello ${name},</p>
   <p>${streakMsg} Your check-in takes less than 2 minutes and helps your practitioner track your progress.</p>
