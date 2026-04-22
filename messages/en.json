@@ -309,7 +309,8 @@
     },
     "unverifiedBanner": "Please verify your email address.",
     "resendVerification": "Resend verification email",
-    "resendSent": "Verification email sent"
+    "resendSent": "Verification email sent",
+    "dismiss": "Dismiss"
   },
   "contact": {
     "title": "Get in touch",

@@ -41,7 +41,7 @@ export function EmailVerificationBanner() {
       </p>
       <button
         onClick={() => setDismissed(true)}
-        aria-label="Dismiss"
+        aria-label={t("dismiss")}
         className="text-yellow-600 hover:text-yellow-800 flex-shrink-0"
       >
         <X size={16} />

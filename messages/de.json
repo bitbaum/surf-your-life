@@ -309,7 +309,8 @@
     },
     "unverifiedBanner": "Bitte verifizieren Sie Ihre E-Mail-Adresse.",
     "resendVerification": "Bestätigungs-E-Mail erneut senden",
-    "resendSent": "Bestätigungs-E-Mail gesendet"
+    "resendSent": "Bestätigungs-E-Mail gesendet",
+    "dismiss": "Schließen"
   },
   "contact": {
     "title": "Kontakt aufnehmen",

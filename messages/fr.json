@@ -309,7 +309,8 @@
     },
     "unverifiedBanner": "Veuillez vérifier votre adresse e-mail.",
     "resendVerification": "Renvoyer l'e-mail de vérification",
-    "resendSent": "E-mail de vérification envoyé"
+    "resendSent": "E-mail de vérification envoyé",
+    "dismiss": "Fermer"
   },
   "contact": {
     "title": "Prendre contact",
