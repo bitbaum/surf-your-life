@@ -1,4 +1,5 @@
 import { auth } from "@/lib/auth"
+import { isStaff } from "@/lib/domain/auth"
 import { db } from "@/lib/db"
 import { techniqueAssignments } from "@/lib/db/schema"
 import { eq, and } from "drizzle-orm"
@@ -13,7 +14,7 @@ export async function GET(req: Request) {
 
   // Practitioners can query any client; clients can only query themselves
   const targetId =
-    session.user.role === "admin" || session.user.role === "practitioner"
+    isStaff(session.user.role)
       ? (clientId ?? session.user.id)
       : session.user.id
 
@@ -32,7 +33,7 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   const session = await auth()
   if (!session) return Response.json({ success: false, error: "Unauthorized" }, { status: 401 })
-  if (session.user.role !== "admin" && session.user.role !== "practitioner") {
+  if (!isStaff(session.user.role)) {
     return Response.json({ success: false, error: "Forbidden" }, { status: 403 })
   }
 

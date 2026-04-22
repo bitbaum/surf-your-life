@@ -1,5 +1,6 @@
 import createMiddleware from "next-intl/middleware"
 import { auth } from "@/lib/auth"
+import { isStaff } from "@/lib/domain/auth"
 import { routing } from "./i18n/routing"
 import { NextResponse } from "next/server"
 
@@ -24,7 +25,7 @@ export default auth((req) => {
 
   const isPublic = publicPaths.some((r) => path === r || path.startsWith(r + "/"))
   const isAuthPath = authPaths.some((r) => path === r || path.startsWith(r))
-  const dest = session?.user.role === "admin" || session?.user.role === "practitioner"
+  const dest = isStaff(session?.user.role)
     ? "/admin/dashboard"
     : "/dashboard"
 

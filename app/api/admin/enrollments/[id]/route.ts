@@ -4,10 +4,11 @@ import { db } from "@/lib/db"
 import { programEnrollments } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { updateEnrollmentSchema } from "@/lib/domain/program"
+import { isStaff } from "@/lib/domain/auth"
 
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth()
-  if (!session?.user?.id || (session.user.role !== "admin" && session.user.role !== "practitioner")) {
+  if (!session?.user?.id || !isStaff(session.user.role)) {
     return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 })
   }
 
@@ -39,7 +40,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 
 export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth()
-  if (!session?.user?.id || (session.user.role !== "admin" && session.user.role !== "practitioner")) {
+  if (!session?.user?.id || !isStaff(session.user.role)) {
     return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 })
   }
 

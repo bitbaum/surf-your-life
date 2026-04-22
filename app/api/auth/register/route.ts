@@ -4,7 +4,7 @@ import { eq, inArray } from "drizzle-orm"
 import crypto from "crypto"
 import { db } from "@/lib/db"
 import { users, profiles, verificationTokens } from "@/lib/db/schema"
-import { registerSchema, resolveRole } from "@/lib/domain/auth"
+import { registerSchema, resolveRole, STAFF_ROLES } from "@/lib/domain/auth"
 import { sendEmail } from "@/lib/email"
 import { welcomeEmail, newUserAlertEmail, verificationEmail } from "@/lib/email/templates"
 import { SITE_URL } from "@/lib/constants"
@@ -73,7 +73,7 @@ export async function POST(req: Request) {
     })().catch(e => console.error("[register] verification email failed", e)),
     (async () => {
       const admins = await db.select({ email: users.email }).from(users)
-        .where(inArray(users.role, ["admin", "practitioner"]))
+        .where(inArray(users.role, STAFF_ROLES))
       const adminEmails = admins.map(a => a.email).filter(Boolean) as string[]
       if (adminEmails.length === 0) return
       await sendEmail({

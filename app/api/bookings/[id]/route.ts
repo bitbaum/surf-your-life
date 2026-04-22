@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
 import { auth } from "@/lib/auth"
+import { isStaff } from "@/lib/domain/auth"
 import { db } from "@/lib/db"
 import { bookings, users } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
@@ -19,7 +20,7 @@ export async function PATCH(
     return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
   }
 
-  const isAdmin = session.user.role === "admin" || session.user.role === "practitioner"
+  const isAdmin = isStaff(session.user.role)
   const isClient = session.user.role === "client"
 
   const body = await req.json()

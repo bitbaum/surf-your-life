@@ -1,4 +1,5 @@
 import { auth } from "@/lib/auth"
+import { isStaff } from "@/lib/domain/auth"
 import { db } from "@/lib/db"
 import { threads, threadMessages } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
@@ -9,7 +10,7 @@ export async function GET() {
   const session = await auth()
   if (!session) return Response.json({ success: false, error: "Unauthorized" }, { status: 401 })
 
-  const isAdmin = session.user.role === "admin" || session.user.role === "practitioner"
+  const isAdmin = isStaff(session.user.role)
 
   const rows = await db.query.threads.findMany({
     where: isAdmin ? undefined : eq(threads.clientId, session.user.id),
@@ -40,7 +41,7 @@ export async function POST(request: Request) {
     return Response.json({ success: false, error: "Validation failed", details: parsed.error.flatten() }, { status: 422 })
   }
 
-  const isAdmin = session.user.role === "admin" || session.user.role === "practitioner"
+  const isAdmin = isStaff(session.user.role)
 
   let clientId: string
   if (isAdmin) {

@@ -6,6 +6,7 @@
 import { db } from "@/lib/db"
 import { checkIns, clientAlerts, users } from "@/lib/db/schema"
 import { eq, desc, gte, and, inArray } from "drizzle-orm"
+import { STAFF_ROLES } from "@/lib/domain/auth"
 import {
   ALERT_ENERGY_DECLINE_THRESHOLD,
   ALERT_FATIGUE_SPIKE_THRESHOLD,
@@ -245,7 +246,7 @@ export async function generateAlerts(clientId: string, newCheckInId: string): Pr
           columns: { name: true, email: true },
         }),
         db.select({ email: users.email }).from(users)
-          .where(inArray(users.role, ["admin", "practitioner"])),
+          .where(inArray(users.role, STAFF_ROLES)),
       ])
 
       if (client && practitioners.length > 0) {

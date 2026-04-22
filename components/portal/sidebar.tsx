@@ -5,6 +5,7 @@ import { usePathname, Link } from "@/i18n/navigation"
 import { useTranslations } from "next-intl"
 import { signOut } from "next-auth/react"
 import { cn } from "@/lib/utils"
+import { isStaff } from "@/lib/domain/auth"
 import { LocaleSwitcher } from "@/components/ui/locale-switcher"
 import {
   LayoutDashboard,
@@ -92,7 +93,7 @@ export function PortalSidebar({ role }: PortalSidebarProps) {
     </Link>
   )
 
-  const isAdminUser = role === "admin" || role === "practitioner"
+  const isAdminUser = isStaff(role)
 
   const logo = (
     <Link href="/dashboard" className="flex items-center gap-2 px-2 mb-6" onClick={() => setOpen(false)}>

@@ -1,4 +1,5 @@
 import { auth } from "@/lib/auth"
+import { isStaff } from "@/lib/domain/auth"
 import { db } from "@/lib/db"
 import { techniques } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
@@ -7,7 +8,7 @@ import { updateTechniqueSchema } from "@/lib/domain/techniques"
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth()
   if (!session) return Response.json({ success: false, error: "Unauthorized" }, { status: 401 })
-  if (session.user.role !== "admin" && session.user.role !== "practitioner") {
+  if (!isStaff(session.user.role)) {
     return Response.json({ success: false, error: "Forbidden" }, { status: 403 })
   }
 
@@ -39,7 +40,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth()
   if (!session) return Response.json({ success: false, error: "Unauthorized" }, { status: 401 })
-  if (session.user.role !== "admin" && session.user.role !== "practitioner") {
+  if (!isStaff(session.user.role)) {
     return Response.json({ success: false, error: "Forbidden" }, { status: 403 })
   }
 

@@ -1,4 +1,5 @@
 import { auth } from "@/lib/auth"
+import { isStaff } from "@/lib/domain/auth"
 import { db } from "@/lib/db"
 import { threads, threadMessages } from "@/lib/db/schema"
 import { eq, and, isNull, ne } from "drizzle-orm"
@@ -8,7 +9,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
   if (!session) return Response.json({ success: false, error: "Unauthorized" }, { status: 401 })
 
   const { id } = await params
-  const isAdmin = session.user.role === "admin" || session.user.role === "practitioner"
+  const isAdmin = isStaff(session.user.role)
 
   const thread = await db.query.threads.findFirst({
     where: eq(threads.id, id),

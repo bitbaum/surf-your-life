@@ -1,4 +1,5 @@
 import { auth } from "@/lib/auth"
+import { isStaff } from "@/lib/domain/auth"
 import { redirect } from "next/navigation"
 import { db } from "@/lib/db"
 import { clientAlerts, users } from "@/lib/db/schema"
@@ -13,7 +14,7 @@ export default async function AlertsPage({ params }: { params: Promise<{ locale:
   const t = await getTranslations("admin.alerts")
 
   const session = await auth()
-  if (!session?.user || !["admin", "practitioner"].includes(session.user.role)) {
+  if (!session?.user || !isStaff(session.user.role)) {
     redirect("/login")
   }
 

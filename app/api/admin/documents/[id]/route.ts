@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
+import { isStaff } from "@/lib/domain/auth"
 import { db } from "@/lib/db"
 import { documents } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
@@ -9,7 +10,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await auth()
-  if (!session?.user || !["admin", "practitioner"].includes(session.user.role)) {
+  if (!session?.user || !isStaff(session.user.role)) {
     return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
   }
 

@@ -4,6 +4,7 @@ import { db } from "@/lib/db"
 import { bookings, services, users } from "@/lib/db/schema"
 import { and, eq, desc, inArray } from "drizzle-orm"
 import { createBookingSchema } from "@/lib/domain/booking"
+import { STAFF_ROLES } from "@/lib/domain/auth"
 import { sendEmail } from "@/lib/email"
 import { bookingNotificationEmail, bookingRequestEmail } from "@/lib/email/templates"
 
@@ -89,7 +90,7 @@ export async function POST(req: Request) {
   const adminUsers = await db
     .select({ email: users.email, name: users.name })
     .from(users)
-    .where(inArray(users.role, ["admin", "practitioner"]))
+    .where(inArray(users.role, STAFF_ROLES))
 
   if (adminUsers.length > 0) {
     const html = bookingNotificationEmail({

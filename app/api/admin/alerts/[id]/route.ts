@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
+import { isStaff } from "@/lib/domain/auth"
 import { db } from "@/lib/db"
 import { clientAlerts } from "@/lib/db/schema"
 import { eq, and } from "drizzle-orm"
@@ -10,7 +11,7 @@ export async function PATCH(
 ) {
   const { id } = await params
   const session = await auth()
-  if (!session?.user?.id || (session.user.role !== "admin" && session.user.role !== "practitioner")) {
+  if (!session?.user?.id || !isStaff(session.user.role)) {
     return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 })
   }
 

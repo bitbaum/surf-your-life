@@ -1,4 +1,5 @@
 import { auth } from "@/lib/auth"
+import { isStaff } from "@/lib/domain/auth"
 import { db } from "@/lib/db"
 import { techniques } from "@/lib/db/schema"
 import { eq, asc } from "drizzle-orm"
@@ -19,7 +20,7 @@ export async function GET() {
 export async function POST(req: Request) {
   const session = await auth()
   if (!session) return Response.json({ success: false, error: "Unauthorized" }, { status: 401 })
-  if (session.user.role !== "admin" && session.user.role !== "practitioner") {
+  if (!isStaff(session.user.role)) {
     return Response.json({ success: false, error: "Forbidden" }, { status: 403 })
   }
 

@@ -3,12 +3,13 @@ import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { services } from "@/lib/db/schema"
 import { serviceSchema } from "@/lib/domain/services"
+import { isStaff } from "@/lib/domain/auth"
 import { asc } from "drizzle-orm"
 
 export async function GET() {
   const session = await auth()
   if (!session) return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
-  if (session.user.role !== "admin" && session.user.role !== "practitioner") {
+  if (!isStaff(session.user.role)) {
     return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 })
   }
 
@@ -19,7 +20,7 @@ export async function GET() {
 export async function POST(req: Request) {
   const session = await auth()
   if (!session) return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
-  if (session.user.role !== "admin" && session.user.role !== "practitioner") {
+  if (!isStaff(session.user.role)) {
     return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 })
   }
 

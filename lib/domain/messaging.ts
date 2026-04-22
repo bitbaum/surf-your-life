@@ -2,6 +2,7 @@ import { z } from "zod"
 import { db } from "@/lib/db"
 import { users } from "@/lib/db/schema"
 import { eq, inArray } from "drizzle-orm"
+import { STAFF_ROLES } from "@/lib/domain/auth"
 import { sendEmail } from "@/lib/email"
 import { newMessageEmail } from "@/lib/email/templates"
 
@@ -48,7 +49,7 @@ export async function notifyMessageParty(params: NotifyParams): Promise<void> {
       const admins = await db
         .select({ email: users.email })
         .from(users)
-        .where(inArray(users.role, ["admin", "practitioner"]))
+        .where(inArray(users.role, STAFF_ROLES))
       const emails = admins.map((a) => a.email).filter(Boolean) as string[]
       if (emails.length === 0) return
       await sendEmail({

@@ -9,6 +9,7 @@ import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { users, checkIns, clientAlerts } from "@/lib/db/schema"
 import { eq, and, gte, desc, inArray, count } from "drizzle-orm"
+import { STAFF_ROLES } from "@/lib/domain/auth"
 import { SEVEN_DAYS_MS, SITE_URL, MOOD_SCORE, MOODS } from "@/lib/constants"
 import { sendEmail } from "@/lib/email"
 import { practitionerWeeklyDigestEmail, type PractitionerDigestClientRow } from "@/lib/email/templates"
@@ -203,7 +204,7 @@ export async function GET(req: Request) {
     const practitioners = await db
       .select({ email: users.email })
       .from(users)
-      .where(inArray(users.role, ["admin", "practitioner"]))
+      .where(inArray(users.role, STAFF_ROLES))
 
     if (practitioners.length > 0) {
       const weekEnd = new Date()
