@@ -868,6 +868,7 @@
         "joinedOn": "Inscrit le {date}",
         "profileCard": "Profil",
         "checkInsCard": "Check-ins",
+        "showingRecent": "{n} plus récents affichés",
         "noProfile": "Profil non renseigné",
         "noCheckIns": "Aucun check-in pour l'instant",
         "mainConcern": "Problématique principale",

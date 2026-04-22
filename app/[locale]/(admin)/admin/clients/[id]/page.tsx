@@ -1,12 +1,12 @@
 import { notFound } from "next/navigation"
 import { db } from "@/lib/db"
 import { users, checkIns, programs, programEnrollments, medicationLog, functionalAssessments, techniqueAssignments, techniques } from "@/lib/db/schema"
-import { eq, desc, isNull, and } from "drizzle-orm"
+import { eq, desc, isNull, and, count } from "drizzle-orm"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ProgressBar } from "@/components/ui/progress-bar"
 import { formatDate, formatEnumValue } from "@/lib/utils"
 import { Link } from "@/i18n/navigation"
-import { MOOD_EMOJI } from "@/lib/constants"
+import { MOOD_EMOJI, PAGINATION_DEFAULT } from "@/lib/constants"
 import { ResetLinkButton } from "./reset-link-button"
 import { NewThreadButton } from "./new-thread-button"
 import { EnrollProgramButton } from "./enroll-program-button"
@@ -22,7 +22,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
   const t = await getTranslations("admin.clients")
   const tPrograms = await getTranslations("admin.programs")
 
-  const [client, clientCheckIns, allPrograms, activeEnrollment, currentMedications, latestAssessment, clientAssignments, allTechniques] = await Promise.all([
+  const [client, clientCheckIns, checkInCountResult, allPrograms, activeEnrollment, currentMedications, latestAssessment, clientAssignments, allTechniques] = await Promise.all([
     db.query.users.findFirst({
       where: eq(users.id, id),
       with: { profile: true },
@@ -30,7 +30,9 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
     db.query.checkIns.findMany({
       where: eq(checkIns.userId, id),
       orderBy: [desc(checkIns.createdAt)],
+      limit: PAGINATION_DEFAULT,
     }),
+    db.select({ count: count() }).from(checkIns).where(eq(checkIns.userId, id)),
     db.query.programs.findMany({ orderBy: [desc(programs.createdAt)] }),
     db.query.programEnrollments.findFirst({
       where: eq(programEnrollments.clientId, id),
@@ -58,6 +60,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
 
   if (!client || client.role !== "client") notFound()
 
+  const totalCheckIns = checkInCountResult[0]?.count ?? 0
   const profile = client.profile
 
   return (
@@ -115,7 +118,14 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
 
         <Card>
           <CardHeader>
-            <CardTitle>{t("detail.checkInsCard")} ({clientCheckIns.length})</CardTitle>
+            <CardTitle>
+            {t("detail.checkInsCard")} ({totalCheckIns})
+            {totalCheckIns > PAGINATION_DEFAULT && (
+              <span className="ml-2 text-xs font-normal text-slate-400">
+                {t("detail.showingRecent", { n: PAGINATION_DEFAULT })}
+              </span>
+            )}
+          </CardTitle>
           </CardHeader>
           <CardContent>
             {clientCheckIns.length > 0 ? (

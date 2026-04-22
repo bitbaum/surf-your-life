@@ -851,6 +851,7 @@
         "joinedOn": "Joined {date}",
         "profileCard": "Profile",
         "checkInsCard": "Check-ins",
+        "showingRecent": "showing {n} most recent",
         "noProfile": "No profile filled in yet",
         "noCheckIns": "No check-ins yet",
         "mainConcern": "Main concern",

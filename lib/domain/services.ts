@@ -4,7 +4,7 @@ export const SERVICE_CATEGORIES = ["machine", "space", "consultation"] as const
 
 export const serviceSchema = z.object({
   name: z.string().min(1).max(100),
-  description: z.string().max(500).optional(),
+  description: z.string().max(500).nullish(),
   category: z.enum(SERVICE_CATEGORIES),
   durationMinutes: z.number().int().min(5).max(480).optional().nullable(),
 })
