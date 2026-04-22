@@ -109,6 +109,7 @@ export const NINETY_DAYS_MS = 90 * DAY_MS
 
 // Valid booking time preference values (schema SSOT)
 export const BOOKING_TIME_PREFERENCE_VALUES = ["morning", "afternoon", "flexible"] as const
+export type BookingTimePreference = (typeof BOOKING_TIME_PREFERENCE_VALUES)[number]
 
 // List size limits
 export const RECENT_CHECK_INS_LIMIT = 5

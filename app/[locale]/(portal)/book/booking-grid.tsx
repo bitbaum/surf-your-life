@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Clock, Cpu, Building2, Stethoscope } from "lucide-react"
 import type { Service } from "@/lib/db/schema"
 import { toDateString } from "@/lib/utils"
-import { BookingModal } from "./booking-modal"
+import { BookingModal, type BookingForm } from "./booking-modal"
 
 const CATEGORY_ICONS = {
   machine: Cpu,
@@ -18,12 +18,6 @@ const CATEGORY_COLORS = {
   machine: "bg-violet-50 text-violet-700",
   space: "bg-teal-50 text-teal-700",
   consultation: "bg-amber-50 text-amber-700",
-}
-
-type BookingForm = {
-  preferredDate: string
-  preferredTime: "morning" | "afternoon" | "flexible"
-  notes: string
 }
 
 export function BookingGrid({ services }: { services: Service[] }) {

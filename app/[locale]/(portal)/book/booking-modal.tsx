@@ -5,10 +5,11 @@ import { Button } from "@/components/ui/button"
 import { CheckCircle, X } from "lucide-react"
 import type { Service } from "@/lib/db/schema"
 import { toDateString } from "@/lib/utils"
+import { BOOKING_TIME_PREFERENCE_VALUES, type BookingTimePreference } from "@/lib/constants"
 
-type BookingForm = {
+export type BookingForm = {
   preferredDate: string
-  preferredTime: "morning" | "afternoon" | "flexible"
+  preferredTime: BookingTimePreference
   notes: string
 }
 
@@ -63,7 +64,7 @@ export function BookingModal({ selected, form, setForm, loading, submitted, erro
             <div>
               <label className="text-sm font-medium text-slate-700 block mb-1.5">{t("preferredTime")}</label>
               <div className="flex gap-2">
-                {(["morning", "afternoon", "flexible"] as const).map((opt) => (
+                {BOOKING_TIME_PREFERENCE_VALUES.map((opt) => (
                   <button
                     key={opt}
                     type="button"
