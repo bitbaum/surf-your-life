@@ -895,7 +895,16 @@
         "physical": "Physical",
         "emotional": "Emotional",
         "social": "Social",
-        "viewAllCheckIns": "View all →"
+        "viewAllCheckIns": "View all →",
+        "assignmentCard": "Assigned practitioner",
+        "unassigned": "Unassigned",
+        "assignedSince": "since {date}",
+        "changePractitioner": "Change",
+        "removePractitioner": "Remove",
+        "assignPractitioner": "Assign",
+        "selectPractitioner": "Select practitioner...",
+        "assignError": "Failed to update assignment",
+        "saving": "Saving..."
       },
       "atRisk": {
         "title": "At-Risk Clients",

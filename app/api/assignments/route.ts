@@ -1,0 +1,40 @@
+import { NextResponse } from "next/server"
+import { auth } from "@/lib/auth"
+import { db } from "@/lib/db"
+import { assignments } from "@/lib/db/schema"
+import { and, eq } from "drizzle-orm"
+import { z } from "zod"
+
+const assignSchema = z.object({
+  clientId: z.string().uuid(),
+  practitionerId: z.string().uuid(),
+})
+
+export async function POST(req: Request) {
+  const session = await auth()
+  if (!session?.user?.id || !["admin", "practitioner"].includes(session.user.role ?? "")) {
+    return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
+  }
+
+  const body = await req.json()
+  const parsed = assignSchema.safeParse(body)
+  if (!parsed.success) {
+    return NextResponse.json({ success: false, error: "Invalid input" }, { status: 400 })
+  }
+
+  const { clientId, practitionerId } = parsed.data
+
+  // Deactivate any existing active assignment for this client
+  await db
+    .update(assignments)
+    .set({ active: false })
+    .where(and(eq(assignments.clientId, clientId), eq(assignments.active, true)))
+
+  // Create new assignment
+  const [created] = await db
+    .insert(assignments)
+    .values({ clientId, practitionerId })
+    .returning({ id: assignments.id })
+
+  return NextResponse.json({ success: true, data: { id: created.id } }, { status: 201 })
+}

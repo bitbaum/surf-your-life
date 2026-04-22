@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation"
 import { db } from "@/lib/db"
-import { users, checkIns, programs, programEnrollments, medicationLog, functionalAssessments, techniqueAssignments, techniques } from "@/lib/db/schema"
-import { eq, desc, isNull, and, count } from "drizzle-orm"
+import { users, checkIns, programs, programEnrollments, medicationLog, functionalAssessments, techniqueAssignments, techniques, assignments } from "@/lib/db/schema"
+import { eq, desc, isNull, and, count, inArray } from "drizzle-orm"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { formatDate, formatEnumValue } from "@/lib/utils"
 
@@ -16,6 +16,7 @@ import { SessionNotes } from "./session-notes"
 import { TechniqueAssignments } from "./technique-assignments"
 import { ClientMedicationsRow } from "./client-medications-row"
 import { ClientEnrollmentCard } from "./client-enrollment-card"
+import { PractitionerAssignmentCard } from "./practitioner-assignment-card"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 
 export default async function ClientDetailPage({ params }: { params: Promise<{ locale: string; id: string }> }) {
@@ -23,7 +24,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
   setRequestLocale(locale)
   const t = await getTranslations("admin.clients")
 
-  const [client, clientCheckIns, checkInCountResult, allPrograms, activeEnrollment, currentMedications, latestAssessment, clientAssignments, allTechniques] = await Promise.all([
+  const [client, clientCheckIns, checkInCountResult, allPrograms, activeEnrollment, currentMedications, latestAssessment, clientAssignments, allTechniques, currentAssignment, allPractitioners] = await Promise.all([
     db.query.users.findFirst({
       where: eq(users.id, id),
       with: { profile: true },
@@ -57,6 +58,23 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
       where: eq(techniques.isActive, true),
       orderBy: (t, { asc }) => [asc(t.category), asc(t.name)],
     }),
+    db
+      .select({
+        id: assignments.id,
+        practitionerId: assignments.practitionerId,
+        practitionerName: users.name,
+        practitionerEmail: users.email,
+        assignedAt: assignments.assignedAt,
+      })
+      .from(assignments)
+      .innerJoin(users, eq(users.id, assignments.practitionerId))
+      .where(and(eq(assignments.clientId, id), eq(assignments.active, true)))
+      .limit(1)
+      .then((rows) => rows[0] ?? null),
+    db
+      .select({ id: users.id, name: users.name, email: users.email })
+      .from(users)
+      .where(inArray(users.role, ["practitioner", "admin"])),
   ])
 
   if (!client || client.role !== "client") notFound()
@@ -150,6 +168,14 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
             )}
           </CardContent>
         </Card>
+      </div>
+
+      <div className="mt-6">
+        <PractitionerAssignmentCard
+          clientId={id}
+          current={currentAssignment}
+          practitioners={allPractitioners}
+        />
       </div>
 
       <ClientMedicationsRow currentMedications={currentMedications} latestAssessment={latestAssessment} />

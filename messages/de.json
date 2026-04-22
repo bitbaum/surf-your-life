@@ -895,7 +895,16 @@
         "physical": "Körperlich",
         "emotional": "Emotional",
         "social": "Sozial",
-        "viewAllCheckIns": "Alle anzeigen →"
+        "viewAllCheckIns": "Alle anzeigen →",
+        "assignmentCard": "Zugewiesene Fachkraft",
+        "unassigned": "Nicht zugewiesen",
+        "assignedSince": "seit {date}",
+        "changePractitioner": "Ändern",
+        "removePractitioner": "Entfernen",
+        "assignPractitioner": "Zuweisen",
+        "selectPractitioner": "Fachkraft auswählen...",
+        "assignError": "Zuweisung konnte nicht aktualisiert werden",
+        "saving": "Wird gespeichert..."
       },
       "atRisk": {
         "title": "Gefährdete Klienten",

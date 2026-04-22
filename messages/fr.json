@@ -913,7 +913,16 @@
         "physical": "Physique",
         "emotional": "Émotionnel",
         "social": "Social",
-        "viewAllCheckIns": "Voir tout →"
+        "viewAllCheckIns": "Voir tout →",
+        "assignmentCard": "Praticien assigné",
+        "unassigned": "Non assigné",
+        "assignedSince": "depuis {date}",
+        "changePractitioner": "Modifier",
+        "removePractitioner": "Retirer",
+        "assignPractitioner": "Assigner",
+        "selectPractitioner": "Sélectionner un praticien...",
+        "assignError": "Échec de la mise à jour de l'affectation",
+        "saving": "Enregistrement..."
       },
       "atRisk": {
         "title": "Clients à risque",
