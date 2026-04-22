@@ -4,8 +4,9 @@
  */
 
 import { db } from "@/lib/db"
-import { checkIns } from "@/lib/db/schema"
-import { eq, sql } from "drizzle-orm"
+import { checkIns, documents } from "@/lib/db/schema"
+import { and, eq, isNotNull, sql } from "drizzle-orm"
+import { AI_CONTEXT_CHECKINS } from "@/lib/constants"
 
 async function generateEmbedding(text: string): Promise<number[] | null> {
   const apiKey = process.env.OPENAI_API_KEY
@@ -119,5 +120,96 @@ export async function embedCheckIn(checkInId: string): Promise<void> {
       .where(eq(checkIns.id, checkInId))
   } catch {
     // Never surface embedding failures to callers
+  }
+}
+
+/**
+ * Generate and store an embedding for the given document.
+ * Called fire-and-forget after document creation — never throws.
+ */
+export async function embedDocument(documentId: string): Promise<void> {
+  try {
+    const row = await db.query.documents.findFirst({
+      where: eq(documents.id, documentId),
+      columns: { title: true, content: true, type: true },
+    })
+    if (!row || !row.content) return
+
+    const text = [row.title, row.content].filter(Boolean).join("\n\n")
+    const embedding = await generateEmbedding(text)
+    if (!embedding) return
+
+    await db
+      .update(documents)
+      .set({ embedding: sql`${JSON.stringify(embedding)}::vector` })
+      .where(eq(documents.id, documentId))
+  } catch {
+    // Never surface embedding failures to callers
+  }
+}
+
+/**
+ * Semantic search over a user's check-ins using cosine similarity.
+ * Returns the most relevant check-ins for a given query, ordered by relevance.
+ * Falls back to null when embeddings are unavailable (no OPENAI_API_KEY or no
+ * embedded check-ins yet) — callers should use recency-based fallback.
+ */
+export async function semanticCheckInSearch(
+  userId: string,
+  query: string,
+  limit: number = AI_CONTEXT_CHECKINS
+): Promise<{
+  id: string
+  createdAt: Date
+  mood: string | null
+  energyLevel: number | null
+  sleepHours: number | null
+  sleepQuality: number | null
+  activityLevel: string | null
+  pemFlag: boolean | null
+  pemSeverity: number | null
+  orthostaticSymptoms: boolean | null
+  symptomFatigue: number | null
+  symptomBrainFog: number | null
+  symptomPain: number | null
+  stressLevel: number | null
+  journalEntry: string | null
+  wins: string | null
+  challenges: string | null
+  notes: string | null
+}[] | null> {
+  const queryEmbedding = await generateEmbedding(query)
+  if (!queryEmbedding) return null
+
+  try {
+    const rows = await db
+      .select({
+        id: checkIns.id,
+        createdAt: checkIns.createdAt,
+        mood: checkIns.mood,
+        energyLevel: checkIns.energyLevel,
+        sleepHours: checkIns.sleepHours,
+        sleepQuality: checkIns.sleepQuality,
+        activityLevel: checkIns.activityLevel,
+        pemFlag: checkIns.pemFlag,
+        pemSeverity: checkIns.pemSeverity,
+        orthostaticSymptoms: checkIns.orthostaticSymptoms,
+        symptomFatigue: checkIns.symptomFatigue,
+        symptomBrainFog: checkIns.symptomBrainFog,
+        symptomPain: checkIns.symptomPain,
+        stressLevel: checkIns.stressLevel,
+        journalEntry: checkIns.journalEntry,
+        wins: checkIns.wins,
+        challenges: checkIns.challenges,
+        notes: checkIns.notes,
+      })
+      .from(checkIns)
+      .where(and(eq(checkIns.userId, userId), isNotNull(checkIns.embedding)))
+      .orderBy(sql`embedding <=> ${JSON.stringify(queryEmbedding)}::vector`)
+      .limit(limit)
+
+    return rows.length > 0 ? rows : null
+  } catch {
+    return null
   }
 }

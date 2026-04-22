@@ -13,36 +13,40 @@ import { checkIns, medicationLog, functionalAssessments } from "@/lib/db/schema"
 import { eq, desc, isNull, and } from "drizzle-orm"
 import { SEVEN_DAYS_MS, MOOD_SCORE, AI_CONTEXT_CHECKINS } from "@/lib/constants"
 import { callClaude } from "@/lib/domain/anthropic"
+import { semanticCheckInSearch } from "@/lib/domain/embeddings"
 
 
 // ─── Context builder ─────────────────────────────────────────────────────────
 
-async function buildContext(userId: string) {
-  const [recent, medications, latestAssessment] = await Promise.all([
+async function buildContext(userId: string, query?: string) {
+  const recentColumns = {
+    createdAt: true,
+    mood: true,
+    energyLevel: true,
+    sleepHours: true,
+    sleepQuality: true,
+    activityLevel: true,
+    pemFlag: true,
+    pemSeverity: true,
+    orthostaticSymptoms: true,
+    symptomFatigue: true,
+    symptomBrainFog: true,
+    symptomPain: true,
+    stressLevel: true,
+    journalEntry: true,
+    wins: true,
+    challenges: true,
+    notes: true,
+  } as const
+
+  const [recentFallback, semanticResults, medications, latestAssessment] = await Promise.all([
     db.query.checkIns.findMany({
       where: eq(checkIns.userId, userId),
       orderBy: [desc(checkIns.createdAt)],
       limit: AI_CONTEXT_CHECKINS,
-      columns: {
-        createdAt: true,
-        mood: true,
-        energyLevel: true,
-        sleepHours: true,
-        sleepQuality: true,
-        activityLevel: true,
-        pemFlag: true,
-        pemSeverity: true,
-        orthostaticSymptoms: true,
-        symptomFatigue: true,
-        symptomBrainFog: true,
-        symptomPain: true,
-        stressLevel: true,
-        journalEntry: true,
-        wins: true,
-        challenges: true,
-        notes: true,
-      },
+      columns: recentColumns,
     }),
+    query ? semanticCheckInSearch(userId, query, AI_CONTEXT_CHECKINS) : Promise.resolve(null),
     db.query.medicationLog.findMany({
       where: and(eq(medicationLog.userId, userId), isNull(medicationLog.endDate)),
       columns: { medicationName: true, dose: true, frequency: true, startDate: true, notes: true },
@@ -61,6 +65,9 @@ async function buildContext(userId: string) {
       },
     }),
   ])
+
+  // Use semantic results when available, otherwise fall back to recency
+  const recent = semanticResults ?? recentFallback
   return { recent, medications, latestAssessment }
 }
 
@@ -289,7 +296,7 @@ export async function generateAiReply(
   userMessage: string,
   history: { role: "user" | "assistant"; content: string }[]
 ): Promise<string> {
-  const context = await buildContext(userId)
+  const context = await buildContext(userId, userMessage)
   const { recent, medications, latestAssessment } = context
 
   // Try AI first (no-op until ANTHROPIC_API_KEY is set)

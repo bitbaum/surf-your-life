@@ -6,6 +6,7 @@ import { documents, documentTypeEnum } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
 import { z } from "zod"
 import { DOCUMENTS_PER_CLIENT_LIMIT } from "@/lib/constants"
+import { embedDocument } from "@/lib/domain/embeddings"
 
 const createDocSchema = z.object({
   type: z.enum(documentTypeEnum.enumValues),
@@ -64,6 +65,8 @@ export async function POST(
     .insert(documents)
     .values({ userId: clientId, authorId: session.user.id, type, title, content })
     .returning({ id: documents.id })
+
+  void embedDocument(doc.id)
 
   return NextResponse.json({ success: true, data: { id: doc.id } }, { status: 201 })
 }

@@ -11,6 +11,10 @@
     {
       "path": "/api/cron/ai-digest",
       "schedule": "0 19 * * 0"
+    },
+    {
+      "path": "/api/cron/embed-backfill",
+      "schedule": "0 3 * * *"
     }
   ]
 }

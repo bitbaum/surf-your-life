@@ -108,6 +108,7 @@ export const SERVICES_MAX_LIMIT = 100
 export const DOCUMENTS_PER_CLIENT_LIMIT = PAGINATION_DEFAULT
 export const DOCUMENT_UPLOAD_MAX_CONTENT = 5000  // max chars for client-submitted upload text
 export const DOCUMENT_UPLOAD_MAX_TITLE = 200     // max chars for upload title
+export const EMBED_BACKFILL_BATCH = 50           // records processed per cron run during backfill
 export const ADMIN_DASHBOARD_ALERTS_PREVIEW = 10
 
 // SVG chart dimensions (shared by all inline charts)
