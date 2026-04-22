@@ -11,10 +11,6 @@ import {
 // ─── computeStreak ────────────────────────────────────────────────────────────
 
 describe("computeStreak", () => {
-  function d(iso: string) {
-    return new Date(iso)
-  }
-
   it("returns 0 for empty input", () => {
     expect(computeStreak([])).toBe(0)
   })

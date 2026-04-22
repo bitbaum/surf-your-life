@@ -116,6 +116,8 @@ export const ADMIN_DASHBOARD_ALERTS_PREVIEW = 10
 export const CHART_W = 800
 export const CHART_H = 220
 export const CHART_PAD = { top: 20, right: 20, bottom: 36, left: 8 } as const
+export const CHART_PLOT_W = CHART_W - CHART_PAD.left - CHART_PAD.right
+export const CHART_PLOT_H = CHART_H - CHART_PAD.top - CHART_PAD.bottom
 // Tooltip flip thresholds — right of this fraction → flip left; left of this → flip right
 export const CHART_TOOLTIP_RIGHT_THRESHOLD = 0.65
 export const CHART_TOOLTIP_LEFT_THRESHOLD = 0.35

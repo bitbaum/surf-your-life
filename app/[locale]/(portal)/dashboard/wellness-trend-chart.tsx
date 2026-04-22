@@ -3,16 +3,11 @@
 import { useState, useRef } from "react"
 import { useTranslations } from "next-intl"
 import { formatDate } from "@/lib/utils"
+import { MOOD_LABEL, MOOD_EMOJI, MOOD_NUMERIC } from "@/lib/constants"
 import {
-  MOOD_LABEL,
-  MOOD_EMOJI,
-  MOOD_NUMERIC,
-  CHART_W,
-  CHART_H,
-  CHART_PAD,
-  CHART_TOOLTIP_RIGHT_THRESHOLD,
-  CHART_TOOLTIP_LEFT_THRESHOLD,
-} from "@/lib/constants"
+  CHART_W, CHART_H, CHART_PAD, CHART_PLOT_H,
+  toPath, toX, findClosestIndex, computeDateIndices, tooltipTransform,
+} from "./chart-utils"
 
 interface DataPoint {
   createdAt: Date
@@ -24,21 +19,6 @@ interface Props {
   data: DataPoint[]
 }
 
-const PLOT_W = CHART_W - CHART_PAD.left - CHART_PAD.right
-const PLOT_H = CHART_H - CHART_PAD.top - CHART_PAD.bottom
-
-function toPath(pts: [number, number][]): string {
-  if (pts.length < 2) return ""
-  const d = [`M ${pts[0][0].toFixed(1)} ${pts[0][1].toFixed(1)}`]
-  for (let i = 1; i < pts.length; i++) {
-    const [x0, y0] = pts[i - 1]
-    const [x1, y1] = pts[i]
-    const cpx = ((x0 + x1) / 2).toFixed(1)
-    d.push(`C ${cpx} ${y0.toFixed(1)}, ${cpx} ${y1.toFixed(1)}, ${x1.toFixed(1)} ${y1.toFixed(1)}`)
-  }
-  return d.join(" ")
-}
-
 export function WellnessTrendChart({ data }: Props) {
   const t = useTranslations("portal.dashboard")
   const [hovered, setHovered] = useState<number | null>(null)
@@ -47,19 +27,19 @@ export function WellnessTrendChart({ data }: Props) {
   if (data.length < 2) return null
 
   const n = data.length
+  const bottom = CHART_PAD.top + CHART_PLOT_H
 
   const moodPts: [number, number][] = data.map((d, i) => [
-    CHART_PAD.left + (n === 1 ? PLOT_W / 2 : (i / (n - 1)) * PLOT_W),
-    CHART_PAD.top + (1 - (MOOD_NUMERIC[d.mood] ?? 0.5)) * PLOT_H,
+    toX(i, n),
+    CHART_PAD.top + (1 - (MOOD_NUMERIC[d.mood] ?? 0.5)) * CHART_PLOT_H,
   ])
   const energyPts: [number, number][] = data.map((d, i) => [
-    CHART_PAD.left + (n === 1 ? PLOT_W / 2 : (i / (n - 1)) * PLOT_W),
-    CHART_PAD.top + (1 - d.energyLevel / 10) * PLOT_H,
+    toX(i, n),
+    CHART_PAD.top + (1 - d.energyLevel / 10) * CHART_PLOT_H,
   ])
 
   const moodLinePath = toPath(moodPts)
   const energyLinePath = toPath(energyPts)
-  const bottom = CHART_PAD.top + PLOT_H
   const moodAreaPath = `${moodLinePath} L ${moodPts[n - 1][0].toFixed(1)} ${bottom} L ${moodPts[0][0].toFixed(1)} ${bottom} Z`
   const energyAreaPath = `${energyLinePath} L ${energyPts[n - 1][0].toFixed(1)} ${bottom} L ${energyPts[0][0].toFixed(1)} ${bottom} Z`
 
@@ -67,21 +47,12 @@ export function WellnessTrendChart({ data }: Props) {
     const rect = svgRef.current?.getBoundingClientRect()
     if (!rect) return
     const mx = ((e.clientX - rect.left) / rect.width) * CHART_W
-    let closest = 0
-    let minDist = Infinity
-    moodPts.forEach(([x], i) => {
-      const dist = Math.abs(x - mx)
-      if (dist < minDist) { minDist = dist; closest = i }
-    })
-    setHovered(closest)
+    setHovered(findClosestIndex(moodPts, mx))
   }
 
   const h = hovered
   const ci = h !== null ? data[h] : null
-
-  const dateIndices = n <= 3
-    ? data.map((_, i) => i)
-    : [0, Math.floor((n - 1) / 2), n - 1]
+  const dateIndices = computeDateIndices(n)
 
   return (
     <div className="relative select-none">
@@ -118,8 +89,8 @@ export function WellnessTrendChart({ data }: Props) {
         {[0.25, 0.5, 0.75, 1].map((v) => (
           <line
             key={v}
-            x1={CHART_PAD.left} y1={CHART_PAD.top + (1 - v) * PLOT_H}
-            x2={CHART_W - CHART_PAD.right} y2={CHART_PAD.top + (1 - v) * PLOT_H}
+            x1={CHART_PAD.left} y1={CHART_PAD.top + (1 - v) * CHART_PLOT_H}
+            x2={CHART_W - CHART_PAD.right} y2={CHART_PAD.top + (1 - v) * CHART_PLOT_H}
             stroke="#f1f5f9" strokeWidth="1"
           />
         ))}
@@ -182,12 +153,7 @@ export function WellnessTrendChart({ data }: Props) {
           style={{
             left: `${(moodPts[h][0] / CHART_W) * 100}%`,
             top: "32px",
-            transform:
-              h > n * CHART_TOOLTIP_RIGHT_THRESHOLD
-                ? "translateX(calc(-100% - 8px))"
-                : h < n * CHART_TOOLTIP_LEFT_THRESHOLD
-                  ? "translateX(8px)"
-                  : "translateX(-50%)",
+            transform: tooltipTransform(h, n),
           }}
         >
           <div className="bg-slate-900 text-white text-xs rounded-xl px-3 py-2.5 shadow-xl min-w-[120px]">

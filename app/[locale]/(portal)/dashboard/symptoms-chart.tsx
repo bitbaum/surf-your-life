@@ -4,12 +4,9 @@ import { useState, useRef } from "react"
 import { useTranslations } from "next-intl"
 import { formatDate } from "@/lib/utils"
 import {
-  CHART_W,
-  CHART_H,
-  CHART_PAD,
-  CHART_TOOLTIP_RIGHT_THRESHOLD,
-  CHART_TOOLTIP_LEFT_THRESHOLD,
-} from "@/lib/constants"
+  CHART_W, CHART_H, CHART_PAD, CHART_PLOT_H,
+  toPath, toX, findClosestIndex, computeDateIndices, tooltipTransform,
+} from "./chart-utils"
 
 interface DataPoint {
   createdAt: Date
@@ -23,9 +20,6 @@ interface Props {
   data: DataPoint[]
 }
 
-const PLOT_W = CHART_W - CHART_PAD.left - CHART_PAD.right
-const PLOT_H = CHART_H - CHART_PAD.top - CHART_PAD.bottom
-
 // Each symptom line: color, data key, i18n label key
 const SYMPTOM_LINES = [
   { key: "symptomFatigue" as const, stroke: "#f59e0b", gradId: "syl-fatigue-grad" },
@@ -34,17 +28,12 @@ const SYMPTOM_LINES = [
   { key: "stressLevel" as const, stroke: "#64748b", gradId: "syl-stress-grad" },
 ] as const
 
-function toPath(pts: [number, number][]): string {
-  if (pts.length < 2) return ""
-  const d = [`M ${pts[0][0].toFixed(1)} ${pts[0][1].toFixed(1)}`]
-  for (let i = 1; i < pts.length; i++) {
-    const [x0, y0] = pts[i - 1]
-    const [x1, y1] = pts[i]
-    const cpx = ((x0 + x1) / 2).toFixed(1)
-    d.push(`C ${cpx} ${y0.toFixed(1)}, ${cpx} ${y1.toFixed(1)}, ${x1.toFixed(1)} ${y1.toFixed(1)}`)
-  }
-  return d.join(" ")
-}
+const LABEL_KEYS = {
+  symptomFatigue: "chartFatigue",
+  symptomBrainFog: "chartBrainFog",
+  symptomPain: "chartPain",
+  stressLevel: "chartStress",
+} as const
 
 export function SymptomsChart({ data }: Props) {
   const t = useTranslations("portal.dashboard")
@@ -54,53 +43,32 @@ export function SymptomsChart({ data }: Props) {
   if (data.length < 2) return null
 
   const n = data.length
-  const bottom = CHART_PAD.top + PLOT_H
+  const bottom = CHART_PAD.top + CHART_PLOT_H
 
-  // Build point arrays for each symptom line (only lines with data)
+  // Build point arrays for each symptom line, filtering out lines with < 2 values
   const lines = SYMPTOM_LINES.map((line) => {
-    const pts: [number, number][] = data.map((d, i) => {
-      const val = d[line.key]
-      return [
-        CHART_PAD.left + (n === 1 ? PLOT_W / 2 : (i / (n - 1)) * PLOT_W),
-        CHART_PAD.top + (1 - (val ?? 0) / 10) * PLOT_H,
-      ]
-    })
-    // Only include if at least 2 non-null values exist
+    const pts: [number, number][] = data.map((d, i) => [
+      toX(i, n),
+      CHART_PAD.top + (1 - (d[line.key] ?? 0) / 10) * CHART_PLOT_H,
+    ])
     const hasData = data.filter((d) => d[line.key] != null).length >= 2
     return { ...line, pts, hasData }
   }).filter((l) => l.hasData)
 
   if (lines.length === 0) return null
 
-  // Use the first active line's x-positions for interaction
   const xPts = lines[0].pts
 
   function handleMouseMove(e: React.MouseEvent<SVGSVGElement>) {
     const rect = svgRef.current?.getBoundingClientRect()
     if (!rect) return
     const mx = ((e.clientX - rect.left) / rect.width) * CHART_W
-    let closest = 0
-    let minDist = Infinity
-    xPts.forEach(([x], i) => {
-      const dist = Math.abs(x - mx)
-      if (dist < minDist) { minDist = dist; closest = i }
-    })
-    setHovered(closest)
+    setHovered(findClosestIndex(xPts, mx))
   }
 
   const h = hovered
   const ci = h !== null ? data[h] : null
-
-  const dateIndices = n <= 3
-    ? data.map((_, i) => i)
-    : [0, Math.floor((n - 1) / 2), n - 1]
-
-  const labelKeys = {
-    symptomFatigue: "chartFatigue",
-    symptomBrainFog: "chartBrainFog",
-    symptomPain: "chartPain",
-    stressLevel: "chartStress",
-  } as const
+  const dateIndices = computeDateIndices(n)
 
   return (
     <div className="relative select-none">
@@ -112,7 +80,7 @@ export function SymptomsChart({ data }: Props) {
               className="inline-block w-4 h-0.5 rounded-full"
               style={{ backgroundColor: line.stroke }}
             />
-            {t(labelKeys[line.key])}
+            {t(LABEL_KEYS[line.key])}
           </span>
         ))}
       </div>
@@ -137,8 +105,8 @@ export function SymptomsChart({ data }: Props) {
         {[0.25, 0.5, 0.75, 1].map((v) => (
           <line
             key={v}
-            x1={CHART_PAD.left} y1={CHART_PAD.top + (1 - v) * PLOT_H}
-            x2={CHART_W - CHART_PAD.right} y2={CHART_PAD.top + (1 - v) * PLOT_H}
+            x1={CHART_PAD.left} y1={CHART_PAD.top + (1 - v) * CHART_PLOT_H}
+            x2={CHART_W - CHART_PAD.right} y2={CHART_PAD.top + (1 - v) * CHART_PLOT_H}
             stroke="#f1f5f9" strokeWidth="1"
           />
         ))}
@@ -193,12 +161,7 @@ export function SymptomsChart({ data }: Props) {
           style={{
             left: `${(xPts[h][0] / CHART_W) * 100}%`,
             top: "32px",
-            transform:
-              h > n * CHART_TOOLTIP_RIGHT_THRESHOLD
-                ? "translateX(calc(-100% - 8px))"
-                : h < n * CHART_TOOLTIP_LEFT_THRESHOLD
-                  ? "translateX(8px)"
-                  : "translateX(-50%)",
+            transform: tooltipTransform(h, n),
           }}
         >
           <div className="bg-slate-900 text-white text-xs rounded-xl px-3 py-2.5 shadow-xl min-w-[130px]">
@@ -209,7 +172,7 @@ export function SymptomsChart({ data }: Props) {
               return (
                 <p key={line.key} className="flex items-center justify-between gap-3 mb-0.5 last:mb-0">
                   <span style={{ color: line.stroke }} className="font-medium">
-                    {t(labelKeys[line.key])}
+                    {t(LABEL_KEYS[line.key])}
                   </span>
                   <span>{val}/10</span>
                 </p>
