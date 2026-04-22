@@ -17,9 +17,10 @@ export default async function TechniquesPage({ params }: { params: Promise<{ loc
 
   const t = await getTranslations("portal.techniques")
 
-  const today = toDateString(new Date())
+  const nowMs = Date.now() // eslint-disable-line react-hooks/purity -- server component
+  const today = toDateString(new Date(nowMs))
   // Fetch logs for debt window (14 days)
-  const since = toDateString(new Date(Date.now() - 14 * DAY_MS))
+  const since = toDateString(new Date(nowMs - 14 * DAY_MS))
 
   const [assignments, logs] = await Promise.all([
     db.query.techniqueAssignments.findMany({

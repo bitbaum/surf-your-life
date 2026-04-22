@@ -6,7 +6,7 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { checkIns, documents } from "@/lib/db/schema"
-import { isNull, eq } from "drizzle-orm"
+import { isNull } from "drizzle-orm"
 import { embedCheckIn, embedDocument } from "@/lib/domain/embeddings"
 import { EMBED_BACKFILL_BATCH } from "@/lib/constants"
 
