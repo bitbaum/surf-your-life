@@ -3,8 +3,6 @@
 import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
-import { ProgressBar } from "@/components/ui/progress-bar"
-import { Check, CheckCircle } from "lucide-react"
 import { PROFILE_WIZARD_STEPS, WIZARD_COMPLETION_FIELDS } from "@/lib/constants"
 import type { Profile } from "@/lib/db/schema"
 import { StepYou } from "./steps/step-you"
@@ -12,6 +10,7 @@ import { StepChallenges } from "./steps/step-challenges"
 import { StepStory } from "./steps/step-story"
 import { StepHealth } from "./steps/step-health"
 import { StepLifestyle } from "./steps/step-lifestyle"
+import { WizardProgress } from "./wizard-progress"
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -191,51 +190,11 @@ export function ProfileForm({ profile, initialName }: { profile: Profile | null;
   }
 
   const stepTitles = PROFILE_WIZARD_STEPS.map((s) => t(s.key as Parameters<typeof t>[0]))
+  const stepsCompleted = PROFILE_WIZARD_STEPS.map((_, i) => isStepComplete(form, i))
 
   return (
     <form onSubmit={handleFinish} className="flex flex-col gap-6 pb-16">
-      {/* Progress bar — sticky at top, includes saved indicator */}
-      <div className="sticky top-0 z-10 bg-white rounded-xl border border-slate-200 p-4 shadow-sm space-y-2">
-        <div className="flex items-center justify-between">
-          <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-            {step + 1} / {totalSteps}
-          </span>
-          <div className="flex items-center gap-1.5">
-            {saved && <CheckCircle className="w-3.5 h-3.5 text-teal-500" />}
-            <span className="text-sm font-bold text-teal-700">{pct}%</span>
-          </div>
-        </div>
-        <ProgressBar value={pct} />
-        {/* Step indicators */}
-        <div className="flex items-center gap-1 pt-1">
-          {PROFILE_WIZARD_STEPS.map((s, i) => {
-            const done = isStepComplete(form, i)
-            const active = i === step
-            return (
-              <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                <div
-                  className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
-                    done
-                      ? "bg-teal-500 text-white"
-                      : active
-                      ? "bg-teal-100 text-teal-700 ring-2 ring-teal-500"
-                      : "bg-slate-100 text-slate-400"
-                  }`}
-                >
-                  {done ? <Check className="w-3 h-3" /> : i + 1}
-                </div>
-                <span
-                  className={`text-xs hidden sm:block truncate max-w-[60px] text-center ${
-                    active ? "text-teal-700 font-medium" : "text-slate-400"
-                  }`}
-                >
-                  {stepTitles[i]}
-                </span>
-              </div>
-            )
-          })}
-        </div>
-      </div>
+      <WizardProgress step={step} totalSteps={totalSteps} pct={pct} saved={saved} stepTitles={stepTitles} stepsCompleted={stepsCompleted} />
 
       {/* Step title */}
       <div>
