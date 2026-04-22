@@ -10,6 +10,7 @@
 import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { z } from "zod"
+import { AI_MODEL_FAST } from "@/lib/constants"
 
 const parseSchema = z.object({
   text: z.string().min(1).max(1000),
@@ -130,7 +131,7 @@ JSON only, no explanation:`
         "anthropic-version": "2023-06-01",
       },
       body: JSON.stringify({
-        model: "claude-haiku-4-5-20251001",
+        model: AI_MODEL_FAST,
         max_tokens: 200,
         messages: [{ role: "user", content: prompt }],
       }),

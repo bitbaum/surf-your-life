@@ -84,6 +84,9 @@ export const SITE_URL = process.env.AUTH_URL ?? "https://surf-your-life.ch"
 export const BRAND_NAME = "Surf Your Life"
 export const COMPANY_ADDRESS = "Surf Your Life · Zollikerstrasse 183, 8008 Zürich"
 
+// AI model identifiers — update here when upgrading models
+export const AI_MODEL_FAST = "claude-haiku-4-5-20251001"
+
 // Practitioner note on check-ins
 export const PRACTITIONER_NOTE_MAX_LENGTH = 1000
 

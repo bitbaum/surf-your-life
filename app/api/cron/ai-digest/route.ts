@@ -10,7 +10,7 @@ import { db } from "@/lib/db"
 import { users, checkIns, clientAlerts } from "@/lib/db/schema"
 import { eq, and, gte, desc, inArray, count } from "drizzle-orm"
 import { STAFF_ROLES } from "@/lib/domain/auth"
-import { SEVEN_DAYS_MS, SITE_URL, MOOD_SCORE, MOODS } from "@/lib/constants"
+import { SEVEN_DAYS_MS, SITE_URL, MOOD_SCORE, MOODS, AI_MODEL_FAST } from "@/lib/constants"
 import { sendEmail } from "@/lib/email"
 import { practitionerWeeklyDigestEmail, type PractitionerDigestClientRow } from "@/lib/email/templates"
 
@@ -79,7 +79,7 @@ Be factual, empathetic, and clinically precise. No bullet points — flowing pro
         "anthropic-version": "2023-06-01",
       },
       body: JSON.stringify({
-        model: "claude-haiku-4-5-20251001",
+        model: AI_MODEL_FAST,
         max_tokens: 300,
         messages: [{ role: "user", content: prompt }],
       }),

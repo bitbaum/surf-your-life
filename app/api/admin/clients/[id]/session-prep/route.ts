@@ -9,6 +9,7 @@ import { isStaff } from "@/lib/domain/auth"
 import { db } from "@/lib/db"
 import { users, checkIns, clientAlerts } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
+import { AI_MODEL_FAST } from "@/lib/constants"
 
 export async function GET(
   _req: Request,
@@ -64,7 +65,7 @@ export async function GET(
         "content-type": "application/json",
       },
       body: JSON.stringify({
-        model: "claude-haiku-4-5-20251001",
+        model: AI_MODEL_FAST,
         max_tokens: 600,
         messages: [
           {

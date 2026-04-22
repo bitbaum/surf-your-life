@@ -11,7 +11,7 @@
 import { db } from "@/lib/db"
 import { checkIns, medicationLog, functionalAssessments } from "@/lib/db/schema"
 import { eq, desc, isNull, and } from "drizzle-orm"
-import { SEVEN_DAYS_MS, MOOD_SCORE } from "@/lib/constants"
+import { SEVEN_DAYS_MS, MOOD_SCORE, AI_MODEL_FAST } from "@/lib/constants"
 
 const CONTEXT_CHECKINS = 14 // how many recent check-ins to include in context
 
@@ -284,7 +284,7 @@ ${assessmentLines}`
         "anthropic-version": "2023-06-01",
       },
       body: JSON.stringify({
-        model: "claude-haiku-4-5-20251001",
+        model: AI_MODEL_FAST,
         max_tokens: 500,
         system: systemPrompt,
         messages: [
