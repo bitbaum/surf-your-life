@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl"
 import { Link } from "@/i18n/navigation"
 import { ResolveAlertButton } from "./resolve-button"
 import { formatDate } from "@/lib/utils"
+import { ALERT_SEVERITY_DOT, ALERT_SEVERITY_BADGE } from "@/lib/constants"
 import type { AlertType, AlertSeverity } from "@/lib/db/schema"
 
 export type AlertRow = {
@@ -15,18 +16,6 @@ export type AlertRow = {
   message: string
   createdAt: Date
   client: { id: string; name: string | null; email: string }
-}
-
-const SEVERITY_STYLE: Record<AlertSeverity, string> = {
-  high:   "bg-red-50 text-red-700 border-red-200",
-  medium: "bg-orange-50 text-orange-700 border-orange-200",
-  low:    "bg-yellow-50 text-yellow-700 border-yellow-200",
-}
-
-const SEVERITY_DOT: Record<AlertSeverity, string> = {
-  high:   "bg-red-500",
-  medium: "bg-orange-400",
-  low:    "bg-yellow-400",
 }
 
 interface Props {
@@ -65,7 +54,7 @@ export function AlertList({ initialAlerts }: Props) {
         return (
           <section key={sev}>
             <div className="flex items-center gap-2 mb-3">
-              <span className={`w-2 h-2 rounded-full ${SEVERITY_DOT[sev]}`} />
+              <span className={`w-2 h-2 rounded-full ${ALERT_SEVERITY_DOT[sev]}`} />
               <h2 className="text-sm font-semibold text-slate-600 uppercase tracking-wide">
                 {t(`severity.${sev}`)} · {group.length}
               </h2>
@@ -78,7 +67,7 @@ export function AlertList({ initialAlerts }: Props) {
                   className="bg-white rounded-xl border border-slate-200 p-4 flex items-start gap-4"
                 >
                   {/* Severity badge */}
-                  <span className={`flex-shrink-0 text-xs px-2 py-0.5 rounded-full border font-medium mt-0.5 ${SEVERITY_STYLE[alert.severity]}`}>
+                  <span className={`flex-shrink-0 text-xs px-2 py-0.5 rounded-full border font-medium mt-0.5 ${ALERT_SEVERITY_BADGE[alert.severity]}`}>
                     {t(`severity.${alert.severity}`)}
                   </span>
 

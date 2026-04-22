@@ -221,6 +221,19 @@ export const SESSION_PREP_ALERTS_LIMIT = 5    // recent alerts included in brief
 // Streak calculation
 export const STREAK_LOOKBACK_DAYS = 30  // max days to look back when calculating check-in streaks
 
+// Alert severity color config — canonical mapping used by all alert UI components
+// Dot = filled circle indicator; Badge = label pill with border
+export const ALERT_SEVERITY_DOT: Record<string, string> = {
+  high:   "bg-red-500",
+  medium: "bg-amber-500",
+  low:    "bg-yellow-400",
+}
+export const ALERT_SEVERITY_BADGE: Record<string, string> = {
+  high:   "bg-red-50 text-red-700 border-red-200",
+  medium: "bg-amber-50 text-amber-700 border-amber-200",
+  low:    "bg-yellow-50 text-yellow-700 border-yellow-200",
+}
+
 // Alert generation thresholds
 export const ALERT_ENERGY_DECLINE_THRESHOLD = 3  // drop of ≥3 over last 3 check-ins
 export const ALERT_FATIGUE_SPIKE_THRESHOLD = 8   // fatigue ≥ 8

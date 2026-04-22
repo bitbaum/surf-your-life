@@ -5,6 +5,7 @@ import { Link } from "@/i18n/navigation"
 import { useRouter } from "@/i18n/navigation"
 import { useTranslations } from "next-intl"
 import { X } from "lucide-react"
+import { ALERT_SEVERITY_DOT, ALERT_SEVERITY_BADGE } from "@/lib/constants"
 
 type Alert = {
   id: string
@@ -43,10 +44,7 @@ export function AlertList({ alerts }: { alerts: Alert[] }) {
           key={alert.id}
           className="flex items-start gap-3 p-3 rounded-lg border border-slate-100 hover:border-slate-200 bg-white transition-colors"
         >
-          <span className={`mt-1.5 w-2 h-2 rounded-full flex-shrink-0 ${
-            alert.severity === "high" ? "bg-red-500" :
-            alert.severity === "medium" ? "bg-amber-500" : "bg-slate-400"
-          }`} />
+          <span className={`mt-1.5 w-2 h-2 rounded-full flex-shrink-0 ${ALERT_SEVERITY_DOT[alert.severity] ?? "bg-slate-400"}`} />
 
           <Link
             href={`/admin/clients/${alert.clientId}`}
@@ -59,11 +57,7 @@ export function AlertList({ alerts }: { alerts: Alert[] }) {
             <p className="text-xs text-slate-500 mt-0.5 truncate">{alert.message}</p>
           </Link>
 
-          <span className={`text-xs px-2 py-0.5 rounded-full font-medium flex-shrink-0 ${
-            alert.severity === "high" ? "bg-red-50 text-red-700 border border-red-200" :
-            alert.severity === "medium" ? "bg-amber-50 text-amber-700 border border-amber-200" :
-            "bg-slate-100 text-slate-600 border border-slate-200"
-          }`}>
+          <span className={`text-xs px-2 py-0.5 rounded-full font-medium flex-shrink-0 border ${ALERT_SEVERITY_BADGE[alert.severity] ?? "bg-slate-100 text-slate-600 border-slate-200"}`}>
             {tAlerts(`severity.${alert.severity}`)}
           </span>
 
