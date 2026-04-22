@@ -4,15 +4,9 @@ import { useTranslations } from "next-intl"
 import { Trash2 } from "lucide-react"
 import { formatDate } from "@/lib/utils"
 import type { Document } from "@/lib/db/schema"
+import { DOC_TYPE_I18N_KEYS } from "@/lib/constants"
 
 type DocWithAuthor = Document & { author: { name: string | null } | null }
-
-const DOC_TYPE_KEYS = {
-  session_note: "typeSessionNote",
-  assessment: "typeAssessment",
-  report: "typeReport",
-  upload: "typeUpload",
-} as const
 
 function typeBadgeClass(docType: string) {
   switch (docType) {
@@ -30,7 +24,7 @@ interface Props {
 
 export function SessionNotesList({ docs, deleteError, onDelete }: Props) {
   const t = useTranslations("admin.clients.sessionNotes")
-  const typeLabel = (docType: string) => t(DOC_TYPE_KEYS[docType as keyof typeof DOC_TYPE_KEYS] ?? "typeSessionNote")
+  const typeLabel = (docType: string) => t(DOC_TYPE_I18N_KEYS[docType] ?? "typeSessionNote")
 
   return (
     <>

@@ -3,12 +3,7 @@
 import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
-
-const DOC_TYPE_KEYS = {
-  session_note: "typeSessionNote",
-  assessment: "typeAssessment",
-  report: "typeReport",
-} as const
+import { DOC_TYPE_I18N_KEYS } from "@/lib/constants"
 
 function typeBadgeClass(docType: string) {
   switch (docType) {
@@ -58,7 +53,7 @@ export function SessionNoteForm({ clientId, onSaved, onCancel }: Props) {
         {(["session_note", "assessment", "report"] as const).map((opt) => (
           <button key={opt} type="button" onClick={() => setType(opt)}
             className={`text-xs px-3 py-1.5 rounded-full border font-medium transition-colors ${type === opt ? typeBadgeClass(opt) + " border" : "border-slate-200 text-slate-500 hover:border-slate-300"}`}>
-            {t(DOC_TYPE_KEYS[opt])}
+            {t(DOC_TYPE_I18N_KEYS[opt] ?? opt)}
           </button>
         ))}
       </div>

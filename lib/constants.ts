@@ -189,3 +189,14 @@ export const ALERT_FATIGUE_SPIKE_THRESHOLD = 8   // fatigue ≥ 8
 export const ALERT_STRESS_SPIKE_THRESHOLD = 8    // stress ≥ 8
 export const ALERT_MISSED_CHECKINS_DAYS = 5      // no check-in in 5+ days
 export const ALERT_PEM_CLUSTER_COUNT = 2         // 2+ PEM flags in last 7 days
+
+// AI digest thresholds
+export const AI_DIGEST_MIN_CHECKINS = 3  // minimum check-ins in window to generate AI digest
+
+// Document type → i18n key mapping (namespace: admin.clients.sessionNotes)
+export const DOC_TYPE_I18N_KEYS: Record<string, string> = {
+  session_note: "typeSessionNote",
+  assessment: "typeAssessment",
+  report: "typeReport",
+  upload: "typeUpload",
+}
