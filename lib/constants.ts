@@ -244,6 +244,7 @@ export const ALERT_SEVERITY_BADGE: Record<string, string> = {
 }
 
 // Alert generation thresholds
+export const ALERT_CHECKIN_WINDOW = 7            // check-ins fetched for alert evaluation
 export const ALERT_ENERGY_DECLINE_THRESHOLD = 3  // drop of ≥3 over last 3 check-ins
 export const ALERT_FATIGUE_SPIKE_THRESHOLD = 8   // fatigue ≥ 8
 export const ALERT_STRESS_SPIKE_THRESHOLD = 8    // stress ≥ 8

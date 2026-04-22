@@ -8,6 +8,7 @@ import { checkIns, clientAlerts, users } from "@/lib/db/schema"
 import { eq, desc, gte, and, inArray } from "drizzle-orm"
 import { STAFF_ROLES, CLIENT_ROLE } from "@/lib/domain/auth"
 import {
+  ALERT_CHECKIN_WINDOW,
   ALERT_ENERGY_DECLINE_THRESHOLD,
   ALERT_FATIGUE_SPIKE_THRESHOLD,
   ALERT_STRESS_SPIKE_THRESHOLD,
@@ -31,11 +32,11 @@ type AlertInsert = typeof clientAlerts.$inferInsert
  */
 export async function generateAlerts(clientId: string, newCheckInId: string): Promise<void> {
   try {
-    // Fetch the last 7 check-ins for context
+    // Fetch recent check-ins for alert evaluation
     const recent = await db.query.checkIns.findMany({
       where: eq(checkIns.userId, clientId),
       orderBy: [desc(checkIns.createdAt)],
-      limit: 7,
+      limit: ALERT_CHECKIN_WINDOW,
     })
 
     if (recent.length === 0) return
