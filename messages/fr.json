@@ -613,7 +613,8 @@
       "deleteConfirm": "Saisissez votre mot de passe pour confirmer",
       "deleteButton": "Supprimer mon compte",
       "deleting": "Suppression...",
-      "deleteWarning": "Cette action est définitive. Tous vos check-ins, réservations, messages et données de profil seront supprimés."
+      "deleteWarning": "Cette action est définitive. Tous vos check-ins, réservations, messages et données de profil seront supprimés.",
+      "deleteError": "Quelque chose s'est mal passé. Veuillez réessayer."
     },
     "program": {
       "title": "Mon programme",

@@ -613,7 +613,8 @@
       "deleteConfirm": "Enter your password to confirm",
       "deleteButton": "Delete my account",
       "deleting": "Deleting...",
-      "deleteWarning": "This is permanent. All check-ins, bookings, messages and profile data will be deleted."
+      "deleteWarning": "This is permanent. All check-ins, bookings, messages and profile data will be deleted.",
+      "deleteError": "Something went wrong. Please try again."
     },
     "program": {
       "title": "My Program",

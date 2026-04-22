@@ -26,7 +26,7 @@ export function DeleteAccountForm() {
       })
       const data = await res.json()
       if (!res.ok) {
-        setError(data.error ?? "Something went wrong")
+        setError(data.error ?? t("deleteError"))
       } else {
         router.push("/")
       }

@@ -613,7 +613,8 @@
       "deleteConfirm": "Geben Sie Ihr Passwort zur Bestätigung ein",
       "deleteButton": "Mein Konto löschen",
       "deleting": "Wird gelöscht...",
-      "deleteWarning": "Dies ist dauerhaft. Alle Check-ins, Buchungen, Nachrichten und Profildaten werden gelöscht."
+      "deleteWarning": "Dies ist dauerhaft. Alle Check-ins, Buchungen, Nachrichten und Profildaten werden gelöscht.",
+      "deleteError": "Etwas ist schiefgelaufen. Bitte versuche es erneut."
     },
     "program": {
       "title": "Mein Programm",
