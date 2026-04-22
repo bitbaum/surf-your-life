@@ -12,7 +12,7 @@ import { users, checkIns, clientAlerts } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
 import { callClaude } from "@/lib/domain/anthropic"
 import { toDateString } from "@/lib/utils"
-import { SESSION_PREP_CHECKIN_LIMIT, SESSION_PREP_ALERTS_LIMIT , API_ERR_UNAUTHORIZED } from "@/lib/constants"
+import { SESSION_PREP_CHECKIN_LIMIT, SESSION_PREP_ALERTS_LIMIT, SESSION_PREP_ENERGY_AVG_WINDOW, API_ERR_UNAUTHORIZED } from "@/lib/constants"
 
 export async function GET(
   _req: Request,
@@ -88,7 +88,7 @@ function buildClinicalContext(
 
   if (recentCheckIns.length > 0) {
     lines.push(`\nLast ${recentCheckIns.length} check-ins:`)
-    for (const ci of recentCheckIns.slice(0, 7)) {
+    for (const ci of recentCheckIns) {
       const date = toDateString(ci.createdAt)
       const pem = ci.pemFlag ? ` | PEM${ci.pemSeverity ? ` ${ci.pemSeverity}/10` : ""}` : ""
       const fatigue = ci.symptomFatigue != null ? ` | fatigue ${ci.symptomFatigue}` : ""
@@ -118,13 +118,13 @@ function buildRuleBasedSummary(
 
   const latest = recentCheckIns[0]
   const avgEnergy = Math.round(
-    recentCheckIns.slice(0, 5).reduce((s, ci) => s + ci.energyLevel, 0) / Math.min(5, recentCheckIns.length)
+    recentCheckIns.slice(0, SESSION_PREP_ENERGY_AVG_WINDOW).reduce((s, ci) => s + ci.energyLevel, 0) / Math.min(SESSION_PREP_ENERGY_AVG_WINDOW, recentCheckIns.length)
   )
   const pemCount = recentCheckIns.filter((ci) => ci.pemFlag).length
   const highAlerts = alerts.filter((a) => a.severity === "high")
 
   const parts: string[] = [
-    `${client.name ?? "Client"}'s latest check-in shows mood "${formatEnumValue(latest.mood)}" and energy ${latest.energyLevel}/10 (5-session average: ${avgEnergy}/10).`,
+    `${client.name ?? "Client"}'s latest check-in shows mood "${formatEnumValue(latest.mood)}" and energy ${latest.energyLevel}/10 (${SESSION_PREP_ENERGY_AVG_WINDOW}-session average: ${avgEnergy}/10).`,
   ]
 
   if (pemCount > 0) {
