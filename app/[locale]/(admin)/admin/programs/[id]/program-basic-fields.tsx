@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl"
 import { Input } from "@/components/ui/input"
-import { MAIN_CONCERNS, FIELD_MAX_TITLE, FIELD_MAX_LONG } from "@/lib/constants"
+import { MAIN_CONCERNS, FIELD_MAX_TITLE, FIELD_MAX_LONG, PROGRAM_DURATION_WEEKS_MAX } from "@/lib/constants"
 import { formatEnumValue } from "@/lib/utils"
 
 interface FormState {
@@ -53,7 +53,7 @@ export function ProgramBasicFields({ form, onChange }: Props) {
             id="edit-duration"
             type="number"
             min={1}
-            max={104}
+            max={PROGRAM_DURATION_WEEKS_MAX}
             value={form.durationWeeks}
             onChange={(e) => onChange("durationWeeks", e.target.value)}
             placeholder={t("fieldDurationPlaceholder")}

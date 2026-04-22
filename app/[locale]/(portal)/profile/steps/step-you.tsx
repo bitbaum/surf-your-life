@@ -1,6 +1,7 @@
 "use client"
 import { useTranslations, useLocale } from "next-intl"
 import { Input } from "@/components/ui/input"
+import { WORK_HOURS_WEEK_MAX } from "@/lib/constants"
 import type { FormState } from "../profile-form.helpers"
 
 function getMonthNames(locale: string) {
@@ -88,7 +89,7 @@ export function StepYou({
           label={t("workHoursLabel")}
           type="number"
           min={0}
-          max={168}
+          max={WORK_HOURS_WEEK_MAX}
           value={form.workHoursPerWeek}
           onChange={(e) => onChange("workHoursPerWeek", e.target.value)}
           placeholder={t("workHoursPlaceholder")}

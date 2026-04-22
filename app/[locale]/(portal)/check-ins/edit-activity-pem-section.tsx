@@ -1,7 +1,7 @@
 "use client"
 
 import { useTranslations } from "next-intl"
-import { ACTIVITY_LEVELS } from "@/lib/constants"
+import { ACTIVITY_LEVELS, PEM_SEVERITY_SCALE } from "@/lib/constants"
 
 interface Props {
   activityLevel: string | null
@@ -56,11 +56,11 @@ export function EditActivityPemSection({
         </label>
         {pemFlag && (
           <div className="mt-3">
-            <p className="text-xs text-slate-500 mb-1">{t("editPemSeverityLabel")}: {pemSeverity}/10</p>
+            <p className="text-xs text-slate-500 mb-1">{t("editPemSeverityLabel")}: {pemSeverity}/{PEM_SEVERITY_SCALE.max}</p>
             <input
               type="range"
-              min={1}
-              max={10}
+              min={PEM_SEVERITY_SCALE.min}
+              max={PEM_SEVERITY_SCALE.max}
               value={pemSeverity}
               onChange={(e) => setPemSeverity(parseInt(e.target.value))}
               className="w-full accent-teal-600"

@@ -182,6 +182,15 @@ export const TECHNIQUE_DIFFICULTIES = [
 export const TECHNIQUE_DEFAULT_FREQUENCY = 1
 export const TECHNIQUE_DEFAULT_SAFETY_CAP = 150 // 1.5×
 export const TECHNIQUE_DEFAULT_MAX_DEBT_DAYS = 7 // debt older than 7 days is forgiven
+export const TECHNIQUE_DAILY_FREQUENCY_MAX = 10  // max reps/sessions per day
+
+// Program duration bounds (weeks)
+export const PROGRAM_DURATION_WEEKS_MAX = 104     // 2 years
+
+// Profile biometric bounds
+export const WORK_HOURS_WEEK_MAX = 168            // 24 × 7 — max realistic weekly hours
+export const HEIGHT_CM = { min: 50, max: 300 } as const
+export const WEIGHT_KG = { min: 20, max: 500 } as const
 
 // AI chat limits
 export const AI_CHAT_HISTORY_LIMIT = 20   // messages sent as context to AI

@@ -7,7 +7,7 @@ import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import type { Technique } from "@/lib/db/schema"
 import { toDateString } from "@/lib/utils"
-import { FIELD_MAX_TITLE } from "@/lib/constants"
+import { FIELD_MAX_TITLE, TECHNIQUE_DAILY_FREQUENCY_MAX } from "@/lib/constants"
 
 interface Props {
   clientId: string
@@ -73,7 +73,7 @@ export function TechniqueAssignForm({ clientId, available, categoryEmoji, onSave
         <input
           type="number"
           min={1}
-          max={10}
+          max={TECHNIQUE_DAILY_FREQUENCY_MAX}
           value={form.frequencyPerDay}
           onChange={(e) => setForm((f) => ({ ...f, frequencyPerDay: e.target.value }))}
           className="w-24 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"

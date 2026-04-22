@@ -1,6 +1,7 @@
 "use client"
 import { useTranslations } from "next-intl"
 import { Input } from "@/components/ui/input"
+import { QUALITY_SCALE, HEIGHT_CM, WEIGHT_KG } from "@/lib/constants"
 import type { FormState } from "../profile-form.helpers"
 
 function SliderField({
@@ -21,16 +22,16 @@ function SliderField({
         {hint && <span className="text-xs text-slate-400">{hint}</span>}
       </div>
       <div className="flex items-center gap-4">
-        <span className="text-xs text-slate-400 w-3">1</span>
+        <span className="text-xs text-slate-400 w-3">{QUALITY_SCALE.min}</span>
         <input
           type="range"
-          min={1}
-          max={10}
+          min={QUALITY_SCALE.min}
+          max={QUALITY_SCALE.max}
           value={value}
           onChange={(e) => onChange(parseInt(e.target.value))}
           className="flex-1 accent-teal-600"
         />
-        <span className="text-xs text-slate-400 w-3">10</span>
+        <span className="text-xs text-slate-400 w-3">{QUALITY_SCALE.max}</span>
         <span className="text-lg font-bold text-teal-700 w-6 text-center">{value}</span>
       </div>
     </div>
@@ -55,8 +56,8 @@ export function StepLifestyle({
         <Input
           label={t("heightLabel")}
           type="number"
-          min={50}
-          max={300}
+          min={HEIGHT_CM.min}
+          max={HEIGHT_CM.max}
           value={form.heightCm}
           onChange={(e) => onChange("heightCm", e.target.value)}
           placeholder={t("heightPlaceholder")}
@@ -64,8 +65,8 @@ export function StepLifestyle({
         <Input
           label={t("weightLabel")}
           type="number"
-          min={20}
-          max={500}
+          min={WEIGHT_KG.min}
+          max={WEIGHT_KG.max}
           value={form.weightKg}
           onChange={(e) => onChange("weightKg", e.target.value)}
           placeholder={t("weightPlaceholder")}

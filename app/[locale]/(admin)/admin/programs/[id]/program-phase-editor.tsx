@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl"
 import { Input } from "@/components/ui/input"
 import { Plus, Trash2 } from "lucide-react"
-import { FIELD_MAX_TITLE, FIELD_MAX_LONG } from "@/lib/constants"
+import { FIELD_MAX_TITLE, FIELD_MAX_LONG, PROGRAM_DURATION_WEEKS_MAX } from "@/lib/constants"
 
 type Phase = { week: number; title: string; guidance: string }
 
@@ -42,7 +42,7 @@ export function ProgramPhaseEditor({ phases, onAdd, onUpdate, onRemove }: Props)
                 <Input
                   type="number"
                   min={1}
-                  max={104}
+                  max={PROGRAM_DURATION_WEEKS_MAX}
                   value={phase.week}
                   onChange={(e) => onUpdate(i, "week", parseInt(e.target.value) || 1)}
                   className="text-sm"
