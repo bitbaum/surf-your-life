@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils"
 import { isStaff } from "@/lib/domain/auth"
 import { BRAND_NAME } from "@/lib/constants"
 import { LocaleSwitcher } from "@/components/ui/locale-switcher"
+import { SidebarMobileBar } from "./sidebar-mobile-bar"
 import {
   LayoutDashboard,
   User,
@@ -165,31 +166,7 @@ export function PortalSidebar({ role }: PortalSidebarProps) {
 
   return (
     <>
-      {/* Mobile top bar */}
-      <div className="md:hidden fixed top-0 inset-x-0 z-40 h-14 bg-white border-b border-slate-200 flex items-center justify-between px-4">
-        <Link href="/dashboard" className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-teal-600 flex items-center justify-center">
-            <Waves className="w-3.5 h-3.5 text-white" />
-          </div>
-          <span className="font-semibold text-slate-900 text-sm">{BRAND_NAME}</span>
-        </Link>
-        <div className="flex items-center gap-2">
-          <Link
-            href="/check-in"
-            className="flex items-center gap-1.5 text-xs font-semibold bg-teal-600 text-white px-3 py-1.5 rounded-lg hover:bg-teal-700 transition-colors"
-          >
-            <ClipboardList className="w-3.5 h-3.5" />
-            {t("checkIn")}
-          </Link>
-          <button
-            onClick={() => setOpen(true)}
-            className="p-2 rounded-lg hover:bg-slate-100 transition-colors"
-            aria-label={t("openMenu")}
-          >
-            <Menu className="w-5 h-5 text-slate-700" />
-          </button>
-        </div>
-      </div>
+      <SidebarMobileBar onOpenMenu={() => setOpen(true)} />
 
       {open && (
         <div className="md:hidden fixed inset-0 z-50 bg-black/40" onClick={() => setOpen(false)} />
