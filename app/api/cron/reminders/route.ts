@@ -10,6 +10,7 @@ import { eq, and, gte, desc } from "drizzle-orm"
 import { sendEmail } from "@/lib/email"
 import { checkInReminderEmail } from "@/lib/email/templates"
 import { SITE_URL, DAY_MS, STREAK_LOOKBACK_DAYS } from "@/lib/constants"
+import { generateMissedCheckInAlerts } from "@/lib/domain/alerts"
 
 export async function GET(req: Request) {
   // Vercel cron authentication — only allow requests from Vercel cron
@@ -79,5 +80,8 @@ export async function GET(req: Request) {
     sent++
   }
 
-  return NextResponse.json({ success: true, sent, skipped })
+  // Generate missed check-in alerts for practitioners (runs daily alongside reminders)
+  const missedAlerts = await generateMissedCheckInAlerts()
+
+  return NextResponse.json({ success: true, sent, skipped, missedAlerts })
 }

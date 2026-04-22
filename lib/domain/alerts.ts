@@ -13,6 +13,7 @@ import {
   ALERT_STRESS_SPIKE_THRESHOLD,
   ALERT_PEM_CLUSTER_COUNT,
   ALERT_ORTHOSTATIC_CLUSTER_COUNT,
+  ALERT_MISSED_CHECKINS_DAYS,
   SEVEN_DAYS_MS,
   MOOD_SCORE,
   SITE_URL,
@@ -20,6 +21,7 @@ import {
 } from "@/lib/constants"
 import { sendEmail } from "@/lib/email"
 import { practitionerAlertEmail } from "@/lib/email/templates"
+import { formatEnumValue } from "@/lib/utils"
 
 type AlertInsert = typeof clientAlerts.$inferInsert
 
@@ -163,7 +165,7 @@ export async function generateAlerts(clientId: string, newCheckInId: string): Pr
             type: "mood_decline",
             severity: moodDrop <= -3 ? "high" : "medium",
             title: "Mood decline detected",
-            message: `Mood has dropped from "${recent[2].mood.replace("_", " ")}" to "${recent[0].mood.replace("_", " ")}" over the last 3 check-ins.`,
+            message: `Mood has dropped from "${formatEnumValue(recent[2].mood)}" to "${formatEnumValue(recent[0].mood)}" over the last 3 check-ins.`,
             checkInId: newCheckInId,
             createdAt: now,
           })
@@ -279,5 +281,101 @@ export async function generateAlerts(clientId: string, newCheckInId: string): Pr
   } catch (err) {
     // Never let alert generation block the check-in response
     console.error("[alerts] Failed to generate alerts for client", clientId, err)
+  }
+}
+
+/**
+ * Daily cron rule: create a missed_checkins alert for every client who hasn't
+ * checked in for ALERT_MISSED_CHECKINS_DAYS days and has no open alert already.
+ * Called from the reminders cron so it runs once per day.
+ * Returns the number of new alerts created.
+ */
+export async function generateMissedCheckInAlerts(): Promise<number> {
+  try {
+    const cutoff = new Date(Date.now() - ALERT_MISSED_CHECKINS_DAYS * DAY_MS)
+
+    const clients = await db
+      .select({ id: users.id, name: users.name, email: users.email })
+      .from(users)
+      .where(eq(users.role, "client"))
+
+    if (clients.length === 0) return 0
+
+    const newAlerts: AlertInsert[] = []
+
+    for (const client of clients) {
+      const lastCheckIn = await db.query.checkIns.findFirst({
+        where: eq(checkIns.userId, client.id),
+        orderBy: [desc(checkIns.createdAt)],
+        columns: { createdAt: true },
+      })
+
+      // Checked in recently — nothing to flag
+      if (lastCheckIn && lastCheckIn.createdAt >= cutoff) continue
+
+      // Already has an open missed_checkins alert — don't duplicate
+      const existing = await db.query.clientAlerts.findFirst({
+        where: and(
+          eq(clientAlerts.clientId, client.id),
+          eq(clientAlerts.type, "missed_checkins"),
+          eq(clientAlerts.isResolved, false)
+        ),
+        columns: { id: true },
+      })
+      if (existing) continue
+
+      const daysMissed = lastCheckIn
+        ? Math.floor((Date.now() - lastCheckIn.createdAt.getTime()) / DAY_MS)
+        : null
+
+      newAlerts.push({
+        clientId: client.id,
+        type: "missed_checkins",
+        severity: "medium",
+        title: "No check-ins for 5+ days",
+        message: daysMissed != null
+          ? `Client has not checked in for ${daysMissed} day${daysMissed !== 1 ? "s" : ""}.`
+          : "Client has never submitted a check-in.",
+        createdAt: new Date(),
+      })
+    }
+
+    if (newAlerts.length === 0) return 0
+
+    await db.insert(clientAlerts).values(newAlerts)
+
+    // Notify practitioners once for all new missed check-in alerts
+    const practitioners = await db
+      .select({ email: users.email })
+      .from(users)
+      .where(inArray(users.role, STAFF_ROLES))
+
+    if (practitioners.length > 0) {
+      for (const alert of newAlerts) {
+        const client = clients.find((c) => c.id === alert.clientId)!
+        const html = practitionerAlertEmail({
+          clientName: client.name ?? client.email,
+          clientEmail: client.email,
+          alertTitle: alert.title,
+          alertMessage: alert.message!,
+          severity: "medium",
+          adminUrl: `${SITE_URL}/admin/clients/${client.id}`,
+        })
+        await Promise.all(
+          practitioners.map((p) =>
+            sendEmail({
+              to: p.email,
+              subject: `[Alert] ${alert.title} — ${client.name ?? client.email}`,
+              html,
+            }).catch(() => {})
+          )
+        )
+      }
+    }
+
+    return newAlerts.length
+  } catch (err) {
+    console.error("[alerts] Failed to generate missed check-in alerts", err)
+    return 0
   }
 }
