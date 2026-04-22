@@ -3,6 +3,7 @@ import { db } from "@/lib/db"
 import { threads, threadMessages } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { sendMessageSchema, notifyMessageParty } from "@/lib/domain/messaging"
+import { SITE_URL } from "@/lib/constants"
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth()
@@ -41,7 +42,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     threadId: id,
     threadSubject: thread.subject,
     body: parsed.data.body,
-    baseUrl: process.env.AUTH_URL ?? "https://surf-your-life.ch",
+    baseUrl: SITE_URL,
   })
 
   return Response.json({ success: true, data: { id: message.id } })

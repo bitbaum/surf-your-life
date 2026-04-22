@@ -1,7 +1,7 @@
 import { MetadataRoute } from "next"
+import { SITE_URL } from "@/lib/constants"
 
 export default function robots(): MetadataRoute.Robots {
-  const base = process.env.AUTH_URL ?? "https://surf-your-life.ch"
   return {
     rules: [
       {
@@ -10,6 +10,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/admin/", "/api/", "/dashboard", "/check-in", "/profile", "/messages", "/book"],
       },
     ],
-    sitemap: `${base}/sitemap.xml`,
+    sitemap: `${SITE_URL}/sitemap.xml`,
   }
 }

@@ -5,6 +5,7 @@ import { eq } from "drizzle-orm"
 import { sendEmail } from "@/lib/email"
 import { inviteEmail } from "@/lib/email/templates"
 import { NextRequest, NextResponse } from "next/server"
+import { SITE_URL } from "@/lib/constants"
 
 export async function POST(
   _req: NextRequest,
@@ -21,8 +22,7 @@ export async function POST(
     return NextResponse.json({ success: false, error: "Lead not found" }, { status: 404 })
   }
 
-  const baseUrl = process.env.AUTH_URL ?? "https://surf-your-life.ch"
-  const registerUrl = `${baseUrl}/register?email=${encodeURIComponent(lead.email)}`
+  const registerUrl = `${SITE_URL}/register?email=${encodeURIComponent(lead.email)}`
 
   const practitionerName = session.user.name ?? "Your practitioner"
 

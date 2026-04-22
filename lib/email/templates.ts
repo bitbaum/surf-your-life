@@ -1,5 +1,5 @@
 import type { Service } from "@/lib/db/schema"
-import { COMPANY_ADDRESS } from "@/lib/constants"
+import { COMPANY_ADDRESS, SITE_URL } from "@/lib/constants"
 
 // ─── Verification email ───────────────────────────────────────────────────────
 
@@ -114,7 +114,7 @@ type WelcomeEmailData = { name: string | null; email: string }
 export function welcomeEmail(data: WelcomeEmailData): string {
   const { name, email } = data
   const displayName = name ?? email
-  const dashboardUrl = `${process.env.AUTH_URL ?? "https://surf-your-life.ch"}/dashboard`
+  const dashboardUrl = `${SITE_URL}/dashboard`
 
   return `
 <!DOCTYPE html>
@@ -157,7 +157,7 @@ type NewUserAlertData = { name: string | null; email: string; createdAt: Date }
 export function newUserAlertEmail(data: NewUserAlertData): string {
   const { name, email, createdAt } = data
   const displayName = name ?? "(no name)"
-  const adminUrl = `${process.env.AUTH_URL ?? "https://surf-your-life.ch"}/admin/clients`
+  const adminUrl = `${SITE_URL}/admin/clients`
   const joinedAt = createdAt.toISOString().replace("T", " ").slice(0, 16) + " UTC"
 
   return `

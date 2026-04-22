@@ -6,6 +6,7 @@ import { Geist } from "next/font/google"
 import type { Metadata } from "next"
 import { Toaster } from "sonner"
 import "../globals.css"
+import { SITE_URL } from "@/lib/constants"
 
 export const metadata: Metadata = {
   title: {
@@ -26,7 +27,7 @@ export const metadata: Metadata = {
     title: "Surf Your Life — Medical Performance Space Zürich",
     description: "Psychiatry-led burnout recovery and longevity program. Zürich.",
   },
-  metadataBase: new URL(process.env.AUTH_URL ?? "https://surf-your-life.ch"),
+  metadataBase: new URL(SITE_URL),
 }
 
 const geist = Geist({ subsets: ["latin"] })

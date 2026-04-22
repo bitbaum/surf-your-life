@@ -4,6 +4,7 @@ import { db } from "@/lib/db"
 import { passwordResetTokens } from "@/lib/db/schema"
 import { randomBytes } from "crypto"
 import { z } from "zod"
+import { SITE_URL } from "@/lib/constants"
 
 const schema = z.object({ userId: z.string().uuid() })
 
@@ -26,8 +27,7 @@ export async function POST(req: Request) {
     expiresAt,
   })
 
-  const baseUrl = process.env.AUTH_URL ?? "http://localhost:3000"
-  const link = `${baseUrl}/reset-password?token=${token}`
+  const link = `${SITE_URL}/reset-password?token=${token}`
 
   return NextResponse.json({ success: true, data: { link } })
 }
