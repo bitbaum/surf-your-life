@@ -1,6 +1,6 @@
 import { db } from "@/lib/db"
 import { users, checkIns, bookings, threadMessages, clientAlerts } from "@/lib/db/schema"
-import { eq, desc, gte, count, and, isNull, max } from "drizzle-orm"
+import { eq, desc, gte, count, and, isNull, max, or, lt } from "drizzle-orm"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { StatCard } from "@/components/ui/stat-card"
@@ -30,7 +30,8 @@ export default async function AdminDashboardPage({
     pendingBookingsResult,
     unreadMessagesResult,
     recentClients,
-    allClientsLastCheckIn,
+    atRiskCountResult,
+    atRiskPreview,
     unresolvedAlerts,
   ] = await Promise.all([
     db.select({ count: count() }).from(users).where(eq(users.role, "client")),
@@ -47,6 +48,20 @@ export default async function AdminDashboardPage({
       limit: RECENT_CLIENTS_LIMIT,
       with: { profile: true },
     }),
+    // Count of all at-risk clients (for the stat card)
+    db
+      .select({ count: count() })
+      .from(
+        db
+          .select({ userId: users.id })
+          .from(users)
+          .leftJoin(checkIns, eq(checkIns.userId, users.id))
+          .where(eq(users.role, "client"))
+          .groupBy(users.id)
+          .having(or(isNull(max(checkIns.createdAt)), lt(max(checkIns.createdAt), sevenDaysAgo)))
+          .as("at_risk_sub")
+      ),
+    // Preview: worst N at-risk clients for dashboard card
     db
       .select({
         id: users.id,
@@ -57,7 +72,10 @@ export default async function AdminDashboardPage({
       .from(users)
       .leftJoin(checkIns, eq(checkIns.userId, users.id))
       .where(eq(users.role, "client"))
-      .groupBy(users.id, users.name, users.email),
+      .groupBy(users.id, users.name, users.email)
+      .having(or(isNull(max(checkIns.createdAt)), lt(max(checkIns.createdAt), sevenDaysAgo)))
+      .orderBy(max(checkIns.createdAt))
+      .limit(AT_RISK_CLIENTS_LIMIT),
     db.query.clientAlerts.findMany({
       where: eq(clientAlerts.isResolved, false),
       orderBy: [desc(clientAlerts.createdAt)],
@@ -74,14 +92,8 @@ export default async function AdminDashboardPage({
     ? Math.round((recentCheckInsCount / clientCount) * 10) / 10
     : 0
 
-  const atRiskClients = allClientsLastCheckIn
-    .filter((c) => c.lastCheckIn === null || c.lastCheckIn < sevenDaysAgo)
-    .sort((a, b) => {
-      if (a.lastCheckIn === null) return -1
-      if (b.lastCheckIn === null) return 1
-      return a.lastCheckIn.getTime() - b.lastCheckIn.getTime()
-    })
-    .slice(0, AT_RISK_CLIENTS_LIMIT)
+  const atRiskCount = atRiskCountResult[0]?.count ?? 0
+  const atRiskClients = atRiskPreview
 
   return (
     <div className="max-w-5xl mx-auto">
@@ -95,9 +107,9 @@ export default async function AdminDashboardPage({
         <StatCard label={t("unreadMessages")} value={unreadMessages} icon={MessageSquare} color="teal" />
         <StatCard
           label={t("atRiskClients")}
-          value={atRiskClients.length}
+          value={atRiskCount}
           icon={AlertTriangle}
-          color={atRiskClients.length > 0 ? "amber" : "slate"}
+          color={atRiskCount > 0 ? "amber" : "slate"}
         />
       </div>
 
@@ -132,7 +144,7 @@ export default async function AdminDashboardPage({
             <div className="flex flex-col divide-y divide-slate-100">
               {atRiskClients.map((client) => {
                 const daysAgo = client.lastCheckIn
-                  ? Math.floor((Date.now() - client.lastCheckIn.getTime()) / DAY_MS) // eslint-disable-line react-hooks/purity -- server component
+                  ? Math.floor((nowMs - client.lastCheckIn.getTime()) / DAY_MS)
                   : null
                 return (
                   <Link
