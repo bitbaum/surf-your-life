@@ -4,6 +4,7 @@ import { db } from "@/lib/db"
 import { medicationLog } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
 import { medicationEntrySchema } from "@/lib/domain/clinical"
+import { PAGINATION_DEFAULT } from "@/lib/constants"
 
 export async function GET() {
   const session = await auth()
@@ -14,6 +15,7 @@ export async function GET() {
   const data = await db.query.medicationLog.findMany({
     where: eq(medicationLog.userId, session.user.id),
     orderBy: [desc(medicationLog.createdAt)],
+    limit: PAGINATION_DEFAULT,
   })
 
   return NextResponse.json({ success: true, data })

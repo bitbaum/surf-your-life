@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl"
 import { Send } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ChatMessageList } from "./chat-message-list"
+import { AI_CHAT_MAX_LENGTH } from "@/lib/constants"
 
 type Message = {
   id: string
@@ -90,7 +91,7 @@ export function ChatInterface({ initialMessages }: Props) {
             onKeyDown={handleKeyDown}
             placeholder={t("inputPlaceholder")}
             rows={1}
-            maxLength={1000}
+            maxLength={AI_CHAT_MAX_LENGTH}
             disabled={sending}
             className="flex-1 resize-none rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 disabled:opacity-50 max-h-32 overflow-y-auto"
             style={{ minHeight: "44px" }}
