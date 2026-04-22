@@ -17,7 +17,7 @@ import {
 } from "@/lib/constants"
 import { sendEmail } from "@/lib/email"
 import { practitionerAlertEmail } from "@/lib/email/templates"
-import { SITE_URL } from "@/lib/constants"
+import { SITE_URL, DAY_MS } from "@/lib/constants"
 
 const ALERT_ORTHOSTATIC_CLUSTER_COUNT = 2 // ≥2 episodes in 7 days triggers alert
 
@@ -218,7 +218,7 @@ export async function generateAlerts(clientId: string, newCheckInId: string): Pr
         })
         if (!alreadyExists) {
           const dayDiff = Math.round(
-            (latestCheckIn.createdAt.getTime() - triggerDay.createdAt.getTime()) / (1000 * 60 * 60 * 24)
+            (latestCheckIn.createdAt.getTime() - triggerDay.createdAt.getTime()) / DAY_MS
           ) || 1
           alerts.push({
             clientId,
