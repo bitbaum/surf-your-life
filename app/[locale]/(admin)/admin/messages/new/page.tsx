@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { users } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
+import { CLIENT_ROLE } from "@/lib/domain/auth"
 import { getTranslations } from "next-intl/server"
 import { Link } from "@/i18n/navigation"
 import { NewThreadForm } from "./new-thread-form"
@@ -22,7 +23,7 @@ export default async function AdminNewMessagePage({
   const clients = await db
     .select({ id: users.id, name: users.name, email: users.email })
     .from(users)
-    .where(eq(users.role, "client"))
+    .where(eq(users.role, CLIENT_ROLE))
 
   return (
     <div className="max-w-2xl mx-auto">

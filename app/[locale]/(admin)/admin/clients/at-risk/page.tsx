@@ -1,6 +1,7 @@
 import { db } from "@/lib/db"
 import { users, checkIns } from "@/lib/db/schema"
 import { eq, max, or, isNull, lt } from "drizzle-orm"
+import { CLIENT_ROLE } from "@/lib/domain/auth"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { Link } from "@/i18n/navigation"
@@ -26,7 +27,7 @@ export default async function AtRiskClientsPage({ params }: { params: Promise<{ 
     })
     .from(users)
     .leftJoin(checkIns, eq(checkIns.userId, users.id))
-    .where(eq(users.role, "client"))
+    .where(eq(users.role, CLIENT_ROLE))
     .groupBy(users.id, users.name, users.email, users.createdAt)
     .having(
       or(

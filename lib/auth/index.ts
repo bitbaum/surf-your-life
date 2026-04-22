@@ -6,7 +6,7 @@ import bcrypt from "bcryptjs"
 import { eq } from "drizzle-orm"
 import { db } from "@/lib/db"
 import { users } from "@/lib/db/schema"
-import { loginSchema, resolveRole } from "@/lib/domain/auth"
+import { loginSchema, resolveRole, CLIENT_ROLE } from "@/lib/domain/auth"
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: DrizzleAdapter(db),
@@ -47,7 +47,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         // Resolve role — only apply ADMIN_EMAILS promotion when the env var is
         // actually configured. If it's not set, trust the DB role as-is so that
         // manually-assigned admin accounts don't get silently downgraded to client.
-        const existingRole = (user as { role?: string }).role ?? "client"
+        const existingRole = (user as { role?: string }).role ?? CLIENT_ROLE
         const adminEmailsConfigured = (process.env.ADMIN_EMAILS ?? "").trim().length > 0
         if (adminEmailsConfigured) {
           const correctRole = resolveRole(user.email ?? "")

@@ -1,6 +1,7 @@
 import { db } from "@/lib/db"
 import { users, checkIns, profiles } from "@/lib/db/schema"
 import { eq, desc, count, or, ilike, and, max } from "drizzle-orm"
+import { CLIENT_ROLE } from "@/lib/domain/auth"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { Link } from "@/i18n/navigation"
@@ -33,7 +34,7 @@ export default async function ClientsPage({
       )
     : undefined
 
-  const roleFilter = eq(users.role, "client")
+  const roleFilter = eq(users.role, CLIENT_ROLE)
   const whereClause = searchFilter ? and(roleFilter, searchFilter) : roleFilter
 
   const [clients, totalResult] = await Promise.all([

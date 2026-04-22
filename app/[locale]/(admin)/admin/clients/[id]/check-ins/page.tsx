@@ -2,6 +2,7 @@ import { notFound } from "next/navigation"
 import { db } from "@/lib/db"
 import { users, checkIns } from "@/lib/db/schema"
 import { eq, desc, count } from "drizzle-orm"
+import { CLIENT_ROLE } from "@/lib/domain/auth"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Pagination } from "@/components/ui/pagination"
 import { PageHeader } from "@/components/ui/page-header"
@@ -37,7 +38,7 @@ export default async function ClientCheckInsPage({
     db.select({ count: count() }).from(checkIns).where(eq(checkIns.userId, id)),
   ])
 
-  if (!client || client.role !== "client") notFound()
+  if (!client || client.role !== CLIENT_ROLE) notFound()
 
   const total = countResult[0]?.count ?? 0
   const totalPages = Math.ceil(total / PAGINATION_DEFAULT)

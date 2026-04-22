@@ -5,12 +5,13 @@ import { passwordResetTokens } from "@/lib/db/schema"
 import { randomBytes } from "crypto"
 import { z } from "zod"
 import { SITE_URL } from "@/lib/constants"
+import { CLIENT_ROLE } from "@/lib/domain/auth"
 
 const schema = z.object({ userId: z.string().uuid() })
 
 export async function POST(req: Request) {
   const session = await auth()
-  if (!session || session.user.role === "client") {
+  if (!session || session.user.role === CLIENT_ROLE) {
     return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
   }
 

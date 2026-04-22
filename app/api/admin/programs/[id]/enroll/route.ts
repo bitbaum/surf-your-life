@@ -4,7 +4,7 @@ import { db } from "@/lib/db"
 import { programs, programEnrollments, users } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { enrollClientSchema } from "@/lib/domain/program"
-import { isStaff } from "@/lib/domain/auth"
+import { isStaff, CLIENT_ROLE } from "@/lib/domain/auth"
 
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth()
@@ -26,7 +26,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   }
 
   const client = await db.query.users.findFirst({ where: eq(users.id, parsed.data.clientId) })
-  if (!client || client.role !== "client") {
+  if (!client || client.role !== CLIENT_ROLE) {
     return NextResponse.json({ success: false, error: "Client not found" }, { status: 404 })
   }
 

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { isStaff } from "@/lib/domain/auth"
+import { formatEnumValue } from "@/lib/utils"
 import { db } from "@/lib/db"
 import { documents, documentTypeEnum } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
@@ -55,7 +56,7 @@ export async function POST(
   const { type, content } = parsed.data
   const title =
     parsed.data.title?.trim() ||
-    `${type.replace("_", " ")} – ${new Date().toLocaleDateString("en-GB", {
+    `${formatEnumValue(type)} – ${new Date().toLocaleDateString("en-GB", {
       day: "numeric",
       month: "short",
       year: "numeric",

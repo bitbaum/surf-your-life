@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
 import { auth } from "@/lib/auth"
-import { isStaff } from "@/lib/domain/auth"
+import { isStaff, CLIENT_ROLE } from "@/lib/domain/auth"
 import { db } from "@/lib/db"
 import { bookings, users } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
@@ -21,7 +21,7 @@ export async function PATCH(
   }
 
   const isAdmin = isStaff(session.user.role)
-  const isClient = session.user.role === "client"
+  const isClient = session.user.role === CLIENT_ROLE
 
   const body = await req.json()
   const schema = isAdmin ? adminUpdateSchema : clientUpdateSchema

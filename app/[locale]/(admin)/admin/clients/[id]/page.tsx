@@ -7,6 +7,7 @@ import { formatDate, formatEnumValue } from "@/lib/utils"
 
 import { Link } from "@/i18n/navigation"
 import { PAGINATION_DEFAULT } from "@/lib/constants"
+import { CLIENT_ROLE } from "@/lib/domain/auth"
 import { ResetLinkButton } from "./reset-link-button"
 import { NewThreadButton } from "./new-thread-button"
 import { EnrollProgramButton } from "./enroll-program-button"
@@ -77,7 +78,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
       .where(inArray(users.role, ["practitioner", "admin"])),
   ])
 
-  if (!client || client.role !== "client") notFound()
+  if (!client || client.role !== CLIENT_ROLE) notFound()
 
   const totalCheckIns = checkInCountResult[0]?.count ?? 0
   const profile = client.profile

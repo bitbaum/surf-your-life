@@ -6,7 +6,7 @@
 import { db } from "@/lib/db"
 import { checkIns, clientAlerts, users } from "@/lib/db/schema"
 import { eq, desc, gte, and, inArray } from "drizzle-orm"
-import { STAFF_ROLES } from "@/lib/domain/auth"
+import { STAFF_ROLES, CLIENT_ROLE } from "@/lib/domain/auth"
 import {
   ALERT_ENERGY_DECLINE_THRESHOLD,
   ALERT_FATIGUE_SPIKE_THRESHOLD,
@@ -297,7 +297,7 @@ export async function generateMissedCheckInAlerts(): Promise<number> {
     const clients = await db
       .select({ id: users.id, name: users.name, email: users.email })
       .from(users)
-      .where(eq(users.role, "client"))
+      .where(eq(users.role, CLIENT_ROLE))
 
     if (clients.length === 0) return 0
 

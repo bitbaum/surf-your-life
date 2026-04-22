@@ -6,6 +6,7 @@
 import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { isStaff } from "@/lib/domain/auth"
+import { formatEnumValue } from "@/lib/utils"
 import { db } from "@/lib/db"
 import { users, checkIns, clientAlerts } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
@@ -123,7 +124,7 @@ function buildRuleBasedSummary(
   const highAlerts = alerts.filter((a) => a.severity === "high")
 
   const parts: string[] = [
-    `${client.name ?? "Client"}'s latest check-in shows mood "${latest.mood.replace("_", " ")}" and energy ${latest.energyLevel}/10 (5-session average: ${avgEnergy}/10).`,
+    `${client.name ?? "Client"}'s latest check-in shows mood "${formatEnumValue(latest.mood)}" and energy ${latest.energyLevel}/10 (5-session average: ${avgEnergy}/10).`,
   ]
 
   if (pemCount > 0) {

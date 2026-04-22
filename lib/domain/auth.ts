@@ -6,6 +6,9 @@ import { and, eq, gt } from "drizzle-orm"
 export const STAFF_ROLES = ["admin", "practitioner"] as const
 export type StaffRole = (typeof STAFF_ROLES)[number]
 
+export const CLIENT_ROLE = "client" as const
+export type ClientRole = typeof CLIENT_ROLE
+
 /** Returns true when a user has staff-level access (admin or practitioner). */
 export function isStaff(role: string | undefined | null): boolean {
   return role === "admin" || role === "practitioner"

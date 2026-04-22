@@ -8,6 +8,7 @@ import { PageHeader } from "@/components/ui/page-header"
 import { Link } from "@/i18n/navigation"
 import { Users, ClipboardList, TrendingUp, CalendarClock, MessageSquare, AlertTriangle } from "lucide-react"
 import { SEVEN_DAYS_MS, THIRTY_DAYS_MS, RECENT_CLIENTS_LIMIT, AT_RISK_CLIENTS_LIMIT, ADMIN_DASHBOARD_ALERTS_PREVIEW } from "@/lib/constants"
+import { CLIENT_ROLE } from "@/lib/domain/auth"
 import { AlertList } from "./alert-list"
 import { AtRiskClientsCard } from "./at-risk-clients-card"
 import { RecentClientsCard } from "./recent-clients-card"
@@ -36,16 +37,16 @@ export default async function AdminDashboardPage({
     unresolvedAlertsCountResult,
     unresolvedAlerts,
   ] = await Promise.all([
-    db.select({ count: count() }).from(users).where(eq(users.role, "client")),
+    db.select({ count: count() }).from(users).where(eq(users.role, CLIENT_ROLE)),
     db.select({ count: count() }).from(checkIns).where(gte(checkIns.createdAt, thirtyDaysAgo)),
     db.select({ count: count() }).from(bookings).where(eq(bookings.status, "pending")),
     db
       .select({ count: count() })
       .from(threadMessages)
       .innerJoin(users, eq(threadMessages.senderId, users.id))
-      .where(and(isNull(threadMessages.readAt), eq(users.role, "client"))),
+      .where(and(isNull(threadMessages.readAt), eq(users.role, CLIENT_ROLE))),
     db.query.users.findMany({
-      where: eq(users.role, "client"),
+      where: eq(users.role, CLIENT_ROLE),
       orderBy: [desc(users.createdAt)],
       limit: RECENT_CLIENTS_LIMIT,
       with: { profile: true },
@@ -58,7 +59,7 @@ export default async function AdminDashboardPage({
           .select({ userId: users.id })
           .from(users)
           .leftJoin(checkIns, eq(checkIns.userId, users.id))
-          .where(eq(users.role, "client"))
+          .where(eq(users.role, CLIENT_ROLE))
           .groupBy(users.id)
           .having(or(isNull(max(checkIns.createdAt)), lt(max(checkIns.createdAt), sevenDaysAgo)))
           .as("at_risk_sub")
@@ -73,7 +74,7 @@ export default async function AdminDashboardPage({
       })
       .from(users)
       .leftJoin(checkIns, eq(checkIns.userId, users.id))
-      .where(eq(users.role, "client"))
+      .where(eq(users.role, CLIENT_ROLE))
       .groupBy(users.id, users.name, users.email)
       .having(or(isNull(max(checkIns.createdAt)), lt(max(checkIns.createdAt), sevenDaysAgo)))
       .orderBy(max(checkIns.createdAt))

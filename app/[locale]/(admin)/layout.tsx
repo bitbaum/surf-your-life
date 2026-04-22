@@ -2,11 +2,12 @@ import { auth } from "@/lib/auth"
 import { redirect } from "next/navigation"
 import { AdminSidebar } from "@/components/admin/sidebar"
 import { getUnreadCount, getUnresolvedAlertCount } from "@/components/admin/unread-count"
+import { CLIENT_ROLE } from "@/lib/domain/auth"
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await auth()
   if (!session) redirect("/login")
-  if (session.user.role === "client") redirect("/dashboard")
+  if (session.user.role === CLIENT_ROLE) redirect("/dashboard")
 
   const [unreadMessages, unresolvedAlerts] = await Promise.all([
     getUnreadCount(),

@@ -9,7 +9,7 @@ import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { users, checkIns, clientAlerts } from "@/lib/db/schema"
 import { eq, and, gte, desc, inArray, count } from "drizzle-orm"
-import { STAFF_ROLES } from "@/lib/domain/auth"
+import { STAFF_ROLES, CLIENT_ROLE } from "@/lib/domain/auth"
 import { SEVEN_DAYS_MS, SITE_URL, MOOD_SCORE, MOODS, AI_DIGEST_MIN_CHECKINS } from "@/lib/constants"
 import { callClaude } from "@/lib/domain/anthropic"
 import { sendEmail } from "@/lib/email"
@@ -79,7 +79,7 @@ export async function GET(req: Request) {
   const sevenDaysAgo = new Date(Date.now() - SEVEN_DAYS_MS)
 
   const allClients = await db.query.users.findMany({
-    where: eq(users.role, "client"),
+    where: eq(users.role, CLIENT_ROLE),
     columns: { id: true, name: true, email: true },
   })
 

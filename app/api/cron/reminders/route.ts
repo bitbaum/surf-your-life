@@ -11,6 +11,7 @@ import { sendEmail } from "@/lib/email"
 import { checkInReminderEmail } from "@/lib/email/templates"
 import { SITE_URL, DAY_MS, STREAK_LOOKBACK_DAYS } from "@/lib/constants"
 import { generateMissedCheckInAlerts } from "@/lib/domain/alerts"
+import { CLIENT_ROLE } from "@/lib/domain/auth"
 
 export async function GET(req: Request) {
   // Vercel cron authentication — only allow requests from Vercel cron
@@ -24,7 +25,7 @@ export async function GET(req: Request) {
 
   // Get all clients who have NOT checked in today
   const allClients = await db.query.users.findMany({
-    where: eq(users.role, "client"),
+    where: eq(users.role, CLIENT_ROLE),
     columns: { id: true, name: true, email: true },
   })
 

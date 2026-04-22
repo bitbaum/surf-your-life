@@ -10,6 +10,7 @@ import { eq, and, gte } from "drizzle-orm"
 import { sendEmail } from "@/lib/email"
 import { weeklyReportEmail } from "@/lib/email/templates"
 import { SITE_URL, SEVEN_DAYS_MS, MOOD_SCORE, MOODS } from "@/lib/constants"
+import { CLIENT_ROLE } from "@/lib/domain/auth"
 
 export async function GET(req: Request) {
   const authHeader = req.headers.get("authorization")
@@ -20,7 +21,7 @@ export async function GET(req: Request) {
   const sevenDaysAgo = new Date(Date.now() - SEVEN_DAYS_MS)
 
   const allClients = await db.query.users.findMany({
-    where: eq(users.role, "client"),
+    where: eq(users.role, CLIENT_ROLE),
     columns: { id: true, name: true, email: true },
   })
 
