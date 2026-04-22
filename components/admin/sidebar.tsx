@@ -106,7 +106,7 @@ export function AdminSidebar({ unreadMessages = 0, unresolvedAlerts = 0 }: Admin
         <button
           onClick={() => setOpen(true)}
           className="p-2 rounded-lg hover:bg-slate-800 transition-colors"
-          aria-label="Open menu"
+          aria-label={t("openMenu")}
         >
           <Menu className="w-5 h-5 text-slate-300" />
         </button>
@@ -127,7 +127,7 @@ export function AdminSidebar({ unreadMessages = 0, unresolvedAlerts = 0 }: Admin
           <button
             onClick={() => setOpen(false)}
             className="p-1.5 rounded-lg hover:bg-slate-800 transition-colors"
-            aria-label="Close menu"
+            aria-label={t("closeMenu")}
           >
             <X className="w-5 h-5 text-slate-400" />
           </button>

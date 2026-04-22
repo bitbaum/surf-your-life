@@ -803,7 +803,9 @@
       "services": "Services",
       "clientPortal": "My portal",
       "techniques": "Techniques",
-      "alerts": "Alerts"
+      "alerts": "Alerts",
+      "openMenu": "Open menu",
+      "closeMenu": "Close menu"
     },
     "dashboard": {
       "title": "Admin Dashboard",

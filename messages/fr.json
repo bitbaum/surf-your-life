@@ -803,7 +803,9 @@
       "services": "Services",
       "clientPortal": "Mon portail",
       "techniques": "Techniques",
-      "alerts": "Alertes"
+      "alerts": "Alertes",
+      "openMenu": "Ouvrir le menu",
+      "closeMenu": "Fermer le menu"
     },
     "dashboard": {
       "title": "Tableau de bord Admin",
