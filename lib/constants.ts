@@ -200,3 +200,20 @@ export const DOC_TYPE_I18N_KEYS: Record<string, string> = {
   report: "typeReport",
   upload: "typeUpload",
 }
+
+// Document type → badge Tailwind classes
+export const DOC_TYPE_BADGE_CLASSES: Record<string, string> = {
+  assessment: "bg-violet-50 text-violet-700 border-violet-200",
+  report: "bg-blue-50 text-blue-700 border-blue-200",
+  session_note: "bg-teal-50 text-teal-700 border-teal-200",
+  upload: "bg-teal-50 text-teal-700 border-teal-200",
+}
+
+// Assessment capacity dimensions (ordered: overall first, then sub-dimensions)
+export const ASSESSMENT_DIMENSIONS = [
+  { key: "overallCapacity",   required: true },
+  { key: "physicalCapacity",  required: false },
+  { key: "cognitiveCapacity", required: false },
+  { key: "emotionalCapacity", required: false },
+  { key: "socialCapacity",    required: false },
+] as const

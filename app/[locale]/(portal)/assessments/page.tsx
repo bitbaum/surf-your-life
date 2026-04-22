@@ -3,7 +3,7 @@ import { redirect } from "next/navigation"
 import { db } from "@/lib/db"
 import { functionalAssessments } from "@/lib/db/schema"
 import { eq, desc, count } from "drizzle-orm"
-import { PAGINATION_DEFAULT } from "@/lib/constants"
+import { PAGINATION_DEFAULT, ASSESSMENT_DIMENSIONS } from "@/lib/constants"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ProgressBar } from "@/components/ui/progress-bar"
 import { Pagination } from "@/components/ui/pagination"
@@ -11,13 +11,6 @@ import { getTranslations, setRequestLocale } from "next-intl/server"
 import { formatDate } from "@/lib/utils"
 import { AssessmentsClient } from "./assessments-client"
 
-const CAPACITY_DIMENSIONS = [
-  "overallCapacity",
-  "physicalCapacity",
-  "cognitiveCapacity",
-  "emotionalCapacity",
-  "socialCapacity",
-] as const
 
 export default async function AssessmentsPage({
   params,
@@ -74,7 +67,7 @@ export default async function AssessmentsPage({
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
-                  {CAPACITY_DIMENSIONS.slice(1).map((dim) => {
+                  {ASSESSMENT_DIMENSIONS.slice(1).map(({ key: dim }) => {
                     const val = a[dim]
                     if (val == null) return null
                     return (

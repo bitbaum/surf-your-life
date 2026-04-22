@@ -4,15 +4,7 @@ import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { useRouter } from "@/i18n/navigation"
 import { Button } from "@/components/ui/button"
-import { CAPACITY_SCALE } from "@/lib/constants"
-
-const DIMENSIONS = [
-  { key: "overallCapacity", required: true },
-  { key: "physicalCapacity", required: false },
-  { key: "cognitiveCapacity", required: false },
-  { key: "emotionalCapacity", required: false },
-  { key: "socialCapacity", required: false },
-] as const
+import { CAPACITY_SCALE, ASSESSMENT_DIMENSIONS } from "@/lib/constants"
 
 export function NewAssessmentForm({ onDone }: { onDone: () => void }) {
   const t = useTranslations("portal.assessments")
@@ -45,7 +37,7 @@ export function NewAssessmentForm({ onDone }: { onDone: () => void }) {
     setError("")
 
     const body: Record<string, unknown> = { notes: notes.trim() || undefined }
-    for (const { key } of DIMENSIONS) {
+    for (const { key } of ASSESSMENT_DIMENSIONS) {
       if (enabled.has(key)) body[key] = values[key]
     }
 
@@ -71,7 +63,7 @@ export function NewAssessmentForm({ onDone }: { onDone: () => void }) {
     <form onSubmit={handleSubmit} className="flex flex-col gap-5">
       <p className="text-xs text-slate-400">{t("formHint")}</p>
 
-      {DIMENSIONS.map(({ key, required }) => {
+      {ASSESSMENT_DIMENSIONS.map(({ key, required }) => {
         const active = enabled.has(key)
         return (
           <div key={key} className={active ? "" : "opacity-40"}>

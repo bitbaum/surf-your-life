@@ -3,15 +3,7 @@
 import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
-import { DOC_TYPE_I18N_KEYS } from "@/lib/constants"
-
-function typeBadgeClass(docType: string) {
-  switch (docType) {
-    case "assessment": return "bg-violet-50 text-violet-700 border-violet-200"
-    case "report": return "bg-blue-50 text-blue-700 border-blue-200"
-    default: return "bg-teal-50 text-teal-700 border-teal-200"
-  }
-}
+import { DOC_TYPE_I18N_KEYS, DOC_TYPE_BADGE_CLASSES } from "@/lib/constants"
 
 interface Props {
   clientId: string
@@ -52,7 +44,7 @@ export function SessionNoteForm({ clientId, onSaved, onCancel }: Props) {
       <div className="flex gap-2">
         {(["session_note", "assessment", "report"] as const).map((opt) => (
           <button key={opt} type="button" onClick={() => setType(opt)}
-            className={`text-xs px-3 py-1.5 rounded-full border font-medium transition-colors ${type === opt ? typeBadgeClass(opt) + " border" : "border-slate-200 text-slate-500 hover:border-slate-300"}`}>
+            className={`text-xs px-3 py-1.5 rounded-full border font-medium transition-colors ${type === opt ? (DOC_TYPE_BADGE_CLASSES[opt] ?? DOC_TYPE_BADGE_CLASSES.session_note) + " border" : "border-slate-200 text-slate-500 hover:border-slate-300"}`}>
             {t(DOC_TYPE_I18N_KEYS[opt] ?? opt)}
           </button>
         ))}

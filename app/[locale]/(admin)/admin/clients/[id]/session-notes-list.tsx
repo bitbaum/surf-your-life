@@ -4,17 +4,9 @@ import { useTranslations } from "next-intl"
 import { Trash2 } from "lucide-react"
 import { formatDate } from "@/lib/utils"
 import type { Document } from "@/lib/db/schema"
-import { DOC_TYPE_I18N_KEYS } from "@/lib/constants"
+import { DOC_TYPE_I18N_KEYS, DOC_TYPE_BADGE_CLASSES } from "@/lib/constants"
 
 type DocWithAuthor = Document & { author: { name: string | null } | null }
-
-function typeBadgeClass(docType: string) {
-  switch (docType) {
-    case "assessment": return "bg-violet-50 text-violet-700 border-violet-200"
-    case "report": return "bg-blue-50 text-blue-700 border-blue-200"
-    default: return "bg-teal-50 text-teal-700 border-teal-200"
-  }
-}
 
 interface Props {
   docs: DocWithAuthor[]
@@ -38,7 +30,7 @@ export function SessionNotesList({ docs, deleteError, onDelete }: Props) {
               <div className="flex items-start justify-between gap-2">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-0.5">
-                    <span className={`text-xs px-2 py-0.5 rounded-full border font-medium flex-shrink-0 ${typeBadgeClass(doc.type)}`}>
+                    <span className={`text-xs px-2 py-0.5 rounded-full border font-medium flex-shrink-0 ${DOC_TYPE_BADGE_CLASSES[doc.type] ?? DOC_TYPE_BADGE_CLASSES.session_note}`}>
                       {typeLabel(doc.type)}
                     </span>
                     <span className="text-xs text-slate-400">{formatDate(doc.createdAt)}</span>
