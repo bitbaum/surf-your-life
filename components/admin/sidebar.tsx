@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Link, usePathname } from "@/i18n/navigation"
 import { signOut } from "next-auth/react"
 import { cn } from "@/lib/utils"
+import { BRAND_NAME } from "@/lib/constants"
 import { LocaleSwitcher } from "@/components/ui/locale-switcher"
 import { useTranslations } from "next-intl"
 import { LayoutDashboard, Users, LogOut, Waves, Menu, X, Inbox, MessageSquare, UserCog, CalendarCheck, BookOpen, Wrench, User, Sparkles, Bell } from "lucide-react"
@@ -37,7 +38,7 @@ export function AdminSidebar({ unreadMessages = 0, unresolvedAlerts = 0 }: Admin
         <Waves className="w-4 h-4 text-white" />
       </div>
       <div>
-        <span className="font-semibold text-white text-sm block">Surf Your Life</span>
+        <span className="font-semibold text-white text-sm block">{BRAND_NAME}</span>
         <p className="text-slate-400 text-xs">Admin</p>
       </div>
     </Link>
@@ -101,7 +102,7 @@ export function AdminSidebar({ unreadMessages = 0, unresolvedAlerts = 0 }: Admin
           <div className="w-7 h-7 rounded-lg bg-teal-500 flex items-center justify-center">
             <Waves className="w-3.5 h-3.5 text-white" />
           </div>
-          <span className="font-semibold text-white text-sm">Surf Your Life</span>
+          <span className="font-semibold text-white text-sm">{BRAND_NAME}</span>
         </Link>
         <button
           onClick={() => setOpen(true)}

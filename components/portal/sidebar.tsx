@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl"
 import { signOut } from "next-auth/react"
 import { cn } from "@/lib/utils"
 import { isStaff } from "@/lib/domain/auth"
+import { BRAND_NAME } from "@/lib/constants"
 import { LocaleSwitcher } from "@/components/ui/locale-switcher"
 import {
   LayoutDashboard,
@@ -100,7 +101,7 @@ export function PortalSidebar({ role }: PortalSidebarProps) {
       <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-teal-600">
         <Waves className="w-4 h-4 text-white" />
       </div>
-      <span className="font-semibold text-slate-900">Surf Your Life</span>
+      <span className="font-semibold text-slate-900">{BRAND_NAME}</span>
     </Link>
   )
 
@@ -170,7 +171,7 @@ export function PortalSidebar({ role }: PortalSidebarProps) {
           <div className="w-7 h-7 rounded-lg bg-teal-600 flex items-center justify-center">
             <Waves className="w-3.5 h-3.5 text-white" />
           </div>
-          <span className="font-semibold text-slate-900 text-sm">Surf Your Life</span>
+          <span className="font-semibold text-slate-900 text-sm">{BRAND_NAME}</span>
         </Link>
         <div className="flex items-center gap-2">
           <Link

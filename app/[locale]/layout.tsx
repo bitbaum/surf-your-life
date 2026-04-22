@@ -6,25 +6,27 @@ import { Geist } from "next/font/google"
 import type { Metadata } from "next"
 import { Toaster } from "sonner"
 import "../globals.css"
-import { SITE_URL } from "@/lib/constants"
+import { SITE_URL, BRAND_NAME } from "@/lib/constants"
+
+const BRAND_TITLE = `${BRAND_NAME} — Medical Performance Space Zürich`
 
 export const metadata: Metadata = {
   title: {
-    default: "Surf Your Life — Medical Performance Space Zürich",
-    template: "%s | Surf Your Life",
+    default: BRAND_TITLE,
+    template: `%s | ${BRAND_NAME}`,
   },
   description:
     "Psychiatry-led burnout recovery and longevity program. Individual tracking portal, body-first methodology. Zollikerstrasse 183, Zürich.",
   openGraph: {
     type: "website",
     locale: "en_US",
-    siteName: "Surf Your Life",
-    title: "Surf Your Life — Medical Performance Space Zürich",
+    siteName: BRAND_NAME,
+    title: BRAND_TITLE,
     description: "Psychiatry-led burnout recovery and longevity program. Zürich.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Surf Your Life — Medical Performance Space Zürich",
+    title: BRAND_TITLE,
     description: "Psychiatry-led burnout recovery and longevity program. Zürich.",
   },
   metadataBase: new URL(SITE_URL),

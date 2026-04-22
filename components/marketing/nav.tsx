@@ -6,6 +6,7 @@ import { Link } from "@/i18n/navigation"
 import { Waves, Menu, X, LayoutDashboard } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { LocaleSwitcher } from "@/components/ui/locale-switcher"
+import { BRAND_NAME } from "@/lib/constants"
 
 // anchor=true → rendered as <a href="..."> (same-page scroll)
 // anchor=false → rendered as <Link href="..."> (route navigation)
@@ -30,7 +31,7 @@ export function MarketingNav({ isLoggedIn = false }: { isLoggedIn?: boolean }) {
             <div className="w-8 h-8 rounded-lg bg-teal-600 flex items-center justify-center">
               <Waves className="w-4 h-4 text-white" />
             </div>
-            <span className="font-semibold text-slate-900 text-sm">Surf Your Life</span>
+            <span className="font-semibold text-slate-900 text-sm">{BRAND_NAME}</span>
           </Link>
 
           <nav className="hidden md:flex items-center gap-8">

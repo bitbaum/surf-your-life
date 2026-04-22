@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl"
 import { Link } from "@/i18n/navigation"
 import { Waves } from "lucide-react"
+import { BRAND_NAME } from "@/lib/constants"
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   const t = useTranslations("auth.panel")
@@ -16,7 +17,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           <div className="w-8 h-8 rounded-lg bg-teal-600 flex items-center justify-center">
             <Waves className="w-4 h-4 text-white" />
           </div>
-          <span className="font-semibold text-white text-sm">Surf Your Life</span>
+          <span className="font-semibold text-white text-sm">{BRAND_NAME}</span>
         </Link>
 
         <div>
@@ -45,7 +46,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
               <div className="w-9 h-9 rounded-xl bg-teal-600 flex items-center justify-center">
                 <Waves className="w-5 h-5 text-white" />
               </div>
-              <span className="font-semibold text-slate-900">Surf Your Life</span>
+              <span className="font-semibold text-slate-900">{BRAND_NAME}</span>
             </Link>
           </div>
           {children}

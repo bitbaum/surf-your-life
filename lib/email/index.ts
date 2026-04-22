@@ -1,4 +1,5 @@
 import { Resend } from "resend"
+import { BRAND_NAME } from "@/lib/constants"
 
 // Lazy client — instantiated only when RESEND_API_KEY is present at call time
 let _resend: Resend | null = null
@@ -19,7 +20,7 @@ export async function sendEmail({ to, subject, html }: SendOptions) {
     console.log(`[email] To: ${to}\nSubject: ${subject}`)
     return
   }
-  const from = process.env.RESEND_FROM ?? "Surf Your Life <onboarding@resend.dev>"
+  const from = process.env.RESEND_FROM ?? `${BRAND_NAME} <onboarding@resend.dev>`
   await getResend().emails.send({
     from,
     to: Array.isArray(to) ? to : [to],

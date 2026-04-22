@@ -6,7 +6,7 @@ import { eq } from "drizzle-orm"
 import { sendEmail } from "@/lib/email"
 import { inviteEmail } from "@/lib/email/templates"
 import { NextRequest, NextResponse } from "next/server"
-import { SITE_URL } from "@/lib/constants"
+import { SITE_URL, BRAND_NAME } from "@/lib/constants"
 
 export async function POST(
   _req: NextRequest,
@@ -29,7 +29,7 @@ export async function POST(
 
   await sendEmail({
     to: lead.email,
-    subject: "Your invitation to Surf Your Life",
+    subject: `Your invitation to ${BRAND_NAME}`,
     html: inviteEmail({ name: lead.name, registerUrl, practitionerName }),
   })
 

@@ -3,6 +3,7 @@
 import { Link } from "@/i18n/navigation"
 import { Waves } from "lucide-react"
 import { useTranslations } from "next-intl"
+import { BRAND_NAME } from "@/lib/constants"
 
 export function MarketingFooter() {
   const t = useTranslations("nav")
@@ -14,7 +15,7 @@ export function MarketingFooter() {
           <div className="w-6 h-6 rounded bg-teal-600 flex items-center justify-center">
             <Waves className="w-3 h-3 text-white" />
           </div>
-          <span className="text-sm text-slate-400">Surf Your Life · Zürich</span>
+          <span className="text-sm text-slate-400">{BRAND_NAME} · Zürich</span>
         </div>
         <div className="flex items-center gap-4">
           <Link href="/privacy" className="text-xs text-slate-400 hover:text-teal-600 transition-colors">

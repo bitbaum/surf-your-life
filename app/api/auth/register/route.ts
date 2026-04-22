@@ -7,7 +7,7 @@ import { users, profiles, verificationTokens } from "@/lib/db/schema"
 import { registerSchema, resolveRole, STAFF_ROLES } from "@/lib/domain/auth"
 import { sendEmail } from "@/lib/email"
 import { welcomeEmail, newUserAlertEmail, verificationEmail } from "@/lib/email/templates"
-import { SITE_URL } from "@/lib/constants"
+import { SITE_URL, BRAND_NAME } from "@/lib/constants"
 import { checkRateLimit, ipKey } from "@/lib/rate-limit"
 
 export async function POST(req: Request) {
@@ -57,7 +57,7 @@ export async function POST(req: Request) {
 
   void Promise.all([
     // Welcome email
-    sendEmail({ to: email, subject: "Welcome to Surf Your Life", html: welcomeEmail({ name, email }) })
+    sendEmail({ to: email, subject: `Welcome to ${BRAND_NAME}`, html: welcomeEmail({ name, email }) })
       .catch(e => console.error("[register] welcome email failed", e)),
     // Verification email — create a 24h token and send
     (async () => {
@@ -67,7 +67,7 @@ export async function POST(req: Request) {
       const verifyUrl = `${baseUrl}/verify-email?token=${token}&email=${encodeURIComponent(email)}`
       await sendEmail({
         to: email,
-        subject: "Verify your email — Surf Your Life",
+        subject: `Verify your email — ${BRAND_NAME}`,
         html: verificationEmail({ email, verifyUrl }),
       })
     })().catch(e => console.error("[register] verification email failed", e)),
