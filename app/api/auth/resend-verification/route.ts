@@ -6,6 +6,7 @@ import { users, verificationTokens } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { sendEmail } from "@/lib/email"
 import { verificationEmail } from "@/lib/email/templates"
+import { SITE_URL } from "@/lib/constants"
 
 export async function POST() {
   const session = await auth()
@@ -40,8 +41,7 @@ export async function POST() {
   const expires = new Date(Date.now() + 24 * 60 * 60 * 1000)
   await db.insert(verificationTokens).values({ identifier: email, token, expires })
 
-  const baseUrl = process.env.AUTH_URL ?? "https://surf-your-life.ch"
-  const verifyUrl = `${baseUrl}/verify-email?token=${token}&email=${encodeURIComponent(email)}`
+  const verifyUrl = `${SITE_URL}/verify-email?token=${token}&email=${encodeURIComponent(email)}`
 
   void sendEmail({
     to: email,

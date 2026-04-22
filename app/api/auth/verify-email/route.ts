@@ -7,6 +7,7 @@ import { users, verificationTokens } from "@/lib/db/schema"
 import { auth } from "@/lib/auth"
 import { sendEmail } from "@/lib/email"
 import { verificationEmail } from "@/lib/email/templates"
+import { SITE_URL } from "@/lib/constants"
 
 // POST /api/auth/verify-email — consume token and mark email as verified
 const verifySchema = z.object({
@@ -55,7 +56,6 @@ export async function PUT() {
   }
 
   const { email } = session.user
-  const baseUrl = process.env.AUTH_URL ?? "https://surf-your-life.ch"
 
   // Delete any existing tokens for this email, then create a fresh one
   await db.delete(verificationTokens).where(eq(verificationTokens.identifier, email))
@@ -64,7 +64,7 @@ export async function PUT() {
   const expires = new Date(Date.now() + 24 * 60 * 60 * 1000)
   await db.insert(verificationTokens).values({ identifier: email, token, expires })
 
-  const verifyUrl = `${baseUrl}/verify-email?token=${token}&email=${encodeURIComponent(email)}`
+  const verifyUrl = `${SITE_URL}/verify-email?token=${token}&email=${encodeURIComponent(email)}`
   await sendEmail({
     to: email,
     subject: "Verify your email — Surf Your Life",
