@@ -12,7 +12,7 @@ import { users, checkIns, clientAlerts } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
 import { callClaude } from "@/lib/domain/anthropic"
 import { toDateString } from "@/lib/utils"
-import { SESSION_PREP_CHECKIN_LIMIT, SESSION_PREP_ALERTS_LIMIT, SESSION_PREP_ENERGY_AVG_WINDOW, API_ERR_UNAUTHORIZED } from "@/lib/constants"
+import { SESSION_PREP_CHECKIN_LIMIT, SESSION_PREP_ALERTS_LIMIT, SESSION_PREP_ENERGY_AVG_WINDOW, API_ERR_UNAUTHORIZED, API_ERR_NOT_FOUND } from "@/lib/constants"
 
 export async function GET(
   _req: Request,
@@ -44,7 +44,7 @@ export async function GET(
   ])
 
   if (!client) {
-    return NextResponse.json({ success: false, error: "Client not found" }, { status: 404 })
+    return NextResponse.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
   }
 
   const context = buildClinicalContext(client, recentCheckIns, activeAlerts)

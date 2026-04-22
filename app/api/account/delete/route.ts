@@ -16,7 +16,7 @@ import {
   accounts,
 } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
-import { API_ERR_UNAUTHORIZED } from "@/lib/constants"
+import { API_ERR_UNAUTHORIZED, API_ERR_NOT_FOUND } from "@/lib/constants"
 
 const deleteSchema = z.object({
   password: z.string().min(1),
@@ -38,7 +38,7 @@ export async function DELETE(req: Request) {
 
   const user = await db.query.users.findFirst({ where: eq(users.id, userId) })
   if (!user) {
-    return NextResponse.json({ success: false, error: "User not found" }, { status: 404 })
+    return NextResponse.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
   }
 
   if (!user.password) {

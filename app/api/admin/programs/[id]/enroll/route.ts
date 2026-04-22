@@ -5,7 +5,7 @@ import { programs, programEnrollments, users } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { enrollClientSchema } from "@/lib/domain/program"
 import { isStaff, CLIENT_ROLE } from "@/lib/domain/auth"
-import { API_ERR_FORBIDDEN, API_ERR_INVALID_INPUT } from "@/lib/constants"
+import { API_ERR_FORBIDDEN, API_ERR_INVALID_INPUT, API_ERR_NOT_FOUND } from "@/lib/constants"
 
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth()
@@ -17,7 +17,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
 
   const program = await db.query.programs.findFirst({ where: eq(programs.id, programId) })
   if (!program) {
-    return NextResponse.json({ success: false, error: "Program not found" }, { status: 404 })
+    return NextResponse.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
   }
 
   const body = await req.json()
@@ -28,7 +28,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
 
   const client = await db.query.users.findFirst({ where: eq(users.id, parsed.data.clientId) })
   if (!client || client.role !== CLIENT_ROLE) {
-    return NextResponse.json({ success: false, error: "Client not found" }, { status: 404 })
+    return NextResponse.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
   }
 
   const [enrollment] = await db

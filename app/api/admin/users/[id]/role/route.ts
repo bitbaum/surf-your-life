@@ -5,7 +5,7 @@ import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { users, roleEnum } from "@/lib/db/schema"
 import { ADMIN_ROLE } from "@/lib/domain/auth"
-import { API_ERR_FORBIDDEN, API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED } from "@/lib/constants"
+import { API_ERR_FORBIDDEN, API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED, API_ERR_NOT_FOUND } from "@/lib/constants"
 
 const bodySchema = z.object({
   role: z.enum(roleEnum.enumValues),
@@ -48,7 +48,7 @@ export async function PATCH(
     .returning({ id: users.id, role: users.role })
 
   if (!updated) {
-    return NextResponse.json({ success: false, error: "User not found" }, { status: 404 })
+    return NextResponse.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
   }
 
   return NextResponse.json({ success: true, data: updated })

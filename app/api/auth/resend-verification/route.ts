@@ -6,7 +6,7 @@ import { users, verificationTokens } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { sendEmail } from "@/lib/email"
 import { verificationEmail } from "@/lib/email/templates"
-import { SITE_URL, DAY_MS , API_ERR_UNAUTHORIZED } from "@/lib/constants"
+import { SITE_URL, DAY_MS, API_ERR_UNAUTHORIZED, API_ERR_NOT_FOUND } from "@/lib/constants"
 import { EMAIL_SUBJECT_VERIFY } from "@/lib/email/subjects"
 
 export async function POST() {
@@ -20,7 +20,7 @@ export async function POST() {
   })
 
   if (!user) {
-    return NextResponse.json({ success: false, error: "User not found" }, { status: 404 })
+    return NextResponse.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
   }
 
   if (user.emailVerified) {

@@ -4,7 +4,7 @@ import { db } from "@/lib/db"
 import { threads, threadMessages } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
 import { createThreadSchema, notifyMessageParty } from "@/lib/domain/messaging"
-import { PAGINATION_DEFAULT, SITE_URL , API_ERR_UNAUTHORIZED } from "@/lib/constants"
+import { PAGINATION_DEFAULT, SITE_URL, API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED } from "@/lib/constants"
 
 export async function GET() {
   const session = await auth()
@@ -34,7 +34,7 @@ export async function POST(request: Request) {
   if (!session) return Response.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
 
   const body = await request.json().catch(() => null)
-  if (!body) return Response.json({ success: false, error: "Invalid body" }, { status: 400 })
+  if (!body) return Response.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })
 
   const parsed = createThreadSchema.safeParse(body)
   if (!parsed.success) {

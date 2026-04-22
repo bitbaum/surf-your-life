@@ -5,7 +5,7 @@ import { db } from "@/lib/db"
 import { leads, leadStatusEnum } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { z } from "zod"
-import { API_ERR_FORBIDDEN, API_ERR_NOT_FOUND, API_ERR_UNAUTHORIZED } from "@/lib/constants"
+import { API_ERR_FORBIDDEN, API_ERR_INVALID_INPUT, API_ERR_NOT_FOUND, API_ERR_UNAUTHORIZED } from "@/lib/constants"
 
 const patchSchema = z.object({
   status: z.enum(leadStatusEnum.enumValues),
@@ -24,7 +24,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   const body = await req.json()
   const parsed = patchSchema.safeParse(body)
   if (!parsed.success) {
-    return NextResponse.json({ success: false, error: "Invalid status" }, { status: 400 })
+    return NextResponse.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })
   }
 
   const [updated] = await db

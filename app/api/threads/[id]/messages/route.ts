@@ -4,7 +4,7 @@ import { db } from "@/lib/db"
 import { threads, threadMessages } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { sendMessageSchema, notifyMessageParty } from "@/lib/domain/messaging"
-import { SITE_URL , API_ERR_FORBIDDEN, API_ERR_NOT_FOUND, API_ERR_UNAUTHORIZED } from "@/lib/constants"
+import { SITE_URL, API_ERR_FORBIDDEN, API_ERR_INVALID_INPUT, API_ERR_NOT_FOUND, API_ERR_UNAUTHORIZED } from "@/lib/constants"
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth()
@@ -21,7 +21,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   }
 
   const body = await request.json().catch(() => null)
-  if (!body) return Response.json({ success: false, error: "Invalid body" }, { status: 400 })
+  if (!body) return Response.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })
 
   const parsed = sendMessageSchema.safeParse(body)
   if (!parsed.success) {
