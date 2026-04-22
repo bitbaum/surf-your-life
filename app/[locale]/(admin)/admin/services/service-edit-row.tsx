@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 import { SERVICE_CATEGORIES } from "@/lib/domain/services"
+import { SERVICE_DURATION_MINUTES } from "@/lib/constants"
 import type { InferSelectModel } from "drizzle-orm"
 import type { services } from "@/lib/db/schema"
 
@@ -45,8 +46,8 @@ export function ServiceEditRow({ form, saving, onChange, onSave, onCancel }: Ser
                 type="number"
                 value={form.durationMinutes}
                 onChange={(e) => onChange({ ...form, durationMinutes: e.target.value })}
-                min={5}
-                max={480}
+                min={SERVICE_DURATION_MINUTES.min}
+                max={SERVICE_DURATION_MINUTES.max}
                 className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
               />
             </div>

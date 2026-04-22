@@ -1,7 +1,7 @@
 "use client"
 
 import { useTranslations } from "next-intl"
-import { TECHNIQUE_CATEGORIES, TECHNIQUE_DIFFICULTIES, TECHNIQUE_NAME_MAX, FIELD_MAX_NOTES, FIELD_MAX_LONG } from "@/lib/constants"
+import { TECHNIQUE_CATEGORIES, TECHNIQUE_DIFFICULTIES, TECHNIQUE_NAME_MAX, FIELD_MAX_NOTES, FIELD_MAX_LONG, TECHNIQUE_DURATION_MINUTES } from "@/lib/constants"
 
 export type TechniqueFormState = {
   name: string
@@ -65,7 +65,7 @@ export function TechniqueFormFields({ field }: TechniqueFormFieldsProps) {
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-1">{t("fieldDuration")}</label>
-          <input type="number" min={1} max={120} placeholder="10" {...field("durationMinutes")} className={inputCls} />
+          <input type="number" min={TECHNIQUE_DURATION_MINUTES.min} max={TECHNIQUE_DURATION_MINUTES.max} placeholder="10" {...field("durationMinutes")} className={inputCls} />
         </div>
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-1">{t("fieldResourceUrl")}</label>

@@ -183,9 +183,13 @@ export const TECHNIQUE_DEFAULT_FREQUENCY = 1
 export const TECHNIQUE_DEFAULT_SAFETY_CAP = 150 // 1.5×
 export const TECHNIQUE_DEFAULT_MAX_DEBT_DAYS = 7 // debt older than 7 days is forgiven
 export const TECHNIQUE_DAILY_FREQUENCY_MAX = 10  // max reps/sessions per day
+export const TECHNIQUE_DURATION_MINUTES = { min: 1, max: 120 } as const  // per-session duration
 
 // Program duration bounds (weeks)
 export const PROGRAM_DURATION_WEEKS_MAX = 104     // 2 years
+
+// Service duration bounds (minutes): 5 min → 8 hours
+export const SERVICE_DURATION_MINUTES = { min: 5, max: 480 } as const
 
 // Profile biometric bounds
 export const WORK_HOURS_WEEK_MAX = 168            // 24 × 7 — max realistic weekly hours
