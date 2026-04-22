@@ -1,4 +1,5 @@
 import type { Service } from "@/lib/db/schema"
+import { COMPANY_ADDRESS } from "@/lib/constants"
 
 // ─── Verification email ───────────────────────────────────────────────────────
 
@@ -24,7 +25,7 @@ export function verificationEmail(data: VerificationEmailData): string {
   <p>Thank you for registering. Please verify your email address by clicking the button below. This link expires in 24 hours.</p>
   <a href="${verifyUrl}" class="cta">Verify my email</a>
   <p style="margin-top:24px;font-size:13px;color:#64748b;">If you did not create an account, you can safely ignore this email.</p>
-  <p style="font-size:12px;color:#94a3b8;margin-top:32px;">Surf Your Life · Zollikerstrasse 183, 8008 Zürich</p>
+  <p style="font-size:12px;color:#94a3b8;margin-top:32px;">${COMPANY_ADDRESS}</p>
 </body>
 </html>
   `.trim()
@@ -54,7 +55,7 @@ export function passwordResetEmail(data: PasswordResetEmailData): string {
   <p>We received a request to reset your password. Click the button below — the link expires in 1 hour.</p>
   <a href="${resetUrl}" class="cta">Reset my password</a>
   <p style="margin-top:24px;font-size:13px;color:#64748b;">If you did not request this, you can safely ignore this email. Your password will not change.</p>
-  <p style="font-size:12px;color:#94a3b8;margin-top:32px;">Surf Your Life · Zollikerstrasse 183, 8008 Zürich</p>
+  <p style="font-size:12px;color:#94a3b8;margin-top:32px;">${COMPANY_ADDRESS}</p>
 </body>
 </html>
   `.trim()
@@ -100,7 +101,7 @@ export function bookingRequestEmail(data: BookingRequestData): string {
   </div>
   ${dateBlock}
   <p style="font-size:13px;color:#64748b;margin-top:16px;">If you have any questions, simply reply to this email.</p>
-  <p style="font-size:12px;color:#94a3b8;margin-top:32px;">Surf Your Life · Zollikerstrasse 183, 8008 Zürich</p>
+  <p style="font-size:12px;color:#94a3b8;margin-top:32px;">${COMPANY_ADDRESS}</p>
 </body>
 </html>
   `.trim()
@@ -143,7 +144,7 @@ export function welcomeEmail(data: WelcomeEmailData): string {
 
   <p style="margin-top:24px;font-size:13px;color:#64748b;">If you have any questions, simply reply to this email. We respond within 24 hours.</p>
 
-  <p style="font-size:12px;color:#94a3b8;margin-top:32px;">Surf Your Life · Zollikerstrasse 183, 8008 Zürich</p>
+  <p style="font-size:12px;color:#94a3b8;margin-top:32px;">${COMPANY_ADDRESS}</p>
 </body>
 </html>
   `.trim()
@@ -244,7 +245,7 @@ export function bookingStatusEmail(data: BookingStatusData): string {
 
   ${preferredDate ? `<div class="card"><div class="label">Preferred date &amp; time</div><div class="value">${preferredDate}${timeLabel}</div></div>` : ""}
 
-  <p style="font-size:12px;color:#94a3b8;margin-top:24px;">Surf Your Life · Zollikerstrasse 183, 8008 Zürich</p>
+  <p style="font-size:12px;color:#94a3b8;margin-top:24px;">${COMPANY_ADDRESS}</p>
 </body>
 </html>
   `.trim()
@@ -335,7 +336,7 @@ export function inviteEmail(data: InviteEmailData): string {
   <a href="${registerUrl}" class="cta">Create my account</a>
   <p style="margin-top:24px;font-size:13px;color:#64748b;">If you have any questions before registering, simply reply to this email.</p>
   <p style="margin-top:24px;font-size:13px;color:#64748b;">Looking forward to working with you.</p>
-  <p style="font-size:13px;color:#64748b;margin-top:4px;"><strong>${practitionerName}</strong><br>Surf Your Life · Zollikerstrasse 183, 8008 Zürich</p>
+  <p style="font-size:13px;color:#64748b;margin-top:4px;"><strong>${practitionerName}</strong><br>${COMPANY_ADDRESS}</p>
 </body>
 </html>
   `.trim()
@@ -434,7 +435,7 @@ export function practitionerNoteEmail(data: PractitionerNoteEmailData): string {
   <p>Your practitioner left a note on your check-in from <strong>${dateStr}</strong>:</p>
   <div class="note">${note.replace(/\n/g, "<br>")}</div>
   <a href="${portalUrl}" class="cta">View in portal</a>
-  <p style="font-size:12px;color:#94a3b8;margin-top:32px;">Surf Your Life · Zollikerstrasse 183, 8008 Zürich</p>
+  <p style="font-size:12px;color:#94a3b8;margin-top:32px;">${COMPANY_ADDRESS}</p>
 </body>
 </html>
   `.trim()
@@ -489,7 +490,7 @@ export function practitionerAlertEmail(data: PractitionerAlertEmailData): string
 
   <a href="${adminUrl}" class="cta">View client in admin panel</a>
 
-  <p style="font-size:12px;color:#94a3b8;margin-top:24px;">Surf Your Life · Zollikerstrasse 183, 8008 Zürich</p>
+  <p style="font-size:12px;color:#94a3b8;margin-top:24px;">${COMPANY_ADDRESS}</p>
 </body>
 </html>
   `.trim()
@@ -563,7 +564,7 @@ export function practitionerWeeklyDigestEmail(data: PractitionerWeeklyDigestData
 
   <a href="${adminUrl}" class="cta">Open admin panel</a>
 
-  <p style="font-size:12px;color:#94a3b8;margin-top:24px;">Surf Your Life · Zollikerstrasse 183, 8008 Zürich</p>
+  <p style="font-size:12px;color:#94a3b8;margin-top:24px;">${COMPANY_ADDRESS}</p>
 </body>
 </html>
   `.trim()
@@ -600,7 +601,7 @@ export function checkInReminderEmail(data: CheckInReminderData): string {
   <p>${streakMsg} Your check-in takes less than 2 minutes and helps your practitioner track your progress.</p>
   <a href="${portalUrl}/check-in" class="cta">Check in now</a>
   <p style="margin-top:24px;font-size:13px;color:#64748b;">To unsubscribe from reminders, update your preferences in the portal.</p>
-  <p style="font-size:12px;color:#94a3b8;margin-top:32px;">Surf Your Life · Zollikerstrasse 183, 8008 Zürich</p>
+  <p style="font-size:12px;color:#94a3b8;margin-top:32px;">${COMPANY_ADDRESS}</p>
 </body>
 </html>
   `.trim()
@@ -667,7 +668,7 @@ export function weeklyReportEmail(data: WeeklyReportData): string {
   </ul>
   ${winNote}
   <a href="${portalUrl}/dashboard" class="cta">View full history</a>
-  <p style="font-size:12px;color:#94a3b8;margin-top:32px;">Surf Your Life · Zollikerstrasse 183, 8008 Zürich</p>
+  <p style="font-size:12px;color:#94a3b8;margin-top:32px;">${COMPANY_ADDRESS}</p>
 </body>
 </html>
   `.trim()

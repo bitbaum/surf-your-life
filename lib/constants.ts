@@ -81,6 +81,7 @@ export const MOOD_EMOJI = Object.fromEntries(MOODS.map((m) => [m.value, m.emoji]
 export const MOOD_LABEL = Object.fromEntries(MOODS.map((m) => [m.value, m.label])) as Record<string, string>
 
 export const SITE_URL = process.env.AUTH_URL ?? "https://surf-your-life.ch"
+export const COMPANY_ADDRESS = "Surf Your Life · Zollikerstrasse 183, 8008 Zürich"
 
 // Practitioner note on check-ins
 export const PRACTITIONER_NOTE_MAX_LENGTH = 1000
