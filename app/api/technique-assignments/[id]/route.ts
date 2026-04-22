@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { techniqueAssignments } from "@/lib/db/schema"
-import { eq } from "drizzle-orm"
+import { eq, and } from "drizzle-orm"
 
 export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth()
@@ -11,10 +11,17 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
   }
 
   const { id } = await params
+
+  // Verify the assignment exists before deactivating
+  const existing = await db.query.techniqueAssignments.findFirst({
+    where: eq(techniqueAssignments.id, id),
+  })
+  if (!existing) return Response.json({ success: false, error: "Not found" }, { status: 404 })
+
   const [updated] = await db
     .update(techniqueAssignments)
     .set({ isActive: false })
-    .where(eq(techniqueAssignments.id, id))
+    .where(and(eq(techniqueAssignments.id, id), eq(techniqueAssignments.isActive, true)))
     .returning()
 
   if (!updated) return Response.json({ success: false, error: "Not found" }, { status: 404 })
