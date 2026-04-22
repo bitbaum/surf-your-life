@@ -2,6 +2,7 @@ import { z } from "zod"
 import { db } from "@/lib/db"
 import { verificationTokens, users } from "@/lib/db/schema"
 import { and, eq, gt } from "drizzle-orm"
+import { PASSWORD_MIN_LENGTH } from "@/lib/constants"
 
 export const ADMIN_ROLE = "admin" as const
 export const PRACTITIONER_ROLE = "practitioner" as const
@@ -21,12 +22,12 @@ export function isStaff(role: string | undefined | null): boolean {
 
 export const loginSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(8),
+  password: z.string().min(PASSWORD_MIN_LENGTH),
 })
 
 export const registerSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(8),
+  password: z.string().min(PASSWORD_MIN_LENGTH),
 })
 
 export type LoginInput = z.infer<typeof loginSchema>

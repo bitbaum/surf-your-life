@@ -6,11 +6,11 @@ import { db } from "@/lib/db"
 import { users } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { checkRateLimit, ipKey } from "@/lib/rate-limit"
-import { API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED } from "@/lib/constants"
+import { API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED, PASSWORD_MIN_LENGTH } from "@/lib/constants"
 
 const changePasswordSchema = z.object({
   currentPassword: z.string().min(1),
-  newPassword: z.string().min(8),
+  newPassword: z.string().min(PASSWORD_MIN_LENGTH),
 })
 
 export async function POST(req: Request) {

@@ -5,11 +5,11 @@ import { users, passwordResetTokens } from "@/lib/db/schema"
 import { eq, and, gt, isNull } from "drizzle-orm"
 import bcrypt from "bcryptjs"
 import { checkRateLimit, ipKey } from "@/lib/rate-limit"
-import { API_ERR_INVALID_INPUT } from "@/lib/constants"
+import { API_ERR_INVALID_INPUT, PASSWORD_MIN_LENGTH } from "@/lib/constants"
 
 const schema = z.object({
   token: z.string().min(1),
-  password: z.string().min(8),
+  password: z.string().min(PASSWORD_MIN_LENGTH),
 })
 
 export async function POST(req: Request) {

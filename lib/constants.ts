@@ -90,6 +90,9 @@ export const AI_MODEL_FAST = "claude-haiku-4-5-20251001"
 // Practitioner note on check-ins
 export const PRACTITIONER_NOTE_MAX_LENGTH = 1000
 
+// Authentication constraints
+export const PASSWORD_MIN_LENGTH = 8
+
 // Standard API error message strings — used in all route handlers for consistent responses
 export const API_ERR_UNAUTHORIZED = "Unauthorized"
 export const API_ERR_FORBIDDEN = "Forbidden"
