@@ -4,7 +4,7 @@
  * Never throws; failures are logged but don't block the check-in response.
  */
 import { db } from "@/lib/db"
-import { checkIns, clientAlerts, users } from "@/lib/db/schema"
+import { checkIns, clientAlerts, users, type AlertType } from "@/lib/db/schema"
 import { eq, desc, gte, and, inArray } from "drizzle-orm"
 import { STAFF_ROLES, CLIENT_ROLE } from "@/lib/domain/auth"
 import {
@@ -28,6 +28,143 @@ import { formatEnumValue } from "@/lib/utils"
 
 type AlertInsert = typeof clientAlerts.$inferInsert
 
+// ─── Pure rule evaluation ─────────────────────────────────────────────────────
+
+/** Minimal check-in shape required for alert rule evaluation. */
+export type CheckInDataForAlerts = {
+  energyLevel: number
+  symptomFatigue: number | null
+  stressLevel: number | null
+  pemFlag: boolean | null
+  createdAt: Date
+  mood: string
+  orthostaticSymptoms: boolean | null
+  activityLevel: string | null
+}
+
+/** Alert specification produced by a firing rule — no DB IDs, no client context. */
+export type AlertSpec = {
+  type: AlertType
+  severity: "high" | "medium" | "low"
+  title: string
+  message: string
+}
+
+/**
+ * Evaluate all 7 clinical alert rules against a set of recent check-ins.
+ * Pure function — no DB access, no side effects, deterministic output.
+ *
+ * @param recent  Up to ALERT_CHECKIN_WINDOW check-ins, newest first
+ * @param now     Reference timestamp for 7-day window calculations
+ */
+export function evaluateAlertRules(
+  recent: CheckInDataForAlerts[],
+  now: Date = new Date()
+): AlertSpec[] {
+  if (recent.length === 0) return []
+
+  const alerts: AlertSpec[] = []
+  const sevenDaysAgo = new Date(now.getTime() - SEVEN_DAYS_MS)
+  const [latest] = recent
+
+  // ─── Rule 1: Energy decline ────────────────────────────────────────────────
+  if (recent.length >= 3) {
+    const [, , prev2] = recent
+    const drop = prev2.energyLevel - latest.energyLevel
+    if (drop >= ALERT_ENERGY_DECLINE_THRESHOLD) {
+      alerts.push({
+        type: "energy_decline",
+        severity: drop >= 5 ? "high" : "medium",
+        title: "Energy decline detected",
+        message: `Energy dropped from ${prev2.energyLevel} to ${latest.energyLevel} over the last 3 check-ins (−${drop} points).`,
+      })
+    }
+  }
+
+  // ─── Rule 2: Fatigue spike ─────────────────────────────────────────────────
+  if (latest.symptomFatigue != null && latest.symptomFatigue >= ALERT_FATIGUE_SPIKE_THRESHOLD) {
+    alerts.push({
+      type: "fatigue_spike",
+      severity: latest.symptomFatigue >= 9 ? "high" : "medium",
+      title: "High fatigue reported",
+      message: `Client reported fatigue ${latest.symptomFatigue}/10 today.`,
+    })
+  }
+
+  // ─── Rule 3: Stress spike ──────────────────────────────────────────────────
+  if (latest.stressLevel != null && latest.stressLevel >= ALERT_STRESS_SPIKE_THRESHOLD) {
+    alerts.push({
+      type: "stress_spike",
+      severity: latest.stressLevel >= 9 ? "high" : "medium",
+      title: "High stress reported",
+      message: `Client reported stress ${latest.stressLevel}/10 today.`,
+    })
+  }
+
+  // ─── Rule 4: PEM cluster ───────────────────────────────────────────────────
+  const recentPemCount = recent.filter((ci) => ci.pemFlag && ci.createdAt >= sevenDaysAgo).length
+  if (recentPemCount >= ALERT_PEM_CLUSTER_COUNT) {
+    alerts.push({
+      type: "pem_cluster",
+      severity: "high",
+      title: "PEM cluster in last 7 days",
+      message: `Client reported ${recentPemCount} PEM/crash episodes in the last 7 days. Consider reviewing activity pacing.`,
+    })
+  }
+
+  // ─── Rule 5: Mood decline ──────────────────────────────────────────────────
+  // recent is newest-first; moodValues[0] = newest, moodValues[2] = oldest.
+  // moodDrop = newest_score - oldest_score → negative means mood has fallen.
+  if (recent.length >= ALERT_MOOD_DECLINE_WINDOW) {
+    const moodValues = recent.slice(0, ALERT_MOOD_DECLINE_WINDOW).map((ci) => MOOD_SCORE[ci.mood] ?? 3)
+    const moodDrop = moodValues[0] - moodValues[ALERT_MOOD_DECLINE_WINDOW - 1]
+    if (moodDrop <= ALERT_MOOD_DECLINE_THRESHOLD) {
+      alerts.push({
+        type: "mood_decline",
+        severity: moodDrop <= -3 ? "high" : "medium",
+        title: "Mood decline detected",
+        message: `Mood has dropped from "${formatEnumValue(recent[ALERT_MOOD_DECLINE_WINDOW - 1].mood)}" to "${formatEnumValue(recent[0].mood)}" over the last 3 check-ins.`,
+      })
+    }
+  }
+
+  // ─── Rule 6: Orthostatic symptom cluster ──────────────────────────────────
+  const orthostaticCount = recent.filter(
+    (ci) => ci.orthostaticSymptoms && ci.createdAt >= sevenDaysAgo
+  ).length
+  if (orthostaticCount >= ALERT_ORTHOSTATIC_CLUSTER_COUNT) {
+    alerts.push({
+      type: "orthostatic_intolerance",
+      severity: "medium",
+      title: "Orthostatic symptoms recurring",
+      message: `Client reported dizziness on standing ${orthostaticCount} times in the last 7 days. Consider screening for POTS/orthostatic intolerance.`,
+    })
+  }
+
+  // ─── Rule 7: PEM lag pattern ───────────────────────────────────────────────
+  if (latest.pemFlag && recent.length >= 2) {
+    const prevCheckIns = recent.slice(1, 3)
+    const triggerDay = prevCheckIns.find(
+      (ci) => ci.activityLevel === "moderate" || ci.activityLevel === "active"
+    )
+    if (triggerDay) {
+      const dayDiff = Math.round(
+        (latest.createdAt.getTime() - triggerDay.createdAt.getTime()) / DAY_MS
+      ) || 1
+      alerts.push({
+        type: "pem_cluster",
+        severity: "high",
+        title: "PEM lag detected",
+        message: `PEM reported today following ${triggerDay.activityLevel} activity ${dayDiff} day${dayDiff !== 1 ? "s" : ""} ago. This delayed crash pattern is a key Long COVID pacing signal — consider reviewing the client's activity envelope.`,
+      })
+    }
+  }
+
+  return alerts
+}
+
+// ─── DB orchestration ─────────────────────────────────────────────────────────
+
 /**
  * Generate rule-based alerts for a client after a new check-in.
  * Returns immediately — all DB work is fire-and-forget from the caller's POV.
@@ -43,201 +180,34 @@ export async function generateAlerts(clientId: string, newCheckInId: string): Pr
 
     if (recent.length === 0) return
 
-    const alerts: AlertInsert[] = []
     const now = new Date()
+    const candidates = evaluateAlertRules(recent, now)
 
-    // ─── Rule 1: Energy decline ────────────────────────────────────────────────
-    // If the last 3 check-ins show a total energy drop of ≥ threshold, flag it.
-    if (recent.length >= 3) {
-      const [latest, , prev2] = recent
-      const drop = prev2.energyLevel - latest.energyLevel
-      if (drop >= ALERT_ENERGY_DECLINE_THRESHOLD) {
-        const alreadyExists = await db.query.clientAlerts.findFirst({
-          where: and(
-            eq(clientAlerts.clientId, clientId),
-            eq(clientAlerts.type, "energy_decline"),
-            eq(clientAlerts.isResolved, false),
-            gte(clientAlerts.createdAt, new Date(Date.now() - SEVEN_DAYS_MS))
-          ),
-        })
-        if (!alreadyExists) {
-          alerts.push({
-            clientId,
-            type: "energy_decline",
-            severity: drop >= 5 ? "high" : "medium",
-            title: "Energy decline detected",
-            message: `Energy dropped from ${prev2.energyLevel} to ${latest.energyLevel} over the last 3 check-ins (−${drop} points).`,
-            checkInId: newCheckInId,
-            createdAt: now,
-          })
-        }
-      }
-    }
-
-    // ─── Rule 2: Fatigue spike ─────────────────────────────────────────────────
-    const [latestCheckIn] = recent
-    if (latestCheckIn.symptomFatigue != null && latestCheckIn.symptomFatigue >= ALERT_FATIGUE_SPIKE_THRESHOLD) {
+    // Deduplicate: skip any alert type that already has an open alert in the last 7 days
+    const newAlerts: AlertInsert[] = []
+    for (const candidate of candidates) {
       const alreadyExists = await db.query.clientAlerts.findFirst({
         where: and(
           eq(clientAlerts.clientId, clientId),
-          eq(clientAlerts.type, "fatigue_spike"),
+          eq(clientAlerts.type, candidate.type),
           eq(clientAlerts.isResolved, false),
-          gte(clientAlerts.createdAt, new Date(Date.now() - SEVEN_DAYS_MS))
+          gte(clientAlerts.createdAt, new Date(now.getTime() - SEVEN_DAYS_MS))
         ),
       })
       if (!alreadyExists) {
-        alerts.push({
+        newAlerts.push({
           clientId,
-          type: "fatigue_spike",
-          severity: latestCheckIn.symptomFatigue >= 9 ? "high" : "medium",
-          title: "High fatigue reported",
-          message: `Client reported fatigue ${latestCheckIn.symptomFatigue}/10 today.`,
+          type: candidate.type,
+          severity: candidate.severity,
+          title: candidate.title,
+          message: candidate.message,
           checkInId: newCheckInId,
           createdAt: now,
         })
       }
     }
 
-    // ─── Rule 3: Stress spike ──────────────────────────────────────────────────
-    if (latestCheckIn.stressLevel != null && latestCheckIn.stressLevel >= ALERT_STRESS_SPIKE_THRESHOLD) {
-      const alreadyExists = await db.query.clientAlerts.findFirst({
-        where: and(
-          eq(clientAlerts.clientId, clientId),
-          eq(clientAlerts.type, "stress_spike"),
-          eq(clientAlerts.isResolved, false),
-          gte(clientAlerts.createdAt, new Date(Date.now() - SEVEN_DAYS_MS))
-        ),
-      })
-      if (!alreadyExists) {
-        alerts.push({
-          clientId,
-          type: "stress_spike",
-          severity: latestCheckIn.stressLevel >= 9 ? "high" : "medium",
-          title: "High stress reported",
-          message: `Client reported stress ${latestCheckIn.stressLevel}/10 today.`,
-          checkInId: newCheckInId,
-          createdAt: now,
-        })
-      }
-    }
-
-    // ─── Rule 4: PEM cluster ───────────────────────────────────────────────────
-    const sevenDaysAgo = new Date(Date.now() - SEVEN_DAYS_MS)
-    const recentPemCount = recent.filter(
-      (ci) => ci.pemFlag && ci.createdAt >= sevenDaysAgo
-    ).length
-
-    if (recentPemCount >= ALERT_PEM_CLUSTER_COUNT) {
-      const alreadyExists = await db.query.clientAlerts.findFirst({
-        where: and(
-          eq(clientAlerts.clientId, clientId),
-          eq(clientAlerts.type, "pem_cluster"),
-          eq(clientAlerts.isResolved, false),
-          gte(clientAlerts.createdAt, sevenDaysAgo)
-        ),
-      })
-      if (!alreadyExists) {
-        alerts.push({
-          clientId,
-          type: "pem_cluster",
-          severity: "high",
-          title: "PEM cluster in last 7 days",
-          message: `Client reported ${recentPemCount} PEM/crash episodes in the last 7 days. Consider reviewing activity pacing.`,
-          checkInId: newCheckInId,
-          createdAt: now,
-        })
-      }
-    }
-
-    // ─── Rule 5: Mood decline ──────────────────────────────────────────────────
-    if (recent.length >= 3) {
-      const moodValues = recent.slice(0, ALERT_MOOD_DECLINE_WINDOW).map((ci) => MOOD_SCORE[ci.mood] ?? 3)
-      const moodDrop = moodValues[ALERT_MOOD_DECLINE_WINDOW - 1] - moodValues[0]
-      if (moodDrop <= ALERT_MOOD_DECLINE_THRESHOLD) {
-        const alreadyExists = await db.query.clientAlerts.findFirst({
-          where: and(
-            eq(clientAlerts.clientId, clientId),
-            eq(clientAlerts.type, "mood_decline"),
-            eq(clientAlerts.isResolved, false),
-            gte(clientAlerts.createdAt, new Date(Date.now() - SEVEN_DAYS_MS))
-          ),
-        })
-        if (!alreadyExists) {
-          alerts.push({
-            clientId,
-            type: "mood_decline",
-            severity: moodDrop <= -3 ? "high" : "medium",
-            title: "Mood decline detected",
-            message: `Mood has dropped from "${formatEnumValue(recent[2].mood)}" to "${formatEnumValue(recent[0].mood)}" over the last 3 check-ins.`,
-            checkInId: newCheckInId,
-            createdAt: now,
-          })
-        }
-      }
-    }
-
-    // ─── Rule 6: Orthostatic symptom cluster ──────────────────────────────────
-    // ≥2 episodes of dizziness on standing in 7 days — possible POTS indicator
-    const orthostaticCount = recent.filter(
-      (ci) => ci.orthostaticSymptoms && ci.createdAt >= sevenDaysAgo
-    ).length
-
-    if (orthostaticCount >= ALERT_ORTHOSTATIC_CLUSTER_COUNT) {
-      const alreadyExists = await db.query.clientAlerts.findFirst({
-        where: and(
-          eq(clientAlerts.clientId, clientId),
-          eq(clientAlerts.type, "orthostatic_intolerance"),
-          eq(clientAlerts.isResolved, false),
-          gte(clientAlerts.createdAt, sevenDaysAgo)
-        ),
-      })
-      if (!alreadyExists) {
-        alerts.push({
-          clientId,
-          type: "orthostatic_intolerance",
-          severity: "medium",
-          title: "Orthostatic symptoms recurring",
-          message: `Client reported dizziness on standing ${orthostaticCount} times in the last 7 days. Consider screening for POTS/orthostatic intolerance.`,
-          checkInId: newCheckInId,
-          createdAt: now,
-        })
-      }
-    }
-
-    // ─── Rule 7: PEM lag pattern ───────────────────────────────────────────────
-    // If today has PEM flagged AND 1-2 days ago was moderate/active activity,
-    // this suggests a delayed PEM response — a key Long COVID pacing signal.
-    if (latestCheckIn.pemFlag && recent.length >= 2) {
-      const prevCheckIns = recent.slice(1, 3) // 1-2 days prior
-      const triggerDay = prevCheckIns.find(
-        (ci) => ci.activityLevel === "moderate" || ci.activityLevel === "active"
-      )
-      if (triggerDay) {
-        const alreadyExists = await db.query.clientAlerts.findFirst({
-          where: and(
-            eq(clientAlerts.clientId, clientId),
-            eq(clientAlerts.type, "pem_cluster"),
-            eq(clientAlerts.isResolved, false),
-            gte(clientAlerts.createdAt, new Date(Date.now() - SEVEN_DAYS_MS))
-          ),
-        })
-        if (!alreadyExists) {
-          const dayDiff = Math.round(
-            (latestCheckIn.createdAt.getTime() - triggerDay.createdAt.getTime()) / DAY_MS
-          ) || 1
-          alerts.push({
-            clientId,
-            type: "pem_cluster",
-            severity: "high",
-            title: "PEM lag detected",
-            message: `PEM reported today following ${triggerDay.activityLevel} activity ${dayDiff} day${dayDiff !== 1 ? "s" : ""} ago. This delayed crash pattern is a key Long COVID pacing signal — consider reviewing the client's activity envelope.`,
-            checkInId: newCheckInId,
-            createdAt: now,
-          })
-        }
-      }
-    }
-
+    const alerts = newAlerts
     if (alerts.length > 0) {
       await db.insert(clientAlerts).values(alerts)
     }
