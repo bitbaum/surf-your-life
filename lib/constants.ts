@@ -223,6 +223,9 @@ export const SESSION_PREP_ENERGY_AVG_WINDOW = 5  // check-ins used for energy av
 // Streak calculation
 export const STREAK_LOOKBACK_DAYS = 30  // max days to look back when calculating check-in streaks
 
+// Alert severity display order — most critical first (used by alert list grouping)
+export const ALERT_SEVERITY_ORDER = ["high", "medium", "low"] as const
+
 // Enrollment status badge classes — used by portal program page and admin enrollment-status component
 export const ENROLLMENT_STATUS_BADGE: Record<string, string> = {
   active:    "bg-teal-50 text-teal-700 border border-teal-200",

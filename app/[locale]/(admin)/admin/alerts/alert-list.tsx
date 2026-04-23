@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl"
 import { Link } from "@/i18n/navigation"
 import { ResolveAlertButton } from "./resolve-button"
 import { formatDate } from "@/lib/utils"
-import { ALERT_SEVERITY_DOT, ALERT_SEVERITY_BADGE } from "@/lib/constants"
+import { ALERT_SEVERITY_DOT, ALERT_SEVERITY_BADGE, ALERT_SEVERITY_ORDER } from "@/lib/constants"
 import type { AlertType, AlertSeverity } from "@/lib/db/schema"
 
 export type AlertRow = {
@@ -42,13 +42,12 @@ export function AlertList({ initialAlerts }: Props) {
     )
   }
 
-  // Group by severity: high → medium → low
-  const grouped: Record<AlertSeverity, AlertRow[]> = { high: [], medium: [], low: [] }
+  const grouped = Object.fromEntries(ALERT_SEVERITY_ORDER.map((s) => [s, [] as AlertRow[]])) as Record<AlertSeverity, AlertRow[]>
   for (const alert of alerts) grouped[alert.severity].push(alert)
 
   return (
     <div className="flex flex-col gap-6">
-      {(["high", "medium", "low"] as AlertSeverity[]).map((sev) => {
+      {ALERT_SEVERITY_ORDER.map((sev) => {
         const group = grouped[sev]
         if (group.length === 0) return null
         return (
