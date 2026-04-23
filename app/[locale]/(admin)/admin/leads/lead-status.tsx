@@ -3,47 +3,46 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useTranslations } from "next-intl"
+import { leadStatusEnum } from "@/lib/db/schema"
 
-type Status = "new" | "contacted" | "dismissed"
+type LeadStatus = (typeof leadStatusEnum.enumValues)[number]
 
 interface Props {
   leadId: string
-  currentStatus: Status
+  currentStatus: LeadStatus
 }
 
-const STATUS_BADGE: Record<Status, string> = {
+const STATUS_BADGE: Record<LeadStatus, string> = {
   new: "bg-slate-100 text-slate-600",
   contacted: "bg-teal-50 text-teal-700",
   dismissed: "bg-red-50 text-red-600",
 }
 
-const STATUS_ACTIVE: Record<Status, string> = {
+const STATUS_ACTIVE: Record<LeadStatus, string> = {
   new: "bg-slate-200 text-slate-800 font-semibold",
   contacted: "bg-teal-100 text-teal-800 font-semibold",
   dismissed: "bg-red-100 text-red-700 font-semibold",
 }
 
-const STATUS_VALUES: Status[] = ["new", "contacted", "dismissed"]
-
 export function LeadStatus({ leadId, currentStatus }: Props) {
   const t = useTranslations("admin.leads")
   const router = useRouter()
-  const [status, setStatus] = useState<Status>(currentStatus)
+  const [status, setStatus] = useState<LeadStatus>(currentStatus)
   const [loading, setLoading] = useState(false)
 
-  const STATUS_LABELS: Record<Status, string> = {
+  const STATUS_LABELS: Record<LeadStatus, string> = {
     new: t("statusNew"),
     contacted: t("statusContacted"),
     dismissed: t("statusDismissed"),
   }
 
-  const MARK_AS_TITLES: Record<Status, string> = {
+  const MARK_AS_TITLES: Record<LeadStatus, string> = {
     new: t("markAsNew"),
     contacted: t("markAsContacted"),
     dismissed: t("markAsDismissed"),
   }
 
-  async function handleChange(next: Status) {
+  async function handleChange(next: LeadStatus) {
     if (next === status || loading) return
     setLoading(true)
     const res = await fetch(`/api/admin/leads/${leadId}`, {
@@ -60,7 +59,7 @@ export function LeadStatus({ leadId, currentStatus }: Props) {
 
   return (
     <div className="flex items-center gap-1.5">
-      {STATUS_VALUES.map((s) => (
+      {leadStatusEnum.enumValues.map((s) => (
         <button
           key={s}
           onClick={() => handleChange(s)}

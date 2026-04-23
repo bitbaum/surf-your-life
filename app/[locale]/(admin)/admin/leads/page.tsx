@@ -1,5 +1,5 @@
 import { db } from "@/lib/db"
-import { leads } from "@/lib/db/schema"
+import { leads, leadStatusEnum } from "@/lib/db/schema"
 import { desc, count, eq } from "drizzle-orm"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
@@ -11,7 +11,8 @@ import { getTranslations, setRequestLocale } from "next-intl/server"
 import { Pagination } from "@/components/ui/pagination"
 import { FilterTabs } from "@/components/ui/filter-tabs"
 
-type StatusFilter = "all" | "new" | "contacted" | "dismissed"
+type LeadStatusValue = (typeof leadStatusEnum.enumValues)[number]
+type StatusFilter = "all" | LeadStatusValue
 
 export default async function LeadsPage({
   params,
@@ -35,10 +36,9 @@ export default async function LeadsPage({
   const page = Math.max(1, parseInt(pageParam ?? "1") || 1)
   const offset = (page - 1) * PAGINATION_DEFAULT
 
-  const statusFilter =
-    statusParam === "new" || statusParam === "contacted" || statusParam === "dismissed"
-      ? statusParam
-      : "all"
+  const statusFilter = (leadStatusEnum.enumValues as readonly string[]).includes(statusParam ?? "")
+    ? (statusParam as LeadStatusValue)
+    : "all"
 
   const whereClause =
     statusFilter !== "all" ? eq(leads.status, statusFilter) : undefined
