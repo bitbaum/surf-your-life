@@ -10,9 +10,10 @@ import { eq, and, gte, desc } from "drizzle-orm"
 import { sendEmail } from "@/lib/email"
 import { checkInReminderEmail } from "@/lib/email/templates"
 import { EMAIL_SUBJECT_CHECKIN_REMINDER } from "@/lib/email/subjects"
-import { SITE_URL, DAY_MS, STREAK_LOOKBACK_DAYS , API_ERR_UNAUTHORIZED } from "@/lib/constants"
+import { SITE_URL, STREAK_LOOKBACK_DAYS, API_ERR_UNAUTHORIZED } from "@/lib/constants"
 import { generateMissedCheckInAlerts } from "@/lib/domain/alerts"
 import { CLIENT_ROLE } from "@/lib/domain/auth"
+import { computeStreak } from "@/lib/domain/check-in"
 
 export async function GET(req: Request) {
   // Vercel cron authentication — only allow requests from Vercel cron
@@ -55,19 +56,8 @@ export async function GET(req: Request) {
       columns: { createdAt: true },
     })
 
-    let streak = 0
-    const now = Date.now()
-    for (let i = 0; i < recentCheckIns.length; i++) {
-      const expectedDay = new Date(now - (i + 1) * DAY_MS)
-      expectedDay.setHours(0, 0, 0, 0)
-      const ciDay = new Date(recentCheckIns[i].createdAt)
-      ciDay.setHours(0, 0, 0, 0)
-      if (ciDay.getTime() === expectedDay.getTime()) {
-        streak++
-      } else {
-        break
-      }
-    }
+    // computeStreak deduplicates multiple same-day check-ins before counting
+    const streak = computeStreak(recentCheckIns.map((ci) => new Date(ci.createdAt)))
 
     await sendEmail({
       to: client.email,
