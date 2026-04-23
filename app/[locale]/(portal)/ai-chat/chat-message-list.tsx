@@ -1,13 +1,7 @@
 "use client"
 
 import { useTranslations } from "next-intl"
-
-type Message = {
-  id: string
-  role: "user" | "assistant"
-  content: string
-  createdAt: string
-}
+import type { Message } from "./chat-interface"
 
 type Props = {
   messages: Message[]

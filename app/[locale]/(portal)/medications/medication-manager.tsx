@@ -8,20 +8,10 @@ import { toast } from "sonner"
 import { AddMedicationForm } from "./add-medication-form"
 import { MedicationHistoricalList } from "./medication-historical-list"
 import { toDateString } from "@/lib/utils"
-
-type Medication = {
-  id: string
-  medicationName: string
-  dose: string | null
-  frequency: string | null
-  startDate: string | null
-  endDate: string | null
-  notes: string | null
-  createdAt: Date
-}
+import type { MedicationEntry } from "@/lib/db/schema"
 
 type Props = {
-  medications: Medication[]
+  medications: MedicationEntry[]
 }
 
 export function MedicationManager({ medications: initial }: Props) {

@@ -3,17 +3,10 @@
 import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { ChevronDown, ChevronUp, Trash2 } from "lucide-react"
-
-type Medication = {
-  id: string
-  medicationName: string
-  dose: string | null
-  startDate: string | null
-  endDate: string | null
-}
+import type { MedicationEntry } from "@/lib/db/schema"
 
 interface Props {
-  medications: Medication[]
+  medications: MedicationEntry[]
   deleting: string | null
   onDelete: (id: string) => void
 }

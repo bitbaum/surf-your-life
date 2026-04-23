@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { ChatMessageList } from "./chat-message-list"
 import { AI_CHAT_MAX_LENGTH } from "@/lib/constants"
 
-type Message = {
+export type Message = {
   id: string
   role: "user" | "assistant"
   content: string
