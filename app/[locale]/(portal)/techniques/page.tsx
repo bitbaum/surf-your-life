@@ -7,7 +7,7 @@ import { PageHeader } from "@/components/ui/page-header"
 import { TechniqueTracker } from "./technique-tracker"
 import type { LogByDate } from "@/lib/domain/techniques"
 import { toDateString } from "@/lib/utils"
-import { DAY_MS } from "@/lib/constants"
+import { DAY_MS, TECHNIQUE_LOG_WINDOW_DAYS } from "@/lib/constants"
 
 export default async function TechniquesPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
@@ -19,8 +19,8 @@ export default async function TechniquesPage({ params }: { params: Promise<{ loc
 
   const nowMs = Date.now() // eslint-disable-line react-hooks/purity -- server component
   const today = toDateString(new Date(nowMs))
-  // Fetch logs for debt window (14 days)
-  const since = toDateString(new Date(nowMs - 14 * DAY_MS))
+  // Fetch logs for debt window
+  const since = toDateString(new Date(nowMs - TECHNIQUE_LOG_WINDOW_DAYS * DAY_MS))
 
   const [assignments, logs] = await Promise.all([
     db.query.techniqueAssignments.findMany({

@@ -5,17 +5,17 @@ import { techniqueLogs, techniqueAssignments } from "@/lib/db/schema"
 import { eq, and, gte } from "drizzle-orm"
 import { logTechniqueSchema } from "@/lib/domain/techniques"
 import { toDateString } from "@/lib/utils"
-import { API_ERR_UNAUTHORIZED } from "@/lib/constants"
+import { API_ERR_UNAUTHORIZED, TECHNIQUE_LOG_WINDOW_DAYS } from "@/lib/constants"
 
 export async function GET(req: Request) {
   const session = await auth()
   if (!session) return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
 
   const { searchParams } = new URL(req.url)
-  // Default to last 14 days so debt can be computed client-side
+  // Default to TECHNIQUE_LOG_WINDOW_DAYS so debt can be computed client-side
   const since = searchParams.get("since") ?? (() => {
     const d = new Date()
-    d.setDate(d.getDate() - 14)
+    d.setDate(d.getDate() - TECHNIQUE_LOG_WINDOW_DAYS)
     return toDateString(d)
   })()
 
