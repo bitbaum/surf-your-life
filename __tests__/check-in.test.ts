@@ -251,8 +251,8 @@ describe("summariseCheckIns", () => {
     expect(summariseCheckIns(rows)!.avgStress).toBe(8)
   })
 
-  it("returns avgStress 0 when all stressLevel are null", () => {
-    expect(summariseCheckIns([row({ stressLevel: null })])!.avgStress).toBe(0)
+  it("returns avgStress null when all stressLevel are null", () => {
+    expect(summariseCheckIns([row({ stressLevel: null })])!.avgStress).toBeNull()
   })
 
   it("returns avgMood string label matching the numeric score", () => {

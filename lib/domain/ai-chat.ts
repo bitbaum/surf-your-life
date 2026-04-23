@@ -135,8 +135,7 @@ function ruleBasedResponse(question: string, rows: CheckInRow[], medications: Me
 
   // Stress
   if (q.includes("stress") || q.includes("overwhelm") || q.includes("burnout") || q.includes("pressure")) {
-    const stressRows = rows.filter((r) => r.stressLevel != null)
-    if (stressRows.length === 0) {
+    if (stats.avgStress == null) {
       return `You haven't been logging your stress levels. Adding this to your daily check-ins helps identify patterns and early warning signs. ${dataNote}`
     }
     const level = stats.avgStress >= 7 ? "high" : stats.avgStress >= 5 ? "moderate" : "relatively low"

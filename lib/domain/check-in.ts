@@ -30,8 +30,9 @@ export function summariseCheckIns(rows: CheckInSummaryRow[]) {
   const pemCount = rows.filter((r) => r.pemFlag).length
 
   const stressRows = rows.filter((r) => r.stressLevel != null)
-  const avgStress = stressRows.reduce((s, r) => s + (r.stressLevel ?? 0), 0) /
-    Math.max(stressRows.length, 1)
+  const avgStress = stressRows.length > 0
+    ? stressRows.reduce((s, r) => s + (r.stressLevel ?? 0), 0) / stressRows.length
+    : null
 
   const avgMoodNum = rows.reduce((s, r) => s + (MOOD_SCORE[r.mood ?? "neutral"] ?? 3), 0) / rows.length
 
