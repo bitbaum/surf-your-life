@@ -5,16 +5,21 @@ import {
   TECHNIQUE_DEFAULT_FREQUENCY,
   TECHNIQUE_DEFAULT_MAX_DEBT_DAYS,
   TECHNIQUE_DEFAULT_SAFETY_CAP,
+  TECHNIQUE_DAILY_FREQUENCY_MAX,
+  TECHNIQUE_DURATION_MINUTES,
+  TECHNIQUE_NAME_MAX,
+  FIELD_MAX_NOTES,
+  FIELD_MAX_LONG,
 } from "@/lib/constants"
 
 // ─── Zod schemas (SSOT for input validation) ─────────────────────────────────
 
 export const createTechniqueSchema = z.object({
-  name: z.string().min(1).max(120),
-  description: z.string().max(500).optional(),
+  name: z.string().min(1).max(TECHNIQUE_NAME_MAX),
+  description: z.string().max(FIELD_MAX_NOTES).optional(),
   category: z.enum(techniqueCategoryEnum.enumValues),
-  instructions: z.string().max(2000).optional(),
-  durationMinutes: z.number().int().min(1).max(120).optional(),
+  instructions: z.string().max(FIELD_MAX_LONG).optional(),
+  durationMinutes: z.number().int().min(TECHNIQUE_DURATION_MINUTES.min).max(TECHNIQUE_DURATION_MINUTES.max).optional(),
   difficulty: z.enum(techniqueDifficultyEnum.enumValues).default("easy"),
   resourceUrl: z.string().url().optional().or(z.literal("")),
 })
@@ -26,13 +31,13 @@ export const updateTechniqueSchema = createTechniqueSchema.partial().extend({
 export const createAssignmentSchema = z.object({
   techniqueId: z.string().uuid(),
   clientId: z.string().uuid(),
-  frequencyPerDay: z.number().int().min(1).max(10).default(TECHNIQUE_DEFAULT_FREQUENCY),
+  frequencyPerDay: z.number().int().min(1).max(TECHNIQUE_DAILY_FREQUENCY_MAX).default(TECHNIQUE_DEFAULT_FREQUENCY),
   // safetyCapMultiplier stored ×100: 150 = 1.5× daily target
   safetyCapMultiplier: z.number().int().min(100).max(300).default(TECHNIQUE_DEFAULT_SAFETY_CAP),
   maxDebtDays: z.number().int().min(1).max(30).default(TECHNIQUE_DEFAULT_MAX_DEBT_DAYS),
   startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
-  notes: z.string().max(500).optional(),
+  notes: z.string().max(FIELD_MAX_NOTES).optional(),
 })
 
 export const logTechniqueSchema = z.object({

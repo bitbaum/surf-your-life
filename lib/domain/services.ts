@@ -1,13 +1,14 @@
 import { z } from "zod"
 import { serviceCategoryEnum } from "@/lib/db/schema"
+import { FIELD_MAX_SHORT, FIELD_MAX_NOTES, SERVICE_DURATION_MINUTES } from "@/lib/constants"
 
 export const SERVICE_CATEGORIES = serviceCategoryEnum.enumValues
 
 export const serviceSchema = z.object({
-  name: z.string().min(1).max(100),
-  description: z.string().max(500).nullish(),
+  name: z.string().min(1).max(FIELD_MAX_SHORT),
+  description: z.string().max(FIELD_MAX_NOTES).nullish(),
   category: z.enum(SERVICE_CATEGORIES),
-  durationMinutes: z.number().int().min(5).max(480).optional().nullable(),
+  durationMinutes: z.number().int().min(SERVICE_DURATION_MINUTES.min).max(SERVICE_DURATION_MINUTES.max).optional().nullable(),
 })
 
 export const serviceUpdateSchema = serviceSchema.partial().extend({
