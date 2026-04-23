@@ -72,17 +72,21 @@ export const techniqueDifficultyEnum = pgEnum("technique_difficulty", ["easy", "
 
 // ─── Auth tables (Auth.js v5 compatible) ──────────────────────────────────────
 
-export const users = pgTable("users", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  name: text("name"),
-  email: text("email").unique().notNull(),
-  emailVerified: timestamp("email_verified", { mode: "date" }),
-  image: text("image"),
-  password: text("password"), // null for OAuth users
-  role: roleEnum("role").notNull().default("client"),
-  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
-})
+export const users = pgTable(
+  "users",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    name: text("name"),
+    email: text("email").unique().notNull(),
+    emailVerified: timestamp("email_verified", { mode: "date" }),
+    image: text("image"),
+    password: text("password"), // null for OAuth users
+    role: roleEnum("role").notNull().default("client"),
+    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
+  },
+  (table) => [index("users_role_idx").on(table.role)]
+)
 
 export const accounts = pgTable(
   "accounts",
@@ -226,17 +230,21 @@ export const documents = pgTable(
 
 // ─── Practitioner assignments ─────────────────────────────────────────────────
 
-export const assignments = pgTable("assignments", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  clientId: uuid("client_id")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  practitionerId: uuid("practitioner_id")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  assignedAt: timestamp("assigned_at", { mode: "date" }).defaultNow().notNull(),
-  active: boolean("active").default(true).notNull(),
-})
+export const assignments = pgTable(
+  "assignments",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    clientId: uuid("client_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    practitionerId: uuid("practitioner_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    assignedAt: timestamp("assigned_at", { mode: "date" }).defaultNow().notNull(),
+    active: boolean("active").default(true).notNull(),
+  },
+  (table) => [index("assignments_client_id_idx").on(table.clientId)]
+)
 
 // ─── Leads (marketing intake) ─────────────────────────────────────────────────
 

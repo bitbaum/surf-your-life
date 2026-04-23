@@ -1,6 +1,8 @@
 // SSOT for all display values, enum mappings, and magic numbers.
 // Import from here — never hardcode these inline.
 
+import { mainConcernEnum } from "@/lib/db/schema"
+
 export const MOODS = [
   { value: "very_low", label: "Very low", emoji: "😔" },
   { value: "low", label: "Low", emoji: "😕" },
@@ -9,13 +11,7 @@ export const MOODS = [
   { value: "excellent", label: "Excellent", emoji: "😄" },
 ] as const
 
-export const MAIN_CONCERNS = [
-  "burnout",
-  "long_covid",
-  "midlife_reinvention",
-  "general_wellbeing",
-  "other",
-] as const
+export const MAIN_CONCERNS = mainConcernEnum.enumValues
 
 export const ENERGY_SCALE = { min: 1, max: 10, default: 5 } as const
 export const SLEEP_HOURS = { min: 0, max: 24 } as const
