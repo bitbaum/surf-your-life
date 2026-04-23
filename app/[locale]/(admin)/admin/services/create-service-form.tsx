@@ -4,7 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
-import { SERVICE_CATEGORIES } from "@/lib/domain/services"
+import { SERVICE_CATEGORIES, type ServiceInput } from "@/lib/domain/services"
 import { SERVICE_DURATION_MINUTES } from "@/lib/constants"
 
 export function CreateServiceForm() {
@@ -16,7 +16,7 @@ export function CreateServiceForm() {
   const [form, setForm] = useState({
     name: "",
     description: "",
-    category: "consultation" as "machine" | "space" | "consultation",
+    category: "consultation" as ServiceInput["category"],
     durationMinutes: "",
   })
 

@@ -1,6 +1,7 @@
 import { z } from "zod"
+import { serviceCategoryEnum } from "@/lib/db/schema"
 
-export const SERVICE_CATEGORIES = ["machine", "space", "consultation"] as const
+export const SERVICE_CATEGORIES = serviceCategoryEnum.enumValues
 
 export const serviceSchema = z.object({
   name: z.string().min(1).max(100),
