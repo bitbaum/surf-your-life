@@ -4,6 +4,11 @@ import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 import { DOC_TYPE_I18N_KEYS, DOC_TYPE_BADGE_CLASSES, FIELD_MAX_TITLE } from "@/lib/constants"
+import { documentTypeEnum } from "@/lib/db/schema"
+
+// Practitioners can create these types; "upload" is reserved for client-submitted documents
+const PRACTITIONER_DOC_TYPES = documentTypeEnum.enumValues.filter((t) => t !== "upload")
+type PractitionerDocType = (typeof PRACTITIONER_DOC_TYPES)[number]
 
 interface Props {
   clientId: string
@@ -13,7 +18,7 @@ interface Props {
 
 export function SessionNoteForm({ clientId, onSaved, onCancel }: Props) {
   const t = useTranslations("admin.clients.sessionNotes")
-  const [type, setType] = useState<"session_note" | "assessment" | "report">("session_note")
+  const [type, setType] = useState<PractitionerDocType>("session_note")
   const [title, setTitle] = useState("")
   const [content, setContent] = useState("")
   const [saving, setSaving] = useState(false)
@@ -42,7 +47,7 @@ export function SessionNoteForm({ clientId, onSaved, onCancel }: Props) {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-3 border border-slate-200 rounded-xl p-4 bg-slate-50">
       <div className="flex gap-2">
-        {(["session_note", "assessment", "report"] as const).map((opt) => (
+        {PRACTITIONER_DOC_TYPES.map((opt) => (
           <button key={opt} type="button" onClick={() => setType(opt)}
             className={`text-xs px-3 py-1.5 rounded-full border font-medium transition-colors ${type === opt ? (DOC_TYPE_BADGE_CLASSES[opt] ?? DOC_TYPE_BADGE_CLASSES.session_note) + " border" : "border-slate-200 text-slate-500 hover:border-slate-300"}`}>
             {t(DOC_TYPE_I18N_KEYS[opt] ?? opt)}
