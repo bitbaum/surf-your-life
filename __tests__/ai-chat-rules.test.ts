@@ -15,6 +15,7 @@ import { DAY_MS, SEVEN_DAYS_MS } from "@/lib/constants"
 
 function row(overrides: Partial<CheckInRow> = {}): CheckInRow {
   return {
+    id: "test-id",
     createdAt: new Date(),
     mood: "neutral",
     energyLevel: 5,
@@ -33,7 +34,7 @@ function row(overrides: Partial<CheckInRow> = {}): CheckInRow {
     challenges: null,
     notes: null,
     ...overrides,
-  }
+  } as CheckInRow
 }
 
 const NO_MEDS: MedicationRow[] = []
@@ -306,7 +307,7 @@ describe("ruleBasedResponse — medications", () => {
 
   it("lists medications with dose and frequency", () => {
     const meds: MedicationRow[] = [
-      { medicationName: "Vitamin D", dose: "2000 IU", frequency: "daily", startDate: new Date(), notes: null },
+      { medicationName: "Vitamin D", dose: "2000 IU", frequency: "daily", startDate: "2024-01-01", notes: null },
     ]
     const rows = [row()]
     const reply = ruleBasedResponse("my supplements", rows, meds, NO_ASSESSMENT)
@@ -315,7 +316,7 @@ describe("ruleBasedResponse — medications", () => {
 
   it("uses singular for one medication", () => {
     const meds: MedicationRow[] = [
-      { medicationName: "Melatonin", dose: null, frequency: null, startDate: new Date(), notes: null },
+      { medicationName: "Melatonin", dose: null, frequency: null, startDate: "2024-01-01", notes: null },
     ]
     const rows = [row()]
     const reply = ruleBasedResponse("medication", rows, meds, NO_ASSESSMENT)
