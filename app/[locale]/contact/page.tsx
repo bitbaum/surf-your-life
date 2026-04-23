@@ -23,18 +23,22 @@ export default function ContactPage() {
     e.preventDefault()
     setLoading(true)
     setError("")
-    const res = await fetch("/api/contact", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    })
-    if (!res.ok) {
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      })
+      if (!res.ok) {
+        setError(t("error"))
+        return
+      }
+      setSent(true)
+    } catch {
       setError(t("error"))
+    } finally {
       setLoading(false)
-      return
     }
-    setSent(true)
-    setLoading(false)
   }
 
   return (

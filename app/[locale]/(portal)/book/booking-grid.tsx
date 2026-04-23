@@ -40,16 +40,21 @@ export function BookingGrid({ services }: { services: Service[] }) {
     if (!selected) return
     setLoading(true)
     setError(null)
-    const res = await fetch("/api/bookings", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ serviceId: selected.id, ...form }),
-    })
-    setLoading(false)
-    if (res.ok) {
-      setSubmitted(true)
-    } else {
+    try {
+      const res = await fetch("/api/bookings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ serviceId: selected.id, ...form }),
+      })
+      if (res.ok) {
+        setSubmitted(true)
+      } else {
+        setError(t("bookingError"))
+      }
+    } catch {
       setError(t("bookingError"))
+    } finally {
+      setLoading(false)
     }
   }
 

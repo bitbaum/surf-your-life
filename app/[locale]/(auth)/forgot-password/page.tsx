@@ -16,13 +16,18 @@ export default function ForgotPasswordPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
-    await fetch("/api/auth/forgot-password", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email }),
-    })
-    setSent(true)
-    setLoading(false)
+    try {
+      await fetch("/api/auth/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      })
+    } catch {
+      // intentionally fire-and-forget; always show success to avoid email enumeration
+    } finally {
+      setSent(true)
+      setLoading(false)
+    }
   }
 
   if (sent) {

@@ -27,18 +27,23 @@ function ResetForm() {
     }
     setLoading(true)
     setError("")
-    const res = await fetch("/api/auth/reset-password", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token, password }),
-    })
-    if (!res.ok) {
-      const data = await res.json().catch(() => ({}))
-      setError(data.error ?? t("errorInvalid"))
+    try {
+      const res = await fetch("/api/auth/reset-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token, password }),
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        setError(data.error ?? t("errorInvalid"))
+        return
+      }
+      setDone(true)
+    } catch {
+      setError(t("errorInvalid"))
+    } finally {
       setLoading(false)
-      return
     }
-    setDone(true)
   }
 
   if (!token) {

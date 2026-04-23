@@ -25,13 +25,17 @@ export function AlertList({ alerts }: { alerts: Alert[] }) {
 
   async function dismiss(alertId: string) {
     setDismissing((s) => new Set(s).add(alertId))
-
-    const res = await fetch(`/api/admin/alerts/${alertId}`, { method: "PATCH" })
-    if (res.ok) {
-      setDismissed((s) => new Set(s).add(alertId))
-      router.refresh()
+    try {
+      const res = await fetch(`/api/admin/alerts/${alertId}`, { method: "PATCH" })
+      if (res.ok) {
+        setDismissed((s) => new Set(s).add(alertId))
+        router.refresh()
+      }
+    } catch {
+      // silently ignore; alert remains visible
+    } finally {
+      setDismissing((s) => { const n = new Set(s); n.delete(alertId); return n })
     }
-    setDismissing((s) => { const n = new Set(s); n.delete(alertId); return n })
   }
 
   const visible = alerts.filter((a) => !dismissed.has(a.id))

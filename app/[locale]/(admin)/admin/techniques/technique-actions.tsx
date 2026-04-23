@@ -15,11 +15,15 @@ export function TechniqueActions({ technique }: { technique: Technique }) {
 
   async function handleArchive() {
     if (!confirm(t("archiveConfirm"))) return
-    const res = await fetch(`/api/techniques/${technique.id}`, { method: "DELETE" })
-    if (res.ok) {
-      toast.success(t("archivedSuccess"))
-      router.refresh()
-    } else {
+    try {
+      const res = await fetch(`/api/techniques/${technique.id}`, { method: "DELETE" })
+      if (res.ok) {
+        toast.success(t("archivedSuccess"))
+        router.refresh()
+      } else {
+        toast.error(t("saveError"))
+      }
+    } catch {
       toast.error(t("saveError"))
     }
   }

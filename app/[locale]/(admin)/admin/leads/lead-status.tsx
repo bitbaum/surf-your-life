@@ -45,16 +45,21 @@ export function LeadStatus({ leadId, currentStatus }: Props) {
   async function handleChange(next: LeadStatus) {
     if (next === status || loading) return
     setLoading(true)
-    const res = await fetch(`/api/admin/leads/${leadId}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status: next }),
-    })
-    if (res.ok) {
-      setStatus(next)
-      router.refresh()
+    try {
+      const res = await fetch(`/api/admin/leads/${leadId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: next }),
+      })
+      if (res.ok) {
+        setStatus(next)
+        router.refresh()
+      }
+    } catch {
+      // silently ignore; status remains unchanged
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }
 
   return (

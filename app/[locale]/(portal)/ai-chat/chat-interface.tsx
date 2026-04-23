@@ -44,25 +44,28 @@ export function ChatInterface({ initialMessages }: Props) {
       { id: tempId, role: "user", content, createdAt: new Date().toISOString() },
     ])
 
-    const res = await fetch("/api/portal/ai-chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ content }),
-    })
-
-    const data = await res.json()
-    setSending(false)
-
-    if (!data.success) {
+    try {
+      const res = await fetch("/api/portal/ai-chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content }),
+      })
+      const data = await res.json()
+      if (!data.success) {
+        setError(t("sendError"))
+        setMessages((prev) => prev.filter((m) => m.id !== tempId))
+        return
+      }
+      setMessages((prev) => [
+        ...prev,
+        { id: data.data.id, role: "assistant", content: data.data.content, createdAt: data.data.createdAt },
+      ])
+    } catch {
       setError(t("sendError"))
       setMessages((prev) => prev.filter((m) => m.id !== tempId))
-      return
+    } finally {
+      setSending(false)
     }
-
-    setMessages((prev) => [
-      ...prev,
-      { id: data.data.id, role: "assistant", content: data.data.content, createdAt: data.data.createdAt },
-    ])
   }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {

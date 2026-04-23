@@ -28,34 +28,33 @@ function RegisterForm() {
     e.preventDefault()
     setLoading(true)
     setError("")
-
-    const res = await fetch("/api/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    })
-
-    const data = await res.json()
-    if (!res.ok) {
-      setError(data.error ?? t("errorGeneric"))
-      setLoading(false)
-      return
-    }
-
-    const signInRes = await signIn("credentials", {
-      email: form.email,
-      password: form.password,
-      redirect: false,
-    })
-
-    if (signInRes?.error) {
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setError(data.error ?? t("errorGeneric"))
+        return
+      }
+      const signInRes = await signIn("credentials", {
+        email: form.email,
+        password: form.password,
+        redirect: false,
+      })
+      if (signInRes?.error) {
+        setError(t("errorGeneric"))
+        return
+      }
+      router.push("/profile")
+      router.refresh()
+    } catch {
       setError(t("errorGeneric"))
+    } finally {
       setLoading(false)
-      return
     }
-
-    router.push("/profile")
-    router.refresh()
   }
 
   return (

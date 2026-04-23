@@ -19,12 +19,17 @@ export function InviteButton({ leadId, currentStatus }: Props) {
   async function handleInvite() {
     if (loading || sent) return
     setLoading(true)
-    const res = await fetch(`/api/admin/leads/${leadId}/invite`, { method: "POST" })
-    if (res.ok) {
-      setSent(true)
-      router.refresh()
+    try {
+      const res = await fetch(`/api/admin/leads/${leadId}/invite`, { method: "POST" })
+      if (res.ok) {
+        setSent(true)
+        router.refresh()
+      }
+    } catch {
+      // silently ignore; button returns to idle state
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }
 
   if (currentStatus === "dismissed") return null
