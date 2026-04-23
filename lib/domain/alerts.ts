@@ -5,7 +5,7 @@
  */
 import { db } from "@/lib/db"
 import { checkIns, clientAlerts, users, type AlertType } from "@/lib/db/schema"
-import { eq, desc, gte, and, inArray } from "drizzle-orm"
+import { eq, desc, gte, and, inArray, max } from "drizzle-orm"
 import { STAFF_ROLES, CLIENT_ROLE } from "@/lib/domain/auth"
 import {
   ALERT_CHECKIN_WINDOW,
@@ -183,29 +183,28 @@ export async function generateAlerts(clientId: string, newCheckInId: string): Pr
     const now = new Date()
     const candidates = evaluateAlertRules(recent, now)
 
-    // Deduplicate: skip any alert type that already has an open alert in the last 7 days
-    const newAlerts: AlertInsert[] = []
-    for (const candidate of candidates) {
-      const alreadyExists = await db.query.clientAlerts.findFirst({
-        where: and(
-          eq(clientAlerts.clientId, clientId),
-          eq(clientAlerts.type, candidate.type),
-          eq(clientAlerts.isResolved, false),
-          gte(clientAlerts.createdAt, new Date(now.getTime() - SEVEN_DAYS_MS))
-        ),
-      })
-      if (!alreadyExists) {
-        newAlerts.push({
-          clientId,
-          type: candidate.type,
-          severity: candidate.severity,
-          title: candidate.title,
-          message: candidate.message,
-          checkInId: newCheckInId,
-          createdAt: now,
-        })
-      }
-    }
+    // Deduplicate: batch-fetch all open alert types for this client in the last 7 days
+    const existingOpenTypes = await db
+      .select({ type: clientAlerts.type })
+      .from(clientAlerts)
+      .where(and(
+        eq(clientAlerts.clientId, clientId),
+        eq(clientAlerts.isResolved, false),
+        gte(clientAlerts.createdAt, new Date(now.getTime() - SEVEN_DAYS_MS))
+      ))
+    const openTypeSet = new Set(existingOpenTypes.map((a) => a.type))
+
+    const newAlerts: AlertInsert[] = candidates
+      .filter((c) => !openTypeSet.has(c.type))
+      .map((c) => ({
+        clientId,
+        type: c.type,
+        severity: c.severity,
+        title: c.title,
+        message: c.message,
+        checkInId: newCheckInId,
+        createdAt: now,
+      }))
 
     const alerts = newAlerts
     if (alerts.length > 0) {
@@ -274,38 +273,46 @@ export async function generateMissedCheckInAlerts(): Promise<number> {
 
     if (clients.length === 0) return 0
 
+    const clientIds = clients.map((c) => c.id)
+
+    // Batch: last check-in date per client (one query instead of N)
+    const lastCheckInRows = await db
+      .select({ userId: checkIns.userId, lastCheckIn: max(checkIns.createdAt) })
+      .from(checkIns)
+      .where(inArray(checkIns.userId, clientIds))
+      .groupBy(checkIns.userId)
+    const lastCheckInMap = new Map(lastCheckInRows.map((r) => [r.userId, r.lastCheckIn]))
+
+    // Batch: clients with an open missed_checkins alert (one query instead of N)
+    const existingAlertRows = await db
+      .select({ clientId: clientAlerts.clientId })
+      .from(clientAlerts)
+      .where(and(
+        eq(clientAlerts.type, "missed_checkins"),
+        eq(clientAlerts.isResolved, false),
+        inArray(clientAlerts.clientId, clientIds)
+      ))
+    const clientsWithOpenAlert = new Set(existingAlertRows.map((a) => a.clientId))
+
     const newAlerts: AlertInsert[] = []
 
     for (const client of clients) {
-      const lastCheckIn = await db.query.checkIns.findFirst({
-        where: eq(checkIns.userId, client.id),
-        orderBy: [desc(checkIns.createdAt)],
-        columns: { createdAt: true },
-      })
+      if (clientsWithOpenAlert.has(client.id)) continue
+
+      const lastCheckIn = lastCheckInMap.get(client.id) ?? null
 
       // Checked in recently — nothing to flag
-      if (lastCheckIn && lastCheckIn.createdAt >= cutoff) continue
-
-      // Already has an open missed_checkins alert — don't duplicate
-      const existing = await db.query.clientAlerts.findFirst({
-        where: and(
-          eq(clientAlerts.clientId, client.id),
-          eq(clientAlerts.type, "missed_checkins"),
-          eq(clientAlerts.isResolved, false)
-        ),
-        columns: { id: true },
-      })
-      if (existing) continue
+      if (lastCheckIn && lastCheckIn >= cutoff) continue
 
       const daysMissed = lastCheckIn
-        ? Math.floor((Date.now() - lastCheckIn.createdAt.getTime()) / DAY_MS)
+        ? Math.floor((Date.now() - lastCheckIn.getTime()) / DAY_MS)
         : null
 
       newAlerts.push({
         clientId: client.id,
         type: "missed_checkins",
         severity: "medium",
-        title: "No check-ins for 5+ days",
+        title: `No check-ins for ${ALERT_MISSED_CHECKINS_DAYS}+ days`,
         message: daysMissed != null
           ? `Client has not checked in for ${daysMissed} day${daysMissed !== 1 ? "s" : ""}.`
           : "Client has never submitted a check-in.",
