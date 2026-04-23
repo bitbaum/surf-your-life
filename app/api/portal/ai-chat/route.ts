@@ -4,7 +4,7 @@ import { db } from "@/lib/db"
 import { aiMessages } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
 import { generateAiReply } from "@/lib/domain/ai-chat"
-import { AI_CHAT_HISTORY_LIMIT, AI_CHAT_MAX_LENGTH , API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED } from "@/lib/constants"
+import { AI_CHAT_HISTORY_LIMIT, AI_CHAT_DISPLAY_LIMIT, AI_CHAT_MAX_LENGTH, API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED } from "@/lib/constants"
 import { z } from "zod"
 
 const messageSchema = z.object({
@@ -18,7 +18,7 @@ export async function GET(req: Request) {
   }
 
   const { searchParams } = new URL(req.url)
-  const limit = Math.min(parseInt(searchParams.get("limit") ?? "50"), 100)
+  const limit = Math.min(parseInt(searchParams.get("limit") ?? String(AI_CHAT_DISPLAY_LIMIT)), AI_CHAT_DISPLAY_LIMIT)
 
   const messages = await db.query.aiMessages.findMany({
     where: eq(aiMessages.userId, session.user.id),
