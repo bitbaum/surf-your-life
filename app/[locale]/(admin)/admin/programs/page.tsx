@@ -30,16 +30,19 @@ export default async function ProgramsPage({ params }: { params: Promise<{ local
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="flex items-start justify-between gap-4 mb-8">
-        <PageHeader title={t("title")} description={t("description")} />
-        <Link
-          href="/admin/programs/new"
-          className="inline-flex items-center gap-2 min-h-[44px] px-4 py-2 rounded-lg bg-teal-600 text-white text-sm font-medium hover:bg-teal-700 transition-colors flex-shrink-0"
-        >
-          <Plus className="w-4 h-4" />
-          {t("new")}
-        </Link>
-      </div>
+      <PageHeader
+        title={t("title")}
+        description={t("description")}
+        action={
+          <Link
+            href="/admin/programs/new"
+            className="inline-flex items-center gap-2 min-h-[44px] px-4 py-2 rounded-lg bg-teal-600 text-white text-sm font-medium hover:bg-teal-700 transition-colors flex-shrink-0"
+          >
+            <Plus className="w-4 h-4" />
+            {t("new")}
+          </Link>
+        }
+      />
 
       <Card>
         <CardHeader><CardTitle>{t("title")} ({rows.length})</CardTitle></CardHeader>
