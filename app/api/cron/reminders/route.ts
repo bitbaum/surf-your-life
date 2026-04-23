@@ -9,6 +9,7 @@ import { users, checkIns } from "@/lib/db/schema"
 import { eq, and, gte, desc } from "drizzle-orm"
 import { sendEmail } from "@/lib/email"
 import { checkInReminderEmail } from "@/lib/email/templates"
+import { EMAIL_SUBJECT_CHECKIN_REMINDER } from "@/lib/email/subjects"
 import { SITE_URL, DAY_MS, STREAK_LOOKBACK_DAYS , API_ERR_UNAUTHORIZED } from "@/lib/constants"
 import { generateMissedCheckInAlerts } from "@/lib/domain/alerts"
 import { CLIENT_ROLE } from "@/lib/domain/auth"
@@ -70,7 +71,7 @@ export async function GET(req: Request) {
 
     await sendEmail({
       to: client.email,
-      subject: "Time for your daily check-in",
+      subject: EMAIL_SUBJECT_CHECKIN_REMINDER,
       html: checkInReminderEmail({
         clientName: client.name,
         portalUrl: SITE_URL,

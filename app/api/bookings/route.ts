@@ -105,7 +105,7 @@ export async function POST(req: Request) {
       bookingId: booking.id,
     })
 
-    Promise.all(
+    void Promise.all(
       adminUsers.map((admin) =>
         sendEmail({
           to: admin.email,

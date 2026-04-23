@@ -7,6 +7,7 @@ import { practitionerNoteSchema } from "@/lib/domain/profile"
 import { eq } from "drizzle-orm"
 import { sendEmail } from "@/lib/email"
 import { practitionerNoteEmail } from "@/lib/email/templates"
+import { EMAIL_SUBJECT_PRACTITIONER_NOTE } from "@/lib/email/subjects"
 import { SITE_URL , API_ERR_FORBIDDEN, API_ERR_INVALID_INPUT, API_ERR_NOT_FOUND, API_ERR_UNAUTHORIZED } from "@/lib/constants"
 
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -41,9 +42,9 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     columns: { email: true, name: true },
   })
   if (client?.email) {
-    sendEmail({
+    void sendEmail({
       to: client.email,
-      subject: "You have a new note from your practitioner",
+      subject: EMAIL_SUBJECT_PRACTITIONER_NOTE,
       html: practitionerNoteEmail({
         clientName: client.name ?? client.email,
         checkInDate: existing.createdAt,
