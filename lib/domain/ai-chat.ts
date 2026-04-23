@@ -129,7 +129,8 @@ function ruleBasedResponse(question: string, rows: CheckInRow[], medications: Me
       stats.avgMoodNum >= 4.5 ? "mostly good to excellent" :
       stats.avgMoodNum >= 3.5 ? "generally neutral to good" :
       stats.avgMoodNum >= 2.5 ? "mixed, with some low days" :
-      "frequently low"
+      stats.avgMoodNum >= 1.5 ? "frequently low" :
+      "frequently very low"
     return `Your mood over the last ${stats.count} check-ins has been ${moodLabel}. Mood and energy often move together — if you notice consistent low mood, it's worth flagging with your practitioner. ${dataNote}`
   }
 
