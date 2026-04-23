@@ -74,9 +74,9 @@ async function buildContext(userId: string, query?: string) {
 }
 
 type BuildContextResult = Awaited<ReturnType<typeof buildContext>>
-type CheckInRow = BuildContextResult["recent"][number]
-type MedicationRow = BuildContextResult["medications"][number]
-type AssessmentRow = NonNullable<BuildContextResult["latestAssessment"]>
+export type CheckInRow = BuildContextResult["recent"][number]
+export type MedicationRow = BuildContextResult["medications"][number]
+export type AssessmentRow = NonNullable<BuildContextResult["latestAssessment"]>
 
 function getJournalText(r: CheckInRow): string | null {
   return r.journalEntry ?? r.notes ?? null
@@ -84,7 +84,7 @@ function getJournalText(r: CheckInRow): string | null {
 
 // ─── Rule-based response ──────────────────────────────────────────────────────
 
-function ruleBasedResponse(question: string, rows: CheckInRow[], medications: MedicationRow[], latestAssessment: AssessmentRow | undefined): string {
+export function ruleBasedResponse(question: string, rows: CheckInRow[], medications: MedicationRow[], latestAssessment: AssessmentRow | undefined): string {
   const stats = summariseCheckIns(rows)
   const q = question.toLowerCase()
 
