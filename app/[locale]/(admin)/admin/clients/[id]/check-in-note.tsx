@@ -25,21 +25,25 @@ export function CheckInNote({ checkInId, existingNote, existingNoteAt }: Props) 
     if (!text.trim()) return
     setSaving(true)
     setError("")
-    const res = await fetch(`/api/check-in/${checkInId}/note`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ note: text.trim() }),
-    })
-    const data = await res.json()
-    if (!res.ok) {
-      setError(data.error ?? t("saving"))
+    try {
+      const res = await fetch(`/api/check-in/${checkInId}/note`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ note: text.trim() }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setError(data.error ?? t("saving"))
+        return
+      }
+      setSaved(text.trim())
+      setSavedAt(new Date())
+      setOpen(false)
+    } catch {
+      setError(t("saving"))
+    } finally {
       setSaving(false)
-      return
     }
-    setSaved(text.trim())
-    setSavedAt(new Date())
-    setOpen(false)
-    setSaving(false)
   }
 
   return (

@@ -31,11 +31,15 @@ export function TechniqueAssignments({ clientId, assignments, allTechniques }: T
 
   async function handleRemove(assignmentId: string) {
     if (!confirm(t("removeConfirm"))) return
-    const res = await fetch(`/api/technique-assignments/${assignmentId}`, { method: "DELETE" })
-    if (res.ok) {
-      toast.success(t("removedSuccess"))
-      router.refresh()
-    } else {
+    try {
+      const res = await fetch(`/api/technique-assignments/${assignmentId}`, { method: "DELETE" })
+      if (res.ok) {
+        toast.success(t("removedSuccess"))
+        router.refresh()
+      } else {
+        toast.error(t("saveError"))
+      }
+    } catch {
       toast.error(t("saveError"))
     }
   }

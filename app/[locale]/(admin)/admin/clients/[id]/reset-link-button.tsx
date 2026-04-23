@@ -13,14 +13,19 @@ export function ResetLinkButton({ userId }: { userId: string }) {
 
   async function generate() {
     setLoading(true)
-    const res = await fetch(`/api/admin/reset-link`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId }),
-    })
-    const data = await res.json()
-    setLink(data.link)
-    setLoading(false)
+    try {
+      const res = await fetch(`/api/admin/reset-link`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId }),
+      })
+      const data = await res.json()
+      setLink(data.link ?? null)
+    } catch {
+      // silently fail; button returns to idle state
+    } finally {
+      setLoading(false)
+    }
   }
 
   async function copy() {
