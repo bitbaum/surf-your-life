@@ -9,6 +9,7 @@ import { ProgressBar } from "@/components/ui/progress-bar"
 import { Pagination } from "@/components/ui/pagination"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { formatDate } from "@/lib/utils"
+import { PageHeader } from "@/components/ui/page-header"
 import { AssessmentsClient } from "./assessments-client"
 
 
@@ -46,12 +47,7 @@ export default async function AssessmentsPage({
 
   return (
     <div className="max-w-2xl mx-auto">
-      <div className="mb-6 flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">{t("title")}</h1>
-          <p className="text-slate-500 mt-1">{t("description")}</p>
-        </div>
-      </div>
+      <PageHeader title={t("title")} description={t("description")} />
 
       <AssessmentsClient total={total} />
 
