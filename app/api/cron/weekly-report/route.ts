@@ -6,7 +6,7 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { users, checkIns } from "@/lib/db/schema"
-import { eq, and, gte } from "drizzle-orm"
+import { eq, and, gte, inArray } from "drizzle-orm"
 import { sendEmail } from "@/lib/email"
 import { weeklyReportEmail } from "@/lib/email/templates"
 import { SITE_URL, SEVEN_DAYS_MS, MOOD_SCORE, MOODS , API_ERR_UNAUTHORIZED } from "@/lib/constants"
@@ -25,18 +25,28 @@ export async function GET(req: Request) {
     columns: { id: true, name: true, email: true },
   })
 
+  if (allClients.length === 0) return NextResponse.json({ success: true, sent: 0 })
+
+  // Batch: fetch all check-ins for all clients in the last 7 days (one query instead of N)
+  const allWeekCheckIns = await db.query.checkIns.findMany({
+    where: and(
+      inArray(checkIns.userId, allClients.map((c) => c.id)),
+      gte(checkIns.createdAt, sevenDaysAgo)
+    ),
+    columns: { userId: true, energyLevel: true, mood: true, pemFlag: true, wins: true },
+  })
+
+  // Group by userId in memory
+  const checkInsByClient = new Map<string, typeof allWeekCheckIns>()
+  for (const ci of allWeekCheckIns) {
+    if (!checkInsByClient.has(ci.userId)) checkInsByClient.set(ci.userId, [])
+    checkInsByClient.get(ci.userId)!.push(ci)
+  }
+
   let sent = 0
 
   for (const client of allClients) {
-    const weekCheckIns = await db.query.checkIns.findMany({
-      where: and(
-        eq(checkIns.userId, client.id),
-        gte(checkIns.createdAt, sevenDaysAgo)
-      ),
-      columns: {
-        energyLevel: true, mood: true, pemFlag: true, wins: true, createdAt: true,
-      },
-    })
+    const weekCheckIns = checkInsByClient.get(client.id) ?? []
 
     if (weekCheckIns.length === 0) continue // skip clients with no check-ins this week
 

@@ -83,38 +83,64 @@ export async function GET(req: Request) {
     columns: { id: true, name: true, email: true },
   })
 
+  if (allClients.length === 0) {
+    return NextResponse.json({ success: true, processed: 0, skipped: 0, emailedPractitioners: false })
+  }
+
+  const clientIds = allClients.map((c) => c.id)
+
+  // Batch: all check-ins for all clients this week (one query instead of N)
+  const allWeekCheckIns = await db.query.checkIns.findMany({
+    where: and(inArray(checkIns.userId, clientIds), gte(checkIns.createdAt, sevenDaysAgo)),
+    columns: {
+      userId: true,
+      id: true,
+      createdAt: true,
+      mood: true,
+      energyLevel: true,
+      sleepHours: true,
+      sleepQuality: true,
+      activityLevel: true,
+      pemFlag: true,
+      pemSeverity: true,
+      orthostaticSymptoms: true,
+      symptomFatigue: true,
+      symptomBrainFog: true,
+      symptomPain: true,
+      stressLevel: true,
+      journalEntry: true,
+      wins: true,
+      challenges: true,
+      notes: true,
+    },
+    orderBy: [desc(checkIns.createdAt)],
+  })
+
+  // Batch: unresolved alert counts per client this week (one query instead of N)
+  const alertCountRows = await db
+    .select({ clientId: clientAlerts.clientId, count: count() })
+    .from(clientAlerts)
+    .where(and(
+      inArray(clientAlerts.clientId, clientIds),
+      eq(clientAlerts.isResolved, false),
+      gte(clientAlerts.createdAt, sevenDaysAgo)
+    ))
+    .groupBy(clientAlerts.clientId)
+  const alertCountMap = new Map(alertCountRows.map((r) => [r.clientId, r.count]))
+
+  // Group check-ins by client — order preserved newest-first per client
+  const checkInsByClient = new Map<string, typeof allWeekCheckIns>()
+  for (const ci of allWeekCheckIns) {
+    if (!checkInsByClient.has(ci.userId)) checkInsByClient.set(ci.userId, [])
+    checkInsByClient.get(ci.userId)!.push(ci)
+  }
+
   let processed = 0
   let skipped = 0
   const digestRows: PractitionerDigestClientRow[] = []
 
   for (const client of allClients) {
-    const weekCheckIns = await db.query.checkIns.findMany({
-      where: and(
-        eq(checkIns.userId, client.id),
-        gte(checkIns.createdAt, sevenDaysAgo)
-      ),
-      columns: {
-        id: true,
-        createdAt: true,
-        mood: true,
-        energyLevel: true,
-        sleepHours: true,
-        sleepQuality: true,
-        activityLevel: true,
-        pemFlag: true,
-        pemSeverity: true,
-        orthostaticSymptoms: true,
-        symptomFatigue: true,
-        symptomBrainFog: true,
-        symptomPain: true,
-        stressLevel: true,
-        journalEntry: true,
-        wins: true,
-        challenges: true,
-        notes: true,
-      },
-      orderBy: [desc(checkIns.createdAt)],
-    })
+    const weekCheckIns = checkInsByClient.get(client.id) ?? []
 
     if (weekCheckIns.length < AI_DIGEST_MIN_CHECKINS) {
       skipped++
@@ -155,15 +181,6 @@ export async function GET(req: Request) {
 
     const pemEpisodes = weekCheckIns.filter((r) => r.pemFlag === true).length
 
-    const alertResult = await db.select({ count: count() })
-      .from(clientAlerts)
-      .where(and(
-        eq(clientAlerts.clientId, client.id),
-        eq(clientAlerts.isResolved, false),
-        gte(clientAlerts.createdAt, sevenDaysAgo)
-      ))
-    const clientAlertCount = alertResult[0]?.count ?? 0
-
     digestRows.push({
       name: client.name ?? client.email,
       email: client.email,
@@ -171,7 +188,7 @@ export async function GET(req: Request) {
       avgEnergy,
       avgMood,
       pemEpisodes,
-      alertCount: clientAlertCount,
+      alertCount: alertCountMap.get(client.id) ?? 0,
       aiNarrative: digest,
     })
   }

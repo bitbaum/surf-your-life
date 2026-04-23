@@ -6,11 +6,11 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { users, checkIns } from "@/lib/db/schema"
-import { eq, and, gte, desc } from "drizzle-orm"
+import { eq, and, gte, desc, inArray } from "drizzle-orm"
 import { sendEmail } from "@/lib/email"
 import { checkInReminderEmail } from "@/lib/email/templates"
 import { EMAIL_SUBJECT_CHECKIN_REMINDER } from "@/lib/email/subjects"
-import { SITE_URL, STREAK_LOOKBACK_DAYS, API_ERR_UNAUTHORIZED } from "@/lib/constants"
+import { SITE_URL, STREAK_LOOKBACK_DAYS, DAY_MS, API_ERR_UNAUTHORIZED } from "@/lib/constants"
 import { generateMissedCheckInAlerts } from "@/lib/domain/alerts"
 import { CLIENT_ROLE } from "@/lib/domain/auth"
 import { computeStreak } from "@/lib/domain/check-in"
@@ -25,51 +25,65 @@ export async function GET(req: Request) {
   const startOfToday = new Date()
   startOfToday.setHours(0, 0, 0, 0)
 
-  // Get all clients who have NOT checked in today
   const allClients = await db.query.users.findMany({
     where: eq(users.role, CLIENT_ROLE),
     columns: { id: true, name: true, email: true },
   })
 
-  let sent = 0
-  let skipped = 0
+  if (allClients.length === 0) {
+    const missedAlerts = await generateMissedCheckInAlerts()
+    return NextResponse.json({ success: true, sent: 0, skipped: 0, missedAlerts })
+  }
 
-  for (const client of allClients) {
-    const todayCheckIn = await db.query.checkIns.findFirst({
+  const clientIds = allClients.map((c) => c.id)
+
+  // Batch 1: find all clients who already checked in today (one query instead of N)
+  const todayCheckIns = await db.query.checkIns.findMany({
+    where: and(inArray(checkIns.userId, clientIds), gte(checkIns.createdAt, startOfToday)),
+    columns: { userId: true },
+  })
+  const clientsCheckedInToday = new Set(todayCheckIns.map((ci) => ci.userId))
+
+  const clientsNeedingReminders = allClients.filter((c) => !clientsCheckedInToday.has(c.id))
+  const skipped = allClients.length - clientsNeedingReminders.length
+
+  let sent = 0
+
+  if (clientsNeedingReminders.length > 0) {
+    // Batch 2: recent check-ins for streak computation — one query for all remaining clients
+    const streakCutoff = new Date(Date.now() - STREAK_LOOKBACK_DAYS * DAY_MS)
+    const recentCheckInsAll = await db.query.checkIns.findMany({
       where: and(
-        eq(checkIns.userId, client.id),
-        gte(checkIns.createdAt, startOfToday)
+        inArray(checkIns.userId, clientsNeedingReminders.map((c) => c.id)),
+        gte(checkIns.createdAt, streakCutoff)
       ),
-      columns: { id: true },
+      orderBy: [desc(checkIns.createdAt)],
+      columns: { userId: true, createdAt: true },
     })
 
-    if (todayCheckIn) {
-      skipped++
-      continue
+    // Group by userId — order is preserved newest-first per client
+    const recentByClient = new Map<string, Date[]>()
+    for (const ci of recentCheckInsAll) {
+      if (!recentByClient.has(ci.userId)) recentByClient.set(ci.userId, [])
+      recentByClient.get(ci.userId)!.push(new Date(ci.createdAt))
     }
 
-    // Calculate current streak for personalized message
-    const recentCheckIns = await db.query.checkIns.findMany({
-      where: eq(checkIns.userId, client.id),
-      orderBy: [desc(checkIns.createdAt)],
-      limit: STREAK_LOOKBACK_DAYS,
-      columns: { createdAt: true },
-    })
+    for (const client of clientsNeedingReminders) {
+      // computeStreak deduplicates multiple same-day check-ins before counting
+      const streak = computeStreak(recentByClient.get(client.id) ?? [])
 
-    // computeStreak deduplicates multiple same-day check-ins before counting
-    const streak = computeStreak(recentCheckIns.map((ci) => new Date(ci.createdAt)))
+      await sendEmail({
+        to: client.email,
+        subject: EMAIL_SUBJECT_CHECKIN_REMINDER,
+        html: checkInReminderEmail({
+          clientName: client.name,
+          portalUrl: SITE_URL,
+          currentStreak: streak,
+        }),
+      }).catch(() => {}) // swallow individual failures
 
-    await sendEmail({
-      to: client.email,
-      subject: EMAIL_SUBJECT_CHECKIN_REMINDER,
-      html: checkInReminderEmail({
-        clientName: client.name,
-        portalUrl: SITE_URL,
-        currentStreak: streak,
-      }),
-    }).catch(() => {}) // swallow individual failures
-
-    sent++
+      sent++
+    }
   }
 
   // Generate missed check-in alerts for practitioners (runs daily alongside reminders)
