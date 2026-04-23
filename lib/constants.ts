@@ -122,6 +122,7 @@ export const DOCUMENT_UPLOAD_MAX_CONTENT = 5000  // max chars for client-submitt
 export const DOCUMENT_UPLOAD_MAX_TITLE = 200     // max chars for upload title
 export const EMBED_BACKFILL_BATCH = 50           // records processed per cron run during backfill
 export const ADMIN_DASHBOARD_ALERTS_PREVIEW = 10
+export const DASHBOARD_INSIGHT_ENERGY_WINDOW = 3  // recent energy levels used for portal insight calculation
 
 // SVG chart dimensions (shared by all inline charts)
 export const CHART_W = 800
@@ -249,6 +250,8 @@ export const ALERT_SEVERITY_BADGE: Record<string, string> = {
 // Alert generation thresholds
 export const ALERT_CHECKIN_WINDOW = 7            // check-ins fetched for alert evaluation
 export const ALERT_ENERGY_DECLINE_THRESHOLD = 3  // drop of ≥3 over last 3 check-ins
+export const ALERT_MOOD_DECLINE_WINDOW = 3        // check-ins compared for mood decline rule
+export const ALERT_MOOD_DECLINE_THRESHOLD = -2    // mood score drop to trigger alert
 export const ALERT_FATIGUE_SPIKE_THRESHOLD = 8   // fatigue ≥ 8
 export const ALERT_STRESS_SPIKE_THRESHOLD = 8    // stress ≥ 8
 export const ALERT_MISSED_CHECKINS_DAYS = 5      // no check-in in 5+ days
@@ -257,6 +260,8 @@ export const ALERT_ORTHOSTATIC_CLUSTER_COUNT = 2 // 2+ orthostatic episodes in l
 
 // AI context limits
 export const AI_CONTEXT_CHECKINS = 14  // recent check-ins included as AI context
+export const AI_CHAT_CHECKIN_CONTEXT_LIMIT = 10  // check-ins summarised in AI chat context
+export const AI_CHAT_JOURNAL_EXCERPT_LENGTH = 100 // max journal chars included per check-in in AI context
 
 // AI digest thresholds
 export const AI_DIGEST_MIN_CHECKINS = 3  // minimum check-ins in window to generate AI digest

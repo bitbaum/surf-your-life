@@ -12,6 +12,7 @@ import {
   RECENT_CHECK_INS_LIMIT,
   THIRTY_DAYS_MS,
   SEVEN_DAYS_MS,
+  DASHBOARD_INSIGHT_ENERGY_WINDOW,
 } from "@/lib/constants"
 import {
   computeStreak,
@@ -109,7 +110,7 @@ export default async function DashboardPage() {
   const sevenDaysAgo = new Date(Date.now() - SEVEN_DAYS_MS) // eslint-disable-line react-hooks/purity -- server component
   const weekCheckInCount = trendCheckIns.filter((ci) => ci.createdAt >= sevenDaysAgo).length
   const insightKey = computeInsightKey(
-    recentCheckIns.slice(0, 3).map((ci) => ci.energyLevel),
+    recentCheckIns.slice(0, DASHBOARD_INSIGHT_ENERGY_WINDOW).map((ci) => ci.energyLevel),
     weekCheckInCount
   )
   const insight = insightKey ? t(insightKey) : null

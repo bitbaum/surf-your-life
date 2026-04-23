@@ -11,7 +11,7 @@
 import { db } from "@/lib/db"
 import { checkIns, medicationLog, functionalAssessments } from "@/lib/db/schema"
 import { eq, desc, isNull, and } from "drizzle-orm"
-import { SEVEN_DAYS_MS, MOOD_SCORE, AI_CONTEXT_CHECKINS, AI_CHAT_CONTEXT_WINDOW } from "@/lib/constants"
+import { SEVEN_DAYS_MS, MOOD_SCORE, AI_CONTEXT_CHECKINS, AI_CHAT_CONTEXT_WINDOW, AI_CHAT_CHECKIN_CONTEXT_LIMIT, AI_CHAT_JOURNAL_EXCERPT_LENGTH } from "@/lib/constants"
 import { callClaude } from "@/lib/domain/anthropic"
 import { semanticCheckInSearch } from "@/lib/domain/embeddings"
 
@@ -239,7 +239,7 @@ async function callAnthropicApi(
   const { recent, medications, latestAssessment } = context
 
   // Build check-in summary
-  const checkInLines = recent.slice(0, 10).map((r, i) => {
+  const checkInLines = recent.slice(0, AI_CHAT_CHECKIN_CONTEXT_LIMIT).map((r, i) => {
     const parts = [`Day ${i + 1} (${new Date(r.createdAt).toLocaleDateString("en-GB")})`]
     if (r.mood) parts.push(`mood=${r.mood}`)
     if (r.energyLevel != null) parts.push(`energy=${r.energyLevel}/10`)
@@ -253,7 +253,7 @@ async function callAnthropicApi(
     if (r.stressLevel != null) parts.push(`stress=${r.stressLevel}/10`)
     if (r.orthostaticSymptoms) parts.push("orthostatic=yes")
     const journal = r.journalEntry ?? r.notes
-    if (journal) parts.push(`journal: "${journal.slice(0, 100)}"`)
+    if (journal) parts.push(`journal: "${journal.slice(0, AI_CHAT_JOURNAL_EXCERPT_LENGTH)}"`)
     return parts.join(", ")
   }).join("\n")
 

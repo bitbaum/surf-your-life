@@ -10,6 +10,8 @@ import { STAFF_ROLES, CLIENT_ROLE } from "@/lib/domain/auth"
 import {
   ALERT_CHECKIN_WINDOW,
   ALERT_ENERGY_DECLINE_THRESHOLD,
+  ALERT_MOOD_DECLINE_WINDOW,
+  ALERT_MOOD_DECLINE_THRESHOLD,
   ALERT_FATIGUE_SPIKE_THRESHOLD,
   ALERT_STRESS_SPIKE_THRESHOLD,
   ALERT_PEM_CLUSTER_COUNT,
@@ -149,9 +151,9 @@ export async function generateAlerts(clientId: string, newCheckInId: string): Pr
 
     // ─── Rule 5: Mood decline ──────────────────────────────────────────────────
     if (recent.length >= 3) {
-      const moodValues = recent.slice(0, 3).map((ci) => MOOD_SCORE[ci.mood] ?? 3)
-      const moodDrop = moodValues[2] - moodValues[0]
-      if (moodDrop <= -2) {
+      const moodValues = recent.slice(0, ALERT_MOOD_DECLINE_WINDOW).map((ci) => MOOD_SCORE[ci.mood] ?? 3)
+      const moodDrop = moodValues[ALERT_MOOD_DECLINE_WINDOW - 1] - moodValues[0]
+      if (moodDrop <= ALERT_MOOD_DECLINE_THRESHOLD) {
         const alreadyExists = await db.query.clientAlerts.findFirst({
           where: and(
             eq(clientAlerts.clientId, clientId),
