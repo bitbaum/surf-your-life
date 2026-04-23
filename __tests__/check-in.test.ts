@@ -9,6 +9,7 @@ import {
   STREAK_MILESTONES,
   type CheckInSummaryRow,
 } from "@/lib/domain/check-in"
+import { DAY_MS, SEVEN_DAYS_MS } from "@/lib/constants"
 
 // ─── computeStreak ────────────────────────────────────────────────────────────
 
@@ -23,7 +24,7 @@ describe("computeStreak", () => {
   })
 
   it("returns 0 when last check-in was 2+ days ago", () => {
-    const threeDaysAgo = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000)
+    const threeDaysAgo = new Date(Date.now() - 3 * DAY_MS)
     expect(computeStreak([threeDaysAgo])).toBe(0)
   })
 
@@ -135,11 +136,9 @@ describe("computeInsightKey", () => {
 // ─── computeProgramProgress ──────────────────────────────────────────────────
 
 describe("computeProgramProgress", () => {
-  const WEEK_MS = 7 * 24 * 60 * 60 * 1000
-
   function makeEnrollment(weeksAgo: number, durationWeeks: number, phaseConfig: unknown = null) {
     return {
-      startDate: new Date(Date.now() - weeksAgo * WEEK_MS),
+      startDate: new Date(Date.now() - weeksAgo * SEVEN_DAYS_MS),
       program: {
         title: "Test Program",
         durationWeeks,

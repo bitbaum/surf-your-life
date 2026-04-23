@@ -1,4 +1,4 @@
-import { DAY_MS, MOOD_SCORE, MOODS } from "@/lib/constants"
+import { DAY_MS, SEVEN_DAYS_MS, MOOD_SCORE, MOODS } from "@/lib/constants"
 import type { ProgramPhase } from "./program"
 
 // ─── Check-in stats summary ────────────────────────────────────────────────
@@ -88,7 +88,7 @@ export function computeProgramProgress(enrollment: {
 }): ProgramProgress | null {
   if (!enrollment.startDate) return null
 
-  const currentWeek = Math.floor((Date.now() - enrollment.startDate.getTime()) / (7 * DAY_MS)) + 1
+  const currentWeek = Math.floor((Date.now() - enrollment.startDate.getTime()) / SEVEN_DAYS_MS) + 1
   const totalWeeks = enrollment.program.durationWeeks ?? 0
 
   if (currentWeek < 1 || (totalWeeks > 0 && currentWeek > totalWeeks)) return null
