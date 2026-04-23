@@ -14,13 +14,23 @@ import { TechniqueAssignForm } from "./technique-assign-form"
 
 type AssignmentWithTechnique = TechniqueAssignment & { technique: Technique }
 
+function AdherenceBadge({ days }: { days: number }) {
+  const color = days >= 6 ? "text-teal-600 bg-teal-50" : days >= 4 ? "text-amber-600 bg-amber-50" : "text-red-500 bg-red-50"
+  return (
+    <span className={`text-xs font-medium px-1.5 py-0.5 rounded-full ${color}`}>
+      {days}/7d
+    </span>
+  )
+}
+
 interface TechniqueAssignmentsProps {
   clientId: string
   assignments: AssignmentWithTechnique[]
   allTechniques: Technique[]
+  adherenceByAssignment: Record<string, number>
 }
 
-export function TechniqueAssignments({ clientId, assignments, allTechniques }: TechniqueAssignmentsProps) {
+export function TechniqueAssignments({ clientId, assignments, allTechniques, adherenceByAssignment }: TechniqueAssignmentsProps) {
   const t = useTranslations("admin.techniques")
   const router = useRouter()
   const [adding, setAdding] = useState(false)
@@ -87,6 +97,7 @@ export function TechniqueAssignments({ clientId, assignments, allTechniques }: T
                     <span className="text-xs text-teal-600 font-medium">
                       {a.frequencyPerDay}× {t("perDay")}
                     </span>
+                    <AdherenceBadge days={adherenceByAssignment[a.id] ?? 0} />
                   </div>
                   {a.notes && <p className="text-xs text-slate-400 mt-0.5 italic">{a.notes}</p>}
                 </div>

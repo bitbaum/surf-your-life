@@ -1,10 +1,10 @@
 import { notFound } from "next/navigation"
 import { db } from "@/lib/db"
-import { users, checkIns, programs, programEnrollments, medicationLog, functionalAssessments, techniqueAssignments, techniques, assignments } from "@/lib/db/schema"
-import { eq, desc, isNull, and, count, inArray } from "drizzle-orm"
-import { formatDate } from "@/lib/utils"
+import { users, checkIns, programs, programEnrollments, medicationLog, functionalAssessments, techniqueAssignments, techniques, assignments, techniqueLogs } from "@/lib/db/schema"
+import { eq, desc, isNull, and, count, inArray, gte } from "drizzle-orm"
+import { formatDate, toDateString } from "@/lib/utils"
 import { Link } from "@/i18n/navigation"
-import { PAGINATION_DEFAULT } from "@/lib/constants"
+import { PAGINATION_DEFAULT, SEVEN_DAYS_MS } from "@/lib/constants"
 import { CLIENT_ROLE, STAFF_ROLES } from "@/lib/domain/auth"
 import { ResetLinkButton } from "./reset-link-button"
 import { NewThreadButton } from "./new-thread-button"
@@ -24,7 +24,9 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
   setRequestLocale(locale)
   const t = await getTranslations("admin.clients")
 
-  const [client, clientCheckIns, checkInCountResult, allPrograms, activeEnrollment, currentMedications, latestAssessment, clientAssignments, allTechniques, currentAssignment, allPractitioners] = await Promise.all([
+  const sevenDaysAgo = toDateString(new Date(Date.now() - SEVEN_DAYS_MS))
+
+  const [client, clientCheckIns, checkInCountResult, allPrograms, activeEnrollment, currentMedications, latestAssessment, clientAssignments, allTechniques, currentAssignment, allPractitioners, recentTechniqueLogs] = await Promise.all([
     db.query.users.findFirst({
       where: eq(users.id, id),
       with: { profile: true },
@@ -75,12 +77,37 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
       .select({ id: users.id, name: users.name, email: users.email })
       .from(users)
       .where(inArray(users.role, STAFF_ROLES)),
+    db.query.techniqueLogs.findMany({
+      where: and(
+        eq(techniqueLogs.userId, id),
+        gte(techniqueLogs.date, sevenDaysAgo)
+      ),
+      columns: { assignmentId: true, date: true, completedReps: true },
+    }),
   ])
 
   if (!client || client.role !== CLIENT_ROLE) notFound()
 
   const totalCheckIns = checkInCountResult[0]?.count ?? 0
   const profile = client.profile
+
+  // Compute adherence: for each assignment, count distinct days in last 7 where total completedReps >= frequencyPerDay
+  // Group logs by (assignmentId, date) first to handle multiple same-day entries
+  const frequencyById = Object.fromEntries(clientAssignments.map((a) => [a.id, a.frequencyPerDay]))
+  const repsByDay: Record<string, number> = {} // key: `${assignmentId}:${date}`
+  for (const log of recentTechniqueLogs) {
+    const key = `${log.assignmentId}:${log.date}`
+    repsByDay[key] = (repsByDay[key] ?? 0) + log.completedReps
+  }
+  const adherenceByAssignment: Record<string, number> = {}
+  for (const [key, reps] of Object.entries(repsByDay)) {
+    const assignmentId = key.split(":")[0]
+    const goal = frequencyById[assignmentId]
+    if (goal == null) continue
+    if (reps >= goal) {
+      adherenceByAssignment[assignmentId] = (adherenceByAssignment[assignmentId] ?? 0) + 1
+    }
+  }
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -122,6 +149,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
           clientId={id}
           assignments={clientAssignments}
           allTechniques={allTechniques}
+          adherenceByAssignment={adherenceByAssignment}
         />
       </div>
 
