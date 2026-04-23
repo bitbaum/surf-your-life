@@ -26,15 +26,20 @@ export function ServiceRow({ service }: Props) {
 
   async function patch(body: Record<string, unknown>) {
     setSaving(true)
-    const res = await fetch(`/api/admin/services/${data.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    })
-    const json = await res.json()
-    if (res.ok) setData(json.data)
-    setSaving(false)
-    return res.ok
+    try {
+      const res = await fetch(`/api/admin/services/${data.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      })
+      const json = await res.json()
+      if (res.ok) setData(json.data)
+      return res.ok
+    } catch {
+      return false
+    } finally {
+      setSaving(false)
+    }
   }
 
   async function handleToggle() {

@@ -71,29 +71,31 @@ export function EditProgramForm({ program }: Props) {
     setSaving(true)
     setError("")
 
-    const res = await fetch(`/api/admin/programs/${program.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        title: form.title.trim(),
-        description: form.description.trim() || undefined,
-        durationWeeks: form.durationWeeks ? parseInt(form.durationWeeks) : null,
-        targetConcern: form.targetConcern || null,
-        isTemplate: form.isTemplate,
-        phaseConfig: phases.length > 0 ? phases : null,
-      }),
-    })
-
-    const data = await res.json()
-    setSaving(false)
-
-    if (!data.success) {
-      setError(data.error ?? t("saveError"))
-      return
+    try {
+      const res = await fetch(`/api/admin/programs/${program.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: form.title.trim(),
+          description: form.description.trim() || undefined,
+          durationWeeks: form.durationWeeks ? parseInt(form.durationWeeks) : null,
+          targetConcern: form.targetConcern || null,
+          isTemplate: form.isTemplate,
+          phaseConfig: phases.length > 0 ? phases : null,
+        }),
+      })
+      const data = await res.json()
+      if (!data.success) {
+        setError(data.error ?? t("saveError"))
+        return
+      }
+      setEditing(false)
+      router.refresh()
+    } catch {
+      setError(t("saveError"))
+    } finally {
+      setSaving(false)
     }
-
-    setEditing(false)
-    router.refresh()
   }
 
   if (!editing) {

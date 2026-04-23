@@ -35,29 +35,31 @@ export function EnrollProgramButton({ clientId, programs }: EnrollProgramButtonP
     setSaving(true)
     setError("")
 
-    const res = await fetch(`/api/admin/programs/${programId}/enroll`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        clientId,
-        startDate: startDate || null,
-        notes: notes.trim() || undefined,
-      }),
-    })
-
-    const data = await res.json()
-    setSaving(false)
-
-    if (!data.success) {
-      setError(data.error ?? t("saveError"))
-      return
+    try {
+      const res = await fetch(`/api/admin/programs/${programId}/enroll`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          clientId,
+          startDate: startDate || null,
+          notes: notes.trim() || undefined,
+        }),
+      })
+      const data = await res.json()
+      if (!data.success) {
+        setError(data.error ?? t("saveError"))
+        return
+      }
+      setOpen(false)
+      setProgramId("")
+      setStartDate("")
+      setNotes("")
+      router.refresh()
+    } catch {
+      setError(t("saveError"))
+    } finally {
+      setSaving(false)
     }
-
-    setOpen(false)
-    setProgramId("")
-    setStartDate("")
-    setNotes("")
-    router.refresh()
   }
 
   if (programs.length === 0) return null

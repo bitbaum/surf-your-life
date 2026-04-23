@@ -19,15 +19,20 @@ export function EnrollmentStatus({ enrollmentId, currentStatus }: EnrollmentStat
 
   async function updateStatus(next: typeof currentStatus) {
     setSaving(true)
-    const res = await fetch(`/api/admin/enrollments/${enrollmentId}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status: next }),
-    })
-    setSaving(false)
-    if (res.ok) {
-      setStatus(next)
-      router.refresh()
+    try {
+      const res = await fetch(`/api/admin/enrollments/${enrollmentId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: next }),
+      })
+      if (res.ok) {
+        setStatus(next)
+        router.refresh()
+      }
+    } catch {
+      // silently ignore; status remains unchanged
+    } finally {
+      setSaving(false)
     }
   }
 

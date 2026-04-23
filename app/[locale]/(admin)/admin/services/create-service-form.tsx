@@ -24,26 +24,30 @@ export function CreateServiceForm() {
     if (!form.name.trim()) return
     setSaving(true)
     setError("")
-    const res = await fetch("/api/admin/services", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: form.name.trim(),
-        description: form.description.trim() || undefined,
-        category: form.category,
-        durationMinutes: form.durationMinutes ? parseInt(form.durationMinutes) : undefined,
-      }),
-    })
-    const data = await res.json()
-    if (!res.ok) {
-      setError(data.error ?? t("error"))
+    try {
+      const res = await fetch("/api/admin/services", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: form.name.trim(),
+          description: form.description.trim() || undefined,
+          category: form.category,
+          durationMinutes: form.durationMinutes ? parseInt(form.durationMinutes) : undefined,
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setError(data.error ?? t("error"))
+        return
+      }
+      setForm({ name: "", description: "", category: "consultation", durationMinutes: "" })
+      setOpen(false)
+      router.refresh()
+    } catch {
+      setError(t("error"))
+    } finally {
       setSaving(false)
-      return
     }
-    setForm({ name: "", description: "", category: "consultation", durationMinutes: "" })
-    setOpen(false)
-    setSaving(false)
-    router.refresh()
   }
 
   if (!open) {
