@@ -1,5 +1,5 @@
 import { db } from "@/lib/db"
-import { bookings } from "@/lib/db/schema"
+import { bookings, bookingStatusEnum } from "@/lib/db/schema"
 import { eq, desc, count } from "drizzle-orm"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
@@ -12,7 +12,7 @@ import { FilterTabs } from "@/components/ui/filter-tabs"
 import { Pagination } from "@/components/ui/pagination"
 import { Link } from "@/i18n/navigation"
 
-type BookingStatus = "pending" | "confirmed" | "cancelled"
+type BookingStatus = (typeof bookingStatusEnum.enumValues)[number]
 
 export default async function AdminBookingsPage({
   params,

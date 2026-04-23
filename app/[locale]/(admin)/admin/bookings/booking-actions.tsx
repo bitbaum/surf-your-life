@@ -3,19 +3,23 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useTranslations } from "next-intl"
+import { bookingStatusEnum } from "@/lib/db/schema"
+
+type BookingStatus = (typeof bookingStatusEnum.enumValues)[number]
+type ActionableStatus = Exclude<BookingStatus, "pending">
 
 type Props = {
   bookingId: string
-  currentStatus: string
+  currentStatus: BookingStatus
 }
 
 export function BookingActions({ bookingId, currentStatus }: Props) {
   const t = useTranslations("admin.bookings")
   const router = useRouter()
-  const [loading, setLoading] = useState<"confirmed" | "cancelled" | null>(null)
+  const [loading, setLoading] = useState<ActionableStatus | null>(null)
   const [error, setError] = useState<string | null>(null)
 
-  async function updateStatus(status: "confirmed" | "cancelled") {
+  async function updateStatus(status: ActionableStatus) {
     setLoading(status)
     setError(null)
 
