@@ -505,6 +505,8 @@ export type PractitionerDigestClientRow = {
   checkInCount: number
   avgEnergy: number
   avgMood: string
+  avgSleep: number | null
+  avgStress: number | null
   pemEpisodes: number
   alertCount: number
   aiNarrative: string | null
@@ -534,10 +536,12 @@ export function practitionerWeeklyDigestEmail(data: PractitionerWeeklyDigestData
           <span style="font-weight:600;color:#0f172a;">${c.name}</span>${alertBadge}
           <div style="font-size:12px;color:#94a3b8;">${c.email}</div>
         </div>
-        <div style="display:flex;gap:16px;font-size:13px;color:#475569;">
+        <div style="display:flex;gap:16px;font-size:13px;color:#475569;flex-wrap:wrap;">
           <span><strong>${c.checkInCount}/7</strong> check-ins</span>
           <span>Energy <strong>${c.avgEnergy}/10</strong></span>
           <span>Mood <strong>${c.avgMood}</strong></span>
+          ${c.avgSleep != null ? `<span>Sleep <strong>${c.avgSleep.toFixed(1)}h</strong></span>` : ""}
+          ${c.avgStress != null ? `<span>Stress <strong>${c.avgStress.toFixed(1)}/10</strong></span>` : ""}
           ${c.pemEpisodes > 0 ? `<span style="color:#dc2626;font-weight:600;">⚠ ${c.pemEpisodes} PEM</span>` : ""}
         </div>
       </div>

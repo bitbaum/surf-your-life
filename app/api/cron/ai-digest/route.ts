@@ -168,6 +168,8 @@ export async function GET(req: Request) {
     const stats = summariseCheckIns(weekCheckIns)!
     const avgEnergy = Math.round(stats.avgEnergy * 10) / 10
     const avgMood = stats.avgMood
+    const avgSleep = stats.avgSleep != null ? Math.round(stats.avgSleep * 10) / 10 : null
+    const avgStress = stats.avgStress != null ? Math.round(stats.avgStress * 10) / 10 : null
     const pemEpisodes = stats.pemCount
 
     digestRows.push({
@@ -176,6 +178,8 @@ export async function GET(req: Request) {
       checkInCount: weekCheckIns.length,
       avgEnergy,
       avgMood,
+      avgSleep,
+      avgStress,
       pemEpisodes,
       alertCount: alertCountMap.get(client.id) ?? 0,
       aiNarrative: digest,
