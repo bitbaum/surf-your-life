@@ -693,7 +693,8 @@
       "moodExcellent": "Excellent",
       "moodGood": "Bien",
       "moodNeutral": "Neutre",
-      "moodLow": "Bas"
+      "moodLow": "Bas",
+      "moodVeryLow": "Très bas"
     },
     "medications": {
       "title": "Médicaments",

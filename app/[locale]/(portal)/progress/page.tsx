@@ -57,6 +57,13 @@ export default async function ProgressPage({ params }: { params: Promise<{ local
   const pemEpisodes = stats?.pemCount ?? 0
   const avgEnergy = stats?.avgEnergy ?? null
   const avgMoodNum = stats?.avgMoodNum ?? null
+  // Round to nearest mood score (1–5) for display — keeps consistent with summariseCheckIns
+  const avgMoodLabel = avgMoodNum == null ? null
+    : avgMoodNum >= 4.5 ? "moodExcellent"
+    : avgMoodNum >= 3.5 ? "moodGood"
+    : avgMoodNum >= 2.5 ? "moodNeutral"
+    : avgMoodNum >= 1.5 ? "moodLow"
+    : "moodVeryLow"
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -154,11 +161,7 @@ export default async function ProgressPage({ params }: { params: Promise<{ local
               <div className="flex flex-col gap-0.5">
                 <span className="text-xs text-slate-500">{t("avgMood")}</span>
                 <span className="text-xl font-bold text-slate-900">
-                  {avgMoodNum == null ? "—" :
-                   avgMoodNum >= 4.5 ? t("moodExcellent") :
-                   avgMoodNum >= 3.5 ? t("moodGood") :
-                   avgMoodNum >= 2.5 ? t("moodNeutral") :
-                   t("moodLow")}
+                  {avgMoodLabel == null ? "—" : t(avgMoodLabel)}
                 </span>
               </div>
               <div className="flex flex-col gap-0.5">
