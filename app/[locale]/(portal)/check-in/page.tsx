@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl"
 import { useRouter } from "@/i18n/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { ENERGY_SCALE, SYMPTOM_SCALE, FIELD_MAX_JOURNAL } from "@/lib/constants"
+import { ENERGY_SCALE, SYMPTOM_SCALE, FIELD_MAX_JOURNAL, CHIP_SELECTED, CHIP_UNSELECTED } from "@/lib/constants"
 import { toast } from "sonner"
 import { NlpEntry, type ParsedFill } from "./nlp-entry"
 import { MoodCard } from "./mood-card"
@@ -147,8 +147,8 @@ export default function CheckInPage() {
                     orthostaticSymptoms === val
                       ? val
                         ? "border-orange-400 bg-orange-50 text-orange-700"
-                        : "border-teal-500 bg-teal-50 text-teal-700"
-                      : "border-slate-200 text-slate-600 hover:border-slate-300"
+                        : CHIP_SELECTED
+                      : CHIP_UNSELECTED
                   }`}
                 >
                   {val ? t("orthostaticYes") : t("orthostaticNo")}

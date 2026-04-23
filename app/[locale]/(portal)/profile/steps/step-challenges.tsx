@@ -1,6 +1,6 @@
 "use client"
 import { useTranslations } from "next-intl"
-import { MAIN_CONCERNS } from "@/lib/constants"
+import { MAIN_CONCERNS, CHIP_SELECTED, CHIP_UNSELECTED } from "@/lib/constants"
 import type { FormState } from "../profile-form.helpers"
 
 export function StepChallenges({
@@ -27,8 +27,8 @@ export function StepChallenges({
               onClick={() => onToggle(value)}
               className={`p-3 rounded-xl border-2 text-sm font-medium transition-all text-left flex items-center gap-2 ${
                 selected
-                  ? "border-teal-500 bg-teal-50 text-teal-700"
-                  : "border-slate-200 text-slate-600 hover:border-slate-300"
+                  ? CHIP_SELECTED
+                  : CHIP_UNSELECTED
               }`}
             >
               <span

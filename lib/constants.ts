@@ -227,6 +227,10 @@ export const STREAK_LOOKBACK_DAYS = 30  // max days to look back when calculatin
 // Alert severity display order — most critical first (used by alert list grouping)
 export const ALERT_SEVERITY_ORDER = ["high", "medium", "low"] as const
 
+// Toggle chip state classes — selected/unselected for single-select and multi-select chip groups
+export const CHIP_SELECTED = "border-teal-500 bg-teal-50 text-teal-700"
+export const CHIP_UNSELECTED = "border-slate-200 text-slate-600 hover:border-slate-300"
+
 // Enrollment status badge classes — used by portal program page and admin enrollment-status component
 export const ENROLLMENT_STATUS_BADGE: Record<string, string> = {
   active:    "bg-teal-50 text-teal-700 border border-teal-200",

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { CheckCircle, X } from "lucide-react"
 import type { Service } from "@/lib/db/schema"
 import { toDateString } from "@/lib/utils"
-import { BOOKING_TIME_PREFERENCE_VALUES, type BookingTimePreference } from "@/lib/constants"
+import { BOOKING_TIME_PREFERENCE_VALUES, type BookingTimePreference, CHIP_SELECTED, CHIP_UNSELECTED } from "@/lib/constants"
 
 export type BookingForm = {
   preferredDate: string
@@ -71,8 +71,8 @@ export function BookingModal({ selected, form, setForm, loading, submitted, erro
                     onClick={() => setForm((f) => ({ ...f, preferredTime: opt }))}
                     className={`flex-1 py-2 rounded-lg text-xs font-medium border-2 transition-all ${
                       form.preferredTime === opt
-                        ? "border-teal-500 bg-teal-50 text-teal-700"
-                        : "border-slate-200 text-slate-600 hover:border-slate-300"
+                        ? CHIP_SELECTED
+                        : CHIP_UNSELECTED
                     }`}
                   >
                     {t(opt as Parameters<typeof t>[0])}

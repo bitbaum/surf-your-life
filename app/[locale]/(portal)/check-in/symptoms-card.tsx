@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { SYMPTOM_SCALE } from "@/lib/constants"
+import { SYMPTOM_SCALE, CHIP_SELECTED } from "@/lib/constants"
 
 type Symptoms = { fatigue: number; brainFog: number; pain: number; stress: number }
 
@@ -36,7 +36,7 @@ export function SymptomsCard({ trackSymptoms, setTrackSymptoms, symptoms, setSym
             onClick={() => setTrackSymptoms(!trackSymptoms)}
             className={`text-xs font-medium px-3 py-1.5 rounded-lg border transition-colors ${
               trackSymptoms
-                ? "border-teal-500 bg-teal-50 text-teal-700"
+                ? CHIP_SELECTED
                 : "border-slate-200 text-slate-500 hover:border-slate-300"
             }`}
           >
