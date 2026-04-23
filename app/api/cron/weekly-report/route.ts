@@ -54,6 +54,8 @@ export async function GET(req: Request) {
     const stats = summariseCheckIns(weekCheckIns)!
     const avgEnergy = Math.round(stats.avgEnergy)
     const avgMood = stats.avgMood
+    const avgSleep = stats.avgSleep != null ? Math.round(stats.avgSleep * 10) / 10 : null
+    const avgStress = stats.avgStress != null ? Math.round(stats.avgStress * 10) / 10 : null
     const pemEpisodes = stats.pemCount
     const topWin = weekCheckIns.find((ci) => ci.wins)?.wins ?? null
 
@@ -71,6 +73,8 @@ export async function GET(req: Request) {
         checkInCount: weekCheckIns.length,
         avgEnergy,
         avgMood,
+        avgSleep,
+        avgStress,
         pemEpisodes,
         topWin,
         portalUrl: SITE_URL,

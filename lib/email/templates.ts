@@ -617,13 +617,15 @@ export type WeeklyReportData = {
   checkInCount: number
   avgEnergy: number
   avgMood: string
+  avgSleep: number | null
+  avgStress: number | null
   pemEpisodes: number
   topWin: string | null
   portalUrl: string
 }
 
 export function weeklyReportEmail(data: WeeklyReportData): string {
-  const { clientName, weekStart, weekEnd, checkInCount, avgEnergy, avgMood, pemEpisodes, topWin, portalUrl } = data
+  const { clientName, weekStart, weekEnd, checkInCount, avgEnergy, avgMood, avgSleep, avgStress, pemEpisodes, topWin, portalUrl } = data
   const name = clientName ?? "there"
   const pemNote = pemEpisodes > 0
     ? `<li>⚠️ <strong>${pemEpisodes} PEM episode(s)</strong> this week — discuss pacing with your practitioner</li>`
@@ -662,6 +664,8 @@ export function weeklyReportEmail(data: WeeklyReportData): string {
       <div class="stat-value">${avgMood}</div>
       <div class="stat-label">Avg mood</div>
     </div>
+    ${avgSleep != null ? `<div class="stat"><div class="stat-value">${avgSleep.toFixed(1)}h</div><div class="stat-label">Avg sleep</div></div>` : ""}
+    ${avgStress != null ? `<div class="stat"><div class="stat-value">${avgStress.toFixed(1)}/10</div><div class="stat-label">Avg stress</div></div>` : ""}
   </div>
   <ul style="padding-left:20px;color:#475569;">
     ${checkInCount === 7 ? "<li>🎯 Perfect week — 7/7 check-ins completed!</li>" : ""}
