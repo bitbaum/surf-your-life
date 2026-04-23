@@ -10,7 +10,7 @@ import { mainConcernEnum, activityLevelEnum } from "@/lib/db/schema"
 
 export const profileSchema = z.object({
   name: z.string().max(FIELD_MAX_TITLE).optional(),
-  gender: z.string().max(50).optional(),
+  gender: z.string().max(FIELD_MAX_SHORT).optional(),
   occupation: z.string().max(FIELD_MAX_TITLE).optional(),
   dateOfBirth: z.string().optional(),
   workHoursPerWeek: z.number().int().min(0).max(WORK_HOURS_WEEK_MAX).optional().nullable(),
@@ -28,7 +28,7 @@ export const profileSchema = z.object({
   sleepSchedule: z.string().max(FIELD_MAX_SHORT).optional(),
   exerciseFrequency: z.string().max(FIELD_MAX_TITLE).optional(),
   alcoholTobacco: z.string().max(FIELD_MAX_NOTES).optional(),
-  socialSupport: z.number().int().min(1).max(10).optional().nullable(),
+  socialSupport: z.number().int().min(QUALITY_SCALE.min).max(QUALITY_SCALE.max).optional().nullable(),
   stressLevel: z.number().int().min(QUALITY_SCALE.min).max(QUALITY_SCALE.max).optional(),
 })
 

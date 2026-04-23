@@ -194,6 +194,7 @@ export const TECHNIQUE_DEFAULT_SAFETY_CAP = 150 // 1.5×
 export const TECHNIQUE_DEFAULT_MAX_DEBT_DAYS = 7 // debt older than 7 days is forgiven
 export const TECHNIQUE_LOG_WINDOW_DAYS = 14      // days of logs fetched for debt computation (2× forgiveness window)
 export const TECHNIQUE_DAILY_FREQUENCY_MAX = 10  // max reps/sessions per day
+export const TECHNIQUE_LOG_MAX_REPS = 20          // max reps that can be logged in a single log entry
 export const TECHNIQUE_DURATION_MINUTES = { min: 1, max: 120 } as const  // per-session duration
 
 // Program duration bounds (weeks)

@@ -7,6 +7,7 @@ import {
   TECHNIQUE_DEFAULT_SAFETY_CAP,
   TECHNIQUE_DAILY_FREQUENCY_MAX,
   TECHNIQUE_DURATION_MINUTES,
+  TECHNIQUE_LOG_MAX_REPS,
   TECHNIQUE_NAME_MAX,
   FIELD_MAX_NOTES,
   FIELD_MAX_LONG,
@@ -43,7 +44,7 @@ export const createAssignmentSchema = z.object({
 export const logTechniqueSchema = z.object({
   assignmentId: z.string().uuid(),
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-  completedReps: z.number().int().min(1).max(20),
+  completedReps: z.number().int().min(1).max(TECHNIQUE_LOG_MAX_REPS),
   notes: z.string().max(FIELD_MAX_NOTES).optional(),
   isRestDay: z.boolean().default(false),
 })
