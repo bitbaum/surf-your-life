@@ -1,6 +1,6 @@
 import { db } from "@/lib/db"
-import { users, checkIns, profiles } from "@/lib/db/schema"
-import { eq, desc, count, or, ilike, and, max } from "drizzle-orm"
+import { users, checkIns, profiles, clientAlerts } from "@/lib/db/schema"
+import { eq, desc, count, or, ilike, and, max, inArray } from "drizzle-orm"
 import { CLIENT_ROLE } from "@/lib/domain/auth"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
@@ -61,6 +61,17 @@ export default async function ClientsPage({
   const total = totalResult[0]?.count ?? 0
   const totalPages = Math.ceil(total / PAGINATION_DEFAULT)
 
+  const clientIds = clients.map((c) => c.id)
+  const alertCountMap = new Map<string, number>()
+  if (clientIds.length > 0) {
+    const alertCountRows = await db
+      .select({ clientId: clientAlerts.clientId, alertCount: count() })
+      .from(clientAlerts)
+      .where(and(eq(clientAlerts.isResolved, false), inArray(clientAlerts.clientId, clientIds)))
+      .groupBy(clientAlerts.clientId)
+    for (const r of alertCountRows) alertCountMap.set(r.clientId, r.alertCount)
+  }
+
   function pageLink(p: number) {
     const params = new URLSearchParams()
     params.set("page", String(p))
@@ -104,7 +115,16 @@ export default async function ClientsPage({
             <tbody>
               {clients.map((client) => (
                 <tr key={client.id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
-                  <td className="py-3 font-medium text-slate-800">{client.name ?? "—"}</td>
+                  <td className="py-3 font-medium text-slate-800">
+                    <span className="flex items-center gap-2">
+                      {client.name ?? "—"}
+                      {(alertCountMap.get(client.id) ?? 0) > 0 && (
+                        <span className="text-[10px] font-semibold text-red-600 bg-red-50 px-1.5 py-0.5 rounded-full leading-none">
+                          {alertCountMap.get(client.id)}
+                        </span>
+                      )}
+                    </span>
+                  </td>
                   <td className="py-3 text-slate-600">{client.email}</td>
                   <td className="py-3 text-slate-500">
                     {client.mainConcern ? formatEnumValue(client.mainConcern) : "—"}
