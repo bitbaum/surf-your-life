@@ -4,11 +4,11 @@ import { db } from "@/lib/db"
 import { documents } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
 import { z } from "zod"
-import { DOCUMENTS_PER_CLIENT_LIMIT, DOCUMENT_UPLOAD_MAX_CONTENT, DOCUMENT_UPLOAD_MAX_TITLE , API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED } from "@/lib/constants"
+import { DOCUMENTS_PER_CLIENT_LIMIT, DOCUMENT_UPLOAD_MAX_CONTENT, FIELD_MAX_TITLE, API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED } from "@/lib/constants"
 import { embedDocument } from "@/lib/domain/embeddings"
 
 const uploadSchema = z.object({
-  title: z.string().max(DOCUMENT_UPLOAD_MAX_TITLE).optional(),
+  title: z.string().max(FIELD_MAX_TITLE).optional(),
   content: z.string().min(1).max(DOCUMENT_UPLOAD_MAX_CONTENT),
 })
 

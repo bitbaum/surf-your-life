@@ -6,13 +6,13 @@ import { db } from "@/lib/db"
 import { documents, documentTypeEnum } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
 import { z } from "zod"
-import { DOCUMENTS_PER_CLIENT_LIMIT , API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED } from "@/lib/constants"
+import { DOCUMENTS_PER_CLIENT_LIMIT, FIELD_MAX_TITLE, DOCUMENT_ADMIN_MAX_CONTENT, API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED } from "@/lib/constants"
 import { embedDocument } from "@/lib/domain/embeddings"
 
 const createDocSchema = z.object({
   type: z.enum(documentTypeEnum.enumValues),
-  title: z.string().max(200).optional(),
-  content: z.string().min(1).max(10000),
+  title: z.string().max(FIELD_MAX_TITLE).optional(),
+  content: z.string().min(1).max(DOCUMENT_ADMIN_MAX_CONTENT),
 })
 
 export async function GET(

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
-import { DOCUMENT_UPLOAD_MAX_CONTENT, DOCUMENT_UPLOAD_MAX_TITLE } from "@/lib/constants"
+import { DOCUMENT_UPLOAD_MAX_CONTENT, FIELD_MAX_TITLE } from "@/lib/constants"
 
 interface Props {
   onCancel: () => void
@@ -48,7 +48,7 @@ export function DocumentUploadForm({ onCancel }: Props) {
           type="text"
           value={form.title}
           onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
-          maxLength={DOCUMENT_UPLOAD_MAX_TITLE}
+          maxLength={FIELD_MAX_TITLE}
           placeholder={t("fieldTitlePlaceholder")}
           className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal-500"
         />
