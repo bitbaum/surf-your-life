@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
-import { DOC_TYPE_I18N_KEYS, DOC_TYPE_BADGE_CLASSES, FIELD_MAX_TITLE } from "@/lib/constants"
+import { DOC_TYPE_I18N_KEYS, DOC_TYPE_BADGE_CLASSES, FIELD_MAX_TITLE, CHIP_UNSELECTED } from "@/lib/constants"
 import { documentTypeEnum } from "@/lib/db/schema"
 
 // Practitioners can create these types; "upload" is reserved for client-submitted documents
@@ -49,7 +49,7 @@ export function SessionNoteForm({ clientId, onSaved, onCancel }: Props) {
       <div className="flex gap-2">
         {PRACTITIONER_DOC_TYPES.map((opt) => (
           <button key={opt} type="button" onClick={() => setType(opt)}
-            className={`text-xs px-3 py-1.5 rounded-full border font-medium transition-colors ${type === opt ? (DOC_TYPE_BADGE_CLASSES[opt] ?? DOC_TYPE_BADGE_CLASSES.session_note) + " border" : "border-slate-200 text-slate-500 hover:border-slate-300"}`}>
+            className={`text-xs px-3 py-1.5 rounded-full border font-medium transition-colors ${type === opt ? (DOC_TYPE_BADGE_CLASSES[opt] ?? DOC_TYPE_BADGE_CLASSES.session_note) + " border" : CHIP_UNSELECTED}`}>
             {t(DOC_TYPE_I18N_KEYS[opt] ?? opt)}
           </button>
         ))}
