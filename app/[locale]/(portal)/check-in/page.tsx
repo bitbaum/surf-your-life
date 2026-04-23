@@ -71,7 +71,6 @@ export default function CheckInPage() {
           pemSeverity: showPem && pemFlag ? pemSeverity : null,
           orthostaticSymptoms,
           journalEntry: journalEntry.trim() || null,
-          notes: journalEntry.trim() || null,
           symptomFatigue: trackSymptoms ? symptoms.fatigue : null,
           symptomBrainFog: trackSymptoms ? symptoms.brainFog : null,
           symptomPain: trackSymptoms ? symptoms.pain : null,

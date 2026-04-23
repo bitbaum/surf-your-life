@@ -98,7 +98,7 @@ export default async function ProgressPage({ params }: { params: Promise<{ local
             {assessments.map((a, i) => {
               const isFirst = i === 0
               const isLatest = i === assessments.length - 1
-              const d = delta != null ? latest!.overallCapacity - first!.overallCapacity : null
+              const d = delta
 
               return (
                 <Card key={a.id}>
