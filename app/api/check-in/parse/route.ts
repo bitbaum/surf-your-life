@@ -11,10 +11,10 @@ import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { z } from "zod"
 import { callClaude } from "@/lib/domain/anthropic"
-import { API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED } from "@/lib/constants"
+import { API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED, FIELD_MAX_MEDIUM } from "@/lib/constants"
 
 const parseSchema = z.object({
-  text: z.string().min(1).max(1000),
+  text: z.string().min(1).max(FIELD_MAX_MEDIUM),
 })
 
 type ParsedFields = {

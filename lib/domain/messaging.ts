@@ -3,17 +3,18 @@ import { db } from "@/lib/db"
 import { users } from "@/lib/db/schema"
 import { eq, inArray } from "drizzle-orm"
 import { STAFF_ROLES } from "@/lib/domain/auth"
+import { FIELD_MAX_TITLE, FIELD_MAX_MESSAGE } from "@/lib/constants"
 import { sendEmail } from "@/lib/email"
 import { newMessageEmail } from "@/lib/email/templates"
 
 export const createThreadSchema = z.object({
-  subject: z.string().min(1).max(200),
-  body: z.string().min(1).max(5000),
+  subject: z.string().min(1).max(FIELD_MAX_TITLE),
+  body: z.string().min(1).max(FIELD_MAX_MESSAGE),
   clientId: z.string().uuid().optional(),
 })
 
 export const sendMessageSchema = z.object({
-  body: z.string().min(1).max(5000),
+  body: z.string().min(1).max(FIELD_MAX_MESSAGE),
 })
 
 type NotifyParams = {
