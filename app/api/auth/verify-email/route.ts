@@ -1,14 +1,9 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
 import { eq, and, gt } from "drizzle-orm"
-import crypto from "crypto"
 import { db } from "@/lib/db"
 import { users, verificationTokens } from "@/lib/db/schema"
-import { auth } from "@/lib/auth"
-import { sendEmail } from "@/lib/email"
-import { verificationEmail } from "@/lib/email/templates"
-import { SITE_URL, DAY_MS , API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED } from "@/lib/constants"
-import { EMAIL_SUBJECT_VERIFY } from "@/lib/email/subjects"
+import { API_ERR_INVALID_INPUT } from "@/lib/constants"
 
 // POST /api/auth/verify-email — consume token and mark email as verified
 const verifySchema = z.object({
@@ -45,32 +40,6 @@ export async function POST(req: Request) {
     db.delete(verificationTokens)
       .where(and(eq(verificationTokens.identifier, email), eq(verificationTokens.token, token))),
   ])
-
-  return NextResponse.json({ success: true })
-}
-
-// PUT /api/auth/verify-email — resend verification email (authenticated user only)
-export async function PUT() {
-  const session = await auth()
-  if (!session?.user?.email) {
-    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
-  }
-
-  const { email } = session.user
-
-  // Delete any existing tokens for this email, then create a fresh one
-  await db.delete(verificationTokens).where(eq(verificationTokens.identifier, email))
-
-  const token = crypto.randomBytes(32).toString("hex")
-  const expires = new Date(Date.now() + DAY_MS)
-  await db.insert(verificationTokens).values({ identifier: email, token, expires })
-
-  const verifyUrl = `${SITE_URL}/verify-email?token=${token}&email=${encodeURIComponent(email)}`
-  await sendEmail({
-    to: email,
-    subject: EMAIL_SUBJECT_VERIFY,
-    html: verificationEmail({ email, verifyUrl }),
-  }).catch(e => console.error("[verify-email] resend failed", e))
 
   return NextResponse.json({ success: true })
 }
