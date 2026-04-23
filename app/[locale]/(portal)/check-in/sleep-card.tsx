@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { SLEEP_HOURS, SLEEP_QUALITY_OPTIONS } from "@/lib/constants"
+import { SLEEP_HOURS, SLEEP_QUALITY_OPTIONS, CHIP_SELECTED, CHIP_UNSELECTED } from "@/lib/constants"
 
 interface Props {
   sleep: string
@@ -49,8 +49,8 @@ export function SleepCard({ sleep, setSleep, sleepQuality, setSleepQuality }: Pr
                 onClick={() => setSleepQuality(sleepQuality === opt.value ? null : opt.value)}
                 className={`flex flex-col items-center gap-1 p-2.5 rounded-xl border-2 flex-1 transition-all ${
                   sleepQuality === opt.value
-                    ? "border-teal-500 bg-teal-50"
-                    : "border-slate-200 hover:border-slate-300"
+                    ? CHIP_SELECTED
+                    : CHIP_UNSELECTED
                 }`}
               >
                 <span className="text-xl">{opt.emoji}</span>

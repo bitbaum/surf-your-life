@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { MOODS } from "@/lib/constants"
+import { MOODS, CHIP_SELECTED, CHIP_UNSELECTED } from "@/lib/constants"
 
 interface Props {
   value: string
@@ -30,7 +30,7 @@ export function MoodCard({ value, onChange }: Props) {
               type="button"
               onClick={() => onChange(m.value)}
               className={`flex flex-col items-center gap-1 p-3 rounded-xl border-2 transition-all ${
-                value === m.value ? "border-teal-500 bg-teal-50" : "border-slate-200 hover:border-slate-300"
+                value === m.value ? CHIP_SELECTED : CHIP_UNSELECTED
               }`}
             >
               <span className="text-2xl">{m.emoji}</span>

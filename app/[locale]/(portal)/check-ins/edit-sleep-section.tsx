@@ -1,7 +1,7 @@
 "use client"
 
 import { useTranslations } from "next-intl"
-import { SLEEP_HOURS, SLEEP_QUALITY_OPTIONS } from "@/lib/constants"
+import { SLEEP_HOURS, SLEEP_QUALITY_OPTIONS, CHIP_SELECTED, CHIP_UNSELECTED } from "@/lib/constants"
 
 interface Props {
   sleep: string
@@ -42,7 +42,7 @@ export function EditSleepSection({ sleep, setSleep, sleepQuality, setSleepQualit
               type="button"
               onClick={() => setSleepQuality(sleepQuality === opt.value ? null : opt.value)}
               className={`flex flex-col items-center gap-1 p-2 rounded-xl border-2 transition-all min-w-[52px] ${
-                sleepQuality === opt.value ? "border-teal-500 bg-teal-50" : "border-slate-200 hover:border-slate-300"
+                sleepQuality === opt.value ? CHIP_SELECTED : CHIP_UNSELECTED
               }`}
             >
               <span className="text-lg">{opt.emoji}</span>

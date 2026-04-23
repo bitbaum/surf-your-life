@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { ACTIVITY_LEVELS, PEM_SEVERITY_SCALE } from "@/lib/constants"
+import { ACTIVITY_LEVELS, PEM_SEVERITY_SCALE, CHIP_SELECTED, CHIP_UNSELECTED } from "@/lib/constants"
 
 interface Props {
   activityLevel: string | null
@@ -39,8 +39,8 @@ export function ActivityPemCard({
               }}
               className={`flex flex-col items-center gap-1 p-3 rounded-xl border-2 transition-all ${
                 activityLevel === level.value
-                  ? "border-teal-500 bg-teal-50"
-                  : "border-slate-200 hover:border-slate-300"
+                  ? CHIP_SELECTED
+                  : CHIP_UNSELECTED
               }`}
             >
               <span className="text-2xl">{level.emoji}</span>

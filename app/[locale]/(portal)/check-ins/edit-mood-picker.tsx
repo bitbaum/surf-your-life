@@ -1,7 +1,7 @@
 "use client"
 
 import { useTranslations } from "next-intl"
-import { MOODS } from "@/lib/constants"
+import { MOODS, CHIP_SELECTED, CHIP_UNSELECTED } from "@/lib/constants"
 
 interface Props {
   mood: string
@@ -29,7 +29,7 @@ export function EditMoodPicker({ mood, onChange }: Props) {
             type="button"
             onClick={() => onChange(m.value)}
             className={`flex flex-col items-center gap-1 p-2 rounded-xl border-2 transition-all ${
-              mood === m.value ? "border-teal-500 bg-teal-50" : "border-slate-200 hover:border-slate-300"
+              mood === m.value ? CHIP_SELECTED : CHIP_UNSELECTED
             }`}
           >
             <span className="text-xl">{m.emoji}</span>

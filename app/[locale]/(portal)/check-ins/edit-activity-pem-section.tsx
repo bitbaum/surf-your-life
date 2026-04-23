@@ -1,7 +1,7 @@
 "use client"
 
 import { useTranslations } from "next-intl"
-import { ACTIVITY_LEVELS, PEM_SEVERITY_SCALE } from "@/lib/constants"
+import { ACTIVITY_LEVELS, PEM_SEVERITY_SCALE, CHIP_SELECTED, CHIP_UNSELECTED } from "@/lib/constants"
 
 interface Props {
   activityLevel: string | null
@@ -33,7 +33,7 @@ export function EditActivityPemSection({
               type="button"
               onClick={() => setActivityLevel(activityLevel === lvl.value ? null : lvl.value)}
               className={`flex flex-col items-center gap-1 p-2 rounded-xl border-2 transition-all min-w-[56px] ${
-                activityLevel === lvl.value ? "border-teal-500 bg-teal-50" : "border-slate-200 hover:border-slate-300"
+                activityLevel === lvl.value ? CHIP_SELECTED : CHIP_UNSELECTED
               }`}
             >
               <span className="text-lg">{lvl.emoji}</span>
