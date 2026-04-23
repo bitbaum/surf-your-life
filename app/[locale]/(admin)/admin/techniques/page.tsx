@@ -31,10 +31,11 @@ export default async function TechniquesPage({ params }: { params: Promise<{ loc
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="flex items-start justify-between gap-4 mb-8">
-        <PageHeader title={t("title")} description={t("description", { count: activeCount })} />
-        <TechniqueCreateButton />
-      </div>
+      <PageHeader
+        title={t("title")}
+        description={t("description", { count: activeCount })}
+        action={<TechniqueCreateButton />}
+      />
 
       {rows.length === 0 ? (
         <Card>
