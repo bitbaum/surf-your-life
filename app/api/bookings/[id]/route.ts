@@ -77,7 +77,7 @@ export async function PATCH(
         ? `Booking confirmed: ${booking.service.name}`
         : `Booking cancelled: ${booking.service.name}`
 
-    sendEmail({ to: client.email, subject, html }).catch((err) =>
+    void sendEmail({ to: client.email, subject, html }).catch((err) =>
       console.error("[booking-status-notify]", err)
     )
   }
