@@ -13,7 +13,7 @@ import { EMBED_BACKFILL_BATCH , API_ERR_UNAUTHORIZED } from "@/lib/constants"
 export async function GET(req: Request) {
   const authHeader = req.headers.get("authorization")
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: API_ERR_UNAUTHORIZED }, { status: 401 })
+    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
   }
 
   // No OPENAI_API_KEY means nothing to do

@@ -73,7 +73,7 @@ Be factual, empathetic, and clinically precise. No bullet points — flowing pro
 export async function GET(req: Request) {
   const authHeader = req.headers.get("authorization")
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: API_ERR_UNAUTHORIZED }, { status: 401 })
+    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
   }
 
   const sevenDaysAgo = new Date(Date.now() - SEVEN_DAYS_MS)

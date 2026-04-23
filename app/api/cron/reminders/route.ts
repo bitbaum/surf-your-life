@@ -17,7 +17,7 @@ export async function GET(req: Request) {
   // Vercel cron authentication — only allow requests from Vercel cron
   const authHeader = req.headers.get("authorization")
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: API_ERR_UNAUTHORIZED }, { status: 401 })
+    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
   }
 
   const startOfToday = new Date()
