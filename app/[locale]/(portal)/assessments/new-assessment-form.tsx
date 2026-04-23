@@ -41,22 +41,24 @@ export function NewAssessmentForm({ onDone }: { onDone: () => void }) {
       if (enabled.has(key)) body[key] = values[key]
     }
 
-    const res = await fetch("/api/functional-assessments", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    })
-
-    const data = await res.json()
-    setSaving(false)
-
-    if (!data.success) {
+    try {
+      const res = await fetch("/api/functional-assessments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      })
+      const data = await res.json()
+      if (!data.success) {
+        setError(t("saveError"))
+        return
+      }
+      router.refresh()
+      onDone()
+    } catch {
       setError(t("saveError"))
-      return
+    } finally {
+      setSaving(false)
     }
-
-    router.refresh()
-    onDone()
   }
 
   return (

@@ -44,33 +44,46 @@ export function ProfileForm({ profile, initialName }: { profile: Profile | null;
   }
 
   async function autoSave(f: FormState) {
-    const res = await fetch("/api/profile", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(buildPayload(f)),
-    })
-    if (res.ok) setSaved(true)
+    try {
+      const res = await fetch("/api/profile", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(buildPayload(f)),
+      })
+      if (res.ok) setSaved(true)
+    } catch {
+      // auto-save is best-effort; step navigation still proceeds
+    }
   }
 
   async function handleNext() {
     setLoading(true)
-    await autoSave(form)
-    setStep((s) => s + 1)
-    setLoading(false)
+    try {
+      await autoSave(form)
+      setStep((s) => s + 1)
+    } finally {
+      setLoading(false)
+    }
   }
 
   async function handleBack() {
     setLoading(true)
-    await autoSave(form)
-    setStep((s) => s - 1)
-    setLoading(false)
+    try {
+      await autoSave(form)
+      setStep((s) => s - 1)
+    } finally {
+      setLoading(false)
+    }
   }
 
   async function handleFinish(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
-    await autoSave(form)
-    setLoading(false)
+    try {
+      await autoSave(form)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const stepTitles = PROFILE_WIZARD_STEPS.map((s) => t(s.key as Parameters<typeof t>[0]))

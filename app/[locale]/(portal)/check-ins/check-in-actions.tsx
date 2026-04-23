@@ -22,13 +22,18 @@ export function CheckInActions({ checkInId, checkIn }: Props) {
   async function handleDelete() {
     setDeleting(true)
     setError("")
-    const res = await fetch(`/api/check-in/${checkInId}`, { method: "DELETE" })
-    if (!res.ok) {
+    try {
+      const res = await fetch(`/api/check-in/${checkInId}`, { method: "DELETE" })
+      if (!res.ok) {
+        setError(t("deleteError"))
+        return
+      }
+      router.refresh()
+    } catch {
       setError(t("deleteError"))
+    } finally {
       setDeleting(false)
-      return
     }
-    router.refresh()
   }
 
   if (mode === "confirmDelete") {

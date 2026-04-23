@@ -57,42 +57,48 @@ export default function CheckInPage() {
 
     const showPem = activityLevel === "moderate" || activityLevel === "active"
 
-    const res = await fetch("/api/check-in", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        mood,
-        energyLevel: energy,
-        sleepHours: sleep ? parseInt(sleep) : null,
-        sleepQuality,
-        activityLevel: activityLevel ?? null,
-        pemFlag: showPem ? pemFlag : false,
-        pemSeverity: showPem && pemFlag ? pemSeverity : null,
-        orthostaticSymptoms,
-        journalEntry: journalEntry.trim() || null,
-        notes: journalEntry.trim() || null,
-        symptomFatigue: trackSymptoms ? symptoms.fatigue : null,
-        symptomBrainFog: trackSymptoms ? symptoms.brainFog : null,
-        symptomPain: trackSymptoms ? symptoms.pain : null,
-        stressLevel: trackSymptoms ? symptoms.stress : null,
-      }),
-    })
+    try {
+      const res = await fetch("/api/check-in", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mood,
+          energyLevel: energy,
+          sleepHours: sleep ? parseInt(sleep) : null,
+          sleepQuality,
+          activityLevel: activityLevel ?? null,
+          pemFlag: showPem ? pemFlag : false,
+          pemSeverity: showPem && pemFlag ? pemSeverity : null,
+          orthostaticSymptoms,
+          journalEntry: journalEntry.trim() || null,
+          notes: journalEntry.trim() || null,
+          symptomFatigue: trackSymptoms ? symptoms.fatigue : null,
+          symptomBrainFog: trackSymptoms ? symptoms.brainFog : null,
+          symptomPain: trackSymptoms ? symptoms.pain : null,
+          stressLevel: trackSymptoms ? symptoms.stress : null,
+        }),
+      })
 
-    if (!res.ok) {
-      if (res.status === 409) {
-        toast.info(t("alreadyDoneBody"))
-        router.push("/dashboard")
-      } else {
-        setError(t("error"))
-        toast.error(t("error"))
+      if (!res.ok) {
+        if (res.status === 409) {
+          toast.info(t("alreadyDoneBody"))
+          router.push("/dashboard")
+        } else {
+          setError(t("error"))
+          toast.error(t("error"))
+        }
+        return
       }
-      setLoading(false)
-      return
-    }
 
-    toast.success(t("submitSuccess"))
-    router.push("/dashboard")
-    router.refresh()
+      toast.success(t("submitSuccess"))
+      router.push("/dashboard")
+      router.refresh()
+    } catch {
+      setError(t("error"))
+      toast.error(t("error"))
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (

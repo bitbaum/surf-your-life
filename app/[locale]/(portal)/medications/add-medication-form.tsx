@@ -24,28 +24,30 @@ export function AddMedicationForm({ onSaved, onCancel }: Props) {
     setSaving(true)
     setError("")
 
-    const res = await fetch("/api/medication-log", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        medicationName: form.medicationName.trim(),
-        dose: form.dose.trim() || undefined,
-        frequency: form.frequency.trim() || undefined,
-        startDate: form.startDate || undefined,
-        notes: form.notes.trim() || undefined,
-      }),
-    })
-
-    const data = await res.json()
-    setSaving(false)
-
-    if (!data.success) {
+    try {
+      const res = await fetch("/api/medication-log", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          medicationName: form.medicationName.trim(),
+          dose: form.dose.trim() || undefined,
+          frequency: form.frequency.trim() || undefined,
+          startDate: form.startDate || undefined,
+          notes: form.notes.trim() || undefined,
+        }),
+      })
+      const data = await res.json()
+      if (!data.success) {
+        setError(t("saveError"))
+        return
+      }
+      toast.success(t("addedSuccess"))
+      onSaved()
+    } catch {
       setError(t("saveError"))
-      return
+    } finally {
+      setSaving(false)
     }
-
-    toast.success(t("addedSuccess"))
-    onSaved()
   }
 
   return (

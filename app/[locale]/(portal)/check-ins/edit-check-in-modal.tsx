@@ -44,35 +44,39 @@ export function EditCheckInModal({ checkIn, checkInId, onSave, onCancel }: EditC
     e.preventDefault()
     setSaving(true)
     setError("")
-    const res = await fetch(`/api/check-in/${checkInId}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        mood,
-        energyLevel: energy,
-        sleepHours: sleep ? parseInt(sleep) : null,
-        sleepQuality,
-        activityLevel,
-        pemFlag,
-        pemSeverity: pemFlag ? pemSeverity : null,
-        orthostaticSymptoms,
-        journalEntry: journalEntry || null,
-        symptomFatigue: fatigue,
-        symptomBrainFog: brainFog,
-        symptomPain: pain,
-        stressLevel: stress,
-        wins: wins || undefined,
-        challenges: challenges || undefined,
-        notes: notes || undefined,
-      }),
-    })
-    if (!res.ok) {
+    try {
+      const res = await fetch(`/api/check-in/${checkInId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mood,
+          energyLevel: energy,
+          sleepHours: sleep ? parseInt(sleep) : null,
+          sleepQuality,
+          activityLevel,
+          pemFlag,
+          pemSeverity: pemFlag ? pemSeverity : null,
+          orthostaticSymptoms,
+          journalEntry: journalEntry || null,
+          symptomFatigue: fatigue,
+          symptomBrainFog: brainFog,
+          symptomPain: pain,
+          stressLevel: stress,
+          wins: wins || undefined,
+          challenges: challenges || undefined,
+          notes: notes || undefined,
+        }),
+      })
+      if (!res.ok) {
+        setError(t("editError"))
+        return
+      }
+      onSave()
+    } catch {
       setError(t("editError"))
+    } finally {
       setSaving(false)
-      return
     }
-    setSaving(false)
-    onSave()
   }
 
   return (

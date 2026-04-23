@@ -31,22 +31,24 @@ export function NlpEntry({ onFill }: Props) {
     setParsing(true)
     setHint("")
 
-    const res = await fetch("/api/check-in/parse", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text }),
-    })
-
-    const data = await res.json()
-    setParsing(false)
-
-    if (!data.success) return
-
-    const filled = Object.keys(data.data).filter(
-      (k) => k !== "journalEntry" && data.data[k] != null
-    ).length
-    setHint(filled > 0 ? t("parseFilledHint", { n: filled }) : t("parseNoMatch"))
-    onFill(data.data as ParsedFill)
+    try {
+      const res = await fetch("/api/check-in/parse", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text }),
+      })
+      const data = await res.json()
+      if (!data.success) return
+      const filled = Object.keys(data.data).filter(
+        (k) => k !== "journalEntry" && data.data[k] != null
+      ).length
+      setHint(filled > 0 ? t("parseFilledHint", { n: filled }) : t("parseNoMatch"))
+      onFill(data.data as ParsedFill)
+    } catch {
+      // NLP parse is best-effort; silently ignore network errors
+    } finally {
+      setParsing(false)
+    }
   }
 
   return (
