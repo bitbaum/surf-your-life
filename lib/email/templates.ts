@@ -1,5 +1,6 @@
 import type { Service } from "@/lib/db/schema"
 import { BRAND_NAME, COMPANY_ADDRESS, SITE_URL } from "@/lib/constants"
+import { EMAIL_SUBJECT_INVITE } from "@/lib/email/subjects"
 
 // ─── Verification email ───────────────────────────────────────────────────────
 
@@ -326,7 +327,7 @@ export function inviteEmail(data: InviteEmailData): string {
 </style></head>
 <body>
   <div class="header">
-    <h1 style="margin:0;font-size:20px;">Your invitation to ${BRAND_NAME}</h1>
+    <h1 style="margin:0;font-size:20px;">${EMAIL_SUBJECT_INVITE}</h1>
     <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">Personal message from ${practitionerName}</p>
   </div>
   <p>Hi ${name},</p>

@@ -5,8 +5,9 @@ import { leads } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { sendEmail } from "@/lib/email"
 import { inviteEmail } from "@/lib/email/templates"
+import { EMAIL_SUBJECT_INVITE } from "@/lib/email/subjects"
 import { NextRequest, NextResponse } from "next/server"
-import { SITE_URL, BRAND_NAME , API_ERR_UNAUTHORIZED } from "@/lib/constants"
+import { SITE_URL, API_ERR_UNAUTHORIZED } from "@/lib/constants"
 
 export async function POST(
   _req: NextRequest,
@@ -29,7 +30,7 @@ export async function POST(
 
   await sendEmail({
     to: lead.email,
-    subject: `Your invitation to ${BRAND_NAME}`,
+    subject: EMAIL_SUBJECT_INVITE,
     html: inviteEmail({ name: lead.name, registerUrl, practitionerName }),
   })
 
