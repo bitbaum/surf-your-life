@@ -76,18 +76,28 @@ type CheckInRow = BuildContextResult["recent"][number]
 type MedicationRow = BuildContextResult["medications"][number]
 type AssessmentRow = NonNullable<BuildContextResult["latestAssessment"]>
 
+/** Fields of a check-in row needed by summariseCheckIns — exported for tests. */
+export type CheckInSummaryRow = {
+  mood: string | null
+  energyLevel: number | null
+  sleepHours: number | null
+  pemFlag: boolean | null
+  stressLevel: number | null
+}
+
 function getJournalText(r: CheckInRow): string | null {
   return r.journalEntry ?? r.notes ?? null
 }
 
-function summariseCheckIns(rows: CheckInRow[]) {
+export function summariseCheckIns(rows: CheckInSummaryRow[]) {
   if (rows.length === 0) return null
 
   const avgEnergy =
     rows.reduce((s, r) => s + (r.energyLevel ?? 0), 0) / rows.length
-  const avgSleep =
-    rows.filter((r) => r.sleepHours != null).reduce((s, r) => s + (r.sleepHours ?? 0), 0) /
-    Math.max(rows.filter((r) => r.sleepHours != null).length, 1)
+  const sleepRows = rows.filter((r) => r.sleepHours != null)
+  const avgSleep = sleepRows.length > 0
+    ? sleepRows.reduce((s, r) => s + (r.sleepHours ?? 0), 0) / sleepRows.length
+    : null
   const pemCount = rows.filter((r) => r.pemFlag).length
   const avgStress =
     rows.filter((r) => r.stressLevel != null).reduce((s, r) => s + (r.stressLevel ?? 0), 0) /
@@ -135,8 +145,9 @@ function ruleBasedResponse(question: string, rows: CheckInRow[], medications: Me
     if (sleepRows.length === 0) {
       return `You haven't been logging your sleep hours. Try adding sleep data to your check-ins — it's one of the strongest predictors of next-day energy and mood. ${dataNote}`
     }
-    const quality = stats.avgSleep >= 7.5 ? "good" : stats.avgSleep >= 6 ? "adequate" : "below optimal"
-    return `Your average sleep is ${stats.avgSleep.toFixed(1)} hours — ${quality}. Most adults need 7–9 hours for full recovery, though individual needs vary. ${dataNote}`
+    const avg = stats.avgSleep!  // non-null guaranteed by sleepRows.length > 0 guard above
+    const quality = avg >= 7.5 ? "good" : avg >= 6 ? "adequate" : "below optimal"
+    return `Your average sleep is ${avg.toFixed(1)} hours — ${quality}. Most adults need 7–9 hours for full recovery, though individual needs vary. ${dataNote}`
   }
 
   // Mood
@@ -226,7 +237,8 @@ function ruleBasedResponse(question: string, rows: CheckInRow[], medications: Me
   }
 
   // Default: summarise current state
-  return `Here's a quick snapshot: over your last ${stats.count} check-ins, your average energy is ${stats.avgEnergy.toFixed(1)}/10, average sleep is ${stats.avgSleep.toFixed(1)}h, and you've had ${stats.pemCount} PEM episode${stats.pemCount === 1 ? "" : "s"}. Ask me about any of these in more detail. ${dataNote}`
+  const sleepSummary = stats.avgSleep != null ? `, average sleep is ${stats.avgSleep.toFixed(1)}h` : ""
+  return `Here's a quick snapshot: over your last ${stats.count} check-ins, your average energy is ${stats.avgEnergy.toFixed(1)}/10${sleepSummary}, and you've had ${stats.pemCount} PEM episode${stats.pemCount === 1 ? "" : "s"}. Ask me about any of these in more detail. ${dataNote}`
 }
 
 // ─── AI call (to be enabled when ANTHROPIC_API_KEY is set) ────────────────────
