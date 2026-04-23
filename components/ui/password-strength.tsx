@@ -1,11 +1,13 @@
 "use client"
 
+import { PASSWORD_MIN_LENGTH } from "@/lib/constants"
+
 type Props = { password: string }
 
 function computeScore(password: string): number {
   if (password.length === 0) return 0
   let score = 0
-  if (password.length >= 8) score++
+  if (password.length >= PASSWORD_MIN_LENGTH) score++
   if (/[A-Z]/.test(password)) score++
   if (/[a-z]/.test(password)) score++
   if (/[0-9]/.test(password)) score++
