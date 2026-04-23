@@ -6,6 +6,7 @@ import { formatDate, toDateString } from "@/lib/utils"
 import { Link } from "@/i18n/navigation"
 import { PAGINATION_DEFAULT, SEVEN_DAYS_MS } from "@/lib/constants"
 import { CLIENT_ROLE, STAFF_ROLES } from "@/lib/domain/auth"
+import { computeAdherenceByAssignment } from "@/lib/domain/techniques"
 import { ResetLinkButton } from "./reset-link-button"
 import { NewThreadButton } from "./new-thread-button"
 import { EnrollProgramButton } from "./enroll-program-button"
@@ -90,24 +91,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
 
   const totalCheckIns = checkInCountResult[0]?.count ?? 0
   const profile = client.profile
-
-  // Compute adherence: for each assignment, count distinct days in last 7 where total completedReps >= frequencyPerDay
-  // Group logs by (assignmentId, date) first to handle multiple same-day entries
-  const frequencyById = Object.fromEntries(clientAssignments.map((a) => [a.id, a.frequencyPerDay]))
-  const repsByDay: Record<string, number> = {} // key: `${assignmentId}:${date}`
-  for (const log of recentTechniqueLogs) {
-    const key = `${log.assignmentId}:${log.date}`
-    repsByDay[key] = (repsByDay[key] ?? 0) + log.completedReps
-  }
-  const adherenceByAssignment: Record<string, number> = {}
-  for (const [key, reps] of Object.entries(repsByDay)) {
-    const assignmentId = key.split(":")[0]
-    const goal = frequencyById[assignmentId]
-    if (goal == null) continue
-    if (reps >= goal) {
-      adherenceByAssignment[assignmentId] = (adherenceByAssignment[assignmentId] ?? 0) + 1
-    }
-  }
+  const adherenceByAssignment = computeAdherenceByAssignment(clientAssignments, recentTechniqueLogs)
 
   return (
     <div className="max-w-4xl mx-auto">

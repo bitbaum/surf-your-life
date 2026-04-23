@@ -119,3 +119,41 @@ function offsetDate(isoDate: string, days: number): string {
   d.setDate(d.getDate() + days)
   return toDateString(d)
 }
+
+// ─── Adherence computation ────────────────────────────────────────────────────
+
+/**
+ * Compute per-assignment adherence (days met) over a 7-day window.
+ *
+ * A day counts as "met" when total completedReps for that assignment on that date
+ * reaches the assignment's frequencyPerDay goal. Multiple same-day log entries
+ * are summed before checking against the goal.
+ *
+ * Returns a map of assignmentId → number of days met (0–7).
+ */
+export function computeAdherenceByAssignment(
+  assignments: Array<{ id: string; frequencyPerDay: number }>,
+  logs: Array<{ assignmentId: string; date: string; completedReps: number }>
+): Record<string, number> {
+  const frequencyById = Object.fromEntries(assignments.map((a) => [a.id, a.frequencyPerDay]))
+
+  // Sum reps per (assignmentId, date)
+  const repsByDay: Record<string, number> = {}
+  for (const log of logs) {
+    const key = `${log.assignmentId}:${log.date}`
+    repsByDay[key] = (repsByDay[key] ?? 0) + log.completedReps
+  }
+
+  // Count days where summed reps met the daily goal
+  const result: Record<string, number> = {}
+  for (const [key, reps] of Object.entries(repsByDay)) {
+    const assignmentId = key.split(":")[0]
+    const goal = frequencyById[assignmentId]
+    if (goal == null) continue
+    if (reps >= goal) {
+      result[assignmentId] = (result[assignmentId] ?? 0) + 1
+    }
+  }
+
+  return result
+}

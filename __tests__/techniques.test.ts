@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest"
-import { computeTechniqueDebt } from "@/lib/domain/techniques"
+import { computeTechniqueDebt, computeAdherenceByAssignment } from "@/lib/domain/techniques"
 
 // Base assignment used across tests — represents a typical 1×/day technique
 const BASE_ASSIGNMENT = {
@@ -149,5 +149,64 @@ describe("computeTechniqueDebt", () => {
       )
       expect(result.dailyTarget).toBe(3)
     })
+  })
+})
+
+describe("computeAdherenceByAssignment", () => {
+  const assignments = [
+    { id: "a1", frequencyPerDay: 1 },
+    { id: "a2", frequencyPerDay: 2 },
+  ]
+
+  it("returns empty map when there are no logs", () => {
+    expect(computeAdherenceByAssignment(assignments, [])).toEqual({})
+  })
+
+  it("counts a day as met when completedReps >= frequencyPerDay", () => {
+    const logs = [{ assignmentId: "a1", date: "2024-01-01", completedReps: 1 }]
+    const result = computeAdherenceByAssignment(assignments, logs)
+    expect(result["a1"]).toBe(1)
+  })
+
+  it("does not count a day when completedReps < frequencyPerDay", () => {
+    const logs = [{ assignmentId: "a2", date: "2024-01-01", completedReps: 1 }] // need 2
+    const result = computeAdherenceByAssignment(assignments, logs)
+    expect(result["a2"]).toBeUndefined()
+  })
+
+  it("sums multiple same-day log entries before checking goal", () => {
+    const logs = [
+      { assignmentId: "a2", date: "2024-01-01", completedReps: 1 },
+      { assignmentId: "a2", date: "2024-01-01", completedReps: 1 }, // 1+1 = 2 meets goal
+    ]
+    const result = computeAdherenceByAssignment(assignments, logs)
+    expect(result["a2"]).toBe(1)
+  })
+
+  it("counts each distinct day separately", () => {
+    const logs = [
+      { assignmentId: "a1", date: "2024-01-01", completedReps: 1 },
+      { assignmentId: "a1", date: "2024-01-02", completedReps: 1 },
+      { assignmentId: "a1", date: "2024-01-03", completedReps: 1 },
+    ]
+    const result = computeAdherenceByAssignment(assignments, logs)
+    expect(result["a1"]).toBe(3)
+  })
+
+  it("tracks multiple assignments independently", () => {
+    const logs = [
+      { assignmentId: "a1", date: "2024-01-01", completedReps: 1 },
+      { assignmentId: "a2", date: "2024-01-01", completedReps: 2 },
+      { assignmentId: "a2", date: "2024-01-02", completedReps: 2 },
+    ]
+    const result = computeAdherenceByAssignment(assignments, logs)
+    expect(result["a1"]).toBe(1)
+    expect(result["a2"]).toBe(2)
+  })
+
+  it("ignores logs for unknown assignment IDs", () => {
+    const logs = [{ assignmentId: "unknown", date: "2024-01-01", completedReps: 5 }]
+    const result = computeAdherenceByAssignment(assignments, logs)
+    expect(Object.keys(result)).toHaveLength(0)
   })
 })
