@@ -12,6 +12,8 @@ import {
   enrollClientSchema,
   updateEnrollmentSchema,
 } from "@/lib/domain/program"
+import { FIELD_MAX_TITLE, FIELD_MAX_LONG, PROGRAM_DURATION_WEEKS_MAX, MAIN_CONCERNS } from "@/lib/constants"
+import { programStatusEnum } from "@/lib/db/schema"
 
 // ─── phaseSchema ──────────────────────────────────────────────────────────────
 
@@ -34,13 +36,13 @@ describe("phaseSchema", () => {
     expect(phaseSchema.safeParse({ ...valid, week: 0 }).success).toBe(false)
   })
 
-  it("rejects week above 104", () => {
-    expect(phaseSchema.safeParse({ ...valid, week: 105 }).success).toBe(false)
+  it(`rejects week above ${PROGRAM_DURATION_WEEKS_MAX}`, () => {
+    expect(phaseSchema.safeParse({ ...valid, week: PROGRAM_DURATION_WEEKS_MAX + 1 }).success).toBe(false)
   })
 
-  it("accepts boundary weeks (1 and 104)", () => {
+  it(`accepts boundary weeks (1 and ${PROGRAM_DURATION_WEEKS_MAX})`, () => {
     expect(phaseSchema.safeParse({ ...valid, week: 1 }).success).toBe(true)
-    expect(phaseSchema.safeParse({ ...valid, week: 104 }).success).toBe(true)
+    expect(phaseSchema.safeParse({ ...valid, week: PROGRAM_DURATION_WEEKS_MAX }).success).toBe(true)
   })
 
   it("rejects non-integer week", () => {
@@ -51,20 +53,20 @@ describe("phaseSchema", () => {
     expect(phaseSchema.safeParse({ ...valid, title: "" }).success).toBe(false)
   })
 
-  it("rejects title exceeding 200 characters", () => {
-    expect(phaseSchema.safeParse({ ...valid, title: "x".repeat(201) }).success).toBe(false)
+  it(`rejects title exceeding ${FIELD_MAX_TITLE} characters`, () => {
+    expect(phaseSchema.safeParse({ ...valid, title: "x".repeat(FIELD_MAX_TITLE + 1) }).success).toBe(false)
   })
 
-  it("accepts title exactly 200 characters", () => {
-    expect(phaseSchema.safeParse({ ...valid, title: "x".repeat(200) }).success).toBe(true)
+  it(`accepts title exactly ${FIELD_MAX_TITLE} characters`, () => {
+    expect(phaseSchema.safeParse({ ...valid, title: "x".repeat(FIELD_MAX_TITLE) }).success).toBe(true)
   })
 
-  it("rejects guidance exceeding 2000 characters", () => {
-    expect(phaseSchema.safeParse({ ...valid, guidance: "x".repeat(2001) }).success).toBe(false)
+  it(`rejects guidance exceeding ${FIELD_MAX_LONG} characters`, () => {
+    expect(phaseSchema.safeParse({ ...valid, guidance: "x".repeat(FIELD_MAX_LONG + 1) }).success).toBe(false)
   })
 
-  it("accepts guidance exactly 2000 characters", () => {
-    expect(phaseSchema.safeParse({ ...valid, guidance: "x".repeat(2000) }).success).toBe(true)
+  it(`accepts guidance exactly ${FIELD_MAX_LONG} characters`, () => {
+    expect(phaseSchema.safeParse({ ...valid, guidance: "x".repeat(FIELD_MAX_LONG) }).success).toBe(true)
   })
 })
 
@@ -91,29 +93,29 @@ describe("createProgramSchema", () => {
     expect(createProgramSchema.safeParse({ ...valid, title: "" }).success).toBe(false)
   })
 
-  it("rejects title exceeding 200 characters", () => {
-    expect(createProgramSchema.safeParse({ ...valid, title: "x".repeat(201) }).success).toBe(false)
+  it(`rejects title exceeding ${FIELD_MAX_TITLE} characters`, () => {
+    expect(createProgramSchema.safeParse({ ...valid, title: "x".repeat(FIELD_MAX_TITLE + 1) }).success).toBe(false)
   })
 
-  it("rejects description exceeding 2000 characters", () => {
-    expect(createProgramSchema.safeParse({ ...valid, description: "x".repeat(2001) }).success).toBe(false)
+  it(`rejects description exceeding ${FIELD_MAX_LONG} characters`, () => {
+    expect(createProgramSchema.safeParse({ ...valid, description: "x".repeat(FIELD_MAX_LONG + 1) }).success).toBe(false)
   })
 
-  it("accepts description exactly 2000 characters", () => {
-    expect(createProgramSchema.safeParse({ ...valid, description: "x".repeat(2000) }).success).toBe(true)
+  it(`accepts description exactly ${FIELD_MAX_LONG} characters`, () => {
+    expect(createProgramSchema.safeParse({ ...valid, description: "x".repeat(FIELD_MAX_LONG) }).success).toBe(true)
   })
 
   it("rejects durationWeeks below 1", () => {
     expect(createProgramSchema.safeParse({ ...valid, durationWeeks: 0 }).success).toBe(false)
   })
 
-  it("rejects durationWeeks above 104", () => {
-    expect(createProgramSchema.safeParse({ ...valid, durationWeeks: 105 }).success).toBe(false)
+  it(`rejects durationWeeks above ${PROGRAM_DURATION_WEEKS_MAX}`, () => {
+    expect(createProgramSchema.safeParse({ ...valid, durationWeeks: PROGRAM_DURATION_WEEKS_MAX + 1 }).success).toBe(false)
   })
 
-  it("accepts durationWeeks boundary values (1 and 104)", () => {
+  it(`accepts durationWeeks boundary values (1 and ${PROGRAM_DURATION_WEEKS_MAX})`, () => {
     expect(createProgramSchema.safeParse({ ...valid, durationWeeks: 1 }).success).toBe(true)
-    expect(createProgramSchema.safeParse({ ...valid, durationWeeks: 104 }).success).toBe(true)
+    expect(createProgramSchema.safeParse({ ...valid, durationWeeks: PROGRAM_DURATION_WEEKS_MAX }).success).toBe(true)
   })
 
   it("rejects non-integer durationWeeks", () => {
@@ -125,7 +127,7 @@ describe("createProgramSchema", () => {
   })
 
   it("accepts all valid targetConcern values", () => {
-    for (const concern of ["burnout", "long_covid", "midlife_reinvention", "general_wellbeing", "other"] as const) {
+    for (const concern of MAIN_CONCERNS) {
       expect(createProgramSchema.safeParse({ ...valid, targetConcern: concern }).success).toBe(true)
     }
   })
@@ -192,12 +194,12 @@ describe("enrollClientSchema", () => {
     expect(enrollClientSchema.safeParse(noClient).success).toBe(false)
   })
 
-  it("rejects notes exceeding 2000 characters", () => {
-    expect(enrollClientSchema.safeParse({ ...valid, notes: "x".repeat(2001) }).success).toBe(false)
+  it(`rejects notes exceeding ${FIELD_MAX_LONG} characters`, () => {
+    expect(enrollClientSchema.safeParse({ ...valid, notes: "x".repeat(FIELD_MAX_LONG + 1) }).success).toBe(false)
   })
 
-  it("accepts notes exactly 2000 characters", () => {
-    expect(enrollClientSchema.safeParse({ ...valid, notes: "x".repeat(2000) }).success).toBe(true)
+  it(`accepts notes exactly ${FIELD_MAX_LONG} characters`, () => {
+    expect(enrollClientSchema.safeParse({ ...valid, notes: "x".repeat(FIELD_MAX_LONG) }).success).toBe(true)
   })
 })
 
@@ -205,7 +207,7 @@ describe("enrollClientSchema", () => {
 
 describe("updateEnrollmentSchema", () => {
   it("accepts all valid status values", () => {
-    for (const status of ["active", "completed", "paused"] as const) {
+    for (const status of programStatusEnum.enumValues) {
       expect(updateEnrollmentSchema.safeParse({ status }).success).toBe(true)
     }
   })
@@ -222,11 +224,11 @@ describe("updateEnrollmentSchema", () => {
     expect(updateEnrollmentSchema.safeParse({ status: "completed", notes: "Great progress." }).success).toBe(true)
   })
 
-  it("rejects notes exceeding 2000 characters", () => {
-    expect(updateEnrollmentSchema.safeParse({ status: "active", notes: "x".repeat(2001) }).success).toBe(false)
+  it(`rejects notes exceeding ${FIELD_MAX_LONG} characters`, () => {
+    expect(updateEnrollmentSchema.safeParse({ status: "active", notes: "x".repeat(FIELD_MAX_LONG + 1) }).success).toBe(false)
   })
 
-  it("accepts notes exactly 2000 characters", () => {
-    expect(updateEnrollmentSchema.safeParse({ status: "active", notes: "x".repeat(2000) }).success).toBe(true)
+  it(`accepts notes exactly ${FIELD_MAX_LONG} characters`, () => {
+    expect(updateEnrollmentSchema.safeParse({ status: "active", notes: "x".repeat(FIELD_MAX_LONG) }).success).toBe(true)
   })
 })

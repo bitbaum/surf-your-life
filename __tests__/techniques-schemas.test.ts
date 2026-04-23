@@ -12,6 +12,15 @@ import {
   createAssignmentSchema,
   logTechniqueSchema,
 } from "@/lib/domain/techniques"
+import {
+  TECHNIQUE_NAME_MAX,
+  TECHNIQUE_DAILY_FREQUENCY_MAX,
+  TECHNIQUE_DEFAULT_MAX_DEBT_DAYS,
+  TECHNIQUE_DURATION_MINUTES,
+  FIELD_MAX_NOTES,
+  FIELD_MAX_LONG,
+} from "@/lib/constants"
+import { techniqueCategoryEnum, techniqueDifficultyEnum } from "@/lib/db/schema"
 
 // ─── createTechniqueSchema ────────────────────────────────────────────────────
 
@@ -44,28 +53,28 @@ describe("createTechniqueSchema", () => {
     expect(createTechniqueSchema.safeParse({ ...valid, name: "" }).success).toBe(false)
   })
 
-  it("rejects name exceeding 120 characters", () => {
-    expect(createTechniqueSchema.safeParse({ ...valid, name: "x".repeat(121) }).success).toBe(false)
+  it(`rejects name exceeding ${TECHNIQUE_NAME_MAX} characters`, () => {
+    expect(createTechniqueSchema.safeParse({ ...valid, name: "x".repeat(TECHNIQUE_NAME_MAX + 1) }).success).toBe(false)
   })
 
-  it("accepts name exactly 120 characters", () => {
-    expect(createTechniqueSchema.safeParse({ ...valid, name: "x".repeat(120) }).success).toBe(true)
+  it(`accepts name exactly ${TECHNIQUE_NAME_MAX} characters`, () => {
+    expect(createTechniqueSchema.safeParse({ ...valid, name: "x".repeat(TECHNIQUE_NAME_MAX) }).success).toBe(true)
   })
 
-  it("rejects description exceeding 500 characters", () => {
-    expect(createTechniqueSchema.safeParse({ ...valid, description: "x".repeat(501) }).success).toBe(false)
+  it(`rejects description exceeding ${FIELD_MAX_NOTES} characters`, () => {
+    expect(createTechniqueSchema.safeParse({ ...valid, description: "x".repeat(FIELD_MAX_NOTES + 1) }).success).toBe(false)
   })
 
-  it("rejects instructions exceeding 2000 characters", () => {
-    expect(createTechniqueSchema.safeParse({ ...valid, instructions: "x".repeat(2001) }).success).toBe(false)
+  it(`rejects instructions exceeding ${FIELD_MAX_LONG} characters`, () => {
+    expect(createTechniqueSchema.safeParse({ ...valid, instructions: "x".repeat(FIELD_MAX_LONG + 1) }).success).toBe(false)
   })
 
-  it("rejects durationMinutes below 1", () => {
-    expect(createTechniqueSchema.safeParse({ ...valid, durationMinutes: 0 }).success).toBe(false)
+  it(`rejects durationMinutes below ${TECHNIQUE_DURATION_MINUTES.min}`, () => {
+    expect(createTechniqueSchema.safeParse({ ...valid, durationMinutes: TECHNIQUE_DURATION_MINUTES.min - 1 }).success).toBe(false)
   })
 
-  it("rejects durationMinutes above 120", () => {
-    expect(createTechniqueSchema.safeParse({ ...valid, durationMinutes: 121 }).success).toBe(false)
+  it(`rejects durationMinutes above ${TECHNIQUE_DURATION_MINUTES.max}`, () => {
+    expect(createTechniqueSchema.safeParse({ ...valid, durationMinutes: TECHNIQUE_DURATION_MINUTES.max + 1 }).success).toBe(false)
   })
 
   it("rejects non-integer durationMinutes", () => {
@@ -73,7 +82,7 @@ describe("createTechniqueSchema", () => {
   })
 
   it("accepts all valid category values", () => {
-    for (const cat of ["breathwork", "movement", "mindfulness", "cognitive", "pacing", "sleep", "social"] as const) {
+    for (const cat of techniqueCategoryEnum.enumValues) {
       expect(createTechniqueSchema.safeParse({ ...valid, category: cat }).success).toBe(true)
     }
   })
@@ -83,7 +92,7 @@ describe("createTechniqueSchema", () => {
   })
 
   it("accepts all valid difficulty values", () => {
-    for (const d of ["easy", "moderate", "challenging"] as const) {
+    for (const d of techniqueDifficultyEnum.enumValues) {
       expect(createTechniqueSchema.safeParse({ ...valid, difficulty: d }).success).toBe(true)
     }
   })
@@ -137,7 +146,7 @@ describe("createAssignmentSchema", () => {
     clientId:    "550e8400-e29b-41d4-a716-446655440001",
     frequencyPerDay: 2,
     safetyCapMultiplier: 150,
-    maxDebtDays: 7,
+    maxDebtDays: TECHNIQUE_DEFAULT_MAX_DEBT_DAYS,
     startDate: "2024-09-01",
   }
 
@@ -165,8 +174,8 @@ describe("createAssignmentSchema", () => {
     expect(createAssignmentSchema.safeParse({ ...valid, frequencyPerDay: 0 }).success).toBe(false)
   })
 
-  it("rejects frequencyPerDay above 10", () => {
-    expect(createAssignmentSchema.safeParse({ ...valid, frequencyPerDay: 11 }).success).toBe(false)
+  it(`rejects frequencyPerDay above ${TECHNIQUE_DAILY_FREQUENCY_MAX}`, () => {
+    expect(createAssignmentSchema.safeParse({ ...valid, frequencyPerDay: TECHNIQUE_DAILY_FREQUENCY_MAX + 1 }).success).toBe(false)
   })
 
   it("rejects non-integer frequencyPerDay", () => {
@@ -198,8 +207,8 @@ describe("createAssignmentSchema", () => {
     expect(createAssignmentSchema.safeParse({ ...valid, endDate: "2024/12/31" }).success).toBe(false)
   })
 
-  it("rejects notes exceeding 500 characters", () => {
-    expect(createAssignmentSchema.safeParse({ ...valid, notes: "x".repeat(501) }).success).toBe(false)
+  it(`rejects notes exceeding ${FIELD_MAX_NOTES} characters`, () => {
+    expect(createAssignmentSchema.safeParse({ ...valid, notes: "x".repeat(FIELD_MAX_NOTES + 1) }).success).toBe(false)
   })
 })
 

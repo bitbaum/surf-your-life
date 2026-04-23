@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest"
 import { functionalAssessmentSchema, medicationEntrySchema } from "@/lib/domain/clinical"
-import { CAPACITY_SCALE } from "@/lib/constants"
+import { CAPACITY_SCALE, FIELD_MAX_LONG, FIELD_MAX_TITLE, FIELD_MAX_SHORT, FIELD_MAX_NOTES } from "@/lib/constants"
 
 // ─── functionalAssessmentSchema ───────────────────────────────────────────────
 
@@ -55,10 +55,10 @@ describe("functionalAssessmentSchema", () => {
 
   it("rejects optional capacity fields outside scale bounds", () => {
     expect(
-      functionalAssessmentSchema.safeParse({ overallCapacity: 5, cognitiveCapacity: 0 }).success
+      functionalAssessmentSchema.safeParse({ overallCapacity: 5, cognitiveCapacity: CAPACITY_SCALE.min - 1 }).success
     ).toBe(false)
     expect(
-      functionalAssessmentSchema.safeParse({ overallCapacity: 5, physicalCapacity: 11 }).success
+      functionalAssessmentSchema.safeParse({ overallCapacity: 5, physicalCapacity: CAPACITY_SCALE.max + 1 }).success
     ).toBe(false)
   })
 
@@ -67,10 +67,10 @@ describe("functionalAssessmentSchema", () => {
     expect(result.success).toBe(false)
   })
 
-  it("rejects notes exceeding max length", () => {
+  it(`rejects notes exceeding ${FIELD_MAX_LONG} characters`, () => {
     const result = functionalAssessmentSchema.safeParse({
       overallCapacity: 5,
-      notes: "x".repeat(2001),
+      notes: "x".repeat(FIELD_MAX_LONG + 1),
     })
     expect(result.success).toBe(false)
   })
@@ -102,20 +102,20 @@ describe("medicationEntrySchema", () => {
     expect(result.success).toBe(false)
   })
 
-  it("rejects medicationName exceeding 200 characters", () => {
-    const result = medicationEntrySchema.safeParse({ medicationName: "x".repeat(201) })
+  it(`rejects medicationName exceeding ${FIELD_MAX_TITLE} characters`, () => {
+    const result = medicationEntrySchema.safeParse({ medicationName: "x".repeat(FIELD_MAX_TITLE + 1) })
     expect(result.success).toBe(false)
   })
 
-  it("accepts medicationName at exactly 200 characters", () => {
-    const result = medicationEntrySchema.safeParse({ medicationName: "x".repeat(200) })
+  it(`accepts medicationName at exactly ${FIELD_MAX_TITLE} characters`, () => {
+    const result = medicationEntrySchema.safeParse({ medicationName: "x".repeat(FIELD_MAX_TITLE) })
     expect(result.success).toBe(true)
   })
 
-  it("rejects dose exceeding 100 characters", () => {
+  it(`rejects dose exceeding ${FIELD_MAX_SHORT} characters`, () => {
     const result = medicationEntrySchema.safeParse({
       medicationName: "Metoprolol",
-      dose: "x".repeat(101),
+      dose: "x".repeat(FIELD_MAX_SHORT + 1),
     })
     expect(result.success).toBe(false)
   })
@@ -128,10 +128,10 @@ describe("medicationEntrySchema", () => {
     expect(result.success).toBe(true)
   })
 
-  it("rejects notes exceeding 500 characters", () => {
+  it(`rejects notes exceeding ${FIELD_MAX_NOTES} characters`, () => {
     const result = medicationEntrySchema.safeParse({
       medicationName: "Metoprolol",
-      notes: "x".repeat(501),
+      notes: "x".repeat(FIELD_MAX_NOTES + 1),
     })
     expect(result.success).toBe(false)
   })

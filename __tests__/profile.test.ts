@@ -8,7 +8,16 @@ import {
   SYMPTOM_SCALE,
   PEM_SEVERITY_SCALE,
   PRACTITIONER_NOTE_MAX_LENGTH,
+  FIELD_MAX_TITLE,
+  FIELD_MAX_MESSAGE,
+  FIELD_MAX_LONG,
+  FIELD_MAX_JOURNAL,
+  HEIGHT_CM,
+  WEIGHT_KG,
+  WORK_HOURS_WEEK_MAX,
+  MAIN_CONCERNS,
 } from "@/lib/constants"
+import { checkInMoodEnum, activityLevelEnum } from "@/lib/db/schema"
 
 // ─── profileSchema ────────────────────────────────────────────────────────────
 
@@ -45,13 +54,13 @@ describe("profileSchema", () => {
     expect(result.success).toBe(true)
   })
 
-  it("rejects name longer than 200 characters", () => {
-    const result = profileSchema.safeParse({ name: "a".repeat(201) })
+  it(`rejects name longer than ${FIELD_MAX_TITLE} characters`, () => {
+    const result = profileSchema.safeParse({ name: "a".repeat(FIELD_MAX_TITLE + 1) })
     expect(result.success).toBe(false)
   })
 
-  it("rejects workHoursPerWeek > 168 (more than a full week)", () => {
-    const result = profileSchema.safeParse({ workHoursPerWeek: 169 })
+  it(`rejects workHoursPerWeek above ${WORK_HOURS_WEEK_MAX}`, () => {
+    const result = profileSchema.safeParse({ workHoursPerWeek: WORK_HOURS_WEEK_MAX + 1 })
     expect(result.success).toBe(false)
   })
 
@@ -66,30 +75,29 @@ describe("profileSchema", () => {
   })
 
   it("accepts all valid mainConcern values", () => {
-    const valid = ["burnout", "long_covid", "midlife_reinvention", "general_wellbeing", "other"]
-    for (const concern of valid) {
+    for (const concern of MAIN_CONCERNS) {
       const result = profileSchema.safeParse({ mainConcern: concern })
       expect(result.success).toBe(true)
     }
   })
 
-  it("rejects heightCm below 50", () => {
-    const result = profileSchema.safeParse({ heightCm: 49 })
+  it(`rejects heightCm below ${HEIGHT_CM.min}`, () => {
+    const result = profileSchema.safeParse({ heightCm: HEIGHT_CM.min - 1 })
     expect(result.success).toBe(false)
   })
 
-  it("rejects heightCm above 300", () => {
-    const result = profileSchema.safeParse({ heightCm: 301 })
+  it(`rejects heightCm above ${HEIGHT_CM.max}`, () => {
+    const result = profileSchema.safeParse({ heightCm: HEIGHT_CM.max + 1 })
     expect(result.success).toBe(false)
   })
 
-  it("rejects weightKg below 20", () => {
-    const result = profileSchema.safeParse({ weightKg: 19 })
+  it(`rejects weightKg below ${WEIGHT_KG.min}`, () => {
+    const result = profileSchema.safeParse({ weightKg: WEIGHT_KG.min - 1 })
     expect(result.success).toBe(false)
   })
 
-  it("rejects weightKg above 500", () => {
-    const result = profileSchema.safeParse({ weightKg: 501 })
+  it(`rejects weightKg above ${WEIGHT_KG.max}`, () => {
+    const result = profileSchema.safeParse({ weightKg: WEIGHT_KG.max + 1 })
     expect(result.success).toBe(false)
   })
 
@@ -113,8 +121,8 @@ describe("profileSchema", () => {
     expect(result.success).toBe(true)
   })
 
-  it("rejects goals longer than 5000 characters", () => {
-    const result = profileSchema.safeParse({ goals: "a".repeat(5001) })
+  it(`rejects goals longer than ${FIELD_MAX_MESSAGE} characters`, () => {
+    const result = profileSchema.safeParse({ goals: "a".repeat(FIELD_MAX_MESSAGE + 1) })
     expect(result.success).toBe(false)
   })
 })
@@ -170,8 +178,7 @@ describe("checkInSchema", () => {
   })
 
   it("accepts all valid mood values", () => {
-    const moods = ["very_low", "low", "neutral", "good", "excellent"]
-    for (const mood of moods) {
+    for (const mood of checkInMoodEnum.enumValues) {
       const result = checkInSchema.safeParse({ ...VALID_BASE, mood })
       expect(result.success).toBe(true)
     }
@@ -218,8 +225,7 @@ describe("checkInSchema", () => {
   })
 
   it("accepts all valid activityLevel values", () => {
-    const levels = ["rest", "light", "moderate", "active"]
-    for (const activityLevel of levels) {
+    for (const activityLevel of activityLevelEnum.enumValues) {
       const result = checkInSchema.safeParse({ ...VALID_BASE, activityLevel })
       expect(result.success).toBe(true)
     }
@@ -230,13 +236,13 @@ describe("checkInSchema", () => {
     expect(checkInSchema.safeParse({ ...VALID_BASE, sleepQuality: SLEEP_QUALITY_SCALE.max + 1 }).success).toBe(false)
   })
 
-  it("rejects notes longer than 2000 characters", () => {
-    const result = checkInSchema.safeParse({ ...VALID_BASE, notes: "a".repeat(2001) })
+  it(`rejects notes longer than ${FIELD_MAX_LONG} characters`, () => {
+    const result = checkInSchema.safeParse({ ...VALID_BASE, notes: "a".repeat(FIELD_MAX_LONG + 1) })
     expect(result.success).toBe(false)
   })
 
-  it("rejects journalEntry longer than 3000 characters", () => {
-    const result = checkInSchema.safeParse({ ...VALID_BASE, journalEntry: "a".repeat(3001) })
+  it(`rejects journalEntry longer than ${FIELD_MAX_JOURNAL} characters`, () => {
+    const result = checkInSchema.safeParse({ ...VALID_BASE, journalEntry: "a".repeat(FIELD_MAX_JOURNAL + 1) })
     expect(result.success).toBe(false)
   })
 })

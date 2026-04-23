@@ -9,6 +9,15 @@ import { createBookingSchema } from "@/lib/domain/booking"
 import { contactSchema, newsletterSchema } from "@/lib/domain/lead"
 import { serviceSchema, serviceUpdateSchema } from "@/lib/domain/services"
 import { createThreadSchema, sendMessageSchema } from "@/lib/domain/messaging"
+import {
+  FIELD_MAX_TITLE,
+  FIELD_MAX_SHORT,
+  FIELD_MAX_MEDIUM,
+  FIELD_MAX_MESSAGE,
+  SERVICE_DURATION_MINUTES,
+  BOOKING_TIME_PREFERENCE_VALUES,
+} from "@/lib/constants"
+import { SERVICE_CATEGORIES } from "@/lib/domain/services"
 
 // ─── createBookingSchema ──────────────────────────────────────────────────────
 
@@ -30,7 +39,7 @@ describe("createBookingSchema", () => {
   })
 
   it("accepts all valid time preference values", () => {
-    for (const time of ["morning", "afternoon", "flexible"] as const) {
+    for (const time of BOOKING_TIME_PREFERENCE_VALUES) {
       expect(createBookingSchema.safeParse({ ...valid, preferredTime: time }).success).toBe(true)
     }
   })
@@ -49,12 +58,12 @@ describe("createBookingSchema", () => {
     expect(createBookingSchema.safeParse({ ...valid, preferredDate: "20240715" }).success).toBe(false)
   })
 
-  it("accepts notes up to 1000 characters", () => {
-    expect(createBookingSchema.safeParse({ ...valid, notes: "x".repeat(1000) }).success).toBe(true)
+  it(`accepts notes up to ${FIELD_MAX_MEDIUM} characters`, () => {
+    expect(createBookingSchema.safeParse({ ...valid, notes: "x".repeat(FIELD_MAX_MEDIUM) }).success).toBe(true)
   })
 
-  it("rejects notes exceeding 1000 characters", () => {
-    expect(createBookingSchema.safeParse({ ...valid, notes: "x".repeat(1001) }).success).toBe(false)
+  it(`rejects notes exceeding ${FIELD_MAX_MEDIUM} characters`, () => {
+    expect(createBookingSchema.safeParse({ ...valid, notes: "x".repeat(FIELD_MAX_MEDIUM + 1) }).success).toBe(false)
   })
 
   it("rejects missing required fields", () => {
@@ -85,12 +94,12 @@ describe("contactSchema", () => {
     expect(contactSchema.safeParse({ ...valid, name: "" }).success).toBe(false)
   })
 
-  it("rejects name exceeding 200 characters", () => {
-    expect(contactSchema.safeParse({ ...valid, name: "x".repeat(201) }).success).toBe(false)
+  it(`rejects name exceeding ${FIELD_MAX_TITLE} characters`, () => {
+    expect(contactSchema.safeParse({ ...valid, name: "x".repeat(FIELD_MAX_TITLE + 1) }).success).toBe(false)
   })
 
-  it("accepts name exactly 200 characters", () => {
-    expect(contactSchema.safeParse({ ...valid, name: "x".repeat(200) }).success).toBe(true)
+  it(`accepts name exactly ${FIELD_MAX_TITLE} characters`, () => {
+    expect(contactSchema.safeParse({ ...valid, name: "x".repeat(FIELD_MAX_TITLE) }).success).toBe(true)
   })
 
   it("rejects invalid email", () => {
@@ -102,12 +111,12 @@ describe("contactSchema", () => {
     expect(contactSchema.safeParse({ ...valid, email: long }).success).toBe(false)
   })
 
-  it("rejects message exceeding 5000 characters", () => {
-    expect(contactSchema.safeParse({ ...valid, message: "x".repeat(5001) }).success).toBe(false)
+  it(`rejects message exceeding ${FIELD_MAX_MESSAGE} characters`, () => {
+    expect(contactSchema.safeParse({ ...valid, message: "x".repeat(FIELD_MAX_MESSAGE + 1) }).success).toBe(false)
   })
 
-  it("accepts message exactly 5000 characters", () => {
-    expect(contactSchema.safeParse({ ...valid, message: "x".repeat(5000) }).success).toBe(true)
+  it(`accepts message exactly ${FIELD_MAX_MESSAGE} characters`, () => {
+    expect(contactSchema.safeParse({ ...valid, message: "x".repeat(FIELD_MAX_MESSAGE) }).success).toBe(true)
   })
 })
 
@@ -138,8 +147,8 @@ describe("newsletterSchema", () => {
     expect(newsletterSchema.safeParse({ email: "not-an-email" }).success).toBe(false)
   })
 
-  it("rejects source exceeding 100 characters", () => {
-    expect(newsletterSchema.safeParse({ email: "sub@example.com", source: "x".repeat(101) }).success).toBe(false)
+  it(`rejects source exceeding ${FIELD_MAX_SHORT} characters`, () => {
+    expect(newsletterSchema.safeParse({ email: "sub@example.com", source: "x".repeat(FIELD_MAX_SHORT + 1) }).success).toBe(false)
   })
 
   it("rejects missing email", () => {
@@ -166,7 +175,7 @@ describe("serviceSchema", () => {
   })
 
   it("accepts all valid category values", () => {
-    for (const cat of ["machine", "space", "consultation"] as const) {
+    for (const cat of SERVICE_CATEGORIES) {
       expect(serviceSchema.safeParse({ ...valid, category: cat }).success).toBe(true)
     }
   })
@@ -179,21 +188,21 @@ describe("serviceSchema", () => {
     expect(serviceSchema.safeParse({ ...valid, name: "" }).success).toBe(false)
   })
 
-  it("rejects name exceeding 100 characters", () => {
-    expect(serviceSchema.safeParse({ ...valid, name: "x".repeat(101) }).success).toBe(false)
+  it(`rejects name exceeding ${FIELD_MAX_SHORT} characters`, () => {
+    expect(serviceSchema.safeParse({ ...valid, name: "x".repeat(FIELD_MAX_SHORT + 1) }).success).toBe(false)
   })
 
-  it("rejects durationMinutes below 5", () => {
-    expect(serviceSchema.safeParse({ ...valid, durationMinutes: 4 }).success).toBe(false)
+  it(`rejects durationMinutes below ${SERVICE_DURATION_MINUTES.min}`, () => {
+    expect(serviceSchema.safeParse({ ...valid, durationMinutes: SERVICE_DURATION_MINUTES.min - 1 }).success).toBe(false)
   })
 
-  it("rejects durationMinutes above 480", () => {
-    expect(serviceSchema.safeParse({ ...valid, durationMinutes: 481 }).success).toBe(false)
+  it(`rejects durationMinutes above ${SERVICE_DURATION_MINUTES.max}`, () => {
+    expect(serviceSchema.safeParse({ ...valid, durationMinutes: SERVICE_DURATION_MINUTES.max + 1 }).success).toBe(false)
   })
 
-  it("accepts boundary values for durationMinutes (5 and 480)", () => {
-    expect(serviceSchema.safeParse({ ...valid, durationMinutes: 5 }).success).toBe(true)
-    expect(serviceSchema.safeParse({ ...valid, durationMinutes: 480 }).success).toBe(true)
+  it(`accepts boundary values for durationMinutes (${SERVICE_DURATION_MINUTES.min} and ${SERVICE_DURATION_MINUTES.max})`, () => {
+    expect(serviceSchema.safeParse({ ...valid, durationMinutes: SERVICE_DURATION_MINUTES.min }).success).toBe(true)
+    expect(serviceSchema.safeParse({ ...valid, durationMinutes: SERVICE_DURATION_MINUTES.max }).success).toBe(true)
   })
 
   it("rejects non-integer durationMinutes", () => {
@@ -255,16 +264,16 @@ describe("createThreadSchema", () => {
     expect(createThreadSchema.safeParse({ ...valid, subject: "" }).success).toBe(false)
   })
 
-  it("rejects subject exceeding 200 characters", () => {
-    expect(createThreadSchema.safeParse({ ...valid, subject: "x".repeat(201) }).success).toBe(false)
+  it(`rejects subject exceeding ${FIELD_MAX_TITLE} characters`, () => {
+    expect(createThreadSchema.safeParse({ ...valid, subject: "x".repeat(FIELD_MAX_TITLE + 1) }).success).toBe(false)
   })
 
   it("rejects empty body", () => {
     expect(createThreadSchema.safeParse({ ...valid, body: "" }).success).toBe(false)
   })
 
-  it("rejects body exceeding 5000 characters", () => {
-    expect(createThreadSchema.safeParse({ ...valid, body: "x".repeat(5001) }).success).toBe(false)
+  it(`rejects body exceeding ${FIELD_MAX_MESSAGE} characters`, () => {
+    expect(createThreadSchema.safeParse({ ...valid, body: "x".repeat(FIELD_MAX_MESSAGE + 1) }).success).toBe(false)
   })
 
   it("rejects non-UUID clientId", () => {
@@ -283,12 +292,12 @@ describe("sendMessageSchema", () => {
     expect(sendMessageSchema.safeParse({ body: "" }).success).toBe(false)
   })
 
-  it("rejects body exceeding 5000 characters", () => {
-    expect(sendMessageSchema.safeParse({ body: "x".repeat(5001) }).success).toBe(false)
+  it(`rejects body exceeding ${FIELD_MAX_MESSAGE} characters`, () => {
+    expect(sendMessageSchema.safeParse({ body: "x".repeat(FIELD_MAX_MESSAGE + 1) }).success).toBe(false)
   })
 
-  it("accepts body exactly 5000 characters", () => {
-    expect(sendMessageSchema.safeParse({ body: "x".repeat(5000) }).success).toBe(true)
+  it(`accepts body exactly ${FIELD_MAX_MESSAGE} characters`, () => {
+    expect(sendMessageSchema.safeParse({ body: "x".repeat(FIELD_MAX_MESSAGE) }).success).toBe(true)
   })
 
   it("rejects missing body", () => {
