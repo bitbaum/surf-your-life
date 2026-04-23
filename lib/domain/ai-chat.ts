@@ -12,6 +12,8 @@ import { db } from "@/lib/db"
 import { checkIns, medicationLog, functionalAssessments } from "@/lib/db/schema"
 import { eq, desc, isNull, and } from "drizzle-orm"
 import { SEVEN_DAYS_MS, MOOD_SCORE, AI_CONTEXT_CHECKINS, AI_CHAT_CONTEXT_WINDOW, AI_CHAT_CHECKIN_CONTEXT_LIMIT, AI_CHAT_JOURNAL_EXCERPT_LENGTH } from "@/lib/constants"
+import { summariseCheckIns } from "@/lib/domain/check-in"
+export { summariseCheckIns, type CheckInSummaryRow } from "@/lib/domain/check-in"
 import { callClaude } from "@/lib/domain/anthropic"
 import { semanticCheckInSearch } from "@/lib/domain/embeddings"
 
@@ -76,37 +78,8 @@ type CheckInRow = BuildContextResult["recent"][number]
 type MedicationRow = BuildContextResult["medications"][number]
 type AssessmentRow = NonNullable<BuildContextResult["latestAssessment"]>
 
-/** Fields of a check-in row needed by summariseCheckIns — exported for tests. */
-export type CheckInSummaryRow = {
-  mood: string | null
-  energyLevel: number | null
-  sleepHours: number | null
-  pemFlag: boolean | null
-  stressLevel: number | null
-}
-
 function getJournalText(r: CheckInRow): string | null {
   return r.journalEntry ?? r.notes ?? null
-}
-
-export function summariseCheckIns(rows: CheckInSummaryRow[]) {
-  if (rows.length === 0) return null
-
-  const avgEnergy =
-    rows.reduce((s, r) => s + (r.energyLevel ?? 0), 0) / rows.length
-  const sleepRows = rows.filter((r) => r.sleepHours != null)
-  const avgSleep = sleepRows.length > 0
-    ? sleepRows.reduce((s, r) => s + (r.sleepHours ?? 0), 0) / sleepRows.length
-    : null
-  const pemCount = rows.filter((r) => r.pemFlag).length
-  const avgStress =
-    rows.filter((r) => r.stressLevel != null).reduce((s, r) => s + (r.stressLevel ?? 0), 0) /
-    Math.max(rows.filter((r) => r.stressLevel != null).length, 1)
-
-  const avgMoodNum =
-    rows.reduce((s, r) => s + (MOOD_SCORE[r.mood ?? "neutral"] ?? 3), 0) / rows.length
-
-  return { avgEnergy, avgSleep, pemCount, avgStress, avgMoodNum, count: rows.length }
 }
 
 // ─── Rule-based response ──────────────────────────────────────────────────────

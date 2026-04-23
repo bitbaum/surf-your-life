@@ -1,16 +1,11 @@
 /**
- * Unit tests for the summariseCheckIns function in lib/domain/ai-chat.
+ * Unit tests for the summariseCheckIns function in lib/domain/check-in.
  *
- * ai-chat.ts imports from lib/db (Drizzle client), so we mock it.
- * The summariseCheckIns function itself is pure — it takes check-in rows
- * and returns aggregated stats with no DB or network calls.
+ * check-in.ts is pure — no DB or network calls, no mocks required.
  */
-import { describe, it, expect, vi } from "vitest"
+import { describe, it, expect } from "vitest"
 
-vi.mock("@/lib/db", () => ({ db: {} }))
-vi.mock("@/lib/domain/embeddings", () => ({ semanticCheckInSearch: vi.fn() }))
-
-import { summariseCheckIns, type CheckInSummaryRow } from "@/lib/domain/ai-chat"
+import { summariseCheckIns, type CheckInSummaryRow } from "@/lib/domain/check-in"
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
 

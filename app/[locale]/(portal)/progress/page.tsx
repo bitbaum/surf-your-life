@@ -9,7 +9,8 @@ import { PageHeader } from "@/components/ui/page-header"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { formatDate } from "@/lib/utils"
 import { Link } from "@/i18n/navigation"
-import { NINETY_DAYS_MS, MOOD_SCORE } from "@/lib/constants"
+import { NINETY_DAYS_MS } from "@/lib/constants"
+import { summariseCheckIns } from "@/lib/domain/check-in"
 
 export default async function ProgressPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
@@ -37,6 +38,8 @@ export default async function ProgressPage({ params }: { params: Promise<{ local
         energyLevel: true,
         mood: true,
         pemFlag: true,
+        sleepHours: true,
+        stressLevel: true,
         createdAt: true,
       },
     }),
@@ -49,15 +52,11 @@ export default async function ProgressPage({ params }: { params: Promise<{ local
     : null
 
   // 90-day summary stats
-  const totalCheckIns = recentCheckIns.length
-  const pemEpisodes = recentCheckIns.filter((r) => r.pemFlag).length
-  const avgEnergy = totalCheckIns > 0
-    ? recentCheckIns.reduce((s, r) => s + r.energyLevel, 0) / totalCheckIns
-    : null
-
-  const avgMoodNum = totalCheckIns > 0
-    ? recentCheckIns.reduce((s, r) => s + (MOOD_SCORE[r.mood ?? "neutral"] ?? 3), 0) / totalCheckIns
-    : null
+  const stats = summariseCheckIns(recentCheckIns)
+  const totalCheckIns = stats?.count ?? 0
+  const pemEpisodes = stats?.pemCount ?? 0
+  const avgEnergy = stats?.avgEnergy ?? null
+  const avgMoodNum = stats?.avgMoodNum ?? null
 
   return (
     <div className="max-w-2xl mx-auto">

@@ -1,5 +1,46 @@
-import { DAY_MS } from "@/lib/constants"
+import { DAY_MS, MOOD_SCORE, MOODS } from "@/lib/constants"
 import type { ProgramPhase } from "./program"
+
+// ─── Check-in stats summary ────────────────────────────────────────────────
+
+/** Minimal check-in shape required by summariseCheckIns. */
+export type CheckInSummaryRow = {
+  mood: string | null
+  energyLevel: number | null
+  sleepHours: number | null
+  pemFlag: boolean | null
+  stressLevel: number | null
+}
+
+/**
+ * Aggregate a set of check-in rows into summary statistics.
+ * Pure function — no DB access, no side effects.
+ * Returns null for empty input.
+ */
+export function summariseCheckIns(rows: CheckInSummaryRow[]) {
+  if (rows.length === 0) return null
+
+  const avgEnergy = rows.reduce((s, r) => s + (r.energyLevel ?? 0), 0) / rows.length
+
+  const sleepRows = rows.filter((r) => r.sleepHours != null)
+  const avgSleep = sleepRows.length > 0
+    ? sleepRows.reduce((s, r) => s + (r.sleepHours ?? 0), 0) / sleepRows.length
+    : null
+
+  const pemCount = rows.filter((r) => r.pemFlag).length
+
+  const stressRows = rows.filter((r) => r.stressLevel != null)
+  const avgStress = stressRows.reduce((s, r) => s + (r.stressLevel ?? 0), 0) /
+    Math.max(stressRows.length, 1)
+
+  const avgMoodNum = rows.reduce((s, r) => s + (MOOD_SCORE[r.mood ?? "neutral"] ?? 3), 0) / rows.length
+
+  // Reverse-map numeric average back to a human-readable mood label
+  const avgMoodScore = Math.round(avgMoodNum)
+  const avgMood = MOODS.find((m) => MOOD_SCORE[m.value] === avgMoodScore)?.label.toLowerCase() ?? "neutral"
+
+  return { avgEnergy, avgSleep, pemCount, avgStress, avgMoodNum, avgMood, count: rows.length }
+}
 
 // ─── Streak ────────────────────────────────────────────────────────────────
 

@@ -10,7 +10,8 @@ import { db } from "@/lib/db"
 import { users, checkIns, clientAlerts } from "@/lib/db/schema"
 import { eq, and, gte, desc, inArray, count } from "drizzle-orm"
 import { STAFF_ROLES, CLIENT_ROLE } from "@/lib/domain/auth"
-import { SEVEN_DAYS_MS, SITE_URL, MOOD_SCORE, MOODS, AI_DIGEST_MIN_CHECKINS , API_ERR_UNAUTHORIZED } from "@/lib/constants"
+import { SEVEN_DAYS_MS, SITE_URL, AI_DIGEST_MIN_CHECKINS, API_ERR_UNAUTHORIZED } from "@/lib/constants"
+import { summariseCheckIns } from "@/lib/domain/check-in"
 import { callClaude } from "@/lib/domain/anthropic"
 import { sendEmail } from "@/lib/email"
 import { practitionerWeeklyDigestEmail, type PractitionerDigestClientRow } from "@/lib/email/templates"
@@ -164,22 +165,10 @@ export async function GET(req: Request) {
     processed++
 
     // Collect stats for the practitioner digest email
-    const energyValues = weekCheckIns
-      .map((r) => r.energyLevel)
-      .filter((v): v is number => v != null)
-    const avgEnergy = energyValues.length > 0
-      ? Math.round((energyValues.reduce((a, b) => a + b, 0) / energyValues.length) * 10) / 10
-      : 0
-
-    const moodValues = weekCheckIns
-      .map((r) => r.mood ? (MOOD_SCORE[r.mood] ?? null) : null)
-      .filter((v): v is number => v != null)
-    const avgMoodScore = moodValues.length > 0
-      ? Math.round(moodValues.reduce((a, b) => a + b, 0) / moodValues.length)
-      : 3
-    const avgMood = MOODS.find((m) => MOOD_SCORE[m.value] === avgMoodScore)?.label.toLowerCase() ?? "neutral"
-
-    const pemEpisodes = weekCheckIns.filter((r) => r.pemFlag === true).length
+    const stats = summariseCheckIns(weekCheckIns)!
+    const avgEnergy = Math.round(stats.avgEnergy * 10) / 10
+    const avgMood = stats.avgMood
+    const pemEpisodes = stats.pemCount
 
     digestRows.push({
       name: client.name ?? client.email,

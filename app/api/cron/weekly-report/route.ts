@@ -9,8 +9,9 @@ import { users, checkIns } from "@/lib/db/schema"
 import { eq, and, gte, inArray } from "drizzle-orm"
 import { sendEmail } from "@/lib/email"
 import { weeklyReportEmail } from "@/lib/email/templates"
-import { SITE_URL, SEVEN_DAYS_MS, MOOD_SCORE, MOODS , API_ERR_UNAUTHORIZED } from "@/lib/constants"
+import { SITE_URL, SEVEN_DAYS_MS, API_ERR_UNAUTHORIZED } from "@/lib/constants"
 import { CLIENT_ROLE } from "@/lib/domain/auth"
+import { summariseCheckIns } from "@/lib/domain/check-in"
 
 export async function GET(req: Request) {
   const authHeader = req.headers.get("authorization")
@@ -33,7 +34,7 @@ export async function GET(req: Request) {
       inArray(checkIns.userId, allClients.map((c) => c.id)),
       gte(checkIns.createdAt, sevenDaysAgo)
     ),
-    columns: { userId: true, energyLevel: true, mood: true, pemFlag: true, wins: true },
+    columns: { userId: true, energyLevel: true, mood: true, pemFlag: true, wins: true, sleepHours: true, stressLevel: true },
   })
 
   // Group by userId in memory
@@ -50,14 +51,10 @@ export async function GET(req: Request) {
 
     if (weekCheckIns.length === 0) continue // skip clients with no check-ins this week
 
-    const avgEnergy = Math.round(
-      weekCheckIns.reduce((s, ci) => s + ci.energyLevel, 0) / weekCheckIns.length
-    )
-    const avgMoodScore = Math.round(
-      weekCheckIns.reduce((s, ci) => s + (MOOD_SCORE[ci.mood] ?? 3), 0) / weekCheckIns.length
-    )
-    const avgMood = MOODS.find((m) => MOOD_SCORE[m.value] === avgMoodScore)?.label.toLowerCase() ?? "neutral"
-    const pemEpisodes = weekCheckIns.filter((ci) => ci.pemFlag).length
+    const stats = summariseCheckIns(weekCheckIns)!
+    const avgEnergy = Math.round(stats.avgEnergy)
+    const avgMood = stats.avgMood
+    const pemEpisodes = stats.pemCount
     const topWin = weekCheckIns.find((ci) => ci.wins)?.wins ?? null
 
     const now = new Date()
