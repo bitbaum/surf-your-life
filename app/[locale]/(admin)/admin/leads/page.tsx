@@ -44,21 +44,13 @@ export default async function LeadsPage({
     statusFilter !== "all" ? eq(leads.status, statusFilter) : undefined
 
   const [all, totalResult] = await Promise.all([
-    whereClause
-      ? db.query.leads.findMany({
-          where: whereClause,
-          orderBy: [desc(leads.createdAt)],
-          limit: PAGINATION_DEFAULT,
-          offset,
-        })
-      : db.query.leads.findMany({
-          orderBy: [desc(leads.createdAt)],
-          limit: PAGINATION_DEFAULT,
-          offset,
-        }),
-    whereClause
-      ? db.select({ count: count() }).from(leads).where(whereClause)
-      : db.select({ count: count() }).from(leads),
+    db.query.leads.findMany({
+      where: whereClause,
+      orderBy: [desc(leads.createdAt)],
+      limit: PAGINATION_DEFAULT,
+      offset,
+    }),
+    db.select({ count: count() }).from(leads).where(whereClause),
   ])
 
   const total = totalResult[0]?.count ?? 0
