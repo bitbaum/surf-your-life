@@ -694,7 +694,9 @@
       "moodGood": "Good",
       "moodNeutral": "Neutral",
       "moodLow": "Low",
-      "moodVeryLow": "Very low"
+      "moodVeryLow": "Very low",
+      "avgSleep": "Avg sleep",
+      "avgStress": "Avg stress"
     },
     "medications": {
       "title": "Medications",

@@ -56,6 +56,8 @@ export default async function ProgressPage({ params }: { params: Promise<{ local
   const totalCheckIns = stats?.count ?? 0
   const pemEpisodes = stats?.pemCount ?? 0
   const avgEnergy = stats?.avgEnergy ?? null
+  const avgSleep = stats?.avgSleep ?? null
+  const avgStress = stats?.avgStress ?? null
   const avgMoodNum = stats?.avgMoodNum ?? null
   // Round to nearest mood score (1–5) for display — keeps consistent with summariseCheckIns
   const avgMoodLabel = avgMoodNum == null ? null
@@ -150,7 +152,7 @@ export default async function ProgressPage({ params }: { params: Promise<{ local
             <CardTitle className="text-base">{t("ninetyDaySummary")}</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
               <div className="flex flex-col gap-0.5">
                 <span className="text-xs text-slate-500">{t("avgEnergy")}</span>
                 <span className="text-xl font-bold text-slate-900">
@@ -162,6 +164,20 @@ export default async function ProgressPage({ params }: { params: Promise<{ local
                 <span className="text-xs text-slate-500">{t("avgMood")}</span>
                 <span className="text-xl font-bold text-slate-900">
                   {avgMoodLabel == null ? "—" : t(avgMoodLabel)}
+                </span>
+              </div>
+              <div className="flex flex-col gap-0.5">
+                <span className="text-xs text-slate-500">{t("avgSleep")}</span>
+                <span className="text-xl font-bold text-slate-900">
+                  {avgSleep != null ? avgSleep.toFixed(1) : "—"}
+                  {avgSleep != null && <span className="text-xs font-normal text-slate-400">h</span>}
+                </span>
+              </div>
+              <div className="flex flex-col gap-0.5">
+                <span className="text-xs text-slate-500">{t("avgStress")}</span>
+                <span className="text-xl font-bold text-slate-900">
+                  {avgStress != null ? avgStress.toFixed(1) : "—"}
+                  {avgStress != null && <span className="text-xs font-normal text-slate-400">/10</span>}
                 </span>
               </div>
               <div className="flex flex-col gap-0.5">

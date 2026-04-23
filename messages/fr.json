@@ -694,7 +694,9 @@
       "moodGood": "Bien",
       "moodNeutral": "Neutre",
       "moodLow": "Bas",
-      "moodVeryLow": "Très bas"
+      "moodVeryLow": "Très bas",
+      "avgSleep": "Sommeil moy.",
+      "avgStress": "Stress moy."
     },
     "medications": {
       "title": "Médicaments",
