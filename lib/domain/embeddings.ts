@@ -6,7 +6,7 @@
 import { db } from "@/lib/db"
 import { checkIns, documents } from "@/lib/db/schema"
 import { and, eq, isNotNull, sql } from "drizzle-orm"
-import { AI_CONTEXT_CHECKINS } from "@/lib/constants"
+import { AI_CONTEXT_CHECKINS, EMBEDDING_DIMENSIONS } from "@/lib/constants"
 
 async function generateEmbedding(text: string): Promise<number[] | null> {
   const apiKey = process.env.OPENAI_API_KEY
@@ -22,7 +22,7 @@ async function generateEmbedding(text: string): Promise<number[] | null> {
       body: JSON.stringify({
         model: "text-embedding-3-small",
         input: text,
-        dimensions: 1536,
+        dimensions: EMBEDDING_DIMENSIONS,
       }),
     })
 

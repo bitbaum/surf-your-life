@@ -293,6 +293,10 @@ export const FIELD_MAX_LONG = 2000          // long descriptions, instructions, 
 export const FIELD_MAX_JOURNAL = 3000       // check-in journal / reflection
 export const FIELD_MAX_MESSAGE = 5000       // message body text
 
+// pgvector embedding dimensions — must match the vector(1536) columns in lib/db/schema.ts
+// (schema cannot import this constant without creating a circular dependency)
+export const EMBEDDING_DIMENSIONS = 1536
+
 // Assessment capacity dimensions (ordered: overall first, then sub-dimensions)
 export const ASSESSMENT_DIMENSIONS = [
   { key: "overallCapacity",   required: true },

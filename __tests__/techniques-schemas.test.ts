@@ -258,12 +258,12 @@ describe("logTechniqueSchema", () => {
     expect(logTechniqueSchema.safeParse({ ...valid, isRestDay: true }).success).toBe(true)
   })
 
-  it("rejects notes exceeding 300 characters", () => {
-    expect(logTechniqueSchema.safeParse({ ...valid, notes: "x".repeat(301) }).success).toBe(false)
+  it(`rejects notes exceeding ${FIELD_MAX_NOTES} characters`, () => {
+    expect(logTechniqueSchema.safeParse({ ...valid, notes: "x".repeat(FIELD_MAX_NOTES + 1) }).success).toBe(false)
   })
 
-  it("accepts notes exactly 300 characters", () => {
-    expect(logTechniqueSchema.safeParse({ ...valid, notes: "x".repeat(300) }).success).toBe(true)
+  it(`accepts notes exactly ${FIELD_MAX_NOTES} characters`, () => {
+    expect(logTechniqueSchema.safeParse({ ...valid, notes: "x".repeat(FIELD_MAX_NOTES) }).success).toBe(true)
   })
 
   it("rejects missing required fields", () => {

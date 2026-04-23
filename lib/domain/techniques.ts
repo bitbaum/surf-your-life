@@ -44,7 +44,7 @@ export const logTechniqueSchema = z.object({
   assignmentId: z.string().uuid(),
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   completedReps: z.number().int().min(1).max(20),
-  notes: z.string().max(300).optional(),
+  notes: z.string().max(FIELD_MAX_NOTES).optional(),
   isRestDay: z.boolean().default(false),
 })
 
