@@ -1,3 +1,4 @@
+import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { isStaff } from "@/lib/domain/auth"
 import { db } from "@/lib/db"
@@ -7,9 +8,9 @@ import { API_ERR_FORBIDDEN, API_ERR_NOT_FOUND, API_ERR_UNAUTHORIZED } from "@/li
 
 export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth()
-  if (!session) return Response.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
+  if (!session) return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
   if (!isStaff(session.user.role)) {
-    return Response.json({ success: false, error: API_ERR_FORBIDDEN }, { status: 403 })
+    return NextResponse.json({ success: false, error: API_ERR_FORBIDDEN }, { status: 403 })
   }
 
   const { id } = await params
@@ -18,7 +19,7 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
   const existing = await db.query.techniqueAssignments.findFirst({
     where: eq(techniqueAssignments.id, id),
   })
-  if (!existing) return Response.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
+  if (!existing) return NextResponse.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
 
   const [updated] = await db
     .update(techniqueAssignments)
@@ -26,7 +27,7 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
     .where(and(eq(techniqueAssignments.id, id), eq(techniqueAssignments.isActive, true)))
     .returning()
 
-  if (!updated) return Response.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
+  if (!updated) return NextResponse.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
 
-  return Response.json({ success: true })
+  return NextResponse.json({ success: true })
 }

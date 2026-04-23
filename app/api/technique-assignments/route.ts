@@ -1,3 +1,4 @@
+import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { isStaff } from "@/lib/domain/auth"
 import { db } from "@/lib/db"
@@ -8,7 +9,7 @@ import { API_ERR_FORBIDDEN, API_ERR_UNAUTHORIZED } from "@/lib/constants"
 
 export async function GET(req: Request) {
   const session = await auth()
-  if (!session) return Response.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
+  if (!session) return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
 
   const { searchParams } = new URL(req.url)
   const clientId = searchParams.get("clientId")
@@ -28,20 +29,20 @@ export async function GET(req: Request) {
     orderBy: (a, { asc }) => [asc(a.createdAt)],
   })
 
-  return Response.json({ success: true, data: rows })
+  return NextResponse.json({ success: true, data: rows })
 }
 
 export async function POST(req: Request) {
   const session = await auth()
-  if (!session) return Response.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
+  if (!session) return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
   if (!isStaff(session.user.role)) {
-    return Response.json({ success: false, error: API_ERR_FORBIDDEN }, { status: 403 })
+    return NextResponse.json({ success: false, error: API_ERR_FORBIDDEN }, { status: 403 })
   }
 
   const body = await req.json()
   const result = createAssignmentSchema.safeParse(body)
   if (!result.success) {
-    return Response.json({ success: false, error: result.error.flatten() }, { status: 400 })
+    return NextResponse.json({ success: false, error: result.error.flatten() }, { status: 400 })
   }
 
   const [assignment] = await db
@@ -54,5 +55,5 @@ export async function POST(req: Request) {
     })
     .returning()
 
-  return Response.json({ success: true, data: assignment }, { status: 201 })
+  return NextResponse.json({ success: true, data: assignment }, { status: 201 })
 }

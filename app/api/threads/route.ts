@@ -1,3 +1,4 @@
+import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { isStaff } from "@/lib/domain/auth"
 import { db } from "@/lib/db"
@@ -8,7 +9,7 @@ import { PAGINATION_DEFAULT, SITE_URL, API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZ
 
 export async function GET() {
   const session = await auth()
-  if (!session) return Response.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
+  if (!session) return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
 
   const isAdmin = isStaff(session.user.role)
 
@@ -26,19 +27,19 @@ export async function GET() {
     },
   })
 
-  return Response.json({ success: true, data: rows })
+  return NextResponse.json({ success: true, data: rows })
 }
 
 export async function POST(request: Request) {
   const session = await auth()
-  if (!session) return Response.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
+  if (!session) return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
 
   const body = await request.json().catch(() => null)
-  if (!body) return Response.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })
+  if (!body) return NextResponse.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })
 
   const parsed = createThreadSchema.safeParse(body)
   if (!parsed.success) {
-    return Response.json({ success: false, error: "Validation failed", details: parsed.error.flatten() }, { status: 422 })
+    return NextResponse.json({ success: false, error: "Validation failed", details: parsed.error.flatten() }, { status: 422 })
   }
 
   const isAdmin = isStaff(session.user.role)
@@ -46,7 +47,7 @@ export async function POST(request: Request) {
   let clientId: string
   if (isAdmin) {
     if (!parsed.data.clientId) {
-      return Response.json({ success: false, error: "clientId required for admin" }, { status: 422 })
+      return NextResponse.json({ success: false, error: "clientId required for admin" }, { status: 422 })
     }
     clientId = parsed.data.clientId
   } else {
@@ -75,5 +76,5 @@ export async function POST(request: Request) {
     baseUrl: SITE_URL,
   })
 
-  return Response.json({ success: true, data: { threadId: thread.id } })
+  return NextResponse.json({ success: true, data: { threadId: thread.id } })
 }

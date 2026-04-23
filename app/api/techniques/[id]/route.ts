@@ -1,3 +1,4 @@
+import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { isStaff } from "@/lib/domain/auth"
 import { db } from "@/lib/db"
@@ -8,16 +9,16 @@ import { API_ERR_FORBIDDEN, API_ERR_NOT_FOUND, API_ERR_UNAUTHORIZED } from "@/li
 
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth()
-  if (!session) return Response.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
+  if (!session) return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
   if (!isStaff(session.user.role)) {
-    return Response.json({ success: false, error: API_ERR_FORBIDDEN }, { status: 403 })
+    return NextResponse.json({ success: false, error: API_ERR_FORBIDDEN }, { status: 403 })
   }
 
   const { id } = await params
   const body = await req.json()
   const result = updateTechniqueSchema.safeParse(body)
   if (!result.success) {
-    return Response.json({ success: false, error: result.error.flatten() }, { status: 400 })
+    return NextResponse.json({ success: false, error: result.error.flatten() }, { status: 400 })
   }
 
   const { resourceUrl, ...rest } = result.data
@@ -33,16 +34,16 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     .where(eq(techniques.id, id))
     .returning()
 
-  if (!updated) return Response.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
+  if (!updated) return NextResponse.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
 
-  return Response.json({ success: true, data: updated })
+  return NextResponse.json({ success: true, data: updated })
 }
 
 export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth()
-  if (!session) return Response.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
+  if (!session) return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
   if (!isStaff(session.user.role)) {
-    return Response.json({ success: false, error: API_ERR_FORBIDDEN }, { status: 403 })
+    return NextResponse.json({ success: false, error: API_ERR_FORBIDDEN }, { status: 403 })
   }
 
   const { id } = await params
@@ -53,7 +54,7 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
     .where(eq(techniques.id, id))
     .returning()
 
-  if (!updated) return Response.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
+  if (!updated) return NextResponse.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
 
-  return Response.json({ success: true })
+  return NextResponse.json({ success: true })
 }

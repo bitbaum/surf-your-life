@@ -1,3 +1,4 @@
+import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { techniqueLogs, techniqueAssignments } from "@/lib/db/schema"
@@ -8,7 +9,7 @@ import { API_ERR_UNAUTHORIZED } from "@/lib/constants"
 
 export async function GET(req: Request) {
   const session = await auth()
-  if (!session) return Response.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
+  if (!session) return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
 
   const { searchParams } = new URL(req.url)
   // Default to last 14 days so debt can be computed client-side
@@ -26,17 +27,17 @@ export async function GET(req: Request) {
     orderBy: (l, { desc }) => [desc(l.date)],
   })
 
-  return Response.json({ success: true, data: rows })
+  return NextResponse.json({ success: true, data: rows })
 }
 
 export async function POST(req: Request) {
   const session = await auth()
-  if (!session) return Response.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
+  if (!session) return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
 
   const body = await req.json()
   const result = logTechniqueSchema.safeParse(body)
   if (!result.success) {
-    return Response.json({ success: false, error: result.error.flatten() }, { status: 400 })
+    return NextResponse.json({ success: false, error: result.error.flatten() }, { status: 400 })
   }
 
   // Verify the assignment belongs to this user
@@ -47,7 +48,7 @@ export async function POST(req: Request) {
     ),
   })
   if (!assignment) {
-    return Response.json({ success: false, error: "Assignment not found" }, { status: 404 })
+    return NextResponse.json({ success: false, error: "Assignment not found" }, { status: 404 })
   }
 
   const [log] = await db
@@ -59,5 +60,5 @@ export async function POST(req: Request) {
     })
     .returning()
 
-  return Response.json({ success: true, data: log }, { status: 201 })
+  return NextResponse.json({ success: true, data: log }, { status: 201 })
 }
