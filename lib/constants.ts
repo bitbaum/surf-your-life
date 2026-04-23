@@ -292,6 +292,7 @@ export const FIELD_MAX_MEDIUM = 1000        // medium text areas: NLP entry, AI 
 export const FIELD_MAX_LONG = 2000          // long descriptions, instructions, goals
 export const FIELD_MAX_JOURNAL = 3000       // check-in journal / reflection
 export const FIELD_MAX_MESSAGE = 5000       // message body text
+export const EMAIL_MAX_LENGTH = 254         // RFC 5321 maximum email address length
 
 // pgvector embedding dimensions — must match the vector(1536) columns in lib/db/schema.ts
 // (schema cannot import this constant without creating a circular dependency)

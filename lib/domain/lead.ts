@@ -1,14 +1,14 @@
 import { z } from "zod"
-import { FIELD_MAX_TITLE, FIELD_MAX_SHORT, FIELD_MAX_MESSAGE } from "@/lib/constants"
+import { FIELD_MAX_TITLE, FIELD_MAX_SHORT, FIELD_MAX_MESSAGE, EMAIL_MAX_LENGTH } from "@/lib/constants"
 
 export const contactSchema = z.object({
   name: z.string().min(1).max(FIELD_MAX_TITLE),
-  email: z.string().email().max(300),
+  email: z.string().email().max(EMAIL_MAX_LENGTH),
   message: z.string().max(FIELD_MAX_MESSAGE).optional(),
 })
 
 export const newsletterSchema = z.object({
-  email: z.string().email().max(300),
+  email: z.string().email().max(EMAIL_MAX_LENGTH),
   source: z.string().max(FIELD_MAX_SHORT).default("newsletter"),
 })
 
