@@ -14,11 +14,8 @@ import {
   ALERT_PEM_CLUSTER_COUNT,
   ALERT_ORTHOSTATIC_CLUSTER_COUNT,
   SEVEN_DAYS_MS,
+  DAY_MS,
 } from "@/lib/constants"
-
-// ─── Test helpers ─────────────────────────────────────────────────────────────
-
-const DAY_MS = 24 * 60 * 60 * 1000
 const NOW = new Date("2024-06-15T12:00:00Z")
 
 function daysAgo(n: number): Date {
