@@ -5,13 +5,14 @@ import { CLIENT_ROLE } from "@/lib/domain/auth"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { Link } from "@/i18n/navigation"
-import { formatDate, formatEnumValue, computeTotalPages, parsePage, computeOffset } from "@/lib/utils"
+import { computeTotalPages, parsePage, computeOffset } from "@/lib/utils"
 import { PAGINATION_DEFAULT } from "@/lib/constants"
 import { ClientSearch } from "./client-search"
 import { FilterTabs } from "@/components/ui/filter-tabs"
 import { Suspense } from "react"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { Pagination } from "@/components/ui/pagination"
+import { ClientTableRow } from "./client-table-row"
 
 type SortOption = "joined" | "checkin_desc" | "checkin_asc" | "most_checkins"
 const SORT_OPTIONS: SortOption[] = ["joined", "checkin_desc", "checkin_asc", "most_checkins"]
@@ -154,40 +155,12 @@ export default async function ClientsPage({
             </thead>
             <tbody>
               {clients.map((client) => (
-                <tr key={client.id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
-                  <td className="py-3 font-medium text-slate-800">
-                    <span className="flex items-center gap-2">
-                      {client.name ?? "—"}
-                      {(alertCountMap.get(client.id)?.count ?? 0) > 0 && (() => {
-                        const a = alertCountMap.get(client.id)!
-                        return (
-                          <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full leading-none ${a.hasHigh ? "text-white bg-red-600" : "text-red-600 bg-red-50"}`}>
-                            {a.count}
-                          </span>
-                        )
-                      })()}
-                    </span>
-                  </td>
-                  <td className="py-3 text-slate-600">{client.email}</td>
-                  <td className="py-3 text-slate-500">
-                    {client.mainConcern ? formatEnumValue(client.mainConcern) : "—"}
-                  </td>
-                  <td className="py-3 text-slate-500">
-                    {client.lastCheckIn ? formatDate(client.lastCheckIn) : <span className="text-slate-300">—</span>}
-                  </td>
-                  <td className="py-3 text-slate-500">
-                    {client.checkInCount > 0 ? client.checkInCount : <span className="text-slate-300">0</span>}
-                  </td>
-                  <td className="py-3 text-slate-400">{formatDate(client.createdAt)}</td>
-                  <td className="py-3 text-right">
-                    <Link
-                      href={`/admin/clients/${client.id}`}
-                      className="text-teal-600 hover:underline text-xs font-medium"
-                    >
-                      {t("viewLink")}
-                    </Link>
-                  </td>
-                </tr>
+                <ClientTableRow
+                  key={client.id}
+                  client={client}
+                  alert={alertCountMap.get(client.id)}
+                  viewLabel={t("viewLink")}
+                />
               ))}
               {clients.length === 0 && (
                 <tr>
