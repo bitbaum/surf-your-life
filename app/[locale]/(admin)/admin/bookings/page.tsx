@@ -4,7 +4,7 @@ import { eq, desc, count } from "drizzle-orm"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { formatDate, computeTotalPages, parsePage, computeOffset } from "@/lib/utils"
-import { PAGINATION_DEFAULT, BOOKING_STATUS_BADGE_VARIANT, DAY_MS } from "@/lib/constants"
+import { PAGINATION_DEFAULT, BOOKING_STATUS_BADGE_VARIANT, DAY_MS, BOOKING_AGE_URGENT_DAYS } from "@/lib/constants"
 import { BookingActions } from "./booking-actions"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { Badge } from "@/components/ui/badge"
@@ -123,7 +123,7 @@ export default async function AdminBookingsPage({
                     {booking.status === "pending" && (() => {
                       const days = Math.floor((Date.now() - booking.createdAt.getTime()) / DAY_MS)
                       return days > 0 ? (
-                        <span className={`ml-1.5 px-1.5 py-0.5 rounded-full text-[10px] font-semibold leading-none ${days >= 3 ? "bg-red-50 text-red-600" : "bg-amber-50 text-amber-600"}`}>
+                        <span className={`ml-1.5 px-1.5 py-0.5 rounded-full text-[10px] font-semibold leading-none ${days >= BOOKING_AGE_URGENT_DAYS ? "bg-red-50 text-red-600" : "bg-amber-50 text-amber-600"}`}>
                           {t("pendingDays", { n: days })}
                         </span>
                       ) : null

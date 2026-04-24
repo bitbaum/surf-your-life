@@ -5,7 +5,7 @@ import { db } from "@/lib/db"
 import { techniques } from "@/lib/db/schema"
 import { eq, asc } from "drizzle-orm"
 import { createTechniqueSchema } from "@/lib/domain/techniques"
-import { API_ERR_FORBIDDEN, API_ERR_UNAUTHORIZED, API_ERR_INVALID_INPUT } from "@/lib/constants"
+import { API_ERR_FORBIDDEN, API_ERR_UNAUTHORIZED, API_ERR_INVALID_INPUT, SERVICES_MAX_LIMIT } from "@/lib/constants"
 
 export async function GET() {
   const session = await auth()
@@ -14,6 +14,7 @@ export async function GET() {
   const rows = await db.query.techniques.findMany({
     where: eq(techniques.isActive, true),
     orderBy: [asc(techniques.category), asc(techniques.name)],
+    limit: SERVICES_MAX_LIMIT,
   })
 
   return NextResponse.json({ success: true, data: rows })

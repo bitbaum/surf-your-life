@@ -5,7 +5,7 @@ import { programs, programEnrollments } from "@/lib/db/schema"
 import { desc, count, eq } from "drizzle-orm"
 import { createProgramSchema } from "@/lib/domain/program"
 import { isStaff } from "@/lib/domain/auth"
-import { API_ERR_FORBIDDEN, API_ERR_INVALID_INPUT } from "@/lib/constants"
+import { API_ERR_FORBIDDEN, API_ERR_INVALID_INPUT, ADMIN_PROGRAMS_MAX } from "@/lib/constants"
 
 export async function GET() {
   const session = await auth()
@@ -27,6 +27,7 @@ export async function GET() {
     .leftJoin(programEnrollments, eq(programEnrollments.programId, programs.id))
     .groupBy(programs.id)
     .orderBy(desc(programs.createdAt))
+    .limit(ADMIN_PROGRAMS_MAX)
 
   return NextResponse.json({ success: true, data: rows })
 }

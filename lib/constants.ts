@@ -230,6 +230,9 @@ export const TECHNIQUE_LOG_WINDOW_DAYS = 14      // days of logs fetched for deb
 export const TECHNIQUE_DAILY_FREQUENCY_MAX = 10  // max reps/sessions per day
 export const TECHNIQUE_LOG_MAX_REPS = 20          // max reps that can be logged in a single log entry
 export const TECHNIQUE_DURATION_MINUTES = { min: 1, max: 120 } as const  // per-session duration
+// Adherence badge thresholds (days completed out of 7-day window)
+export const ADHERENCE_GOOD_DAYS = 6  // ≥6/7 → teal (good)
+export const ADHERENCE_OK_DAYS   = 4  // ≥4/7 → amber (ok); <4 → red (poor)
 
 // Program duration bounds (weeks)
 export const PROGRAM_DURATION_WEEKS_MAX = 104     // 2 years
@@ -279,6 +282,9 @@ export const BOOKING_STATUS_BADGE_VARIANT: Record<string, "yellow" | "teal" | "s
   confirmed: "teal",
   cancelled: "slate",
 }
+// Pending booking age thresholds for urgency badge on admin bookings page
+export const BOOKING_AGE_URGENT_DAYS = 3   // ≥3 days old → red (needs immediate attention)
+export const BOOKING_AGE_WARN_DAYS   = 1   // ≥1 day old → amber (follow up soon)
 
 // User role → Badge variant — used by admin users page and role-button component
 export const ROLE_BADGE_VARIANT: Record<string, "teal" | "blue" | "slate"> = {

@@ -10,11 +10,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import type { Technique } from "@/lib/db/schema"
 import type { AssignmentWithTechnique } from "@/lib/domain/techniques"
 import { formatEnumValue } from "@/lib/utils"
-import { TECHNIQUE_CATEGORIES } from "@/lib/constants"
+import { TECHNIQUE_CATEGORIES, ADHERENCE_GOOD_DAYS, ADHERENCE_OK_DAYS } from "@/lib/constants"
 import { TechniqueAssignForm } from "./technique-assign-form"
 
 function AdherenceBadge({ days }: { days: number }) {
-  const color = days >= 6 ? "text-teal-600 bg-teal-50" : days >= 4 ? "text-amber-600 bg-amber-50" : "text-red-500 bg-red-50"
+  const color = days >= ADHERENCE_GOOD_DAYS ? "text-teal-600 bg-teal-50" : days >= ADHERENCE_OK_DAYS ? "text-amber-600 bg-amber-50" : "text-red-500 bg-red-50"
   return (
     <span className={`text-xs font-medium px-1.5 py-0.5 rounded-full ${color}`}>
       {days}/7d
