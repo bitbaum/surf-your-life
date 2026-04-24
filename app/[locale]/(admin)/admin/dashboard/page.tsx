@@ -8,6 +8,7 @@ import { PageHeader } from "@/components/ui/page-header"
 import { Link } from "@/i18n/navigation"
 import { Users, ClipboardList, TrendingUp, CalendarClock, MessageSquare, AlertTriangle } from "lucide-react"
 import { SEVEN_DAYS_MS, THIRTY_DAYS_MS, RECENT_CLIENTS_LIMIT, AT_RISK_CLIENTS_LIMIT, ADMIN_DASHBOARD_ALERTS_PREVIEW, ADMIN_DASHBOARD_INSIGHTS_PREVIEW } from "@/lib/constants"
+import { roundOne } from "@/lib/utils"
 import { CLIENT_ROLE } from "@/lib/domain/auth"
 import { AlertList } from "./alert-list"
 import { AtRiskClientsCard } from "./at-risk-clients-card"
@@ -113,9 +114,7 @@ export default async function AdminDashboardPage({
   const recentCheckInsCount = recentCheckInsCountResult[0]?.count ?? 0
   const pendingBookings = pendingBookingsResult[0]?.count ?? 0
   const unreadMessages = unreadMessagesResult[0]?.count ?? 0
-  const avgCheckIns = clientCount > 0
-    ? Math.round((recentCheckInsCount / clientCount) * 10) / 10
-    : 0
+  const avgCheckIns = clientCount > 0 ? roundOne(recentCheckInsCount / clientCount) : 0
 
   const atRiskCount = atRiskCountResult[0]?.count ?? 0
   const atRiskClients = atRiskPreview
