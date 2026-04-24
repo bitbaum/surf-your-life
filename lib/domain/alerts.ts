@@ -23,7 +23,7 @@ import {
   DAY_MS,
 } from "@/lib/constants"
 import { sendEmail } from "@/lib/email"
-import { practitionerAlertEmail } from "@/lib/email/templates"
+import { practitionerAlertEmail, missedCheckInDigestEmail } from "@/lib/email/templates"
 import { formatEnumValue } from "@/lib/utils"
 
 type AlertInsert = typeof clientAlerts.$inferInsert
@@ -324,33 +324,35 @@ export async function generateMissedCheckInAlerts(): Promise<number> {
 
     await db.insert(clientAlerts).values(newAlerts)
 
-    // Notify practitioners once for all new missed check-in alerts
+    // Notify practitioners with a single digest email listing all newly overdue clients
     const practitioners = await db
       .select({ email: users.email })
       .from(users)
       .where(inArray(users.role, STAFF_ROLES))
 
     if (practitioners.length > 0) {
-      for (const alert of newAlerts) {
+      const digestClients = newAlerts.map((alert) => {
         const client = clients.find((c) => c.id === alert.clientId)!
-        const html = practitionerAlertEmail({
-          clientName: client.name ?? client.email,
-          clientEmail: client.email,
-          alertTitle: alert.title,
-          alertMessage: alert.message!,
-          severity: "medium",
-          adminUrl: `${SITE_URL}/admin/clients/${client.id}`,
-        })
-        await Promise.all(
-          practitioners.map((p) =>
-            sendEmail({
-              to: p.email,
-              subject: `[Alert] ${alert.title} — ${client.name ?? client.email}`,
-              html,
-            }).catch(() => {})
-          )
+        const daysMissed = lastCheckInMap.get(alert.clientId) != null
+          ? Math.floor((Date.now() - lastCheckInMap.get(alert.clientId)!.getTime()) / DAY_MS)
+          : null
+        return { name: client.name, email: client.email, daysMissed }
+      })
+
+      const html = missedCheckInDigestEmail({
+        clients: digestClients,
+        adminUrl: `${SITE_URL}/admin/clients`,
+      })
+
+      await Promise.all(
+        practitioners.map((p) =>
+          sendEmail({
+            to: p.email,
+            subject: `[Alert] ${newAlerts.length} client${newAlerts.length !== 1 ? "s" : ""} missed check-ins`,
+            html,
+          }).catch(() => {})
         )
-      }
+      )
     }
 
     return newAlerts.length

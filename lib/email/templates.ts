@@ -456,6 +456,50 @@ export function practitionerWeeklyDigestEmail(data: PractitionerWeeklyDigestData
 `)
 }
 
+// ─── Missed check-in digest (practitioner, sent once per cron run) ───────────
+
+export type MissedCheckInDigestData = {
+  clients: { name: string | null; email: string; daysMissed: number | null }[]
+  adminUrl: string
+}
+
+export function missedCheckInDigestEmail(data: MissedCheckInDigestData): string {
+  const { clients, adminUrl } = data
+
+  const rows = clients
+    .sort((a, b) => (b.daysMissed ?? 9999) - (a.daysMissed ?? 9999))
+    .map((c) => {
+      const label = c.daysMissed != null
+        ? `${c.daysMissed} day${c.daysMissed !== 1 ? "s" : ""} overdue`
+        : "Never checked in"
+      return `
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f1f5f9;">
+        <div>
+          <span style="font-weight:600;color:#0f172a;">${c.name ?? "(no name)"}</span>
+          <div style="font-size:12px;color:#94a3b8;">${c.email}</div>
+        </div>
+        <span style="font-size:13px;color:#d97706;font-weight:500;">${label}</span>
+      </div>`
+    })
+    .join("")
+
+  return emailShell(`
+  <div class="header" style="background:#1e293b;padding:16px 24px">
+    <h1 style="margin:0;font-size:16px;">Missed check-ins — ${clients.length} client${clients.length !== 1 ? "s" : ""}</h1>
+  </div>
+
+  <p style="font-size:14px;color:#475569;">The following client${clients.length !== 1 ? "s have" : " has"} not submitted a check-in in the last ${clients[0]?.daysMissed != null ? "7+" : "7+"} days:</p>
+
+  <div style="margin:16px 0;">
+    ${rows}
+  </div>
+
+  <a href="${adminUrl}" class="cta">Open admin panel</a>
+
+  <p style="font-size:12px;color:#94a3b8;margin-top:24px;">${COMPANY_ADDRESS}</p>
+`)
+}
+
 // ─── Daily check-in reminder ──────────────────────────────────────────────────
 
 export type CheckInReminderData = {
