@@ -10,6 +10,7 @@ import { Link } from "@/i18n/navigation"
 import { PAGINATION_DEFAULT } from "@/lib/constants"
 import { computeTotalPages, parsePage, computeOffset } from "@/lib/utils"
 import { CheckInRow } from "../check-in-row"
+import { EmptyState } from "@/components/ui/empty-state"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 
 export default async function ClientCheckInsPage({
@@ -72,7 +73,9 @@ export default async function ClientCheckInsPage({
               ))}
             </div>
           ) : (
-            <p className="text-slate-400 text-sm">{t("detail.noCheckIns")}</p>
+            <div className="py-8">
+              <EmptyState message={t("detail.noCheckIns")} />
+            </div>
           )}
 
           <Pagination page={page} totalPages={totalPages} pageLink={pageLink} />

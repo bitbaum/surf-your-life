@@ -8,6 +8,7 @@ import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
 import { formatDate, formatEnumValue, computeTotalPages, parsePage, computeOffset } from "@/lib/utils"
 import { PAGINATION_DEFAULT, MOOD_EMOJI, SLEEP_QUALITY_OPTIONS, ACTIVITY_LEVELS } from "@/lib/constants"
+import { EmptyState } from "@/components/ui/empty-state"
 
 const FIELD_LABEL_CLS = "text-xs font-medium text-slate-400 uppercase tracking-wide"
 
@@ -61,11 +62,11 @@ export default async function CheckInsPage({
       />
 
       {items.length === 0 ? (
-        <div className="text-center py-16 text-slate-400">
-          <p className="mb-4">{t("noCheckIns")}</p>
-          <Link href="/check-in">
-            <Button>{t("doFirstCheckIn")}</Button>
-          </Link>
+        <div className="py-16">
+          <EmptyState
+            message={t("noCheckIns")}
+            action={<Link href="/check-in"><Button>{t("doFirstCheckIn")}</Button></Link>}
+          />
         </div>
       ) : (
         <>

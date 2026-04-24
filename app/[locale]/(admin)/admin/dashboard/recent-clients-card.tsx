@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Link } from "@/i18n/navigation"
 import { formatDate, formatEnumValue } from "@/lib/utils"
+import { EmptyState } from "@/components/ui/empty-state"
 
 type RecentClient = {
   id: string
@@ -51,7 +52,9 @@ export async function RecentClientsCard({ clients }: Props) {
             </Link>
           ))}
           {clients.length === 0 && (
-            <p className="text-sm text-slate-400 py-4 text-center">{t("noClients")}</p>
+            <div className="py-6">
+              <EmptyState message={t("noClients")} />
+            </div>
           )}
         </div>
       </CardContent>
