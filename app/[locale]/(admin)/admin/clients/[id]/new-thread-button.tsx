@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { Modal } from "@/components/ui/modal"
 import { Textarea } from "@/components/ui/textarea"
 import { MessageSquare } from "lucide-react"
@@ -47,19 +48,15 @@ export function NewThreadButton({ clientId }: { clientId: string }) {
       {open && (
         <Modal title={t("title")} onClose={() => setOpen(false)} closeLabel={t("close")}>
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium text-slate-700">{t("subjectLabel")}</label>
-              <input
-                type="text"
-                value={form.subject}
-                onChange={(e) => setForm((f) => ({ ...f, subject: e.target.value }))}
-                placeholder={t("subjectPlaceholder")}
-                required
-                disabled={sending}
-                maxLength={FIELD_MAX_TITLE}
-                className="rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:opacity-50"
-              />
-            </div>
+            <Input
+              label={t("subjectLabel")}
+              value={form.subject}
+              onChange={(e) => setForm((f) => ({ ...f, subject: e.target.value }))}
+              placeholder={t("subjectPlaceholder")}
+              required
+              disabled={sending}
+              maxLength={FIELD_MAX_TITLE}
+            />
 
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-medium text-slate-700">{t("messageLabel")}</label>

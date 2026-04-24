@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { CheckCircle, X } from "lucide-react"
 import type { Service } from "@/lib/db/schema"
@@ -52,14 +53,13 @@ export function BookingModal({ selected, form, setForm, loading, submitted, erro
         ) : (
           <form onSubmit={onSubmit} className="flex flex-col gap-4">
             <div>
-              <label className="text-sm font-medium text-slate-700 block mb-1.5">{t("preferredDate")}</label>
-              <input
+              <Input
+                label={t("preferredDate")}
                 type="date"
                 required
                 min={toDateString(new Date())}
                 value={form.preferredDate}
                 onChange={(e) => setForm((f) => ({ ...f, preferredDate: e.target.value }))}
-                className="h-10 w-full rounded-lg border border-slate-200 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
               />
             </div>
             <div>

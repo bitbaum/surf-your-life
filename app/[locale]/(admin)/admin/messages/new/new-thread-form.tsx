@@ -4,8 +4,9 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
+import { Input } from "@/components/ui/input"
 import { Select } from "@/components/ui/select"
+import { Textarea } from "@/components/ui/textarea"
 import { FIELD_MAX_TITLE, FIELD_MAX_MESSAGE } from "@/lib/constants"
 
 type Client = { id: string; name: string | null; email: string }
@@ -66,19 +67,15 @@ export function NewThreadForm({
         ))}
       </Select>
 
-      <div className="flex flex-col gap-1.5">
-        <label className="text-sm font-medium text-slate-700">{t("subject")}</label>
-        <input
-          type="text"
-          value={form.subject}
-          onChange={(e) => setForm((f) => ({ ...f, subject: e.target.value }))}
-          placeholder={t("subjectPlaceholder")}
-          required
-          disabled={sending}
-          maxLength={FIELD_MAX_TITLE}
-          className="rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:opacity-50"
-        />
-      </div>
+      <Input
+        label={t("subject")}
+        value={form.subject}
+        onChange={(e) => setForm((f) => ({ ...f, subject: e.target.value }))}
+        placeholder={t("subjectPlaceholder")}
+        required
+        disabled={sending}
+        maxLength={FIELD_MAX_TITLE}
+      />
 
       <Textarea
         label={t("message")}
