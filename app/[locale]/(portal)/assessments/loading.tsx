@@ -1,3 +1,5 @@
+import { Card } from "@/components/ui/card"
+
 export default function AssessmentsLoading() {
   return (
     <div className="max-w-2xl mx-auto animate-pulse">
@@ -10,7 +12,7 @@ export default function AssessmentsLoading() {
       <div className="h-32 bg-slate-100 rounded-xl mb-6" />
       <div className="flex flex-col gap-4">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="rounded-xl border border-slate-200 bg-white p-6">
+          <Card key={i} className="p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="h-4 bg-slate-200 rounded w-28" />
               <div className="h-8 bg-slate-100 rounded w-16" />
@@ -20,7 +22,7 @@ export default function AssessmentsLoading() {
                 <div key={j} className="h-4 bg-slate-100 rounded" />
               ))}
             </div>
-          </div>
+          </Card>
         ))}
       </div>
     </div>

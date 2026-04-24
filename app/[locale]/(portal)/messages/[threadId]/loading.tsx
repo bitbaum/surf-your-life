@@ -1,9 +1,11 @@
+import { Card } from "@/components/ui/card"
+
 export default function ThreadLoading() {
   return (
     <div className="max-w-3xl mx-auto animate-pulse">
       <div className="h-4 bg-slate-100 rounded w-32 mb-6" />
       <div className="h-8 bg-slate-200 rounded w-56 mb-6" />
-      <div className="rounded-xl border border-slate-200 bg-white p-6">
+      <Card className="p-6">
         <div className="flex flex-col gap-4 mb-6">
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className={`flex ${i % 2 === 0 ? "justify-end" : ""}`}>
@@ -12,7 +14,7 @@ export default function ThreadLoading() {
           ))}
         </div>
         <div className="h-12 bg-slate-100 rounded-xl" />
-      </div>
+      </Card>
     </div>
   )
 }

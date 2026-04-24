@@ -1,3 +1,5 @@
+import { Card } from "@/components/ui/card"
+
 export default function TechniquesAdminLoading() {
   return (
     <div className="max-w-4xl mx-auto animate-pulse">
@@ -9,7 +11,7 @@ export default function TechniquesAdminLoading() {
         <div className="h-9 bg-slate-100 rounded-lg w-32" />
       </div>
       {[1, 2].map((i) => (
-        <div key={i} className="mb-6 rounded-xl border border-slate-200 bg-white">
+        <Card key={i} className="mb-6">
           <div className="p-6 border-b border-slate-100">
             <div className="h-5 bg-slate-200 rounded w-32" />
           </div>
@@ -27,7 +29,7 @@ export default function TechniquesAdminLoading() {
               </div>
             ))}
           </div>
-        </div>
+        </Card>
       ))}
     </div>
   )
