@@ -10,7 +10,7 @@ import { firstCheckInAlertEmail } from "@/lib/email/templates"
 import { EMAIL_SUBJECT_FIRST_CHECKIN } from "@/lib/email/subjects"
 import { STAFF_ROLES } from "@/lib/domain/auth"
 import { eq, and, gte, count, inArray } from "drizzle-orm"
-import { API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED } from "@/lib/constants"
+import { API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED, API_ERR_CHECKIN_DUPLICATE } from "@/lib/constants"
 
 export async function POST(req: Request) {
   const session = await auth()
@@ -26,7 +26,7 @@ export async function POST(req: Request) {
     db.select({ count: count() }).from(checkIns).where(eq(checkIns.userId, session.user.id)),
   ])
   if (existing) {
-    return NextResponse.json({ success: false, error: "Already checked in today" }, { status: 409 })
+    return NextResponse.json({ success: false, error: API_ERR_CHECKIN_DUPLICATE }, { status: 409 })
   }
   const isFirstCheckIn = (priorCountResult[0]?.count ?? 0) === 0
 

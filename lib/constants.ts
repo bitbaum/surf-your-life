@@ -105,6 +105,10 @@ export const API_ERR_FORBIDDEN = "Forbidden"
 export const API_ERR_NOT_FOUND = "Not found"
 export const API_ERR_INVALID_INPUT = "Invalid input"
 export const API_ERR_RATE_LIMITED = "Too many requests. Please try again later."
+export const API_ERR_SERVICE_UNAVAILABLE = "Service not available"
+export const API_ERR_BOOKING_DUPLICATE = "You already have an active booking for this service"
+export const API_ERR_SLOT_TAKEN = "This time slot is no longer available. Please choose another."
+export const API_ERR_CHECKIN_DUPLICATE = "Already checked in today"
 
 // Time constants (milliseconds)
 export const HOUR_MS = 60 * 60 * 1000

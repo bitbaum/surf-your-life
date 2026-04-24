@@ -5,7 +5,7 @@ import { bookings, services, users } from "@/lib/db/schema"
 import { and, eq, desc, inArray } from "drizzle-orm"
 import { createBookingSchema } from "@/lib/domain/booking"
 import { STAFF_ROLES } from "@/lib/domain/auth"
-import { PAGINATION_DEFAULT , API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED } from "@/lib/constants"
+import { PAGINATION_DEFAULT, API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED, API_ERR_SERVICE_UNAVAILABLE, API_ERR_BOOKING_DUPLICATE, API_ERR_SLOT_TAKEN } from "@/lib/constants"
 import { sendEmail } from "@/lib/email"
 import { bookingNotificationEmail, bookingRequestEmail } from "@/lib/email/templates"
 
@@ -41,7 +41,7 @@ export async function POST(req: Request) {
     where: eq(services.id, parsed.data.serviceId),
   })
   if (!service || !service.available) {
-    return NextResponse.json({ success: false, error: "Service not available" }, { status: 404 })
+    return NextResponse.json({ success: false, error: API_ERR_SERVICE_UNAVAILABLE }, { status: 404 })
   }
 
   // Prevent duplicate active bookings for the same service by the same user
@@ -54,7 +54,7 @@ export async function POST(req: Request) {
   })
   if (existingOwn) {
     return NextResponse.json(
-      { success: false, error: "You already have an active booking for this service" },
+      { success: false, error: API_ERR_BOOKING_DUPLICATE },
       { status: 409 }
     )
   }
@@ -71,7 +71,7 @@ export async function POST(req: Request) {
     })
     if (slotTaken) {
       return NextResponse.json(
-        { success: false, error: "This time slot is no longer available. Please choose another." },
+        { success: false, error: API_ERR_SLOT_TAKEN },
         { status: 409 }
       )
     }
