@@ -7,7 +7,7 @@ import { PageHeader } from "@/components/ui/page-header"
 import { TechniqueTracker } from "./technique-tracker"
 import type { LogByDate } from "@/lib/domain/techniques"
 import { toDateString } from "@/lib/utils"
-import { DAY_MS, TECHNIQUE_LOG_WINDOW_DAYS } from "@/lib/constants"
+import { DAY_MS, TECHNIQUE_LOG_WINDOW_DAYS, CLIENT_ASSIGNMENTS_MAX } from "@/lib/constants"
 
 export default async function TechniquesPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
@@ -30,6 +30,7 @@ export default async function TechniquesPage({ params }: { params: Promise<{ loc
       ),
       with: { technique: true },
       orderBy: (a, { asc }) => [asc(a.createdAt)],
+      limit: CLIENT_ASSIGNMENTS_MAX,
     }),
     db.query.techniqueLogs.findMany({
       where: and(

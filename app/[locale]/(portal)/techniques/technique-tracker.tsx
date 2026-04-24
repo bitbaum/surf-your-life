@@ -6,6 +6,7 @@ import { toast } from "sonner"
 import { computeTechniqueDebt, type LogByDate, type AssignmentWithTechnique } from "@/lib/domain/techniques"
 import { TECHNIQUE_CATEGORIES } from "@/lib/constants"
 import { TechniqueCard } from "./technique-card"
+import { EmptyState } from "@/components/ui/empty-state"
 
 interface TechniqueTrackerProps {
   assignments: AssignmentWithTechnique[]
@@ -51,11 +52,7 @@ export function TechniqueTracker({ assignments, logsByAssignment, today }: Techn
   }
 
   if (assignments.length === 0) {
-    return (
-      <div className="text-center py-12">
-        <p className="text-slate-400 text-sm">{t("empty")}</p>
-      </div>
-    )
+    return <EmptyState message={t("empty")} className="py-12" />
   }
 
   return (

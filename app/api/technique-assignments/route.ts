@@ -5,7 +5,7 @@ import { db } from "@/lib/db"
 import { techniqueAssignments } from "@/lib/db/schema"
 import { eq, and } from "drizzle-orm"
 import { createAssignmentSchema } from "@/lib/domain/techniques"
-import { API_ERR_FORBIDDEN, API_ERR_UNAUTHORIZED, API_ERR_INVALID_INPUT } from "@/lib/constants"
+import { API_ERR_FORBIDDEN, API_ERR_UNAUTHORIZED, API_ERR_INVALID_INPUT, CLIENT_ASSIGNMENTS_MAX } from "@/lib/constants"
 
 export async function GET(req: Request) {
   const session = await auth()
@@ -27,6 +27,7 @@ export async function GET(req: Request) {
     ),
     with: { technique: true },
     orderBy: (a, { asc }) => [asc(a.createdAt)],
+    limit: CLIENT_ASSIGNMENTS_MAX,
   })
 
   return NextResponse.json({ success: true, data: rows })

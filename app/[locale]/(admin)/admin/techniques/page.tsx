@@ -4,7 +4,7 @@ import { asc } from "drizzle-orm"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { getTranslations, setRequestLocale } from "next-intl/server"
-import { TECHNIQUE_CATEGORIES, DIFFICULTY_BADGE_CLASSES } from "@/lib/constants"
+import { TECHNIQUE_CATEGORIES, DIFFICULTY_BADGE_CLASSES, TECHNIQUES_MAX } from "@/lib/constants"
 import { formatEnumValue } from "@/lib/utils"
 import { TechniqueActions } from "./technique-actions"
 import { TechniqueCreateButton } from "./technique-create-button"
@@ -17,6 +17,7 @@ export default async function TechniquesPage({ params }: { params: Promise<{ loc
 
   const rows = await db.query.techniques.findMany({
     orderBy: [asc(techniques.category), asc(techniques.name)],
+    limit: TECHNIQUES_MAX,
   })
 
   // Group by category for display
