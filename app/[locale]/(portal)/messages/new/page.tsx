@@ -1,10 +1,12 @@
 import { auth } from "@/lib/auth"
-import { getTranslations } from "next-intl/server"
+import { getTranslations, setRequestLocale } from "next-intl/server"
 import { Link } from "@/i18n/navigation"
 import { PageHeader } from "@/components/ui/page-header"
 import { NewMessageForm } from "./new-message-form"
 
-export default async function PortalNewMessagePage() {
+export default async function PortalNewMessagePage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params
+  setRequestLocale(locale)
   const session = await auth()
   if (!session) return null
 

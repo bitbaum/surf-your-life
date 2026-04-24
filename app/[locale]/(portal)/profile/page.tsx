@@ -2,12 +2,14 @@ import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { profiles } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
-import { getTranslations } from "next-intl/server"
+import { getTranslations, setRequestLocale } from "next-intl/server"
 import { PageHeader } from "@/components/ui/page-header"
 import { ProfileForm } from "./profile-form"
 import { SecurityForm } from "./security-form"
 
-export default async function ProfilePage() {
+export default async function ProfilePage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params
+  setRequestLocale(locale)
   const session = await auth()
   if (!session) return null
 

@@ -3,16 +3,20 @@ import { db } from "@/lib/db"
 import { users } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { CLIENT_ROLE } from "@/lib/domain/auth"
-import { getTranslations } from "next-intl/server"
+import { getTranslations, setRequestLocale } from "next-intl/server"
 import { Link } from "@/i18n/navigation"
 import { PageHeader } from "@/components/ui/page-header"
 import { NewThreadForm } from "./new-thread-form"
 
 export default async function AdminNewMessagePage({
+  params,
   searchParams,
 }: {
+  params: Promise<{ locale: string }>
   searchParams: Promise<{ clientId?: string }>
 }) {
+  const { locale } = await params
+  setRequestLocale(locale)
   const session = await auth()
   if (!session) return null
 

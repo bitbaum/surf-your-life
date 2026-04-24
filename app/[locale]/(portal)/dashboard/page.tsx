@@ -2,7 +2,7 @@ import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { checkIns, profiles, users, programEnrollments } from "@/lib/db/schema"
 import { eq, desc, asc, and, gte, count } from "drizzle-orm"
-import { getTranslations } from "next-intl/server"
+import { getTranslations, setRequestLocale } from "next-intl/server"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { StatCard } from "@/components/ui/stat-card"
 import { ClipboardList, TrendingUp, Flame } from "lucide-react"
@@ -26,7 +26,9 @@ import { ProgressBar } from "@/components/ui/progress-bar"
 import { DashboardBanners } from "./dashboard-banners"
 import { DashboardCharts } from "./dashboard-charts"
 
-export default async function DashboardPage() {
+export default async function DashboardPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params
+  setRequestLocale(locale)
   const session = await auth()
   if (!session) return null
 

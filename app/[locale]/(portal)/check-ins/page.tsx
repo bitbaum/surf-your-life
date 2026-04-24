@@ -2,7 +2,7 @@ import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { checkIns } from "@/lib/db/schema"
 import { eq, desc, count } from "drizzle-orm"
-import { getTranslations } from "next-intl/server"
+import { getTranslations, setRequestLocale } from "next-intl/server"
 import { Card, CardContent } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
@@ -13,10 +13,14 @@ import { Pagination } from "@/components/ui/pagination"
 import { CheckInActions } from "./check-in-actions"
 
 export default async function CheckInsPage({
+  params,
   searchParams,
 }: {
+  params: Promise<{ locale: string }>
   searchParams: Promise<{ page?: string }>
 }) {
+  const { locale } = await params
+  setRequestLocale(locale)
   const session = await auth()
   if (!session) return null
 
