@@ -6,9 +6,8 @@ import { useTranslations } from "next-intl"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { ProgramBasicFields } from "../[id]/program-basic-fields"
-import { ProgramPhaseEditor } from "../[id]/program-phase-editor"
-
-type Phase = { week: number; title: string; guidance: string }
+import { ProgramProgramPhaseEditor } from "../[id]/program-phase-editor"
+import type { ProgramPhase } from "@/lib/domain/program"
 
 export function CreateProgramForm() {
   const t = useTranslations("admin.programs")
@@ -21,7 +20,7 @@ export function CreateProgramForm() {
     targetConcern: "",
     isTemplate: false,
   })
-  const [phases, setPhases] = useState<Phase[]>([])
+  const [phases, setProgramPhases] = useState<ProgramPhase[]>([])
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState("")
 
@@ -29,17 +28,17 @@ export function CreateProgramForm() {
     setForm((prev) => ({ ...prev, [field]: value }))
   }
 
-  function addPhase() {
+  function addProgramPhase() {
     const nextWeek = phases.length > 0 ? Math.max(...phases.map((p) => p.week)) + 1 : 1
-    setPhases((prev) => [...prev, { week: nextWeek, title: "", guidance: "" }])
+    setProgramPhases((prev) => [...prev, { week: nextWeek, title: "", guidance: "" }])
   }
 
-  function updatePhase(index: number, field: keyof Phase, value: string | number) {
-    setPhases((prev) => prev.map((p, i) => i === index ? { ...p, [field]: value } : p))
+  function updateProgramPhase(index: number, field: keyof ProgramPhase, value: string | number) {
+    setProgramPhases((prev) => prev.map((p, i) => i === index ? { ...p, [field]: value } : p))
   }
 
-  function removePhase(index: number) {
-    setPhases((prev) => prev.filter((_, i) => i !== index))
+  function removeProgramPhase(index: number) {
+    setProgramPhases((prev) => prev.filter((_, i) => i !== index))
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -79,7 +78,7 @@ export function CreateProgramForm() {
       <CardContent>
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
           <ProgramBasicFields form={form} onChange={set} />
-          <ProgramPhaseEditor phases={phases} onAdd={addPhase} onUpdate={updatePhase} onRemove={removePhase} />
+          <ProgramProgramPhaseEditor phases={phases} onAdd={addProgramPhase} onUpdate={updateProgramPhase} onRemove={removeProgramPhase} />
 
           {error && <p className="text-sm text-red-600">{error}</p>}
 

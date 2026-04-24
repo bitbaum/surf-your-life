@@ -4,34 +4,33 @@ import { useTranslations } from "next-intl"
 import { Input } from "@/components/ui/input"
 import { Plus, Trash2 } from "lucide-react"
 import { FIELD_MAX_TITLE, FIELD_MAX_LONG, PROGRAM_DURATION_WEEKS_MAX } from "@/lib/constants"
-
-type Phase = { week: number; title: string; guidance: string }
+import type { ProgramPhase } from "@/lib/domain/program"
 
 interface Props {
-  phases: Phase[]
+  phases: ProgramPhase[]
   onAdd: () => void
-  onUpdate: (index: number, field: keyof Phase, value: string | number) => void
+  onUpdate: (index: number, field: keyof ProgramPhase, value: string | number) => void
   onRemove: (index: number) => void
 }
 
-export function ProgramPhaseEditor({ phases, onAdd, onUpdate, onRemove }: Props) {
+export function ProgramProgramPhaseEditor({ phases, onAdd, onUpdate, onRemove }: Props) {
   const t = useTranslations("admin.programs")
 
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
-        <label className="text-sm font-medium text-slate-700">{t("fieldPhases")}</label>
+        <label className="text-sm font-medium text-slate-700">{t("fieldProgramPhases")}</label>
         <button
           type="button"
           onClick={onAdd}
           className="flex items-center gap-1 text-xs text-teal-600 hover:text-teal-700 font-medium"
         >
           <Plus className="w-3.5 h-3.5" />
-          {t("addPhase")}
+          {t("addProgramPhase")}
         </button>
       </div>
       {phases.length === 0 && (
-        <p className="text-xs text-slate-400">{t("noPhasesHint")}</p>
+        <p className="text-xs text-slate-400">{t("noProgramPhasesHint")}</p>
       )}
       <div className="flex flex-col gap-4">
         {phases.map((phase, i) => (

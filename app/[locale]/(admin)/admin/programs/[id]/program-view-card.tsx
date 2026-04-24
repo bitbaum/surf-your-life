@@ -5,12 +5,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { formatDate, formatEnumValue } from "@/lib/utils"
 import { Pencil, Clock, Calendar } from "lucide-react"
 import type { Program } from "@/lib/db/schema"
-
-type Phase = { week: number; title: string; guidance: string }
+import type { ProgramPhase } from "@/lib/domain/program"
 
 interface Props {
   program: Program
-  phases: Phase[]
+  phases: ProgramPhase[]
   onEdit: () => void
 }
 
@@ -59,7 +58,7 @@ export function ProgramViewCard({ program, phases, onEdit }: Props) {
         {phases.length > 0 && (
           <div className="mt-4 border-t border-slate-100 pt-4">
             <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">
-              {t("fieldPhases")} ({phases.length})
+              {t("fieldProgramPhases")} ({phases.length})
             </p>
             <div className="flex flex-col gap-2">
               {phases.map((phase, i) => (

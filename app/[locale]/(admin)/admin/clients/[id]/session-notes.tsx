@@ -4,11 +4,8 @@ import { useState, useCallback } from "react"
 import { useTranslations } from "next-intl"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { FileText, Plus } from "lucide-react"
-import type { Document } from "@/lib/db/schema"
 import { SessionNoteForm } from "./session-note-form"
-import { SessionNotesList } from "./session-notes-list"
-
-type DocWithAuthor = Document & { author: { name: string | null } | null }
+import { SessionNotesList, type DocWithAuthor } from "./session-notes-list"
 
 interface Props {
   clientId: string

@@ -6,7 +6,7 @@ import { formatDate } from "@/lib/utils"
 import type { Document } from "@/lib/db/schema"
 import { DOC_TYPE_I18N_KEYS, DOC_TYPE_BADGE_CLASSES } from "@/lib/constants"
 
-type DocWithAuthor = Document & { author: { name: string | null } | null }
+export type DocWithAuthor = Document & { author: { name: string | null } | null }
 
 interface Props {
   docs: DocWithAuthor[]

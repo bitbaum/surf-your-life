@@ -6,11 +6,10 @@ import { useTranslations } from "next-intl"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import type { Program } from "@/lib/db/schema"
+import type { ProgramPhase } from "@/lib/domain/program"
 import { ProgramViewCard } from "./program-view-card"
 import { ProgramBasicFields } from "./program-basic-fields"
-import { ProgramPhaseEditor } from "./program-phase-editor"
-
-type Phase = { week: number; title: string; guidance: string }
+import { ProgramProgramPhaseEditor } from "./program-phase-editor"
 
 interface Props {
   program: Program
@@ -23,8 +22,8 @@ export function EditProgramForm({ program }: Props) {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState("")
 
-  const initialPhases = Array.isArray(program.phaseConfig)
-    ? (program.phaseConfig as Phase[]).sort((a, b) => a.week - b.week)
+  const initialProgramPhases = Array.isArray(program.phaseConfig)
+    ? (program.phaseConfig as ProgramPhase[]).sort((a, b) => a.week - b.week)
     : []
 
   const [form, setForm] = useState({
@@ -34,23 +33,23 @@ export function EditProgramForm({ program }: Props) {
     targetConcern: program.targetConcern ?? "",
     isTemplate: program.isTemplate,
   })
-  const [phases, setPhases] = useState<Phase[]>(initialPhases)
+  const [phases, setProgramPhases] = useState<ProgramPhase[]>(initialProgramPhases)
 
   function set(field: string, value: string | boolean) {
     setForm((prev) => ({ ...prev, [field]: value }))
   }
 
-  function addPhase() {
+  function addProgramPhase() {
     const nextWeek = phases.length > 0 ? Math.max(...phases.map((p) => p.week)) + 1 : 1
-    setPhases((prev) => [...prev, { week: nextWeek, title: "", guidance: "" }])
+    setProgramPhases((prev) => [...prev, { week: nextWeek, title: "", guidance: "" }])
   }
 
-  function updatePhase(index: number, field: keyof Phase, value: string | number) {
-    setPhases((prev) => prev.map((p, i) => (i === index ? { ...p, [field]: value } : p)))
+  function updateProgramPhase(index: number, field: keyof ProgramPhase, value: string | number) {
+    setProgramPhases((prev) => prev.map((p, i) => (i === index ? { ...p, [field]: value } : p)))
   }
 
-  function removePhase(index: number) {
-    setPhases((prev) => prev.filter((_, i) => i !== index))
+  function removeProgramPhase(index: number) {
+    setProgramPhases((prev) => prev.filter((_, i) => i !== index))
   }
 
   function handleCancel() {
@@ -61,7 +60,7 @@ export function EditProgramForm({ program }: Props) {
       targetConcern: program.targetConcern ?? "",
       isTemplate: program.isTemplate,
     })
-    setPhases(initialPhases)
+    setProgramPhases(initialProgramPhases)
     setError("")
     setEditing(false)
   }
@@ -99,7 +98,7 @@ export function EditProgramForm({ program }: Props) {
   }
 
   if (!editing) {
-    return <ProgramViewCard program={program} phases={initialPhases} onEdit={() => setEditing(true)} />
+    return <ProgramViewCard program={program} phases={initialProgramPhases} onEdit={() => setEditing(true)} />
   }
 
   return (
@@ -110,7 +109,7 @@ export function EditProgramForm({ program }: Props) {
       <CardContent>
         <form onSubmit={handleSave} className="flex flex-col gap-5">
           <ProgramBasicFields form={form} onChange={set} />
-          <ProgramPhaseEditor phases={phases} onAdd={addPhase} onUpdate={updatePhase} onRemove={removePhase} />
+          <ProgramProgramPhaseEditor phases={phases} onAdd={addProgramPhase} onUpdate={updateProgramPhase} onRemove={removeProgramPhase} />
 
           {error && <p className="text-sm text-red-600">{error}</p>}
 
