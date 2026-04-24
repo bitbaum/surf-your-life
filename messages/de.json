@@ -943,7 +943,6 @@
         "never": "Noch nie",
         "noAtRisk": "Alle Klienten haben sich kürzlich eingeloggt",
         "viewAtRisk": "Gefährdete Klienten",
-        "sendMessage": "Nachricht senden",
         "inactiveFor": "Inaktiv seit"
       },
       "newThread": {

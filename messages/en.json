@@ -943,7 +943,6 @@
         "never": "Never",
         "noAtRisk": "All clients have checked in recently",
         "viewAtRisk": "At-risk clients",
-        "sendMessage": "Send message",
         "inactiveFor": "Inactive for"
       },
       "newThread": {

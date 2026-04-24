@@ -8,6 +8,7 @@ import { Link } from "@/i18n/navigation"
 import { formatDate } from "@/lib/utils"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { SEVEN_DAYS_MS, DAY_MS } from "@/lib/constants"
+import { NewThreadButton } from "../[id]/new-thread-button"
 
 export default async function AtRiskClientsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
@@ -95,12 +96,7 @@ export default async function AtRiskClientsPage({ params }: { params: Promise<{ 
                         >
                           {t("viewLink")}
                         </Link>
-                        <a
-                          href={`mailto:${client.email}`}
-                          className="text-xs text-slate-500 hover:text-teal-600 transition-colors"
-                        >
-                          {t("atRisk.sendMessage")}
-                        </a>
+                        <NewThreadButton clientId={client.id} />
                       </div>
                     </td>
                   </tr>
