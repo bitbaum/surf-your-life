@@ -849,7 +849,8 @@
       "clinicalAlerts": "Klinische Hinweise",
       "dismissAlert": "Schliessen",
       "never": "Noch nie eingecheckt",
-      "daysAgo": "{n} Tage ohne Check-in"
+      "daysAgo": "{n} Tage ohne Check-in",
+      "weeklyInsights": "Wöchentliche KI-Einblicke"
     },
     "messages": {
       "title": "Nachrichten",

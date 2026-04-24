@@ -849,7 +849,8 @@
       "clinicalAlerts": "Alertes cliniques",
       "dismissAlert": "Ignorer",
       "never": "Jamais enregistré",
-      "daysAgo": "{n} jours sans check-in"
+      "daysAgo": "{n} jours sans check-in",
+      "weeklyInsights": "Résumés IA hebdomadaires"
     },
     "messages": {
       "title": "Messages",

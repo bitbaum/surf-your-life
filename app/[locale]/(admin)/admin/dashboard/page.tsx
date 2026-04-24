@@ -1,17 +1,18 @@
 import { db } from "@/lib/db"
 import { users, checkIns, bookings, threadMessages, clientAlerts } from "@/lib/db/schema"
-import { eq, desc, gte, count, and, isNull, max, or, lt } from "drizzle-orm"
+import { eq, desc, gte, count, and, isNull, max, or, lt, isNotNull, sql } from "drizzle-orm"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { StatCard } from "@/components/ui/stat-card"
 import { PageHeader } from "@/components/ui/page-header"
 import { Link } from "@/i18n/navigation"
 import { Users, ClipboardList, TrendingUp, CalendarClock, MessageSquare, AlertTriangle } from "lucide-react"
-import { SEVEN_DAYS_MS, THIRTY_DAYS_MS, RECENT_CLIENTS_LIMIT, AT_RISK_CLIENTS_LIMIT, ADMIN_DASHBOARD_ALERTS_PREVIEW } from "@/lib/constants"
+import { SEVEN_DAYS_MS, THIRTY_DAYS_MS, RECENT_CLIENTS_LIMIT, AT_RISK_CLIENTS_LIMIT, ADMIN_DASHBOARD_ALERTS_PREVIEW, ADMIN_DASHBOARD_INSIGHTS_PREVIEW } from "@/lib/constants"
 import { CLIENT_ROLE } from "@/lib/domain/auth"
 import { AlertList } from "./alert-list"
 import { AtRiskClientsCard } from "./at-risk-clients-card"
 import { RecentClientsCard } from "./recent-clients-card"
+import { LatestInsightsCard } from "./latest-insights-card"
 
 export default async function AdminDashboardPage({
   params,
@@ -36,6 +37,7 @@ export default async function AdminDashboardPage({
     atRiskPreview,
     unresolvedAlertsCountResult,
     unresolvedAlerts,
+    latestInsightsRaw,
   ] = await Promise.all([
     db.select({ count: count() }).from(users).where(eq(users.role, CLIENT_ROLE)),
     db.select({ count: count() }).from(checkIns).where(gte(checkIns.createdAt, thirtyDaysAgo)),
@@ -88,6 +90,20 @@ export default async function AdminDashboardPage({
       limit: ADMIN_DASHBOARD_ALERTS_PREVIEW,
       with: { client: { columns: { id: true, name: true, email: true } } },
     }),
+    // Latest AI insight per client — DISTINCT ON ensures one row per client, newest first
+    db.execute<{ client_id: string; client_name: string | null; ai_insight: string; created_at: string }>(sql`
+      SELECT DISTINCT ON (ci.user_id)
+        ci.user_id  AS client_id,
+        u.name      AS client_name,
+        ci.ai_insight,
+        ci.created_at
+      FROM check_ins ci
+      JOIN users u ON u.id = ci.user_id
+      WHERE ci.ai_insight IS NOT NULL
+        AND u.role = ${CLIENT_ROLE}
+      ORDER BY ci.user_id, ci.created_at DESC
+      LIMIT ${ADMIN_DASHBOARD_INSIGHTS_PREVIEW}
+    `),
   ])
 
   const clientCount = clientCountResult[0]?.count ?? 0
@@ -101,6 +117,12 @@ export default async function AdminDashboardPage({
   const atRiskCount = atRiskCountResult[0]?.count ?? 0
   const atRiskClients = atRiskPreview
   const unresolvedAlertsCount = unresolvedAlertsCountResult[0]?.count ?? 0
+  const latestInsights = latestInsightsRaw.rows.map((r) => ({
+    clientId: r.client_id,
+    clientName: r.client_name,
+    aiInsight: r.ai_insight,
+    createdAt: new Date(r.created_at),
+  }))
 
   return (
     <div className="max-w-5xl mx-auto">
@@ -139,6 +161,7 @@ export default async function AdminDashboardPage({
         </Card>
       )}
 
+      <LatestInsightsCard insights={latestInsights} />
       <AtRiskClientsCard clients={atRiskClients} nowMs={nowMs} />
       <RecentClientsCard clients={recentClients} />
     </div>

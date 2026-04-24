@@ -849,7 +849,8 @@
       "clinicalAlerts": "Clinical alerts",
       "dismissAlert": "Dismiss",
       "never": "Never checked in",
-      "daysAgo": "{n} days without check-in"
+      "daysAgo": "{n} days without check-in",
+      "weeklyInsights": "Weekly AI insights"
     },
     "messages": {
       "title": "Messages",
