@@ -126,6 +126,12 @@ export default async function CheckInsPage({
                       )}
                     </div>
                   )}
+                  {ci.aiInsight && (
+                    <div className="mt-4 bg-violet-50 border-l-2 border-violet-300 rounded-r-lg px-3 py-2">
+                      <p className="text-xs font-medium text-violet-600 mb-0.5">{t("weeklyInsight")}</p>
+                      <p className="text-sm text-violet-900 leading-relaxed">{ci.aiInsight}</p>
+                    </div>
+                  )}
                   {ci.practitionerNote && (
                     <div className="mt-4 bg-teal-50 border-l-2 border-teal-400 rounded-r-lg px-3 py-2">
                       <p className="text-xs font-medium text-teal-700 mb-0.5">

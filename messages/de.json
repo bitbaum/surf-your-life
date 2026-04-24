@@ -495,7 +495,8 @@
       "actionCancel": "Abbrechen",
       "editAction": "Bearbeiten",
       "deleteAction": "Löschen",
-      "editSymptomsEnable": "Erfassen"
+      "editSymptomsEnable": "Erfassen",
+      "weeklyInsight": "Wöchentliche Einsicht"
     },
     "profile": {
       "title": "Ihr Profil",

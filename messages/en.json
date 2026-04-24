@@ -495,7 +495,8 @@
       "actionCancel": "Cancel",
       "editAction": "Edit",
       "deleteAction": "Delete",
-      "editSymptomsEnable": "Track"
+      "editSymptomsEnable": "Track",
+      "weeklyInsight": "Weekly insight"
     },
     "profile": {
       "title": "Your profile",

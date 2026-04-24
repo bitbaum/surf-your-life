@@ -495,7 +495,8 @@
       "actionCancel": "Annuler",
       "editAction": "Modifier",
       "deleteAction": "Supprimer",
-      "editSymptomsEnable": "Saisir"
+      "editSymptomsEnable": "Saisir",
+      "weeklyInsight": "Résumé hebdomadaire"
     },
     "profile": {
       "title": "Votre profil",
