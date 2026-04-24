@@ -3,7 +3,7 @@ import { redirect } from "next/navigation"
 import { db } from "@/lib/db"
 import { documents } from "@/lib/db/schema"
 import { eq, desc, count } from "drizzle-orm"
-import { PAGINATION_DEFAULT, DOC_TYPE_BADGE_CLASSES } from "@/lib/constants"
+import { PAGINATION_DEFAULT, DOC_TYPE_BADGE_CLASSES, DOC_TYPE_I18N_KEYS } from "@/lib/constants"
 import { Card, CardContent } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { Pagination } from "@/components/ui/pagination"
@@ -46,13 +46,6 @@ export default async function DocumentsPage({
   const total = totalResult[0]?.value ?? 0
   const totalPages = computeTotalPages(total, PAGINATION_DEFAULT)
 
-  const TYPE_LABELS: Record<string, string> = {
-    session_note: t("type_session_note"),
-    assessment:   t("type_assessment"),
-    report:       t("type_report"),
-    upload:       t("type_upload"),
-  }
-
   return (
     <div className="max-w-2xl mx-auto">
       <PageHeader title={t("title")} description={t("subtitle")} />
@@ -83,7 +76,7 @@ export default async function DocumentsPage({
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-2 mb-1">
                       <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${DOC_TYPE_BADGE_CLASSES[doc.type] ?? DOC_TYPE_BADGE_CLASSES.upload}`}>
-                        {TYPE_LABELS[doc.type] ?? doc.type}
+                        {t(DOC_TYPE_I18N_KEYS[doc.type] ?? "typeUpload")}
                       </span>
                       <span className="text-xs text-slate-400">{formatDate(doc.createdAt)}</span>
                       {doc.author && (

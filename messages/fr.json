@@ -752,10 +752,6 @@
       "emptySubtext": "Votre praticien ajoutera ici des notes de séance et des rapports. Vous pouvez aussi partager des notes avec votre équipe.",
       "by": "par",
       "byYou": "par vous",
-      "type_session_note": "Note de séance",
-      "type_assessment": "Évaluation",
-      "type_report": "Rapport",
-      "type_upload": "Votre dépôt",
       "addDocument": "Ajouter un document",
       "formTitle": "Partager un document avec votre équipe",
       "fieldTitle": "Titre (facultatif)",
@@ -765,7 +761,11 @@
       "submit": "Soumettre",
       "cancel": "Annuler",
       "submitError": "Impossible de soumettre le document. Veuillez réessayer.",
-      "submitSuccess": "Document partagé avec votre équipe soignante."
+      "submitSuccess": "Document partagé avec votre équipe soignante.",
+      "typeSessionNote": "Note de séance",
+      "typeAssessment": "Évaluation",
+      "typeReport": "Rapport",
+      "typeUpload": "Votre dépôt"
     }
   },
   "sidebar": {

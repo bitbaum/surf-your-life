@@ -752,10 +752,6 @@
       "emptySubtext": "Ihr Praktiker fügt hier Sitzungsnotizen und Berichte hinzu. Sie können Ihrem Team auch Notizen teilen.",
       "by": "von",
       "byYou": "von Ihnen",
-      "type_session_note": "Sitzungsnotiz",
-      "type_assessment": "Assessment",
-      "type_report": "Bericht",
-      "type_upload": "Ihr Upload",
       "addDocument": "Dokument hinzufügen",
       "formTitle": "Dokument mit Ihrem Team teilen",
       "fieldTitle": "Titel (optional)",
@@ -765,7 +761,11 @@
       "submit": "Absenden",
       "cancel": "Abbrechen",
       "submitError": "Dokument konnte nicht eingereicht werden. Bitte erneut versuchen.",
-      "submitSuccess": "Dokument wurde mit Ihrem Behandlungsteam geteilt."
+      "submitSuccess": "Dokument wurde mit Ihrem Behandlungsteam geteilt.",
+      "typeSessionNote": "Sitzungsnotiz",
+      "typeAssessment": "Assessment",
+      "typeReport": "Bericht",
+      "typeUpload": "Ihr Upload"
     }
   },
   "sidebar": {
