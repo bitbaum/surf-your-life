@@ -5,7 +5,7 @@ import { db } from "@/lib/db"
 import { techniques } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { updateTechniqueSchema } from "@/lib/domain/techniques"
-import { API_ERR_FORBIDDEN, API_ERR_NOT_FOUND, API_ERR_UNAUTHORIZED } from "@/lib/constants"
+import { API_ERR_FORBIDDEN, API_ERR_NOT_FOUND, API_ERR_UNAUTHORIZED, API_ERR_INVALID_INPUT } from "@/lib/constants"
 
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth()
@@ -18,7 +18,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
   const body = await req.json()
   const result = updateTechniqueSchema.safeParse(body)
   if (!result.success) {
-    return NextResponse.json({ success: false, error: result.error.flatten() }, { status: 400 })
+    return NextResponse.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })
   }
 
   const { resourceUrl, ...rest } = result.data
