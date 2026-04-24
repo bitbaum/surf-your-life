@@ -930,7 +930,8 @@
         "selectPractitioner": "Select practitioner...",
         "assignError": "Failed to update assignment",
         "saving": "Saving...",
-        "energyTrend": "Energy trend"
+        "energyTrend": "Energy trend",
+        "cancel": "Cancel"
       },
       "atRisk": {
         "title": "At-Risk Clients",

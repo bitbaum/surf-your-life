@@ -948,7 +948,8 @@
         "selectPractitioner": "Sélectionner un praticien...",
         "assignError": "Échec de la mise à jour de l'affectation",
         "saving": "Enregistrement...",
-        "energyTrend": "Tendance énergie"
+        "energyTrend": "Tendance énergie",
+        "cancel": "Annuler"
       },
       "atRisk": {
         "title": "Clients à risque",

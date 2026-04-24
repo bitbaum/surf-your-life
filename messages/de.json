@@ -930,7 +930,8 @@
         "selectPractitioner": "Fachkraft auswählen...",
         "assignError": "Zuweisung konnte nicht aktualisiert werden",
         "saving": "Wird gespeichert...",
-        "energyTrend": "Energieverlauf"
+        "energyTrend": "Energieverlauf",
+        "cancel": "Abbrechen"
       },
       "atRisk": {
         "title": "Gefährdete Klienten",

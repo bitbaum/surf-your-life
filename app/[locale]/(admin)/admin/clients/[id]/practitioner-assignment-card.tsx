@@ -94,7 +94,7 @@ export function PractitionerAssignmentCard({ clientId, current, practitioners }:
               {saving ? t("saving") : t("assignPractitioner")}
             </Button>
             <Button size="sm" variant="ghost" onClick={() => { setEditing(false); setSelected("") }}>
-              Cancel
+              {t("cancel")}
             </Button>
           </div>
         ) : current ? (
