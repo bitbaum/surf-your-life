@@ -65,7 +65,10 @@ export default async function AtRiskClientsPage({ params }: { params: Promise<{ 
         <CardContent>
           {atRisk.length === 0 ? (
             <div className="py-8">
-              <EmptyState message={t("atRisk.noAtRisk")} />
+              <EmptyState
+                message={t("atRisk.noAtRisk")}
+                action={<Link href="/admin/clients" className="text-sm font-medium text-teal-600 hover:text-teal-700 transition-colors">{t("detail.backLink")}</Link>}
+              />
             </div>
           ) : (
             <div className="overflow-x-auto">

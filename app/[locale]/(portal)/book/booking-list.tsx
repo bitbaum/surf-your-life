@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { BOOKING_STATUS_BADGE_VARIANT } from "@/lib/constants"
 import { EmptyState } from "@/components/ui/empty-state"
+import { Link } from "@/i18n/navigation"
 
 type BookingWithService = Booking & { service: Service }
 
@@ -60,7 +61,10 @@ export function BookingList({ bookings }: { bookings: BookingWithService[] }) {
       <CardContent>
         {bookings.length === 0 ? (
           <div className="py-6">
-            <EmptyState message={t("noBookings")} />
+            <EmptyState
+              message={t("noBookings")}
+              action={<Link href="/messages/new" className="text-sm font-medium text-teal-600 hover:text-teal-700 transition-colors">{t("messagePractitioner")}</Link>}
+            />
           </div>
         ) : (
           <div className="flex flex-col gap-3">

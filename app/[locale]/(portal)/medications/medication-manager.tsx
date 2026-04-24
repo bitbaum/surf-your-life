@@ -84,7 +84,10 @@ export function MedicationManager({ medications: initial }: Props) {
 
         {current.length === 0 && !showForm && (
           <div className="py-4">
-            <EmptyState message={t("empty")} />
+            <EmptyState
+              message={t("empty")}
+              action={<button onClick={() => setShowForm(true)} className="text-sm font-medium text-teal-600 hover:text-teal-700 transition-colors">{t("add")}</button>}
+            />
           </div>
         )}
 

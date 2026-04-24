@@ -608,7 +608,8 @@
       "cancelBooking": "Cancel booking",
       "cancelling": "Cancelling…",
       "cancelError": "Could not cancel. Please try again.",
-      "noServices": "No services are available for booking at this time. Check back soon or contact your practitioner."
+      "noServices": "No services are available for booking at this time. Check back soon or contact your practitioner.",
+      "messagePractitioner": "Message your practitioner"
     },
     "settings": {
       "title": "Account Settings",

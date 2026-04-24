@@ -54,7 +54,10 @@ export async function RecentClientsCard({ clients }: Props) {
           ))}
           {clients.length === 0 && (
             <div className="py-6">
-              <EmptyState message={t("noClients")} />
+              <EmptyState
+                message={t("noClients")}
+                action={<Link href="/admin/clients" className="text-sm font-medium text-teal-600 hover:text-teal-700 transition-colors">{t("viewAll")} →</Link>}
+              />
             </div>
           )}
         </div>

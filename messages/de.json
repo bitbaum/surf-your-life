@@ -608,7 +608,8 @@
       "cancelBooking": "Buchung stornieren",
       "cancelling": "Wird storniert…",
       "cancelError": "Stornierung fehlgeschlagen. Bitte erneut versuchen.",
-      "noServices": "Derzeit sind keine Dienstleistungen buchbar. Schaue bald wieder vorbei oder kontaktiere deinen Therapeuten."
+      "noServices": "Derzeit sind keine Dienstleistungen buchbar. Schaue bald wieder vorbei oder kontaktiere deinen Therapeuten.",
+      "messagePractitioner": "Therapeuten kontaktieren"
     },
     "settings": {
       "title": "Kontoeinstellungen",
