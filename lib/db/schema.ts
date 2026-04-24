@@ -158,6 +158,8 @@ export const profiles = pgTable("profiles", {
   alcoholTobacco: text("alcohol_tobacco"),
   socialSupport: integer("social_support"), // 1-10
   stressLevel: integer("stress_level"), // 1-10
+  // Notification preferences
+  receiveReminders: boolean("receive_reminders").default(true).notNull(),
   // Embedding for semantic search over profile context
   embedding: vector("embedding", { dimensions: 1536 }),
   updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),

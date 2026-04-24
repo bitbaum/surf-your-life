@@ -615,7 +615,15 @@
       "deleteButton": "Delete my account",
       "deleting": "Deleting...",
       "deleteWarning": "This is permanent. All check-ins, bookings, messages and profile data will be deleted.",
-      "deleteError": "Something went wrong. Please try again."
+      "deleteError": "Something went wrong. Please try again.",
+      "notificationsTitle": "Notifications",
+      "remindersDailyLabel": "Daily check-in reminders",
+      "remindersDescription": "Receive an evening reminder to log your daily check-in.",
+      "remindersEnabled": "Reminders turned on.",
+      "remindersDisabled": "Reminders turned off.",
+      "remindersSaveError": "Could not save preference. Please try again.",
+      "remindersEnableAriaLabel": "Turn on reminders",
+      "remindersDisableAriaLabel": "Turn off reminders"
     },
     "program": {
       "title": "My Program",

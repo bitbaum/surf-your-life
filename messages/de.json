@@ -615,7 +615,15 @@
       "deleteButton": "Mein Konto löschen",
       "deleting": "Wird gelöscht...",
       "deleteWarning": "Dies ist dauerhaft. Alle Check-ins, Buchungen, Nachrichten und Profildaten werden gelöscht.",
-      "deleteError": "Etwas ist schiefgelaufen. Bitte versuche es erneut."
+      "deleteError": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
+      "notificationsTitle": "Benachrichtigungen",
+      "remindersDailyLabel": "Tägliche Check-in-Erinnerungen",
+      "remindersDescription": "Erhalten Sie abends eine Erinnerung, Ihren täglichen Check-in zu erfassen.",
+      "remindersEnabled": "Erinnerungen aktiviert.",
+      "remindersDisabled": "Erinnerungen deaktiviert.",
+      "remindersSaveError": "Einstellung konnte nicht gespeichert werden. Bitte versuchen Sie es erneut.",
+      "remindersEnableAriaLabel": "Erinnerungen aktivieren",
+      "remindersDisableAriaLabel": "Erinnerungen deaktivieren"
     },
     "program": {
       "title": "Mein Programm",

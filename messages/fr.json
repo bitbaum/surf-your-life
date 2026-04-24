@@ -615,7 +615,15 @@
       "deleteButton": "Supprimer mon compte",
       "deleting": "Suppression...",
       "deleteWarning": "Cette action est définitive. Tous vos check-ins, réservations, messages et données de profil seront supprimés.",
-      "deleteError": "Quelque chose s'est mal passé. Veuillez réessayer."
+      "deleteError": "Quelque chose s'est mal passé. Veuillez réessayer.",
+      "notificationsTitle": "Notifications",
+      "remindersDailyLabel": "Rappels quotidiens de check-in",
+      "remindersDescription": "Recevez un rappel en soirée pour enregistrer votre check-in quotidien.",
+      "remindersEnabled": "Rappels activés.",
+      "remindersDisabled": "Rappels désactivés.",
+      "remindersSaveError": "Impossible de sauvegarder la préférence. Veuillez réessayer.",
+      "remindersEnableAriaLabel": "Activer les rappels",
+      "remindersDisableAriaLabel": "Désactiver les rappels"
     },
     "program": {
       "title": "Mon programme",

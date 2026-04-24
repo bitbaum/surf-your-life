@@ -478,7 +478,7 @@ export function checkInReminderEmail(data: CheckInReminderData): string {
   <p>Hello ${name},</p>
   <p>${streakMsg} Your check-in takes less than 2 minutes and helps your practitioner track your progress.</p>
   <a href="${portalUrl}/check-in" class="cta">Check in now</a>
-  <p style="margin-top:24px;font-size:13px;color:#64748b;">To unsubscribe from reminders, update your preferences in the portal.</p>
+  <p style="margin-top:24px;font-size:13px;color:#64748b;">To turn off reminders, visit <a href="${portalUrl}/settings">Settings</a> in the portal.</p>
   <p style="font-size:12px;color:#94a3b8;margin-top:32px;">${COMPANY_ADDRESS}</p>
 `)
 }

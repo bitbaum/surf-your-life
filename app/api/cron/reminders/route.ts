@@ -5,7 +5,7 @@
  */
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
-import { users, checkIns } from "@/lib/db/schema"
+import { users, checkIns, profiles } from "@/lib/db/schema"
 import { eq, and, gte, desc, inArray } from "drizzle-orm"
 import { sendEmail } from "@/lib/email"
 import { checkInReminderEmail } from "@/lib/email/templates"
@@ -37,6 +37,15 @@ export async function GET(req: Request) {
 
   const clientIds = allClients.map((c) => c.id)
 
+  // Batch: fetch reminder preferences — clients without a profile default to opted-in
+  const profilePrefs = await db
+    .select({ userId: profiles.userId, receiveReminders: profiles.receiveReminders })
+    .from(profiles)
+    .where(inArray(profiles.userId, clientIds))
+  const optedOut = new Set(
+    profilePrefs.filter((p) => !p.receiveReminders).map((p) => p.userId)
+  )
+
   // Batch 1: find all clients who already checked in today (one query instead of N)
   const todayCheckIns = await db.query.checkIns.findMany({
     where: and(inArray(checkIns.userId, clientIds), gte(checkIns.createdAt, startOfToday)),
@@ -44,7 +53,10 @@ export async function GET(req: Request) {
   })
   const clientsCheckedInToday = new Set(todayCheckIns.map((ci) => ci.userId))
 
-  const clientsNeedingReminders = allClients.filter((c) => !clientsCheckedInToday.has(c.id))
+  // Skip clients who already checked in OR who have opted out of reminders
+  const clientsNeedingReminders = allClients.filter(
+    (c) => !clientsCheckedInToday.has(c.id) && !optedOut.has(c.id)
+  )
   const skipped = allClients.length - clientsNeedingReminders.length
 
   let sent = 0
