@@ -10,7 +10,7 @@ interface Props {
   trackSymptoms: boolean
   setTrackSymptoms: (v: boolean) => void
   symptoms: Symptoms
-  setSymptoms: (updater: (prev: Symptoms) => Symptoms) => void
+  setSymptoms: (v: Symptoms) => void
 }
 
 export function SymptomsCard({ trackSymptoms, setTrackSymptoms, symptoms, setSymptoms }: Props) {
@@ -60,7 +60,7 @@ export function SymptomsCard({ trackSymptoms, setTrackSymptoms, symptoms, setSym
                   min={SYMPTOM_SCALE.min}
                   max={SYMPTOM_SCALE.max}
                   value={symptoms[key]}
-                  onChange={(e) => setSymptoms((s) => ({ ...s, [key]: parseInt(e.target.value) }))}
+                  onChange={(e) => setSymptoms({ ...symptoms, [key]: parseInt(e.target.value) })}
                   className="flex-1 accent-teal-600"
                 />
                 <span className="text-xs text-slate-400 w-4">{SYMPTOM_SCALE.max}</span>

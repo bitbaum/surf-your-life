@@ -23,22 +23,26 @@ export function EditCheckInModal({ checkIn, checkInId, onSave, onCancel }: EditC
 
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState("")
-  const [mood, setMood] = useState(checkIn.mood)
-  const [energy, setEnergy] = useState(checkIn.energyLevel)
-  const [sleep, setSleep] = useState(checkIn.sleepHours != null ? String(checkIn.sleepHours) : "")
-  const [sleepQuality, setSleepQuality] = useState<number | null>(checkIn.sleepQuality ?? null)
-  const [activityLevel, setActivityLevel] = useState<string | null>(checkIn.activityLevel ?? null)
-  const [pemFlag, setPemFlag] = useState(checkIn.pemFlag ?? false)
-  const [pemSeverity, setPemSeverity] = useState(checkIn.pemSeverity ?? 5)
-  const [orthostaticSymptoms, setOrthostaticSymptoms] = useState<boolean | null>(checkIn.orthostaticSymptoms ?? null)
-  const [journalEntry, setJournalEntry] = useState(checkIn.journalEntry ?? "")
-  const [fatigue, setFatigue] = useState<number | null>(checkIn.symptomFatigue ?? null)
-  const [brainFog, setBrainFog] = useState<number | null>(checkIn.symptomBrainFog ?? null)
-  const [pain, setPain] = useState<number | null>(checkIn.symptomPain ?? null)
-  const [stress, setStress] = useState<number | null>(checkIn.stressLevel ?? null)
-  const [wins, setWins] = useState(checkIn.wins ?? "")
-  const [challenges, setChallenges] = useState(checkIn.challenges ?? "")
-  const [notes, setNotes] = useState(checkIn.notes ?? "")
+  const [form, setForm] = useState({
+    mood: checkIn.mood,
+    energy: checkIn.energyLevel ?? ENERGY_SCALE.default,
+    sleep: checkIn.sleepHours != null ? String(checkIn.sleepHours) : "",
+    sleepQuality: checkIn.sleepQuality ?? null as number | null,
+    activityLevel: checkIn.activityLevel ?? null as string | null,
+    pemFlag: checkIn.pemFlag ?? false,
+    pemSeverity: checkIn.pemSeverity ?? 5,
+    orthostaticSymptoms: checkIn.orthostaticSymptoms ?? null as boolean | null,
+    journalEntry: checkIn.journalEntry ?? "",
+    fatigue: checkIn.symptomFatigue ?? null as number | null,
+    brainFog: checkIn.symptomBrainFog ?? null as number | null,
+    pain: checkIn.symptomPain ?? null as number | null,
+    stress: checkIn.stressLevel ?? null as number | null,
+    wins: checkIn.wins ?? "",
+    challenges: checkIn.challenges ?? "",
+    notes: checkIn.notes ?? "",
+  })
+  const set = <K extends keyof typeof form>(key: K) =>
+    (val: (typeof form)[K]) => setForm((prev) => ({ ...prev, [key]: val }))
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault()
@@ -49,22 +53,22 @@ export function EditCheckInModal({ checkIn, checkInId, onSave, onCancel }: EditC
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          mood,
-          energyLevel: energy,
-          sleepHours: sleep ? parseInt(sleep) : null,
-          sleepQuality,
-          activityLevel,
-          pemFlag,
-          pemSeverity: pemFlag ? pemSeverity : null,
-          orthostaticSymptoms,
-          journalEntry: journalEntry || null,
-          symptomFatigue: fatigue,
-          symptomBrainFog: brainFog,
-          symptomPain: pain,
-          stressLevel: stress,
-          wins: wins || undefined,
-          challenges: challenges || undefined,
-          notes: notes || undefined,
+          mood: form.mood,
+          energyLevel: form.energy,
+          sleepHours: form.sleep ? parseInt(form.sleep) : null,
+          sleepQuality: form.sleepQuality,
+          activityLevel: form.activityLevel,
+          pemFlag: form.pemFlag,
+          pemSeverity: form.pemFlag ? form.pemSeverity : null,
+          orthostaticSymptoms: form.orthostaticSymptoms,
+          journalEntry: form.journalEntry || null,
+          symptomFatigue: form.fatigue,
+          symptomBrainFog: form.brainFog,
+          symptomPain: form.pain,
+          stressLevel: form.stress,
+          wins: form.wins || undefined,
+          challenges: form.challenges || undefined,
+          notes: form.notes || undefined,
         }),
       })
       if (!res.ok) {
@@ -81,11 +85,11 @@ export function EditCheckInModal({ checkIn, checkInId, onSave, onCancel }: EditC
 
   return (
     <form onSubmit={handleSave} className="mt-4 flex flex-col gap-4 border-t border-slate-100 pt-4">
-      <EditMoodPicker mood={mood} onChange={(v) => setMood(v as typeof mood)} />
+      <EditMoodPicker mood={form.mood} onChange={set("mood") as (v: string) => void} />
 
       <div>
         <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">
-          {t("editEnergy", { n: energy })}
+          {t("editEnergy", { n: form.energy })}
         </p>
         <div className="flex items-center gap-4">
           <span className="text-sm text-slate-400">{ENERGY_SCALE.min}</span>
@@ -93,32 +97,32 @@ export function EditCheckInModal({ checkIn, checkInId, onSave, onCancel }: EditC
             type="range"
             min={ENERGY_SCALE.min}
             max={ENERGY_SCALE.max}
-            value={energy}
-            onChange={(e) => setEnergy(parseInt(e.target.value))}
+            value={form.energy}
+            onChange={(e) => set("energy")(parseInt(e.target.value))}
             className="flex-1 accent-teal-600"
           />
           <span className="text-sm text-slate-400">{ENERGY_SCALE.max}</span>
         </div>
       </div>
 
-      <EditSleepSection sleep={sleep} setSleep={setSleep} sleepQuality={sleepQuality} setSleepQuality={setSleepQuality} />
-      <EditActivityPemSection activityLevel={activityLevel} setActivityLevel={setActivityLevel} pemFlag={pemFlag} setPemFlag={setPemFlag} pemSeverity={pemSeverity} setPemSeverity={setPemSeverity} />
+      <EditSleepSection sleep={form.sleep} setSleep={set("sleep")} sleepQuality={form.sleepQuality} setSleepQuality={set("sleepQuality")} />
+      <EditActivityPemSection activityLevel={form.activityLevel} setActivityLevel={set("activityLevel")} pemFlag={form.pemFlag} setPemFlag={set("pemFlag")} pemSeverity={form.pemSeverity} setPemSeverity={set("pemSeverity")} />
 
       <div>
         <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">{t("editOrthostaticLabel")}</p>
         <label className="flex items-center gap-2 cursor-pointer">
           <input
             type="checkbox"
-            checked={orthostaticSymptoms === true}
-            onChange={(e) => setOrthostaticSymptoms(e.target.checked ? true : null)}
+            checked={form.orthostaticSymptoms === true}
+            onChange={(e) => set("orthostaticSymptoms")(e.target.checked ? true : null)}
             className="rounded border-slate-300 accent-teal-600"
           />
           <span className="text-sm text-slate-700">{t("editOrthostaticFlagLabel")}</span>
         </label>
       </div>
 
-      <EditSymptomsSection fatigue={fatigue} setFatigue={setFatigue} brainFog={brainFog} setBrainFog={setBrainFog} pain={pain} setPain={setPain} stress={stress} setStress={setStress} />
-      <EditTextFields hasJournal={checkIn.journalEntry != null} journalEntry={journalEntry} setJournalEntry={setJournalEntry} wins={wins} setWins={setWins} challenges={challenges} setChallenges={setChallenges} notes={notes} setNotes={setNotes} />
+      <EditSymptomsSection fatigue={form.fatigue} setFatigue={set("fatigue")} brainFog={form.brainFog} setBrainFog={set("brainFog")} pain={form.pain} setPain={set("pain")} stress={form.stress} setStress={set("stress")} />
+      <EditTextFields hasJournal={checkIn.journalEntry != null} journalEntry={form.journalEntry} setJournalEntry={set("journalEntry")} wins={form.wins} setWins={set("wins")} challenges={form.challenges} setChallenges={set("challenges")} notes={form.notes} setNotes={set("notes")} />
 
       {error && <p className="text-sm text-red-600">{error}</p>}
 
