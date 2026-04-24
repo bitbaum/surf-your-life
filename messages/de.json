@@ -1041,7 +1041,9 @@
         "typeReport": "Bericht",
         "typeUpload": "Upload",
         "noNotes": "Noch keine Notizen. Fügen Sie nach einer Sitzung eine hinzu.",
-        "error": "Notiz konnte nicht gespeichert werden"
+        "error": "Notiz konnte nicht gespeichert werden",
+        "showMore": "Mehr anzeigen",
+        "showLess": "Weniger anzeigen"
       },
       "checkIns": {
         "title": "Check-ins",

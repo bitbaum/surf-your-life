@@ -1041,7 +1041,9 @@
         "typeReport": "Report",
         "typeUpload": "Upload",
         "noNotes": "No notes yet. Add one after a session.",
-        "error": "Failed to save note"
+        "error": "Failed to save note",
+        "showMore": "Show more",
+        "showLess": "Show less"
       },
       "checkIns": {
         "title": "Check-ins",

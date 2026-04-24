@@ -1059,7 +1059,9 @@
         "typeReport": "Rapport",
         "typeUpload": "Téléchargement",
         "noNotes": "Aucune note pour l'instant. Ajoutez-en une après une séance.",
-        "error": "Impossible d'enregistrer la note"
+        "error": "Impossible d'enregistrer la note",
+        "showMore": "Afficher plus",
+        "showLess": "Afficher moins"
       },
       "checkIns": {
         "title": "Check-ins",
