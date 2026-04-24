@@ -586,3 +586,37 @@ export function weeklyReportEmail(data: WeeklyReportData): string {
   .stat-value { font-size: 24px; font-weight: 700; color: #0d9488; }
   .stat-label { font-size: 12px; color: #64748b; margin-top: 2px; }`)
 }
+
+// ─── First check-in notification (to assigned practitioners / admins) ─────────
+
+export type FirstCheckInAlertData = {
+  clientName: string | null
+  clientEmail: string
+  clientId: string
+}
+
+export function firstCheckInAlertEmail(data: FirstCheckInAlertData): string {
+  const { clientName, clientEmail, clientId } = data
+  const displayName = clientName ?? clientEmail
+  const adminUrl = `${SITE_URL}/admin/clients/${clientId}`
+
+  return emailShell(`
+  <div class="header" style="background:#1e293b;padding:16px 24px">
+    <h1 style="margin:0;font-size:16px;">First check-in submitted</h1>
+    <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">${BRAND_NAME}</p>
+  </div>
+
+  <p>Your client <strong>${displayName}</strong> has just completed their <strong>first check-in</strong>.</p>
+  <p style="color:#64748b;font-size:14px;">This is a great moment to review their initial data and reach out to welcome them to the programme.</p>
+
+  <div class="card">
+    <div class="label">Client</div>
+    <div class="value">${displayName}</div>
+    <div style="font-size:13px;color:#64748b;margin-top:2px;">${clientEmail}</div>
+  </div>
+
+  <a href="${adminUrl}" class="cta">View client in admin panel</a>
+
+  <p style="font-size:12px;color:#94a3b8;margin-top:24px;">${COMPANY_ADDRESS}</p>
+`)
+}
