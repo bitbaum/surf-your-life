@@ -2,23 +2,36 @@ import type { Service } from "@/lib/db/schema"
 import { BRAND_NAME, COMPANY_ADDRESS, SITE_URL } from "@/lib/constants"
 import { EMAIL_SUBJECT_INVITE } from "@/lib/email/subjects"
 
+// ─── Shared shell ─────────────────────────────────────────────────────────────
+
+const SHARED_CSS = `
+  body { font-family: -apple-system, sans-serif; color: #1e293b; max-width: 600px; margin: 0 auto; padding: 24px; }
+  a { color: #0d9488; }
+  .header { color: white; padding: 20px 24px; border-radius: 12px; margin-bottom: 24px; }
+  .cta { display: inline-block; background: #0d9488; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px; margin-top: 20px; }
+  .card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin: 16px 0; }
+  .label { font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; }
+  .value { font-size: 15px; font-weight: 600; color: #0f172a; margin-top: 2px; }
+`
+
+function emailShell(body: string, extraStyles = ""): string {
+  return `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><style>${SHARED_CSS}${extraStyles}</style></head>
+<body>
+${body}
+</body>
+</html>`.trim()
+}
+
 // ─── Verification email ───────────────────────────────────────────────────────
 
 type VerificationEmailData = { email: string; verifyUrl: string }
 
 export function verificationEmail(data: VerificationEmailData): string {
   const { verifyUrl } = data
-  return `
-<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"><style>
-  body { font-family: -apple-system, sans-serif; color: #1e293b; max-width: 600px; margin: 0 auto; padding: 24px; }
-  .header { background: #0d9488; color: white; padding: 20px 24px; border-radius: 12px; margin-bottom: 24px; }
-  .cta { display: inline-block; background: #0d9488; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px; margin-top: 20px; }
-  a { color: #0d9488; }
-</style></head>
-<body>
-  <div class="header">
+  return emailShell(`
+  <div class="header" style="background:#0d9488">
     <h1 style="margin:0;font-size:20px;">Verify your email address</h1>
     <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">${BRAND_NAME}</p>
   </div>
@@ -27,9 +40,7 @@ export function verificationEmail(data: VerificationEmailData): string {
   <a href="${verifyUrl}" class="cta">Verify my email</a>
   <p style="margin-top:24px;font-size:13px;color:#64748b;">If you did not create an account, you can safely ignore this email.</p>
   <p style="font-size:12px;color:#94a3b8;margin-top:32px;">${COMPANY_ADDRESS}</p>
-</body>
-</html>
-  `.trim()
+`)
 }
 
 // ─── Password reset ───────────────────────────────────────────────────────────
@@ -38,17 +49,8 @@ type PasswordResetEmailData = { resetUrl: string }
 
 export function passwordResetEmail(data: PasswordResetEmailData): string {
   const { resetUrl } = data
-  return `
-<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"><style>
-  body { font-family: -apple-system, sans-serif; color: #1e293b; max-width: 600px; margin: 0 auto; padding: 24px; }
-  .header { background: #0d9488; color: white; padding: 20px 24px; border-radius: 12px; margin-bottom: 24px; }
-  .cta { display: inline-block; background: #0d9488; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px; margin-top: 20px; }
-  a { color: #0d9488; }
-</style></head>
-<body>
-  <div class="header">
+  return emailShell(`
+  <div class="header" style="background:#0d9488">
     <h1 style="margin:0;font-size:20px;">Reset your password</h1>
     <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">${BRAND_NAME}</p>
   </div>
@@ -57,9 +59,7 @@ export function passwordResetEmail(data: PasswordResetEmailData): string {
   <a href="${resetUrl}" class="cta">Reset my password</a>
   <p style="margin-top:24px;font-size:13px;color:#64748b;">If you did not request this, you can safely ignore this email. Your password will not change.</p>
   <p style="font-size:12px;color:#94a3b8;margin-top:32px;">${COMPANY_ADDRESS}</p>
-</body>
-</html>
-  `.trim()
+`)
 }
 
 // ─── Booking request confirmation (to client) ─────────────────────────────────
@@ -76,36 +76,26 @@ export function bookingRequestEmail(data: BookingRequestData): string {
   const greeting = clientName ? `Hi ${clientName},` : "Hello,"
   const timeLabel = preferredTime ? ` (${preferredTime})` : ""
   const dateBlock = preferredDate
-    ? `<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:16px;margin:16px 0;">
+    ? `<div class="card">
         <div style="font-size:12px;color:#64748b;text-transform:uppercase;letter-spacing:0.05em;">Preferred date &amp; time</div>
         <div style="font-size:15px;font-weight:600;color:#0f172a;margin-top:2px;">${preferredDate}${timeLabel}</div>
        </div>`
     : ""
-  return `
-<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"><style>
-  body { font-family: -apple-system, sans-serif; color: #1e293b; max-width: 600px; margin: 0 auto; padding: 24px; }
-  .header { background: #0d9488; color: white; padding: 20px 24px; border-radius: 12px; margin-bottom: 24px; }
-  a { color: #0d9488; }
-</style></head>
-<body>
-  <div class="header">
+  return emailShell(`
+  <div class="header" style="background:#0d9488">
     <h1 style="margin:0;font-size:18px;">Booking request received</h1>
     <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">${BRAND_NAME} Portal</p>
   </div>
   <p>${greeting}</p>
   <p>We received your booking request for <strong>${serviceName}</strong>. We'll confirm within 24 hours.</p>
-  <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:16px;margin:16px 0;">
-    <div style="font-size:12px;color:#64748b;text-transform:uppercase;letter-spacing:0.05em;">Service</div>
-    <div style="font-size:15px;font-weight:600;color:#0f172a;margin-top:2px;">${serviceName}</div>
+  <div class="card">
+    <div class="label">Service</div>
+    <div class="value">${serviceName}</div>
   </div>
   ${dateBlock}
   <p style="font-size:13px;color:#64748b;margin-top:16px;">If you have any questions, simply reply to this email.</p>
   <p style="font-size:12px;color:#94a3b8;margin-top:32px;">${COMPANY_ADDRESS}</p>
-</body>
-</html>
-  `.trim()
+`)
 }
 
 // ─── Welcome email ────────────────────────────────────────────────────────────
@@ -117,17 +107,8 @@ export function welcomeEmail(data: WelcomeEmailData): string {
   const displayName = name ?? email
   const dashboardUrl = `${SITE_URL}/dashboard`
 
-  return `
-<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"><style>
-  body { font-family: -apple-system, sans-serif; color: #1e293b; max-width: 600px; margin: 0 auto; padding: 24px; }
-  .header { background: #0d9488; color: white; padding: 20px 24px; border-radius: 12px; margin-bottom: 24px; }
-  .cta { display: inline-block; background: #0d9488; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px; margin-top: 20px; }
-  a { color: #0d9488; }
-</style></head>
-<body>
-  <div class="header">
+  return emailShell(`
+  <div class="header" style="background:#0d9488">
     <h1 style="margin:0;font-size:20px;">Welcome to ${BRAND_NAME}</h1>
     <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">Your program starts here</p>
   </div>
@@ -146,9 +127,7 @@ export function welcomeEmail(data: WelcomeEmailData): string {
   <p style="margin-top:24px;font-size:13px;color:#64748b;">If you have any questions, simply reply to this email. We respond within 24 hours.</p>
 
   <p style="font-size:12px;color:#94a3b8;margin-top:32px;">${COMPANY_ADDRESS}</p>
-</body>
-</html>
-  `.trim()
+`)
 }
 
 // ─── Admin new-user alert ─────────────────────────────────────────────────────
@@ -161,19 +140,8 @@ export function newUserAlertEmail(data: NewUserAlertData): string {
   const adminUrl = `${SITE_URL}/admin/clients`
   const joinedAt = createdAt.toISOString().replace("T", " ").slice(0, 16) + " UTC"
 
-  return `
-<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"><style>
-  body { font-family: -apple-system, sans-serif; color: #1e293b; max-width: 600px; margin: 0 auto; padding: 24px; }
-  .header { background: #1e293b; color: white; padding: 16px 24px; border-radius: 12px; margin-bottom: 24px; }
-  .card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin: 16px 0; }
-  .label { font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; }
-  .value { font-size: 15px; font-weight: 600; color: #0f172a; margin-top: 2px; }
-  .cta { display: inline-block; background: #0d9488; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px; margin-top: 16px; }
-</style></head>
-<body>
-  <div class="header">
+  return emailShell(`
+  <div class="header" style="background:#1e293b;padding:16px 24px">
     <h1 style="margin:0;font-size:16px;">New client registered</h1>
   </div>
 
@@ -193,9 +161,7 @@ export function newUserAlertEmail(data: NewUserAlertData): string {
   </div>
 
   <a href="${adminUrl}" class="cta">View in admin panel</a>
-</body>
-</html>
-  `.trim()
+`)
 }
 
 // ─── Booking status ───────────────────────────────────────────────────────────
@@ -219,19 +185,8 @@ export function bookingStatusEmail(data: BookingStatusData): string {
   const timeLabel = preferredTime ? ` (${preferredTime})` : ""
   const greeting = clientName ? `Hi ${clientName},` : "Hello,"
 
-  return `
-<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"><style>
-  body { font-family: -apple-system, sans-serif; color: #1e293b; max-width: 600px; margin: 0 auto; padding: 24px; }
-  .header { background: ${headerBg}; color: white; padding: 20px 24px; border-radius: 12px; margin-bottom: 24px; }
-  .card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin: 16px 0; }
-  .label { font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; }
-  .value { font-size: 15px; font-weight: 600; color: #0f172a; margin-top: 2px; }
-  a { color: #0d9488; }
-</style></head>
-<body>
-  <div class="header">
+  return emailShell(`
+  <div class="header" style="background:${headerBg}">
     <h1 style="margin:0;font-size:18px;">${headingText}</h1>
     <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">${BRAND_NAME} Portal</p>
   </div>
@@ -247,10 +202,10 @@ export function bookingStatusEmail(data: BookingStatusData): string {
   ${preferredDate ? `<div class="card"><div class="label">Preferred date &amp; time</div><div class="value">${preferredDate}${timeLabel}</div></div>` : ""}
 
   <p style="font-size:12px;color:#94a3b8;margin-top:24px;">${COMPANY_ADDRESS}</p>
-</body>
-</html>
-  `.trim()
+`)
 }
+
+// ─── New message notification ─────────────────────────────────────────────────
 
 type NewMessageData = {
   senderName: string | null
@@ -265,21 +220,8 @@ export function newMessageEmail(data: NewMessageData): string {
   const displayName = senderName ?? senderEmail
   const subjectLine = threadSubject ?? "No subject"
 
-  return `
-<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"><style>
-  body { font-family: -apple-system, sans-serif; color: #1e293b; max-width: 600px; margin: 0 auto; padding: 24px; }
-  .header { background: #0d9488; color: white; padding: 20px 24px; border-radius: 12px; margin-bottom: 24px; }
-  .card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin: 16px 0; }
-  .label { font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; }
-  .value { font-size: 15px; font-weight: 600; color: #0f172a; margin-top: 2px; }
-  .message-body { font-size: 14px; line-height: 1.6; color: #334155; margin-top: 6px; white-space: pre-wrap; }
-  .cta { display: inline-block; background: #0d9488; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px; margin-top: 16px; }
-  a { color: #0d9488; }
-</style></head>
-<body>
-  <div class="header">
+  return emailShell(`
+  <div class="header" style="background:#0d9488">
     <h1 style="margin:0;font-size:18px;">New Message</h1>
     <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">${BRAND_NAME} Portal</p>
   </div>
@@ -305,9 +247,7 @@ export function newMessageEmail(data: NewMessageData): string {
   <a href="${replyUrl}" class="cta">Reply to message</a>
 
   <p style="font-size:12px;color:#94a3b8;margin-top:24px;">You can reply directly from the portal.</p>
-</body>
-</html>
-  `.trim()
+`, `  .message-body { font-size: 14px; line-height: 1.6; color: #334155; margin-top: 6px; white-space: pre-wrap; }`)
 }
 
 // ─── Lead invite ─────────────────────────────────────────────────────────────
@@ -316,17 +256,8 @@ type InviteEmailData = { name: string; registerUrl: string; practitionerName: st
 
 export function inviteEmail(data: InviteEmailData): string {
   const { name, registerUrl, practitionerName } = data
-  return `
-<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"><style>
-  body { font-family: -apple-system, sans-serif; color: #1e293b; max-width: 600px; margin: 0 auto; padding: 24px; }
-  .header { background: #0d9488; color: white; padding: 20px 24px; border-radius: 12px; margin-bottom: 24px; }
-  .cta { display: inline-block; background: #0d9488; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px; margin-top: 20px; }
-  a { color: #0d9488; }
-</style></head>
-<body>
-  <div class="header">
+  return emailShell(`
+  <div class="header" style="background:#0d9488">
     <h1 style="margin:0;font-size:20px;">${EMAIL_SUBJECT_INVITE}</h1>
     <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">Personal message from ${practitionerName}</p>
   </div>
@@ -338,12 +269,10 @@ export function inviteEmail(data: InviteEmailData): string {
   <p style="margin-top:24px;font-size:13px;color:#64748b;">If you have any questions before registering, simply reply to this email.</p>
   <p style="margin-top:24px;font-size:13px;color:#64748b;">Looking forward to working with you.</p>
   <p style="font-size:13px;color:#64748b;margin-top:4px;"><strong>${practitionerName}</strong><br>${COMPANY_ADDRESS}</p>
-</body>
-</html>
-  `.trim()
+`)
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// ─── Admin booking notification ───────────────────────────────────────────────
 
 type BookingNotificationData = {
   clientEmail: string
@@ -360,19 +289,8 @@ export function bookingNotificationEmail(data: BookingNotificationData): string 
   const displayName = clientName ?? clientEmail
   const timeLabel = preferredTime ? ` (${preferredTime})` : ""
 
-  return `
-<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"><style>
-  body { font-family: -apple-system, sans-serif; color: #1e293b; max-width: 600px; margin: 0 auto; padding: 24px; }
-  .header { background: #0d9488; color: white; padding: 20px 24px; border-radius: 12px; margin-bottom: 24px; }
-  .card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin: 16px 0; }
-  .label { font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; }
-  .value { font-size: 15px; font-weight: 600; color: #0f172a; margin-top: 2px; }
-  a { color: #0d9488; }
-</style></head>
-<body>
-  <div class="header">
+  return emailShell(`
+  <div class="header" style="background:#0d9488">
     <h1 style="margin:0;font-size:18px;">New Booking Request</h1>
     <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">${BRAND_NAME} Portal</p>
   </div>
@@ -401,9 +319,7 @@ export function bookingNotificationEmail(data: BookingNotificationData): string 
   <p style="font-size:13px;color:#64748b;">Booking ID: ${bookingId}</p>
 
   <p>Log in to the admin panel to manage this booking.</p>
-</body>
-</html>
-  `.trim()
+`)
 }
 
 // ─── Practitioner note email ──────────────────────────────────────────────────
@@ -418,17 +334,8 @@ type PractitionerNoteEmailData = {
 export function practitionerNoteEmail(data: PractitionerNoteEmailData): string {
   const { clientName, checkInDate, note, portalUrl } = data
   const dateStr = checkInDate.toLocaleDateString("en-CH", { day: "numeric", month: "long", year: "numeric" })
-  return `
-<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"><style>
-  body { font-family: -apple-system, sans-serif; color: #1e293b; max-width: 600px; margin: 0 auto; padding: 24px; }
-  .header { background: #0d9488; color: white; padding: 20px 24px; border-radius: 12px; margin-bottom: 24px; }
-  .note { background: #f0fdfa; border-left: 3px solid #0d9488; padding: 16px; border-radius: 0 8px 8px 0; margin: 20px 0; font-style: italic; color: #134e4a; line-height: 1.6; }
-  .cta { display: inline-block; background: #0d9488; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px; margin-top: 20px; }
-</style></head>
-<body>
-  <div class="header">
+  return emailShell(`
+  <div class="header" style="background:#0d9488">
     <h1 style="margin:0;font-size:20px;">A note from your practitioner</h1>
     <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">${BRAND_NAME}</p>
   </div>
@@ -437,9 +344,7 @@ export function practitionerNoteEmail(data: PractitionerNoteEmailData): string {
   <div class="note">${note.replace(/\n/g, "<br>")}</div>
   <a href="${portalUrl}" class="cta">View in portal</a>
   <p style="font-size:12px;color:#94a3b8;margin-top:32px;">${COMPANY_ADDRESS}</p>
-</body>
-</html>
-  `.trim()
+`, `  .note { background: #f0fdfa; border-left: 3px solid #0d9488; padding: 16px; border-radius: 0 8px 8px 0; margin: 20px 0; font-style: italic; color: #134e4a; line-height: 1.6; }`)
 }
 
 // ─── Practitioner clinical alert ──────────────────────────────────────────────
@@ -459,23 +364,10 @@ export function practitionerAlertEmail(data: PractitionerAlertEmailData): string
   const severityBg = severity === "high" ? "#fef2f2" : severity === "medium" ? "#fffbeb" : "#f0fdfa"
   const severityLabel = severity.charAt(0).toUpperCase() + severity.slice(1)
 
-  return `
-<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"><style>
-  body { font-family: -apple-system, sans-serif; color: #1e293b; max-width: 600px; margin: 0 auto; padding: 24px; }
-  .header { background: #1e293b; color: white; padding: 16px 24px; border-radius: 12px; margin-bottom: 24px; }
-  .badge { display: inline-block; background: ${severityBg}; color: ${severityColor}; border: 1px solid ${severityColor}; border-radius: 9999px; padding: 2px 10px; font-size: 12px; font-weight: 600; }
-  .alert-box { background: ${severityBg}; border-left: 4px solid ${severityColor}; padding: 16px; border-radius: 0 8px 8px 0; margin: 20px 0; }
-  .card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px 16px; margin: 12px 0; }
-  .label { font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; }
-  .value { font-size: 14px; font-weight: 600; color: #0f172a; margin-top: 2px; }
-  .cta { display: inline-block; background: #0d9488; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px; margin-top: 16px; }
-</style></head>
-<body>
-  <div class="header">
+  return emailShell(`
+  <div class="header" style="background:#1e293b;padding:16px 24px">
     <h1 style="margin:0;font-size:16px;">Clinical alert — ${clientName}</h1>
-    <span class="badge" style="margin-top:6px;display:inline-block;">${severityLabel} severity</span>
+    <span style="display:inline-block;background:${severityBg};color:${severityColor};border:1px solid ${severityColor};border-radius:9999px;padding:2px 10px;font-size:12px;font-weight:600;margin-top:6px;">${severityLabel} severity</span>
   </div>
 
   <div class="card">
@@ -484,7 +376,7 @@ export function practitionerAlertEmail(data: PractitionerAlertEmailData): string
     <div style="font-size:13px;color:#64748b;margin-top:2px;">${clientEmail}</div>
   </div>
 
-  <div class="alert-box">
+  <div style="background:${severityBg};border-left:4px solid ${severityColor};padding:16px;border-radius:0 8px 8px 0;margin:20px 0;">
     <p style="font-weight:600;margin:0 0 6px;color:${severityColor};">${alertTitle}</p>
     <p style="margin:0;font-size:14px;line-height:1.6;">${alertMessage}</p>
   </div>
@@ -492,9 +384,7 @@ export function practitionerAlertEmail(data: PractitionerAlertEmailData): string
   <a href="${adminUrl}" class="cta">View client in admin panel</a>
 
   <p style="font-size:12px;color:#94a3b8;margin-top:24px;">${COMPANY_ADDRESS}</p>
-</body>
-</html>
-  `.trim()
+`)
 }
 
 // ─── Practitioner weekly digest ───────────────────────────────────────────────
@@ -549,16 +439,8 @@ export function practitionerWeeklyDigestEmail(data: PractitionerWeeklyDigestData
     </div>`
   }).join("")
 
-  return `
-<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"><style>
-  body { font-family: -apple-system, sans-serif; color: #1e293b; max-width: 600px; margin: 0 auto; padding: 24px; }
-  .header { background: #1e293b; color: white; padding: 20px 24px; border-radius: 12px; margin-bottom: 24px; }
-  .cta { display: inline-block; background: #0d9488; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px; margin-top: 16px; }
-</style></head>
-<body>
-  <div class="header">
+  return emailShell(`
+  <div class="header" style="background:#1e293b">
     <h1 style="margin:0;font-size:18px;">Weekly client overview</h1>
     <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">${weekStart} – ${weekEnd}</p>
   </div>
@@ -570,9 +452,7 @@ export function practitionerWeeklyDigestEmail(data: PractitionerWeeklyDigestData
   <a href="${adminUrl}" class="cta">Open admin panel</a>
 
   <p style="font-size:12px;color:#94a3b8;margin-top:24px;">${COMPANY_ADDRESS}</p>
-</body>
-</html>
-  `.trim()
+`)
 }
 
 // ─── Daily check-in reminder ──────────────────────────────────────────────────
@@ -589,16 +469,8 @@ export function checkInReminderEmail(data: CheckInReminderData): string {
   const streakMsg = currentStreak > 1
     ? `You're on a ${currentStreak}-day streak — keep it going!`
     : "Start your day with a quick check-in."
-  return `
-<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"><style>
-  body { font-family: -apple-system, sans-serif; color: #1e293b; max-width: 600px; margin: 0 auto; padding: 24px; }
-  .header { background: #0d9488; color: white; padding: 20px 24px; border-radius: 12px; margin-bottom: 24px; }
-  .cta { display: inline-block; background: #0d9488; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px; margin-top: 20px; }
-</style></head>
-<body>
-  <div class="header">
+  return emailShell(`
+  <div class="header" style="background:#0d9488">
     <h1 style="margin:0;font-size:20px;">Time for your daily check-in</h1>
     <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">${BRAND_NAME}</p>
   </div>
@@ -607,9 +479,7 @@ export function checkInReminderEmail(data: CheckInReminderData): string {
   <a href="${portalUrl}/check-in" class="cta">Check in now</a>
   <p style="margin-top:24px;font-size:13px;color:#64748b;">To unsubscribe from reminders, update your preferences in the portal.</p>
   <p style="font-size:12px;color:#94a3b8;margin-top:32px;">${COMPANY_ADDRESS}</p>
-</body>
-</html>
-  `.trim()
+`)
 }
 
 // ─── Weekly client report ─────────────────────────────────────────────────────
@@ -637,20 +507,8 @@ export function weeklyReportEmail(data: WeeklyReportData): string {
   const winNote = topWin
     ? `<div style="margin-top:16px;padding:12px 16px;background:#f0fdf4;border-left:3px solid #0d9488;border-radius:4px;"><p style="margin:0;font-size:14px;color:#065f46;">✓ <strong>Win of the week:</strong> ${topWin}</p></div>`
     : ""
-  return `
-<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"><style>
-  body { font-family: -apple-system, sans-serif; color: #1e293b; max-width: 600px; margin: 0 auto; padding: 24px; }
-  .header { background: #0d9488; color: white; padding: 20px 24px; border-radius: 12px; margin-bottom: 24px; }
-  .stats { display: flex; gap: 12px; margin: 20px 0; flex-wrap: wrap; }
-  .stat { flex: 1; min-width: 120px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; text-align: center; }
-  .stat-value { font-size: 24px; font-weight: 700; color: #0d9488; }
-  .stat-label { font-size: 12px; color: #64748b; margin-top: 2px; }
-  .cta { display: inline-block; background: #0d9488; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px; margin-top: 20px; }
-</style></head>
-<body>
-  <div class="header">
+  return emailShell(`
+  <div class="header" style="background:#0d9488">
     <h1 style="margin:0;font-size:20px;">Your weekly summary</h1>
     <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">${weekStart} – ${weekEnd}</p>
   </div>
@@ -678,7 +536,8 @@ export function weeklyReportEmail(data: WeeklyReportData): string {
   ${winNote}
   <a href="${portalUrl}/dashboard" class="cta">View full history</a>
   <p style="font-size:12px;color:#94a3b8;margin-top:32px;">${COMPANY_ADDRESS}</p>
-</body>
-</html>
-  `.trim()
+`, `  .stats { display: flex; gap: 12px; margin: 20px 0; flex-wrap: wrap; }
+  .stat { flex: 1; min-width: 120px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; text-align: center; }
+  .stat-value { font-size: 24px; font-weight: 700; color: #0d9488; }
+  .stat-label { font-size: 12px; color: #64748b; margin-top: 2px; }`)
 }
