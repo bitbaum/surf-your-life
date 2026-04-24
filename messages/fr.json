@@ -1280,6 +1280,8 @@
     "checkIns": {
       "title": "Activité récente",
       "description": "Tous les check-ins de vos clients",
+      "filterAll": "Tous",
+      "filterPem": "SPE uniquement",
       "noActivity": "Pas encore de check-ins",
       "client": "Client",
       "date": "Date",

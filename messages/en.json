@@ -1280,6 +1280,8 @@
     "checkIns": {
       "title": "Recent Activity",
       "description": "All client check-ins across your caseload",
+      "filterAll": "All",
+      "filterPem": "PEM only",
       "noActivity": "No check-ins yet",
       "client": "Client",
       "date": "Date",

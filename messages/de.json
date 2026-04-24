@@ -1280,6 +1280,8 @@
     "checkIns": {
       "title": "Letzte Aktivitäten",
       "description": "Alle Check-ins Ihrer Klienten",
+      "filterAll": "Alle",
+      "filterPem": "Nur PEM",
       "noActivity": "Noch keine Check-ins",
       "client": "Klient",
       "date": "Datum",

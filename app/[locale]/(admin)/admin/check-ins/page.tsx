@@ -11,13 +11,14 @@ import { Link } from "@/i18n/navigation"
 import { Pagination } from "@/components/ui/pagination"
 import { formatDate, formatEnumValue, computeTotalPages, parsePage, computeOffset } from "@/lib/utils"
 import { PAGINATION_DEFAULT, MOOD_EMOJI } from "@/lib/constants"
+import { FilterTabs } from "@/components/ui/filter-tabs"
 
 export default async function AdminCheckInsPage({
   params,
   searchParams,
 }: {
   params: Promise<{ locale: string }>
-  searchParams: Promise<{ page?: string }>
+  searchParams: Promise<{ page?: string; pem?: string }>
 }) {
   const { locale } = await params
   setRequestLocale(locale)
@@ -26,9 +27,12 @@ export default async function AdminCheckInsPage({
   const session = await auth()
   if (!session?.user || !isStaff(session.user.role)) redirect("/login")
 
-  const { page: pageParam } = await searchParams
+  const { page: pageParam, pem: pemParam } = await searchParams
+  const pemOnly = pemParam === "true"
   const page = parsePage(pageParam)
   const offset = computeOffset(page, PAGINATION_DEFAULT)
+
+  const whereClause = pemOnly ? eq(checkIns.pemFlag, true) : undefined
 
   const [rows, totalResult] = await Promise.all([
     db
@@ -46,10 +50,11 @@ export default async function AdminCheckInsPage({
       })
       .from(checkIns)
       .innerJoin(users, eq(users.id, checkIns.userId))
+      .where(whereClause)
       .orderBy(desc(checkIns.createdAt))
       .limit(PAGINATION_DEFAULT)
       .offset(offset),
-    db.select({ count: count() }).from(checkIns),
+    db.select({ count: count() }).from(checkIns).where(whereClause),
   ])
 
   const total = totalResult[0]?.count ?? 0
@@ -62,6 +67,14 @@ export default async function AdminCheckInsPage({
       <Card>
         <CardHeader><CardTitle>{t("title")}</CardTitle></CardHeader>
         <CardContent>
+          <FilterTabs
+            tabs={[
+              { value: "all", label: t("filterAll") },
+              { value: "pem", label: t("filterPem") },
+            ]}
+            active={pemOnly ? "pem" : "all"}
+            href={(v) => v === "pem" ? "/admin/check-ins?pem=true" : "/admin/check-ins"}
+          />
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
@@ -124,7 +137,7 @@ export default async function AdminCheckInsPage({
             </table>
           </div>
 
-          <Pagination page={page} totalPages={totalPages} pageLink={(p) => `/admin/check-ins?page=${p}`} />
+          <Pagination page={page} totalPages={totalPages} pageLink={(p) => pemOnly ? `/admin/check-ins?pem=true&page=${p}` : `/admin/check-ins?page=${p}`} />
         </CardContent>
       </Card>
     </div>
