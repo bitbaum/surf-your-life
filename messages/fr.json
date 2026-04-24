@@ -1317,7 +1317,8 @@
       "showHistory": "Afficher les résolus",
       "hideHistory": "Masquer les résolus",
       "resolvedLabel": "Résolu",
-      "noHistory": "Aucune alerte résolue"
+      "noHistory": "Aucune alerte résolue",
+      "noActiveAlerts": "Aucune alerte active"
     },
     "checkIns": {
       "title": "Activité récente",

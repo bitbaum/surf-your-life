@@ -24,6 +24,7 @@ export type ClientAlertRow = {
 interface Props {
   initialAlerts: ClientAlertRow[]
   clientId: string
+  hasHistory: boolean
 }
 
 function AlertRow({ alert, onResolved, showResolveButton }: {
@@ -58,14 +59,15 @@ function AlertRow({ alert, onResolved, showResolveButton }: {
   )
 }
 
-export function ClientAlertsCard({ initialAlerts, clientId }: Props) {
+export function ClientAlertsCard({ initialAlerts, clientId, hasHistory }: Props) {
   const t = useTranslations("admin.alerts")
   const [alerts, setAlerts] = useState(initialAlerts)
   const [showHistory, setShowHistory] = useState(false)
   const [history, setHistory] = useState<ClientAlertRow[] | null>(null)
   const [loadingHistory, setLoadingHistory] = useState(false)
 
-  if (alerts.length === 0 && !showHistory) return null
+  // Only hide if there are no active alerts AND no history to show
+  if (alerts.length === 0 && !showHistory && !hasHistory) return null
 
   function handleResolved(id: string) {
     setAlerts((prev) => prev.filter((a) => a.id !== id))
@@ -113,6 +115,9 @@ export function ClientAlertsCard({ initialAlerts, clientId }: Props) {
       </CardHeader>
       <CardContent>
         <div className="flex flex-col gap-2">
+          {alerts.length === 0 && (
+            <p className="text-xs text-slate-400 py-1">{t("noActiveAlerts")}</p>
+          )}
           {alerts.map((alert) => (
             <AlertRow
               key={alert.id}

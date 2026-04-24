@@ -1317,7 +1317,8 @@
       "showHistory": "Show resolved",
       "hideHistory": "Hide resolved",
       "resolvedLabel": "Resolved",
-      "noHistory": "No resolved alerts"
+      "noHistory": "No resolved alerts",
+      "noActiveAlerts": "No active alerts"
     },
     "checkIns": {
       "title": "Recent Activity",

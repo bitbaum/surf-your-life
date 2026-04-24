@@ -1317,7 +1317,8 @@
       "showHistory": "Erledigte anzeigen",
       "hideHistory": "Erledigte ausblenden",
       "resolvedLabel": "Erledigt",
-      "noHistory": "Keine erledigten Meldungen"
+      "noHistory": "Keine erledigten Meldungen",
+      "noActiveAlerts": "Keine aktiven Meldungen"
     },
     "checkIns": {
       "title": "Letzte Aktivitäten",

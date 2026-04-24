@@ -29,7 +29,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
 
   const sevenDaysAgo = toDateString(new Date(Date.now() - SEVEN_DAYS_MS)) // eslint-disable-line react-hooks/purity -- server component
 
-  const [client, clientCheckIns, checkInCountResult, allPrograms, activeEnrollment, currentMedications, assessments, clientAssignments, allTechniques, currentAssignment, allPractitioners, recentTechniqueLogs, unresolvedAlerts] = await Promise.all([
+  const [client, clientCheckIns, checkInCountResult, allPrograms, activeEnrollment, currentMedications, assessments, clientAssignments, allTechniques, currentAssignment, allPractitioners, recentTechniqueLogs, unresolvedAlerts, resolvedAlertCountResult] = await Promise.all([
     db.query.users.findFirst({
       where: eq(users.id, id),
       with: { profile: true },
@@ -95,11 +95,14 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
       orderBy: [desc(clientAlerts.createdAt)],
       limit: ADMIN_DASHBOARD_ALERTS_PREVIEW,
     }),
+    db.select({ value: count() }).from(clientAlerts)
+      .where(and(eq(clientAlerts.clientId, id), eq(clientAlerts.isResolved, true))),
   ])
 
   if (!client || client.role !== CLIENT_ROLE) notFound()
 
   const totalCheckIns = checkInCountResult[0]?.count ?? 0
+  const hasAlertHistory = (resolvedAlertCountResult[0]?.value ?? 0) > 0
   const profile = client.profile
   const adherenceByAssignment = computeAdherenceByAssignment(clientAssignments, recentTechniqueLogs)
   const logsGridByAssignment = computeLogsGridByAssignment(recentTechniqueLogs)
@@ -135,9 +138,9 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
         <ClientCheckInsCard clientId={id} checkIns={clientCheckIns} totalCheckIns={totalCheckIns} />
       </div>
 
-      {unresolvedAlerts.length > 0 && (
+      {(unresolvedAlerts.length > 0 || hasAlertHistory) && (
         <div className="mt-6">
-          <ClientAlertsCard initialAlerts={unresolvedAlerts} clientId={id} />
+          <ClientAlertsCard initialAlerts={unresolvedAlerts} clientId={id} hasHistory={hasAlertHistory} />
         </div>
       )}
 
