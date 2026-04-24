@@ -94,7 +94,9 @@ export default async function AdminBookingsPage({
               {allBookings.map((booking) => (
                 <tr key={booking.id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
                   <td className="py-3">
-                    <p className="font-medium text-slate-800">{booking.user.name ?? "—"}</p>
+                    <Link href={`/admin/clients/${booking.user.id}`} className="font-medium text-slate-800 hover:text-teal-700 transition-colors">
+                      {booking.user.name ?? "—"}
+                    </Link>
                     <p className="text-xs text-slate-400">{booking.user.email}</p>
                   </td>
                   <td className="py-3 text-slate-700">{booking.service.name}</td>
@@ -116,7 +118,17 @@ export default async function AdminBookingsPage({
                       variant={BOOKING_STATUS_BADGE_VARIANT[booking.status] ?? "slate"}
                     />
                   </td>
-                  <td className="py-3 text-slate-400 text-xs">{formatDate(booking.createdAt)}</td>
+                  <td className="py-3 text-slate-400 text-xs">
+                    <span>{formatDate(booking.createdAt)}</span>
+                    {booking.status === "pending" && (() => {
+                      const days = Math.floor((Date.now() - booking.createdAt.getTime()) / 86400000)
+                      return days > 0 ? (
+                        <span className={`ml-1.5 px-1.5 py-0.5 rounded-full text-[10px] font-semibold leading-none ${days >= 3 ? "bg-red-50 text-red-600" : "bg-amber-50 text-amber-600"}`}>
+                          {t("pendingDays", { n: days })}
+                        </span>
+                      ) : null
+                    })()}
+                  </td>
                   <td className="py-3">
                     <BookingActions bookingId={booking.id} currentStatus={booking.status} />
                   </td>

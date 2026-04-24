@@ -1088,6 +1088,7 @@
       "description": "Gérer toutes les demandes de réservation",
       "created": "Créé le",
       "error": "Une erreur est survenue",
+      "pendingDays": "{n}j",
       "calendarView": "Calendrier",
       "listView": "Liste",
       "weekOf": "Semaine du {date}",

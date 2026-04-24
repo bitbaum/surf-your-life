@@ -1070,6 +1070,7 @@
       "description": "Alle Buchungsanfragen verwalten",
       "created": "Erstellt",
       "error": "Etwas ist schiefgelaufen",
+      "pendingDays": "{n}T",
       "calendarView": "Kalender",
       "listView": "Liste",
       "weekOf": "Woche vom {date}",

@@ -1070,6 +1070,7 @@
       "description": "Manage all client booking requests",
       "created": "Created",
       "error": "Something went wrong",
+      "pendingDays": "{n}d",
       "calendarView": "Calendar",
       "listView": "List",
       "weekOf": "Week of {date}",
