@@ -90,18 +90,21 @@ export default async function AdminDashboardPage({
       limit: ADMIN_DASHBOARD_ALERTS_PREVIEW,
       with: { client: { columns: { id: true, name: true, email: true } } },
     }),
-    // Latest AI insight per client — DISTINCT ON ensures one row per client, newest first
+    // Latest AI insight per client — outer ORDER BY recency so we show the N most recently updated clients
     db.execute<{ client_id: string; client_name: string | null; ai_insight: string; created_at: string }>(sql`
-      SELECT DISTINCT ON (ci.user_id)
-        ci.user_id  AS client_id,
-        u.name      AS client_name,
-        ci.ai_insight,
-        ci.created_at
-      FROM check_ins ci
-      JOIN users u ON u.id = ci.user_id
-      WHERE ci.ai_insight IS NOT NULL
-        AND u.role = ${CLIENT_ROLE}
-      ORDER BY ci.user_id, ci.created_at DESC
+      SELECT * FROM (
+        SELECT DISTINCT ON (ci.user_id)
+          ci.user_id  AS client_id,
+          u.name      AS client_name,
+          ci.ai_insight,
+          ci.created_at
+        FROM check_ins ci
+        JOIN users u ON u.id = ci.user_id
+        WHERE ci.ai_insight IS NOT NULL
+          AND u.role = ${CLIENT_ROLE}
+        ORDER BY ci.user_id, ci.created_at DESC
+      ) latest_per_client
+      ORDER BY created_at DESC
       LIMIT ${ADMIN_DASHBOARD_INSIGHTS_PREVIEW}
     `),
   ])
