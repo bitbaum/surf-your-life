@@ -4,14 +4,13 @@ import { db } from "@/lib/db"
 import { functionalAssessments, checkIns } from "@/lib/db/schema"
 import { eq, asc, gte } from "drizzle-orm"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ProgressBar } from "@/components/ui/progress-bar"
+import { EmptyState } from "@/components/ui/empty-state"
 import { PageHeader } from "@/components/ui/page-header"
 import { getTranslations, setRequestLocale } from "next-intl/server"
-import { formatDate } from "@/lib/utils"
 import { Link } from "@/i18n/navigation"
 import { NINETY_DAYS_MS, MOODS, MOOD_SCORE, ASSESSMENTS_MAX } from "@/lib/constants"
 import { summariseCheckIns } from "@/lib/domain/check-in"
-import { EmptyState } from "@/components/ui/empty-state"
+import { AssessmentTimeline } from "./assessment-timeline"
 
 export default async function ProgressPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
@@ -69,78 +68,8 @@ export default async function ProgressPage({ params }: { params: Promise<{ local
     <div className="max-w-2xl mx-auto">
       <PageHeader title={t("title")} description={t("description")} />
 
-      {/* Recovery arc */}
-      {assessments.length === 0 ? (
-        <Card className="mt-4">
-          <CardContent className="py-12">
-            <EmptyState
-              message={t("noAssessments")}
-              action={<Link href="/assessments" className="text-sm font-medium text-teal-600 hover:text-teal-700 transition-colors">{t("doAssessment")} →</Link>}
-            />
-          </CardContent>
-        </Card>
-      ) : (
-        <>
-          {/* Narrative summary */}
-          <p className="text-sm text-slate-600 mt-2 mb-6">
-            {assessments.length === 1
-              ? t("narrativeSingle", { capacity: first!.overallCapacity })
-              : t("narrativeMultiple", { n: assessments.length, first: first!.overallCapacity, latest: latest!.overallCapacity })}
-          </p>
+      <AssessmentTimeline assessments={assessments} delta={delta} />
 
-          {/* Assessment timeline */}
-          <div className="flex flex-col gap-3">
-            {assessments.map((a, i) => {
-              const isFirst = i === 0
-              const isLatest = i === assessments.length - 1
-              const d = delta
-
-              return (
-                <Card key={a.id}>
-                  <CardHeader className="pb-2">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <CardTitle className="text-sm font-medium text-slate-700">
-                          {formatDate(a.assessedAt)}
-                        </CardTitle>
-                        {isFirst && (
-                          <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">
-                            {t("firstAssessment")}
-                          </span>
-                        )}
-                        {isLatest && assessments.length > 1 && (
-                          <span className="text-[10px] font-semibold uppercase tracking-wide text-teal-700 bg-teal-50 px-2 py-0.5 rounded-full">
-                            {t("latestAssessment")}
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-2">
-                        {isLatest && d != null && (
-                          <span className={`text-xs font-medium ${d >= 0 ? "text-teal-600" : "text-red-500"}`}>
-                            {d >= 0 ? t("improvementSince", { n: `+${d}` }) : t("declineSince", { n: d })}
-                          </span>
-                        )}
-                        <span className="text-xl font-bold text-teal-700">
-                          {a.overallCapacity}
-                          <span className="text-xs font-normal text-slate-400">/10</span>
-                        </span>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="pt-0">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-slate-500 w-28">{t("overallCapacity")}</span>
-                      <ProgressBar value={(a.overallCapacity / 10) * 100} className="flex-1" />
-                    </div>
-                  </CardContent>
-                </Card>
-              )
-            })}
-          </div>
-        </>
-      )}
-
-      {/* 90-day summary */}
       {totalCheckIns === 0 ? (
         <Card className="mt-6">
           <CardContent className="py-12">
@@ -199,4 +128,3 @@ export default async function ProgressPage({ params }: { params: Promise<{ local
     </div>
   )
 }
-
