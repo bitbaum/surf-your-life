@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { formatDate, formatEnumValue } from "@/lib/utils"
+import { formatDate } from "@/lib/utils"
 import { Pencil, Clock, Calendar } from "lucide-react"
 import type { Program } from "@/lib/db/schema"
 import type { ProgramPhase } from "@/lib/domain/program"
@@ -15,6 +15,7 @@ interface Props {
 
 export function ProgramViewCard({ program, phases, onEdit }: Props) {
   const t = useTranslations("admin.programs")
+  const tConcerns = useTranslations("concerns")
 
   return (
     <Card>
@@ -46,7 +47,7 @@ export function ProgramViewCard({ program, phases, onEdit }: Props) {
           {program.targetConcern && (
             <span className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-teal-500" />
-              {formatEnumValue(program.targetConcern)}
+              {tConcerns(program.targetConcern as Parameters<typeof tConcerns>[0])}
             </span>
           )}
           <span className="flex items-center gap-1.5">

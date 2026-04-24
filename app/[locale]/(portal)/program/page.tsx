@@ -6,7 +6,7 @@ import { eq, desc } from "drizzle-orm"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ProgressBar } from "@/components/ui/progress-bar"
 import { PageHeader } from "@/components/ui/page-header"
-import { formatDate, formatEnumValue } from "@/lib/utils"
+import { formatDate } from "@/lib/utils"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { SEVEN_DAYS_MS, ENROLLMENT_STATUS_BADGE } from "@/lib/constants"
 import { CheckCircle, Clock, Pause } from "lucide-react"
@@ -17,6 +17,7 @@ export default async function ProgramPage({ params }: { params: Promise<{ locale
   const { locale } = await params
   setRequestLocale(locale)
   const t = await getTranslations("portal.program")
+  const tConcerns = await getTranslations("concerns")
 
   const session = await auth()
   if (!session?.user?.id) redirect("/login")
@@ -103,7 +104,7 @@ export default async function ProgramPage({ params }: { params: Promise<{ locale
               {program.targetConcern && (
                 <div className="rounded-lg bg-slate-50 p-4">
                   <p className="text-xs text-slate-400 mb-1">{t("focus")}</p>
-                  <p className="font-semibold text-slate-900">{formatEnumValue(program.targetConcern)}</p>
+                  <p className="font-semibold text-slate-900">{tConcerns(program.targetConcern as Parameters<typeof tConcerns>[0])}</p>
                 </div>
               )}
               {currentWeek && program.durationWeeks && (

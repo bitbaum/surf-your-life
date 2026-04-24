@@ -1,5 +1,6 @@
 import { Link } from "@/i18n/navigation"
-import { formatDate, formatEnumValue } from "@/lib/utils"
+import { formatDate } from "@/lib/utils"
+import { getTranslations } from "next-intl/server"
 
 type ClientRow = {
   id: string
@@ -19,7 +20,8 @@ interface Props {
   viewLabel: string
 }
 
-export function ClientTableRow({ client, alert, viewLabel }: Props) {
+export async function ClientTableRow({ client, alert, viewLabel }: Props) {
+  const tConcerns = await getTranslations("concerns")
   return (
     <tr className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
       <td className="py-3 font-medium text-slate-800">
@@ -36,7 +38,7 @@ export function ClientTableRow({ client, alert, viewLabel }: Props) {
       </td>
       <td className="py-3 text-slate-600">{client.email}</td>
       <td className="py-3 text-slate-500">
-        {client.mainConcern ? formatEnumValue(client.mainConcern) : "—"}
+        {client.mainConcern ? tConcerns(client.mainConcern as Parameters<typeof tConcerns>[0]) : "—"}
       </td>
       <td className="py-3 text-slate-500">
         {client.lastCheckIn ? formatDate(client.lastCheckIn) : <span className="text-slate-300">—</span>}

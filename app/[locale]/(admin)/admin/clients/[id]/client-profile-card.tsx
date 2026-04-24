@@ -1,5 +1,4 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { formatEnumValue } from "@/lib/utils"
 import type { Profile } from "@/lib/db/schema"
 import { getTranslations } from "next-intl/server"
 
@@ -19,6 +18,7 @@ interface ClientProfileCardProps {
 
 export async function ClientProfileCard({ profile }: ClientProfileCardProps) {
   const t = await getTranslations("admin.clients")
+  const tConcerns = await getTranslations("concerns")
 
   return (
     <Card>
@@ -26,10 +26,10 @@ export async function ClientProfileCard({ profile }: ClientProfileCardProps) {
       <CardContent className="flex flex-col gap-3 text-sm">
         {profile ? (
           <>
-            <Row label={t("detail.mainConcern")} value={profile.mainConcern ? formatEnumValue(profile.mainConcern) : undefined} />
+            <Row label={t("detail.mainConcern")} value={profile.mainConcern ? tConcerns(profile.mainConcern as Parameters<typeof tConcerns>[0]) : undefined} />
             <Row label={t("detail.occupation")} value={profile.occupation} />
             <Row label={t("detail.dateOfBirth")} value={profile.dateOfBirth} />
-            <Row label={t("detail.exercise")} value={profile.exerciseFrequency ? formatEnumValue(profile.exerciseFrequency) : undefined} />
+            <Row label={t("detail.exercise")} value={profile.exerciseFrequency ?? undefined} />
             <Row label={t("detail.previousTherapy")} value={profile.previousTherapy ? t("detail.yes") : t("detail.no")} />
             <Row label={t("detail.sleepQuality")} value={profile.sleepQuality ? `${profile.sleepQuality}/10` : undefined} />
             <Row label={t("detail.stressLevel")} value={profile.stressLevel ? `${profile.stressLevel}/10` : undefined} />

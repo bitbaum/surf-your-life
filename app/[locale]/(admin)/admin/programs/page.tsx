@@ -5,7 +5,7 @@ import { ADMIN_PROGRAMS_MAX } from "@/lib/constants"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { Link } from "@/i18n/navigation"
-import { formatDate, formatEnumValue } from "@/lib/utils"
+import { formatDate } from "@/lib/utils"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { Plus, Users } from "lucide-react"
 import { EmptyState } from "@/components/ui/empty-state"
@@ -14,6 +14,7 @@ export default async function ProgramsPage({ params }: { params: Promise<{ local
   const { locale } = await params
   setRequestLocale(locale)
   const t = await getTranslations("admin.programs")
+  const tConcerns = await getTranslations("concerns")
 
   const rows = await db
     .select({
@@ -75,7 +76,7 @@ export default async function ProgramsPage({ params }: { params: Promise<{ local
                         <span>{program.durationWeeks} {t("weeks")}</span>
                       )}
                       {program.targetConcern && (
-                        <span>{formatEnumValue(program.targetConcern)}</span>
+                        <span>{tConcerns(program.targetConcern as Parameters<typeof tConcerns>[0])}</span>
                       )}
                       <span>{formatDate(program.createdAt)}</span>
                     </div>

@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Link } from "@/i18n/navigation"
-import { formatDate, formatEnumValue } from "@/lib/utils"
+import { formatDate } from "@/lib/utils"
 import { EmptyState } from "@/components/ui/empty-state"
 
 type RecentClient = {
@@ -18,6 +18,7 @@ interface Props {
 
 export async function RecentClientsCard({ clients }: Props) {
   const t = await getTranslations("admin.dashboard")
+  const tConcerns = await getTranslations("concerns")
 
   return (
     <Card>
@@ -44,7 +45,7 @@ export async function RecentClientsCard({ clients }: Props) {
               <div className="text-right">
                 <p className="text-xs text-slate-500">
                   {client.profile?.mainConcern
-                    ? formatEnumValue(client.profile.mainConcern)
+                    ? tConcerns(client.profile.mainConcern as Parameters<typeof tConcerns>[0])
                     : t("noProfile")}
                 </p>
                 <p className="text-xs text-slate-400">{formatDate(client.createdAt)}</p>

@@ -5,7 +5,6 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Select } from "@/components/ui/select"
 import { MAIN_CONCERNS, FIELD_MAX_TITLE, FIELD_MAX_LONG, PROGRAM_DURATION_WEEKS_MAX } from "@/lib/constants"
-import { formatEnumValue } from "@/lib/utils"
 
 interface FormState {
   title: string
@@ -22,6 +21,7 @@ interface Props {
 
 export function ProgramBasicFields({ form, onChange }: Props) {
   const t = useTranslations("admin.programs")
+  const tConcerns = useTranslations("concerns")
 
   return (
     <>
@@ -66,7 +66,7 @@ export function ProgramBasicFields({ form, onChange }: Props) {
         >
           <option value="">{t("fieldTargetConcernAny")}</option>
           {MAIN_CONCERNS.map((c) => (
-            <option key={c} value={c}>{formatEnumValue(c)}</option>
+            <option key={c} value={c}>{tConcerns(c as Parameters<typeof tConcerns>[0])}</option>
           ))}
         </Select>
       </div>
