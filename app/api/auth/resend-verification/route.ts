@@ -6,7 +6,7 @@ import { users, verificationTokens } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { sendEmail } from "@/lib/email"
 import { verificationEmail } from "@/lib/email/templates"
-import { SITE_URL, DAY_MS, API_ERR_UNAUTHORIZED, API_ERR_NOT_FOUND } from "@/lib/constants"
+import { SITE_URL, DAY_MS, API_ERR_UNAUTHORIZED, API_ERR_NOT_FOUND, API_ERR_RATE_LIMITED } from "@/lib/constants"
 import { EMAIL_SUBJECT_VERIFY } from "@/lib/email/subjects"
 import { checkRateLimit } from "@/lib/rate-limit"
 
@@ -19,7 +19,7 @@ export async function POST() {
   const { ok, retryAfterSecs } = checkRateLimit(`resend-verification:${session.user.id}`, 3)
   if (!ok) {
     return NextResponse.json(
-      { success: false, error: "Too many requests. Please try again later." },
+      { success: false, error: API_ERR_RATE_LIMITED },
       { status: 429, headers: { "Retry-After": String(retryAfterSecs) } }
     )
   }

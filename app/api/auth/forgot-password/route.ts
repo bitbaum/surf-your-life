@@ -7,7 +7,7 @@ import { randomBytes } from "crypto"
 import { checkRateLimit, ipKey } from "@/lib/rate-limit"
 import { sendEmail } from "@/lib/email"
 import { passwordResetEmail } from "@/lib/email/templates"
-import { HOUR_MS , API_ERR_INVALID_INPUT } from "@/lib/constants"
+import { HOUR_MS, API_ERR_INVALID_INPUT, API_ERR_RATE_LIMITED } from "@/lib/constants"
 import { EMAIL_SUBJECT_RESET_PASSWORD } from "@/lib/email/subjects"
 
 const schema = z.object({ email: z.string().email() })
@@ -16,7 +16,7 @@ export async function POST(req: Request) {
   const { ok, retryAfterSecs } = checkRateLimit(ipKey(req, "forgot-password"), 3)
   if (!ok) {
     return NextResponse.json(
-      { success: false, error: "Too many requests. Please try again later." },
+      { success: false, error: API_ERR_RATE_LIMITED },
       { status: 429, headers: { "Retry-After": String(retryAfterSecs) } }
     )
   }

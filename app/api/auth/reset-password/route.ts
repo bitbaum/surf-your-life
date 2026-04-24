@@ -5,7 +5,7 @@ import { users, passwordResetTokens } from "@/lib/db/schema"
 import { eq, and, gt, isNull } from "drizzle-orm"
 import bcrypt from "bcryptjs"
 import { checkRateLimit, ipKey } from "@/lib/rate-limit"
-import { API_ERR_INVALID_INPUT, BCRYPT_SALT_ROUNDS, PASSWORD_MIN_LENGTH } from "@/lib/constants"
+import { API_ERR_INVALID_INPUT, API_ERR_RATE_LIMITED, BCRYPT_SALT_ROUNDS, PASSWORD_MIN_LENGTH } from "@/lib/constants"
 
 const schema = z.object({
   token: z.string().min(1),
@@ -16,7 +16,7 @@ export async function POST(req: Request) {
   const { ok, retryAfterSecs } = checkRateLimit(ipKey(req, "reset-password"), 5)
   if (!ok) {
     return NextResponse.json(
-      { success: false, error: "Too many requests. Please try again later." },
+      { success: false, error: API_ERR_RATE_LIMITED },
       { status: 429, headers: { "Retry-After": String(retryAfterSecs) } }
     )
   }

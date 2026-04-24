@@ -6,7 +6,7 @@ import { db } from "@/lib/db"
 import { users } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { checkRateLimit, ipKey } from "@/lib/rate-limit"
-import { API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED, BCRYPT_SALT_ROUNDS, PASSWORD_MIN_LENGTH } from "@/lib/constants"
+import { API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED, API_ERR_RATE_LIMITED, BCRYPT_SALT_ROUNDS, PASSWORD_MIN_LENGTH } from "@/lib/constants"
 
 const changePasswordSchema = z.object({
   currentPassword: z.string().min(1),
@@ -17,7 +17,7 @@ export async function POST(req: Request) {
   const { ok, retryAfterSecs } = checkRateLimit(ipKey(req, "change-password"), 5)
   if (!ok) {
     return NextResponse.json(
-      { success: false, error: "Too many requests. Please try again later." },
+      { success: false, error: API_ERR_RATE_LIMITED },
       { status: 429, headers: { "Retry-After": String(retryAfterSecs) } }
     )
   }

@@ -97,6 +97,7 @@ export const API_ERR_UNAUTHORIZED = "Unauthorized"
 export const API_ERR_FORBIDDEN = "Forbidden"
 export const API_ERR_NOT_FOUND = "Not found"
 export const API_ERR_INVALID_INPUT = "Invalid input"
+export const API_ERR_RATE_LIMITED = "Too many requests. Please try again later."
 
 // Time constants (milliseconds)
 export const HOUR_MS = 60 * 60 * 1000
