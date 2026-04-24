@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation"
 import { db } from "@/lib/db"
-import { users, checkIns, programs, programEnrollments, medicationLog, functionalAssessments, techniqueAssignments, techniques, assignments, techniqueLogs } from "@/lib/db/schema"
+import { users, checkIns, programs, programEnrollments, medicationLog, functionalAssessments, techniqueAssignments, techniques, assignments, techniqueLogs, clientAlerts } from "@/lib/db/schema"
 import { eq, desc, isNull, and, count, inArray, gte } from "drizzle-orm"
 import { formatDate, toDateString } from "@/lib/utils"
 import { Link } from "@/i18n/navigation"
@@ -18,6 +18,7 @@ import { ClientEnrollmentCard } from "./client-enrollment-card"
 import { PractitionerAssignmentCard } from "./practitioner-assignment-card"
 import { ClientProfileCard } from "./client-profile-card"
 import { ClientCheckInsCard } from "./client-check-ins-card"
+import { ClientAlertsCard } from "./client-alerts-card"
 import { PageHeader } from "@/components/ui/page-header"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 
@@ -28,7 +29,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
 
   const sevenDaysAgo = toDateString(new Date(Date.now() - SEVEN_DAYS_MS))
 
-  const [client, clientCheckIns, checkInCountResult, allPrograms, activeEnrollment, currentMedications, latestAssessment, clientAssignments, allTechniques, currentAssignment, allPractitioners, recentTechniqueLogs] = await Promise.all([
+  const [client, clientCheckIns, checkInCountResult, allPrograms, activeEnrollment, currentMedications, latestAssessment, clientAssignments, allTechniques, currentAssignment, allPractitioners, recentTechniqueLogs, unresolvedAlerts] = await Promise.all([
     db.query.users.findFirst({
       where: eq(users.id, id),
       with: { profile: true },
@@ -87,6 +88,10 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
       ),
       columns: { assignmentId: true, date: true, completedReps: true },
     }),
+    db.query.clientAlerts.findMany({
+      where: and(eq(clientAlerts.clientId, id), eq(clientAlerts.isResolved, false)),
+      orderBy: [desc(clientAlerts.createdAt)],
+    }),
   ])
 
   if (!client || client.role !== CLIENT_ROLE) notFound()
@@ -119,6 +124,12 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
         <ClientProfileCard profile={profile} />
         <ClientCheckInsCard clientId={id} checkIns={clientCheckIns} totalCheckIns={totalCheckIns} />
       </div>
+
+      {unresolvedAlerts.length > 0 && (
+        <div className="mt-6">
+          <ClientAlertsCard initialAlerts={unresolvedAlerts} />
+        </div>
+      )}
 
       <div className="mt-6">
         <PractitionerAssignmentCard
