@@ -7,8 +7,8 @@ import { getTranslations } from "next-intl/server"
 import { setRequestLocale } from "next-intl/server"
 import { Link } from "@/i18n/navigation"
 import { ArrowLeft } from "lucide-react"
-import { formatDate } from "@/lib/utils"
 import { ReplyForm } from "@/components/ui/reply-form"
+import { MessageBubble } from "@/components/ui/message-bubble"
 
 export default async function AdminThreadPage({
   params,
@@ -82,20 +82,13 @@ export default async function AdminThreadPage({
         {thread.messages.map((msg) => {
           const isOwn = msg.senderId === session.user.id
           return (
-            <div key={msg.id} className={`flex ${isOwn ? "justify-end" : "justify-start"}`}>
-              <div
-                className={`max-w-[75%] rounded-xl px-4 py-3 ${
-                  isOwn ? "bg-teal-600 text-white" : "bg-slate-100 text-slate-900"
-                }`}
-              >
-                <p className={`text-xs mb-1 ${isOwn ? "text-teal-100" : "text-slate-400"}`}>
-                  {isOwn ? t("you") : (msg.sender?.name ?? msg.sender?.email ?? clientName)}
-                  {" · "}
-                  {formatDate(msg.createdAt)}
-                </p>
-                <p className="text-sm whitespace-pre-wrap">{msg.body}</p>
-              </div>
-            </div>
+            <MessageBubble
+              key={msg.id}
+              isOwn={isOwn}
+              senderLabel={isOwn ? t("you") : (msg.sender?.name ?? msg.sender?.email ?? clientName)}
+              createdAt={msg.createdAt}
+              body={msg.body}
+            />
           )
         })}
       </div>
