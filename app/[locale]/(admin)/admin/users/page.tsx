@@ -5,13 +5,12 @@ import { auth } from "@/lib/auth"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { formatDate, computeTotalPages, parsePage, computeOffset } from "@/lib/utils"
-import { PAGINATION_DEFAULT } from "@/lib/constants"
+import { PAGINATION_DEFAULT, ROLE_BADGE_VARIANT } from "@/lib/constants"
 import { ADMIN_ROLE } from "@/lib/domain/auth"
 import { RoleButton } from "./role-button"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { Badge } from "@/components/ui/badge"
 import { Pagination } from "@/components/ui/pagination"
-import type { BadgeVariant } from "@/components/ui/badge"
 
 export default async function UsersPage({
   params,
@@ -50,12 +49,6 @@ export default async function UsersPage({
   const total = totalResult[0]?.count ?? 0
   const totalPages = computeTotalPages(total, PAGINATION_DEFAULT)
 
-  const roleVariant: Record<string, BadgeVariant> = {
-    admin: "teal",
-    practitioner: "blue",
-    client: "slate",
-  }
-
   function pageLink(p: number) {
     return `/admin/users?page=${p}`
   }
@@ -87,7 +80,7 @@ export default async function UsersPage({
                   <td className="py-3">
                     <Badge
                       label={t(`roles.${user.role}`)}
-                      variant={roleVariant[user.role] ?? "slate"}
+                      variant={ROLE_BADGE_VARIANT[user.role] ?? "slate"}
                     />
                   </td>
                   <td className="py-3 text-slate-400">{formatDate(user.createdAt)}</td>

@@ -250,6 +250,13 @@ export const BOOKING_STATUS_BADGE_VARIANT: Record<string, "yellow" | "teal" | "s
   cancelled: "slate",
 }
 
+// User role → Badge variant — used by admin users page and role-button component
+export const ROLE_BADGE_VARIANT: Record<string, "teal" | "blue" | "slate"> = {
+  admin:        "teal",
+  practitioner: "blue",
+  client:       "slate",
+}
+
 // Alert severity color config — canonical mapping used by all alert UI components
 // Dot = filled circle indicator; Badge = label pill with border
 export const ALERT_SEVERITY_DOT: Record<string, string> = {

@@ -4,12 +4,8 @@ import { useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
 import { useTranslations } from "next-intl"
 import { CLIENT_ROLE, PRACTITIONER_ROLE, ADMIN_ROLE, type AppRole } from "@/lib/domain/auth"
-
-const ROLE_BADGE: Record<AppRole, string> = {
-  admin: "bg-teal-50 text-teal-700",
-  practitioner: "bg-blue-50 text-blue-600",
-  client: "bg-slate-100 text-slate-600",
-}
+import { Badge } from "@/components/ui/badge"
+import { ROLE_BADGE_VARIANT } from "@/lib/constants"
 
 
 interface RoleButtonProps {
@@ -48,11 +44,7 @@ export function RoleButton({ userId, currentRole, canEdit }: RoleButtonProps) {
   }
 
   if (!canEdit) {
-    return (
-      <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${ROLE_BADGE[currentRole]}`}>
-        {t(`roles.${currentRole}`)}
-      </span>
-    )
+    return <Badge variant={ROLE_BADGE_VARIANT[currentRole] ?? "slate"} label={t(`roles.${currentRole}`)} />
   }
 
   return (
