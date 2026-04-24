@@ -10,6 +10,7 @@ import { InviteButton } from "./invite-button"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { Pagination } from "@/components/ui/pagination"
 import { FilterTabs } from "@/components/ui/filter-tabs"
+import { EmptyState } from "@/components/ui/empty-state"
 
 type LeadStatusValue = (typeof leadStatusEnum.enumValues)[number]
 type StatusFilter = "all" | LeadStatusValue
@@ -84,7 +85,9 @@ export default async function LeadsPage({
         <CardHeader><CardTitle>{t("title")}</CardTitle></CardHeader>
         <CardContent>
           {all.length === 0 ? (
-            <p className="text-slate-400 text-sm py-4 text-center">{t("noLeads")}</p>
+            <div className="py-8">
+              <EmptyState message={t("noLeads")} />
+            </div>
           ) : (
             <div className="flex flex-col divide-y divide-slate-100">
               {all.map((lead) => (
