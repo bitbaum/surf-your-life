@@ -5,7 +5,7 @@ import { techniqueLogs, techniqueAssignments } from "@/lib/db/schema"
 import { eq, and, gte } from "drizzle-orm"
 import { logTechniqueSchema } from "@/lib/domain/techniques"
 import { toDateString } from "@/lib/utils"
-import { API_ERR_UNAUTHORIZED, TECHNIQUE_LOG_WINDOW_DAYS } from "@/lib/constants"
+import { API_ERR_UNAUTHORIZED, API_ERR_NOT_FOUND, TECHNIQUE_LOG_WINDOW_DAYS } from "@/lib/constants"
 
 export async function GET(req: Request) {
   const session = await auth()
@@ -48,7 +48,7 @@ export async function POST(req: Request) {
     ),
   })
   if (!assignment) {
-    return NextResponse.json({ success: false, error: "Assignment not found" }, { status: 404 })
+    return NextResponse.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
   }
 
   const [log] = await db

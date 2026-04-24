@@ -7,7 +7,7 @@ import { bookings, users } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { sendEmail } from "@/lib/email"
 import { bookingStatusEmail } from "@/lib/email/templates"
-import { API_ERR_FORBIDDEN, API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED } from "@/lib/constants"
+import { API_ERR_FORBIDDEN, API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED, API_ERR_NOT_FOUND } from "@/lib/constants"
 
 const adminUpdateSchema = z.object({ status: z.enum(["confirmed", "cancelled"]) })
 const clientUpdateSchema = z.object({ status: z.literal("cancelled") })
@@ -39,7 +39,7 @@ export async function PATCH(
   })
 
   if (!booking) {
-    return NextResponse.json({ success: false, error: "Booking not found" }, { status: 404 })
+    return NextResponse.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
   }
 
   // Clients can only cancel their own bookings; cannot act on already-cancelled ones

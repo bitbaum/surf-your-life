@@ -5,7 +5,7 @@ import { programEnrollments } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { updateEnrollmentSchema } from "@/lib/domain/program"
 import { isStaff } from "@/lib/domain/auth"
-import { API_ERR_FORBIDDEN, API_ERR_INVALID_INPUT } from "@/lib/constants"
+import { API_ERR_FORBIDDEN, API_ERR_INVALID_INPUT, API_ERR_NOT_FOUND } from "@/lib/constants"
 
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth()
@@ -25,7 +25,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     where: eq(programEnrollments.id, id),
   })
   if (!enrollment) {
-    return NextResponse.json({ success: false, error: "Enrollment not found" }, { status: 404 })
+    return NextResponse.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
   }
 
   await db

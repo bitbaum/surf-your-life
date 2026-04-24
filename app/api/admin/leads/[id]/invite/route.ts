@@ -7,7 +7,7 @@ import { sendEmail } from "@/lib/email"
 import { inviteEmail } from "@/lib/email/templates"
 import { EMAIL_SUBJECT_INVITE } from "@/lib/email/subjects"
 import { NextRequest, NextResponse } from "next/server"
-import { SITE_URL, API_ERR_UNAUTHORIZED } from "@/lib/constants"
+import { SITE_URL, API_ERR_UNAUTHORIZED, API_ERR_NOT_FOUND } from "@/lib/constants"
 
 export async function POST(
   _req: NextRequest,
@@ -21,7 +21,7 @@ export async function POST(
   const { id } = await params
   const lead = await db.query.leads.findFirst({ where: eq(leads.id, id) })
   if (!lead) {
-    return NextResponse.json({ success: false, error: "Lead not found" }, { status: 404 })
+    return NextResponse.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
   }
 
   const registerUrl = `${SITE_URL}/register?email=${encodeURIComponent(lead.email)}`
