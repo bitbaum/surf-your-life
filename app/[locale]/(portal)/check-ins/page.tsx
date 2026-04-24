@@ -6,7 +6,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server"
 import { Card, CardContent } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
-import { formatDate, formatEnumValue } from "@/lib/utils"
+import { formatDate, formatEnumValue, computeTotalPages } from "@/lib/utils"
 import { PAGINATION_DEFAULT, MOOD_EMOJI, SLEEP_QUALITY_OPTIONS } from "@/lib/constants"
 import { Link } from "@/i18n/navigation"
 import { Pagination } from "@/components/ui/pagination"
@@ -41,7 +41,7 @@ export default async function CheckInsPage({
   ])
 
   const total = totalResult[0]?.count ?? 0
-  const totalPages = Math.ceil(total / PAGINATION_DEFAULT)
+  const totalPages = computeTotalPages(total, PAGINATION_DEFAULT)
 
   return (
     <div className="max-w-3xl mx-auto">

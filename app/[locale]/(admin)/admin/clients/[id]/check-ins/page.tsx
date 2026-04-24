@@ -8,6 +8,7 @@ import { Pagination } from "@/components/ui/pagination"
 import { PageHeader } from "@/components/ui/page-header"
 import { Link } from "@/i18n/navigation"
 import { PAGINATION_DEFAULT } from "@/lib/constants"
+import { computeTotalPages } from "@/lib/utils"
 import { CheckInRow } from "../check-in-row"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 
@@ -40,7 +41,7 @@ export default async function ClientCheckInsPage({
   if (!client || client.role !== CLIENT_ROLE) notFound()
 
   const total = countResult[0]?.count ?? 0
-  const totalPages = Math.ceil(total / PAGINATION_DEFAULT)
+  const totalPages = computeTotalPages(total, PAGINATION_DEFAULT)
 
   function pageLink(p: number) {
     return `/admin/clients/${id}/check-ins?page=${p}`

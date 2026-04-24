@@ -4,7 +4,7 @@ import { desc, count } from "drizzle-orm"
 import { auth } from "@/lib/auth"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
-import { formatDate } from "@/lib/utils"
+import { formatDate, computeTotalPages } from "@/lib/utils"
 import { PAGINATION_DEFAULT } from "@/lib/constants"
 import { ADMIN_ROLE } from "@/lib/domain/auth"
 import { RoleButton } from "./role-button"
@@ -48,7 +48,7 @@ export default async function UsersPage({
   ])
 
   const total = totalResult[0]?.count ?? 0
-  const totalPages = Math.ceil(total / PAGINATION_DEFAULT)
+  const totalPages = computeTotalPages(total, PAGINATION_DEFAULT)
 
   const roleVariant: Record<string, BadgeVariant> = {
     admin: "teal",

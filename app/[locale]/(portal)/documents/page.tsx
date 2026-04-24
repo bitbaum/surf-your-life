@@ -7,7 +7,7 @@ import { PAGINATION_DEFAULT, DOC_TYPE_BADGE_CLASSES } from "@/lib/constants"
 import { Card, CardContent } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { Pagination } from "@/components/ui/pagination"
-import { formatDate } from "@/lib/utils"
+import { formatDate, computeTotalPages } from "@/lib/utils"
 import { FileText } from "lucide-react"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { AddDocumentButton } from "./add-document-button"
@@ -43,7 +43,7 @@ export default async function DocumentsPage({
   ])
 
   const total = totalResult[0]?.value ?? 0
-  const totalPages = Math.ceil(total / PAGINATION_DEFAULT)
+  const totalPages = computeTotalPages(total, PAGINATION_DEFAULT)
 
   const TYPE_LABELS: Record<string, string> = {
     session_note: t("type_session_note"),

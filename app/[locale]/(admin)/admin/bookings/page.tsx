@@ -3,7 +3,7 @@ import { bookings, bookingStatusEnum } from "@/lib/db/schema"
 import { eq, desc, count } from "drizzle-orm"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
-import { formatDate } from "@/lib/utils"
+import { formatDate, computeTotalPages } from "@/lib/utils"
 import { PAGINATION_DEFAULT } from "@/lib/constants"
 import { BookingActions } from "./booking-actions"
 import { getTranslations, setRequestLocale } from "next-intl/server"
@@ -50,7 +50,7 @@ export default async function AdminBookingsPage({
   ])
 
   const total = totalResult[0]?.value ?? 0
-  const totalPages = Math.ceil(total / PAGINATION_DEFAULT)
+  const totalPages = computeTotalPages(total, PAGINATION_DEFAULT)
 
   const statusVariant: Record<BookingStatus, "yellow" | "teal" | "slate"> = {
     pending: "yellow",

@@ -24,3 +24,8 @@ export function formatEnumValue(value: string): string {
 export function toDateString(date: Date): string {
   return date.toISOString().split("T")[0]
 }
+
+// Computes total page count for pagination given a total row count and page size.
+export function computeTotalPages(total: number, pageSize: number): number {
+  return Math.ceil(total / pageSize)
+}

@@ -5,7 +5,7 @@ import { CLIENT_ROLE } from "@/lib/domain/auth"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { Link } from "@/i18n/navigation"
-import { formatDate, formatEnumValue } from "@/lib/utils"
+import { formatDate, formatEnumValue, computeTotalPages } from "@/lib/utils"
 import { PAGINATION_DEFAULT } from "@/lib/constants"
 import { ClientSearch } from "./client-search"
 import { Suspense } from "react"
@@ -59,7 +59,7 @@ export default async function ClientsPage({
   ])
 
   const total = totalResult[0]?.count ?? 0
-  const totalPages = Math.ceil(total / PAGINATION_DEFAULT)
+  const totalPages = computeTotalPages(total, PAGINATION_DEFAULT)
 
   const clientIds = clients.map((c) => c.id)
   const alertCountMap = new Map<string, number>()

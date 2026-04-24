@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ProgressBar } from "@/components/ui/progress-bar"
 import { Pagination } from "@/components/ui/pagination"
 import { getTranslations, setRequestLocale } from "next-intl/server"
-import { formatDate } from "@/lib/utils"
+import { formatDate, computeTotalPages } from "@/lib/utils"
 import { PageHeader } from "@/components/ui/page-header"
 import { AssessmentsClient } from "./assessments-client"
 
@@ -43,7 +43,7 @@ export default async function AssessmentsPage({
   ])
 
   const total = totalResult[0]?.value ?? 0
-  const totalPages = Math.ceil(total / PAGINATION_DEFAULT)
+  const totalPages = computeTotalPages(total, PAGINATION_DEFAULT)
 
   return (
     <div className="max-w-2xl mx-auto">

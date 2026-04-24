@@ -3,7 +3,7 @@ import { leads, leadStatusEnum } from "@/lib/db/schema"
 import { desc, count, eq } from "drizzle-orm"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
-import { formatDate } from "@/lib/utils"
+import { formatDate, computeTotalPages } from "@/lib/utils"
 import { PAGINATION_DEFAULT } from "@/lib/constants"
 import { LeadStatus } from "./lead-status"
 import { InviteButton } from "./invite-button"
@@ -54,7 +54,7 @@ export default async function LeadsPage({
   ])
 
   const total = totalResult[0]?.count ?? 0
-  const totalPages = Math.ceil(total / PAGINATION_DEFAULT)
+  const totalPages = computeTotalPages(total, PAGINATION_DEFAULT)
 
   function tabLink(s: StatusFilter) {
     const urlParams = new URLSearchParams()

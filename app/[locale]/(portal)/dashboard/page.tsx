@@ -102,6 +102,9 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
   )
 
   const programProgress = activeEnrollment ? computeProgramProgress(activeEnrollment) : null
+  const programPct = programProgress?.totalWeeks
+    ? Math.round((programProgress.currentWeek / programProgress.totalWeeks) * 100)
+    : 0
 
   const milestoneHit = detectMilestone(totalCheckIns, streak)
   const milestone = milestoneHit
@@ -162,9 +165,9 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
           <CardContent>
             {programProgress.totalWeeks > 0 && (
               <div className="mb-4">
-                <ProgressBar value={Math.min((programProgress.currentWeek / programProgress.totalWeeks) * 100, 100)} track="teal" />
+                <ProgressBar value={Math.min(programPct, 100)} track="teal" />
                 <p className="text-xs text-slate-400 mt-1">
-                  {t("programProgress", { pct: Math.round((programProgress.currentWeek / programProgress.totalWeeks) * 100) })}
+                  {t("programProgress", { pct: programPct })}
                 </p>
               </div>
             )}
