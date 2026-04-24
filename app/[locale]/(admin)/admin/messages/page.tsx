@@ -53,12 +53,15 @@ export default async function AdminMessagesPage({
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="flex items-center justify-between gap-4 mb-6">
-        <PageHeader title={t("title")} description={t("allConversations")} />
-        <Link href="/admin/messages/new">
-          <Button>{t("newConversation")}</Button>
-        </Link>
-      </div>
+      <PageHeader
+        title={t("title")}
+        description={t("allConversations")}
+        action={
+          <Link href="/admin/messages/new">
+            <Button>{t("newConversation")}</Button>
+          </Link>
+        }
+      />
 
       {allThreads.length === 0 ? (
         <div className="rounded-xl border border-slate-200 bg-white shadow-sm p-12 text-center">

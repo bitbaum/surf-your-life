@@ -54,12 +54,14 @@ export default async function PortalMessagesPage({
 
   return (
     <div className="max-w-3xl mx-auto">
-      <div className="flex items-center justify-between gap-4 mb-6">
-        <PageHeader title={t("title")} />
-        <Link href="/messages/new">
-          <Button>{t("newMessage")}</Button>
-        </Link>
-      </div>
+      <PageHeader
+        title={t("title")}
+        action={
+          <Link href="/messages/new">
+            <Button>{t("newMessage")}</Button>
+          </Link>
+        }
+      />
 
       {myThreads.length === 0 ? (
         <div className="rounded-xl border border-slate-200 bg-white shadow-sm p-12 text-center">
