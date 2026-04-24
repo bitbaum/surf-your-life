@@ -947,7 +947,8 @@
         "assignPractitioner": "Assigner",
         "selectPractitioner": "Sélectionner un praticien...",
         "assignError": "Échec de la mise à jour de l'affectation",
-        "saving": "Enregistrement..."
+        "saving": "Enregistrement...",
+        "energyTrend": "Tendance énergie"
       },
       "atRisk": {
         "title": "Clients à risque",

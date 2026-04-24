@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Link } from "@/i18n/navigation"
 import { PAGINATION_DEFAULT } from "@/lib/constants"
 import { CheckInRow } from "./check-in-row"
+import { EnergyMiniChart } from "./energy-mini-chart"
 import { getTranslations } from "next-intl/server"
 import type { checkIns } from "@/lib/db/schema"
 import type { InferSelectModel } from "drizzle-orm"
@@ -41,11 +42,22 @@ export async function ClientCheckInsCard({ clientId, checkIns, totalCheckIns }: 
       </CardHeader>
       <CardContent>
         {checkIns.length > 0 ? (
-          <div className="flex flex-col divide-y divide-slate-100">
-            {checkIns.map((ci) => (
-              <CheckInRow key={ci.id} ci={ci} />
-            ))}
-          </div>
+          <>
+            <div className="mb-4">
+              <p className="text-xs text-slate-400 mb-1.5">{t("detail.energyTrend")}</p>
+              <EnergyMiniChart data={checkIns.map((ci) => ({
+                createdAt: ci.createdAt,
+                energyLevel: ci.energyLevel,
+                mood: ci.mood,
+                pemFlag: ci.pemFlag,
+              }))} />
+            </div>
+            <div className="flex flex-col divide-y divide-slate-100">
+              {checkIns.map((ci) => (
+                <CheckInRow key={ci.id} ci={ci} />
+              ))}
+            </div>
+          </>
         ) : (
           <p className="text-slate-400 text-sm">{t("detail.noCheckIns")}</p>
         )}

@@ -929,7 +929,8 @@
         "assignPractitioner": "Zuweisen",
         "selectPractitioner": "Fachkraft auswählen...",
         "assignError": "Zuweisung konnte nicht aktualisiert werden",
-        "saving": "Wird gespeichert..."
+        "saving": "Wird gespeichert...",
+        "energyTrend": "Energieverlauf"
       },
       "atRisk": {
         "title": "Gefährdete Klienten",
