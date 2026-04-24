@@ -61,11 +61,21 @@ export default async function AdminThreadPage({
         </Link>
       </div>
 
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-slate-900">
-          {thread.subject ?? t("noSubject")}
-        </h1>
-        <p className="text-slate-500 mt-1">{clientName}</p>
+      <div className="mb-6 flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">
+            {thread.subject ?? t("noSubject")}
+          </h1>
+          <p className="text-slate-500 mt-1">{clientName}</p>
+        </div>
+        {thread.client?.id && (
+          <Link
+            href={`/admin/clients/${thread.client.id}`}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition-colors flex-shrink-0 mt-1"
+          >
+            {t("viewClientProfile")}
+          </Link>
+        )}
       </div>
 
       <div className="flex flex-col gap-3 mb-6">

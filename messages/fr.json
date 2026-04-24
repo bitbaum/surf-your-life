@@ -818,7 +818,8 @@
     "sending": "Envoi en cours...",
     "noSubject": "(Sans objet)",
     "teamName": "Équipe Surf Your Life",
-    "failedToSend": "L'envoi a échoué. Veuillez réessayer."
+    "failedToSend": "L'envoi a échoué. Veuillez réessayer.",
+    "viewClientProfile": "Voir le profil →"
   },
   "admin": {
     "sidebar": {

@@ -818,7 +818,8 @@
     "sending": "Sending...",
     "noSubject": "(No subject)",
     "teamName": "Surf Your Life Team",
-    "failedToSend": "Failed to send. Please try again."
+    "failedToSend": "Failed to send. Please try again.",
+    "viewClientProfile": "View profile →"
   },
   "admin": {
     "sidebar": {
