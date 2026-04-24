@@ -879,6 +879,7 @@
       "columnConcern": "Concern",
       "columnJoined": "Joined",
       "columnLastCheckIn": "Last check-in",
+      "columnCheckIns": "Check-ins",
       "noResults": "No clients match your search",
       "noClients": "No clients yet",
       "atRiskLink": "At-risk clients →",
@@ -1022,7 +1023,8 @@
       },
       "sortJoined": "Newest first",
       "sortCheckInDesc": "Most active",
-      "sortCheckInAsc": "Needs attention"
+      "sortCheckInAsc": "Needs attention",
+      "sortMostCheckIns": "Most check-ins"
     },
     "leads": {
       "statusNew": "New",

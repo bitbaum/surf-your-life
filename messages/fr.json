@@ -897,6 +897,7 @@
       "columnConcern": "Problématique",
       "columnJoined": "Inscrit le",
       "columnLastCheckIn": "Dernier check-in",
+      "columnCheckIns": "Check-ins",
       "noResults": "Aucun client ne correspond à la recherche",
       "noClients": "Aucun client pour l'instant",
       "atRiskLink": "Clients à risque →",
@@ -1040,7 +1041,8 @@
       },
       "sortJoined": "Plus récents",
       "sortCheckInDesc": "Plus actifs",
-      "sortCheckInAsc": "Besoin d'attention"
+      "sortCheckInAsc": "Besoin d'attention",
+      "sortMostCheckIns": "Plus de check-ins"
     },
     "leads": {
       "statusNew": "Nouveau",

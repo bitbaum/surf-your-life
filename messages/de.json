@@ -879,6 +879,7 @@
       "columnConcern": "Anliegen",
       "columnJoined": "Beigetreten",
       "columnLastCheckIn": "Letztes Check-in",
+      "columnCheckIns": "Check-ins",
       "noResults": "Keine Klienten entsprechen der Suche",
       "noClients": "Noch keine Klienten",
       "atRiskLink": "Gefährdete Klienten →",
@@ -1022,7 +1023,8 @@
       },
       "sortJoined": "Neueste zuerst",
       "sortCheckInDesc": "Zuletzt aktiv",
-      "sortCheckInAsc": "Aufmerksamkeit nötig"
+      "sortCheckInAsc": "Aufmerksamkeit nötig",
+      "sortMostCheckIns": "Meiste Check-ins"
     },
     "leads": {
       "statusNew": "Neu",

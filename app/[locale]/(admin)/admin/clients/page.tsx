@@ -13,8 +13,8 @@ import { Suspense } from "react"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { Pagination } from "@/components/ui/pagination"
 
-type SortOption = "joined" | "checkin_desc" | "checkin_asc"
-const SORT_OPTIONS: SortOption[] = ["joined", "checkin_desc", "checkin_asc"]
+type SortOption = "joined" | "checkin_desc" | "checkin_asc" | "most_checkins"
+const SORT_OPTIONS: SortOption[] = ["joined", "checkin_desc", "checkin_asc", "most_checkins"]
 function isValidSort(v: string | undefined): v is SortOption {
   return SORT_OPTIONS.includes(v as SortOption)
 }
@@ -54,6 +54,7 @@ export default async function ClientsPage({
         createdAt: users.createdAt,
         mainConcern: profiles.mainConcern,
         lastCheckIn: max(checkIns.createdAt),
+        checkInCount: count(checkIns.id),
       })
       .from(users)
       .leftJoin(profiles, eq(profiles.userId, users.id))
@@ -65,7 +66,9 @@ export default async function ClientsPage({
           ? sql`max(${checkIns.createdAt}) DESC NULLS LAST`
           : sort === "checkin_asc"
             ? sql`max(${checkIns.createdAt}) ASC NULLS LAST`
-            : desc(users.createdAt)
+            : sort === "most_checkins"
+              ? sql`count(${checkIns.id}) DESC`
+              : desc(users.createdAt)
       )
       .limit(PAGINATION_DEFAULT)
       .offset(offset),
@@ -131,6 +134,7 @@ export default async function ClientsPage({
               { value: "joined" as SortOption, label: t("sortJoined") },
               { value: "checkin_desc" as SortOption, label: t("sortCheckInDesc") },
               { value: "checkin_asc" as SortOption, label: t("sortCheckInAsc") },
+              { value: "most_checkins" as SortOption, label: t("sortMostCheckIns") },
             ]}
             active={sort}
             href={sortLink}
@@ -143,6 +147,7 @@ export default async function ClientsPage({
                 <th className="text-left py-2 font-medium text-slate-500">{t("columnEmail")}</th>
                 <th className="text-left py-2 font-medium text-slate-500">{t("columnConcern")}</th>
                 <th className="text-left py-2 font-medium text-slate-500">{t("columnLastCheckIn")}</th>
+                <th className="text-left py-2 font-medium text-slate-500">{t("columnCheckIns")}</th>
                 <th className="text-left py-2 font-medium text-slate-500">{t("columnJoined")}</th>
                 <th />
               </tr>
@@ -170,6 +175,9 @@ export default async function ClientsPage({
                   <td className="py-3 text-slate-500">
                     {client.lastCheckIn ? formatDate(client.lastCheckIn) : <span className="text-slate-300">—</span>}
                   </td>
+                  <td className="py-3 text-slate-500">
+                    {client.checkInCount > 0 ? client.checkInCount : <span className="text-slate-300">0</span>}
+                  </td>
                   <td className="py-3 text-slate-400">{formatDate(client.createdAt)}</td>
                   <td className="py-3 text-right">
                     <Link
@@ -183,7 +191,7 @@ export default async function ClientsPage({
               ))}
               {clients.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="py-8 text-center text-slate-400">
+                  <td colSpan={7} className="py-8 text-center text-slate-400">
                     {q ? t("noResults") : t("noClients")}
                   </td>
                 </tr>
