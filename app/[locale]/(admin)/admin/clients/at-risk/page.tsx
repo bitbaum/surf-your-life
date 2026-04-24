@@ -16,7 +16,7 @@ export default async function AtRiskClientsPage({ params }: { params: Promise<{ 
   setRequestLocale(locale)
   const t = await getTranslations("admin.clients")
 
-  const nowMs = Date.now() // eslint-disable-line react-hooks/purity -- server component
+  const nowMs = Date.now()
   const sevenDaysAgo = new Date(nowMs - SEVEN_DAYS_MS)
 
   const atRisk = await db

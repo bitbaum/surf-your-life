@@ -46,13 +46,12 @@ export async function POST(req: Request) {
   const hashed = await bcrypt.hash(password, BCRYPT_SALT_ROUNDS)
 
   // Atomic: if profile creation fails, roll back the user insert to avoid orphaned records
-  const [user] = await db.transaction(async (tx) => {
+  await db.transaction(async (tx) => {
     const [newUser] = await tx
       .insert(users)
       .values({ email, password: hashed, role })
       .returning({ id: users.id })
     await tx.insert(profiles).values({ userId: newUser.id })
-    return [newUser]
   })
 
   // Fire-and-forget: welcome + verification email + alert admins

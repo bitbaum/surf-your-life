@@ -1,6 +1,6 @@
 import { db } from "@/lib/db"
 import { users, checkIns, bookings, threadMessages, clientAlerts } from "@/lib/db/schema"
-import { eq, desc, gte, count, and, isNull, max, or, lt, isNotNull, sql } from "drizzle-orm"
+import { eq, desc, gte, count, and, isNull, max, or, lt, sql } from "drizzle-orm"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { StatCard } from "@/components/ui/stat-card"
@@ -24,7 +24,7 @@ export default async function AdminDashboardPage({
   setRequestLocale(locale)
   const t = await getTranslations("admin.dashboard")
 
-  const nowMs = Date.now() // eslint-disable-line react-hooks/purity -- server component
+  const nowMs = Date.now()
   const thirtyDaysAgo = new Date(nowMs - THIRTY_DAYS_MS)
   const sevenDaysAgo = new Date(nowMs - SEVEN_DAYS_MS)
 

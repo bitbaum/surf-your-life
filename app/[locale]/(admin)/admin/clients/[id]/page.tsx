@@ -27,7 +27,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
   setRequestLocale(locale)
   const t = await getTranslations("admin.clients")
 
-  const sevenDaysAgo = toDateString(new Date(Date.now() - SEVEN_DAYS_MS))
+  const sevenDaysAgo = toDateString(new Date(Date.now() - SEVEN_DAYS_MS)) // eslint-disable-line react-hooks/purity -- server component
 
   const [client, clientCheckIns, checkInCountResult, allPrograms, activeEnrollment, currentMedications, assessments, clientAssignments, allTechniques, currentAssignment, allPractitioners, recentTechniqueLogs, unresolvedAlerts] = await Promise.all([
     db.query.users.findFirst({

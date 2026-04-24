@@ -11,7 +11,7 @@
 import { db } from "@/lib/db"
 import { checkIns, medicationLog, functionalAssessments } from "@/lib/db/schema"
 import { eq, desc, isNull, and } from "drizzle-orm"
-import { SEVEN_DAYS_MS, MOOD_SCORE, AI_CONTEXT_CHECKINS, AI_CHAT_CONTEXT_WINDOW, AI_CHAT_CHECKIN_CONTEXT_LIMIT, AI_CHAT_JOURNAL_EXCERPT_LENGTH } from "@/lib/constants"
+import { SEVEN_DAYS_MS, AI_CONTEXT_CHECKINS, AI_CHAT_CONTEXT_WINDOW, AI_CHAT_CHECKIN_CONTEXT_LIMIT, AI_CHAT_JOURNAL_EXCERPT_LENGTH } from "@/lib/constants"
 import { summariseCheckIns } from "@/lib/domain/check-in"
 export { summariseCheckIns, type CheckInSummaryRow } from "@/lib/domain/check-in"
 import { callClaude } from "@/lib/domain/anthropic"
