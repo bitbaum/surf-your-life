@@ -41,12 +41,12 @@ export default async function TechniquesPage({ params }: { params: Promise<{ loc
   ])
 
   // Build logsByAssignment: assignmentId → { date → completedReps }
-  // If a date has multiple log entries (incremental taps), sum them
+  // Each tap inserts a new row with completedReps = cumulative total so far that day.
+  // Take MAX to get the actual reps done without double-counting earlier rows.
   const logsByAssignment: Record<string, LogByDate> = {}
   for (const log of logs) {
     if (!logsByAssignment[log.assignmentId]) logsByAssignment[log.assignmentId] = {}
     const existing = logsByAssignment[log.assignmentId][log.date] ?? 0
-    // Use the latest completedReps value for the date (not cumulative — each POST replaces)
     logsByAssignment[log.assignmentId][log.date] = Math.max(existing, log.completedReps)
   }
 

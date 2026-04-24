@@ -141,14 +141,16 @@ export function computeAdherenceByAssignment(
 ): Record<string, number> {
   const frequencyById = Object.fromEntries(assignments.map((a) => [a.id, a.frequencyPerDay]))
 
-  // Sum reps per (assignmentId, date)
+  // Each tap inserts a new row with completedReps = cumulative total so far that day
+  // (e.g. 3 taps → rows [1, 2, 3]). Take the MAX per (assignmentId, date) to get the
+  // actual reps done — summing would triple-count each rep.
   const repsByDay: Record<string, number> = {}
   for (const log of logs) {
     const key = `${log.assignmentId}:${log.date}`
-    repsByDay[key] = (repsByDay[key] ?? 0) + log.completedReps
+    repsByDay[key] = Math.max(repsByDay[key] ?? 0, log.completedReps)
   }
 
-  // Count days where summed reps met the daily goal
+  // Count days where reps met the daily goal
   const result: Record<string, number> = {}
   for (const [key, reps] of Object.entries(repsByDay)) {
     const assignmentId = key.split(":")[0]
@@ -169,7 +171,8 @@ export type LogsGridByAssignment = Record<string, Record<string, number>>
 
 /**
  * Build a lookup of reps-by-date per assignment from the raw log rows.
- * Multiple same-day entries are summed (same logic as adherence computation).
+ * Each tap inserts a cumulative row ([1,2,3] for 3 taps), so take MAX per
+ * (assignmentId, date) — same invariant as the portal's logsByAssignment.
  */
 export function computeLogsGridByAssignment(
   logs: Array<{ assignmentId: string; date: string; completedReps: number }>
@@ -177,7 +180,10 @@ export function computeLogsGridByAssignment(
   const result: LogsGridByAssignment = {}
   for (const log of logs) {
     if (!result[log.assignmentId]) result[log.assignmentId] = {}
-    result[log.assignmentId][log.date] = (result[log.assignmentId][log.date] ?? 0) + log.completedReps
+    result[log.assignmentId][log.date] = Math.max(
+      result[log.assignmentId][log.date] ?? 0,
+      log.completedReps
+    )
   }
   return result
 }
