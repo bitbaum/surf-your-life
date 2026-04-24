@@ -10,6 +10,9 @@ import type { AlertType, AlertSeverity } from "@/lib/db/schema"
 import { EmptyState } from "@/components/ui/empty-state"
 import { Card } from "@/components/ui/card"
 
+const ALL_FILTER = "all" as const
+type TypeFilter = AlertType | typeof ALL_FILTER
+
 export type AlertRow = {
   id: string
   type: AlertType
@@ -27,10 +30,14 @@ interface Props {
 export function AlertList({ initialAlerts }: Props) {
   const t = useTranslations("admin.alerts")
   const [alerts, setAlerts] = useState(initialAlerts)
+  const [typeFilter, setTypeFilter] = useState<TypeFilter>(ALL_FILTER)
 
   function handleResolved(id: string) {
     setAlerts((prev) => prev.filter((a) => a.id !== id))
   }
+
+  const activeTypes = [...new Set(alerts.map((a) => a.type))] as AlertType[]
+  const visible = typeFilter === ALL_FILTER ? alerts : alerts.filter((a) => a.type === typeFilter)
 
   if (alerts.length === 0) {
     return (
@@ -45,10 +52,32 @@ export function AlertList({ initialAlerts }: Props) {
   }
 
   const grouped = Object.fromEntries(ALERT_SEVERITY_ORDER.map((s) => [s, [] as AlertRow[]])) as Record<AlertSeverity, AlertRow[]>
-  for (const alert of alerts) grouped[alert.severity].push(alert)
+  for (const alert of visible) grouped[alert.severity].push(alert)
 
   return (
     <div className="flex flex-col gap-6">
+      {activeTypes.length > 1 && (
+        <div className="flex flex-wrap gap-2">
+          <button
+            onClick={() => setTypeFilter(ALL_FILTER)}
+            className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${typeFilter === ALL_FILTER ? "bg-slate-800 text-white border-slate-800" : "bg-white text-slate-600 border-slate-200 hover:border-slate-400"}`}
+          >
+            {t("filterAll")} ({alerts.length})
+          </button>
+          {activeTypes.map((type) => {
+            const count = alerts.filter((a) => a.type === type).length
+            return (
+              <button
+                key={type}
+                onClick={() => setTypeFilter(type)}
+                className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${typeFilter === type ? "bg-slate-800 text-white border-slate-800" : "bg-white text-slate-600 border-slate-200 hover:border-slate-400"}`}
+              >
+                {t(`type.${type}`)} ({count})
+              </button>
+            )
+          })}
+        </div>
+      )}
       {ALERT_SEVERITY_ORDER.map((sev) => {
         const group = grouped[sev]
         if (group.length === 0) return null

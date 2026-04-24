@@ -1256,7 +1256,8 @@
         "mood_decline": "Baisse de moral",
         "stress_spike": "Pic de stress",
         "orthostatic_intolerance": "Symptômes orthostatiques"
-      }
+      },
+      "filterAll": "Tous"
     }
   },
   "concerns": {

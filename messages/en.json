@@ -1256,7 +1256,8 @@
         "mood_decline": "Mood decline",
         "stress_spike": "Stress spike",
         "orthostatic_intolerance": "Orthostatic symptoms"
-      }
+      },
+      "filterAll": "All"
     }
   },
   "concerns": {
