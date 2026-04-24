@@ -5,6 +5,7 @@ import { aiMessages } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChatInterface } from "./chat-interface"
+import { PageHeader } from "@/components/ui/page-header"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { AI_CHAT_DISPLAY_LIMIT } from "@/lib/constants"
 
@@ -30,10 +31,7 @@ export default async function AiChatPage({ params }: { params: Promise<{ locale:
 
   return (
     <div className="max-w-2xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-slate-900">{t("title")}</h1>
-        <p className="text-slate-500 mt-1">{t("description")}</p>
-      </div>
+      <PageHeader title={t("title")} description={t("description")} />
 
       <Card>
         <CardHeader className="pb-3">

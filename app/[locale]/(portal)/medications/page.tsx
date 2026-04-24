@@ -4,6 +4,7 @@ import { db } from "@/lib/db"
 import { medicationLog } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
 import { Card, CardContent } from "@/components/ui/card"
+import { PageHeader } from "@/components/ui/page-header"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { MedicationManager } from "./medication-manager"
 
@@ -22,10 +23,7 @@ export default async function MedicationsPage({ params }: { params: Promise<{ lo
 
   return (
     <div className="max-w-xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-slate-900">{t("title")}</h1>
-        <p className="text-slate-500 mt-1">{t("description")}</p>
-      </div>
+      <PageHeader title={t("title")} description={t("description")} />
 
       <Card>
         <CardContent className="pt-6">

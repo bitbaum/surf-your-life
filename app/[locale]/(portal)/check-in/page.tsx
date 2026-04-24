@@ -13,6 +13,7 @@ import { EnergyCard } from "./energy-card"
 import { ActivityPemCard } from "./activity-pem-card"
 import { SleepCard } from "./sleep-card"
 import { SymptomsCard, type Symptoms } from "./symptoms-card"
+import { PageHeader } from "@/components/ui/page-header"
 
 export default function CheckInPage() {
   const t = useTranslations("portal.checkIn")
@@ -100,10 +101,7 @@ export default function CheckInPage() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-900">{t("title")}</h1>
-        <p className="text-slate-500 mt-1">{t("subtitle")}</p>
-      </div>
+      <PageHeader title={t("title")} description={t("subtitle")} />
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
         <NlpEntry onFill={handleFill} />
