@@ -7,6 +7,7 @@ import { computeTechniqueDebt, type LogByDate, type AssignmentWithTechnique } fr
 import { TECHNIQUE_CATEGORIES } from "@/lib/constants"
 import { TechniqueCard } from "./technique-card"
 import { EmptyState } from "@/components/ui/empty-state"
+import { Link } from "@/i18n/navigation"
 
 interface TechniqueTrackerProps {
   assignments: AssignmentWithTechnique[]
@@ -52,7 +53,13 @@ export function TechniqueTracker({ assignments, logsByAssignment, today }: Techn
   }
 
   if (assignments.length === 0) {
-    return <EmptyState message={t("empty")} className="py-12" />
+    return (
+      <EmptyState
+        message={t("empty")}
+        action={<Link href="/messages/new" className="text-sm font-medium text-teal-600 hover:text-teal-700 transition-colors">{t("messagePractitioner")}</Link>}
+        className="py-12"
+      />
+    )
   }
 
   return (

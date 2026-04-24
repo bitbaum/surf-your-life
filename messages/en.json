@@ -654,7 +654,8 @@
       "phasesTitle": "Program Phases",
       "phaseWeekLabel": "Week {week}",
       "phaseCurrentBadge": "You are here",
-      "phaseCompletion": "Program complete"
+      "phaseCompletion": "Program complete",
+      "messagePractitioner": "Message your practitioner →"
     },
     "aiChat": {
       "title": "Ask AI",
@@ -753,7 +754,8 @@
       "logError": "Could not log this rep",
       "logOne": "Log one rep",
       "catchUp": "Catch up: {reps} rep(s) from earlier this week",
-      "howTo": "How to do this"
+      "howTo": "How to do this",
+      "messagePractitioner": "Message your practitioner →"
     },
     "documents": {
       "title": "Documents",
@@ -1172,7 +1174,8 @@
       "edit": "Edit",
       "editTitle": "Edit program",
       "editSave": "Save changes",
-      "editSaving": "Saving..."
+      "editSaving": "Saving...",
+      "viewClients": "View clients"
     },
     "services": {
       "title": "Services",

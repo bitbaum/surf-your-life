@@ -12,6 +12,7 @@ import { SEVEN_DAYS_MS, ENROLLMENT_STATUS_BADGE } from "@/lib/constants"
 import { CheckCircle, Clock, Pause } from "lucide-react"
 import { PhaseTimeline } from "./phase-timeline"
 import { EmptyState } from "@/components/ui/empty-state"
+import { Link } from "@/i18n/navigation"
 
 export default async function ProgramPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
@@ -37,6 +38,7 @@ export default async function ProgramPage({ params }: { params: Promise<{ locale
             <EmptyState
               icon={<div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center"><Clock className="w-6 h-6 text-slate-400" /></div>}
               message={t("noProgramDescription")}
+              action={<Link href="/messages/new" className="text-sm font-medium text-teal-600 hover:text-teal-700 transition-colors">{t("messagePractitioner")}</Link>}
             />
           </CardContent>
         </Card>

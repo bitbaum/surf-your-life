@@ -9,6 +9,7 @@ import { formatDate } from "@/lib/utils"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { EnrollmentStatus } from "./enrollment-status"
 import { EditProgramForm } from "./edit-program-form"
+import { EmptyState } from "@/components/ui/empty-state"
 import { Users } from "lucide-react"
 
 export default async function ProgramDetailPage({
@@ -65,7 +66,11 @@ export default async function ProgramDetailPage({
         </CardHeader>
         <CardContent>
           {enrollments.length === 0 ? (
-            <p className="text-slate-400 text-sm py-6 text-center">{t("noEnrollments")}</p>
+            <EmptyState
+              message={t("noEnrollments")}
+              action={<Link href="/admin/clients" className="text-sm font-medium text-teal-600 hover:text-teal-700 transition-colors">{t("viewClients")} →</Link>}
+              className="py-6"
+            />
           ) : (
             <div className="flex flex-col divide-y divide-slate-100">
               {enrollments.map((e) => (

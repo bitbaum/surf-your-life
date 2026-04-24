@@ -654,7 +654,8 @@
       "phasesTitle": "Programmabschnitte",
       "phaseWeekLabel": "Woche {week}",
       "phaseCurrentBadge": "Aktuell",
-      "phaseCompletion": "Programm abgeschlossen"
+      "phaseCompletion": "Programm abgeschlossen",
+      "messagePractitioner": "Therapeuten kontaktieren →"
     },
     "aiChat": {
       "title": "KI fragen",
@@ -753,7 +754,8 @@
       "logError": "Diese Wiederholung konnte nicht gespeichert werden",
       "logOne": "Eine Wiederholung loggen",
       "catchUp": "Nachholbedarf: {reps} Wiederholung(en) aus dieser Woche",
-      "howTo": "Wie geht das?"
+      "howTo": "Wie geht das?",
+      "messagePractitioner": "Therapeuten kontaktieren →"
     },
     "documents": {
       "title": "Dokumente",
@@ -1172,7 +1174,8 @@
       "edit": "Bearbeiten",
       "editTitle": "Programm bearbeiten",
       "editSave": "Änderungen speichern",
-      "editSaving": "Wird gespeichert..."
+      "editSaving": "Wird gespeichert...",
+      "viewClients": "Klienten anzeigen"
     },
     "services": {
       "title": "Angebote",

@@ -654,7 +654,8 @@
       "phasesTitle": "Phases du programme",
       "phaseWeekLabel": "Semaine {week}",
       "phaseCurrentBadge": "Vous êtes ici",
-      "phaseCompletion": "Programme terminé"
+      "phaseCompletion": "Programme terminé",
+      "messagePractitioner": "Contacter votre praticien →"
     },
     "aiChat": {
       "title": "Demander à l'IA",
@@ -753,7 +754,8 @@
       "logError": "Impossible d'enregistrer cette répétition",
       "logOne": "Enregistrer une répétition",
       "catchUp": "Rattrapage : {reps} répétition(s) de cette semaine",
-      "howTo": "Comment faire ?"
+      "howTo": "Comment faire ?",
+      "messagePractitioner": "Contacter votre praticien →"
     },
     "documents": {
       "title": "Documents",
@@ -1172,7 +1174,8 @@
       "edit": "Modifier",
       "editTitle": "Modifier le programme",
       "editSave": "Enregistrer les modifications",
-      "editSaving": "Enregistrement..."
+      "editSaving": "Enregistrement...",
+      "viewClients": "Voir les clients"
     },
     "services": {
       "title": "Services",
