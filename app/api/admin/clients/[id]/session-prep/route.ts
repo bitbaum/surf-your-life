@@ -69,7 +69,33 @@ Write in a professional, clinical tone. Be specific and actionable.`,
   })
 
   const summary = aiSummary ?? buildRuleBasedSummary(client, recentCheckIns, activeAlerts)
-  return NextResponse.json({ success: true, data: { summary, aiGenerated: aiSummary !== null } })
+
+  // Structured snapshot — computed from already-fetched data, no extra queries
+  const energyWindow = recentCheckIns.slice(0, SESSION_PREP_ENERGY_AVG_WINDOW)
+  const latestEnergy = recentCheckIns[0]?.energyLevel ?? null
+  const avgEnergy = energyWindow.length > 0
+    ? Math.round(energyWindow.reduce((s, ci) => s + ci.energyLevel, 0) / energyWindow.length * 10) / 10
+    : null
+  const prevAvgEnergy = recentCheckIns.length > 1
+    ? Math.round(recentCheckIns.slice(1, SESSION_PREP_ENERGY_AVG_WINDOW + 1).reduce((s, ci) => s + ci.energyLevel, 0) / Math.min(SESSION_PREP_ENERGY_AVG_WINDOW, recentCheckIns.length - 1) * 10) / 10
+    : null
+  const energyDirection: "up" | "down" | "stable" =
+    avgEnergy == null || prevAvgEnergy == null ? "stable"
+    : avgEnergy > prevAvgEnergy + 0.5 ? "up"
+    : avgEnergy < prevAvgEnergy - 0.5 ? "down"
+    : "stable"
+
+  const stats = {
+    alertCount: activeAlerts.length,
+    highAlertCount: activeAlerts.filter((a) => a.severity === "high").length,
+    pemCount: recentCheckIns.filter((ci) => ci.pemFlag).length,
+    latestEnergy,
+    avgEnergy,
+    energyDirection,
+    checkInCount: recentCheckIns.length,
+  }
+
+  return NextResponse.json({ success: true, data: { summary, aiGenerated: aiSummary !== null, stats } })
 }
 
 function buildClinicalContext(

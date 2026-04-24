@@ -979,7 +979,11 @@
         "generating": "Generating…",
         "refresh": "Refresh",
         "error": "Failed to generate summary. Please try again.",
-        "ruleBasedNote": "Summary generated from check-in data (AI not configured)."
+        "ruleBasedNote": "Summary generated from check-in data (AI not configured).",
+        "statsEnergy": "Energy",
+        "statsAlerts": "Alerts",
+        "statsPem": "PEM episodes",
+        "statsCheckIns": "Check-ins reviewed"
       },
       "sessionNotes": {
         "title": "Session Notes",

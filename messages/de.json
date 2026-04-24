@@ -979,7 +979,11 @@
         "generating": "Wird erstellt…",
         "refresh": "Aktualisieren",
         "error": "Zusammenfassung konnte nicht erstellt werden. Bitte versuche es erneut.",
-        "ruleBasedNote": "Zusammenfassung basiert auf Check-in-Daten (KI nicht konfiguriert)."
+        "ruleBasedNote": "Zusammenfassung basiert auf Check-in-Daten (KI nicht konfiguriert).",
+        "statsEnergy": "Energie",
+        "statsAlerts": "Meldungen",
+        "statsPem": "PEM-Episoden",
+        "statsCheckIns": "Check-ins analysiert"
       },
       "sessionNotes": {
         "title": "Sitzungsnotizen",

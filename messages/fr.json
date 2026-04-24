@@ -997,7 +997,11 @@
         "generating": "Génération…",
         "refresh": "Actualiser",
         "error": "Impossible de générer le résumé. Veuillez réessayer.",
-        "ruleBasedNote": "Résumé généré à partir des données de check-in (IA non configurée)."
+        "ruleBasedNote": "Résumé généré à partir des données de check-in (IA non configurée).",
+        "statsEnergy": "Énergie",
+        "statsAlerts": "Alertes",
+        "statsPem": "Épisodes SPE",
+        "statsCheckIns": "Check-ins analysés"
       },
       "sessionNotes": {
         "title": "Notes de séance",
