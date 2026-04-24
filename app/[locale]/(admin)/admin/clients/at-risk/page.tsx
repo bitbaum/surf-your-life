@@ -1,6 +1,6 @@
 import { db } from "@/lib/db"
 import { users, checkIns } from "@/lib/db/schema"
-import { eq, max, or, isNull, lt } from "drizzle-orm"
+import { eq, max, or, isNull, lt, sql } from "drizzle-orm"
 import { CLIENT_ROLE } from "@/lib/domain/auth"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
@@ -36,6 +36,7 @@ export default async function AtRiskClientsPage({ params }: { params: Promise<{ 
         lt(max(checkIns.createdAt), sevenDaysAgo)
       )
     )
+    .orderBy(sql`max(${checkIns.createdAt}) ASC NULLS FIRST`)
 
   function daysSince(date: Date | null): string {
     if (!date) return "—"
@@ -82,7 +83,11 @@ export default async function AtRiskClientsPage({ params }: { params: Promise<{ 
                     key={client.id}
                     className="border-b border-slate-50 hover:bg-slate-50 transition-colors"
                   >
-                    <td className="py-3 font-medium text-slate-800">{client.name ?? "—"}</td>
+                    <td className="py-3 font-medium text-slate-800">
+                      <Link href={`/admin/clients/${client.id}`} className="hover:text-teal-700 transition-colors">
+                        {client.name ?? "—"}
+                      </Link>
+                    </td>
                     <td className="py-3 text-slate-600">{client.email}</td>
                     <td className="py-3 text-slate-500">
                       {client.lastCheckIn ? formatDate(client.lastCheckIn) : t("atRisk.never")}
