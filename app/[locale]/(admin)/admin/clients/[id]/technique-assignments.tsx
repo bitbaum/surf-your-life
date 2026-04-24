@@ -4,13 +4,15 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useTranslations } from "next-intl"
 import { toast } from "sonner"
-import { Plus, Trash2, BookOpen } from "lucide-react"
+import { Plus, Trash2, BookOpen, ChevronDown, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import type { Technique } from "@/lib/db/schema"
-import type { AssignmentWithTechnique } from "@/lib/domain/techniques"
+import type { AssignmentWithTechnique, LogsGridByAssignment } from "@/lib/domain/techniques"
 import { TECHNIQUE_CATEGORIES, ADHERENCE_GOOD_DAYS, ADHERENCE_OK_DAYS } from "@/lib/constants"
 import { TechniqueAssignForm } from "./technique-assign-form"
+
+const DAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
 function AdherenceBadge({ days }: { days: number }) {
   const color = days >= ADHERENCE_GOOD_DAYS ? "text-teal-600 bg-teal-50" : days >= ADHERENCE_OK_DAYS ? "text-amber-600 bg-amber-50" : "text-red-500 bg-red-50"
@@ -21,21 +23,81 @@ function AdherenceBadge({ days }: { days: number }) {
   )
 }
 
+function AdherenceGrid({ assignmentId, frequencyPerDay, logsGrid }: {
+  assignmentId: string
+  frequencyPerDay: number
+  logsGrid: LogsGridByAssignment
+}) {
+  // Build the last 7 days ending today
+  const days: { iso: string; label: string }[] = []
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date()
+    d.setDate(d.getDate() - i)
+    const iso = d.toISOString().slice(0, 10)
+    const label = DAY_LABELS[d.getDay()]
+    days.push({ iso, label })
+  }
+
+  const grid = logsGrid[assignmentId] ?? {}
+
+  return (
+    <div className="mt-2 pt-2 border-t border-slate-100 flex gap-1.5">
+      {days.map(({ iso, label }) => {
+        const reps = grid[iso] ?? 0
+        const met = reps >= frequencyPerDay
+        const partial = reps > 0 && !met
+        const dotColor = met
+          ? "bg-teal-500"
+          : partial
+          ? "bg-amber-400"
+          : "bg-slate-200"
+        const textColor = met
+          ? "text-teal-600 font-semibold"
+          : partial
+          ? "text-amber-600"
+          : "text-slate-400"
+
+        return (
+          <div key={iso} className="flex flex-col items-center gap-0.5 flex-1">
+            <span className="text-[10px] text-slate-400">{label}</span>
+            <div className={`w-5 h-5 rounded-full ${dotColor} flex items-center justify-center`}>
+              {reps > 0 && (
+                <span className="text-[9px] text-white font-bold leading-none">{reps}</span>
+              )}
+            </div>
+            <span className={`text-[9px] leading-none ${textColor}`}>/{frequencyPerDay}</span>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
 interface TechniqueAssignmentsProps {
   clientId: string
   assignments: AssignmentWithTechnique[]
   allTechniques: Technique[]
   adherenceByAssignment: Record<string, number>
+  logsGridByAssignment: LogsGridByAssignment
 }
 
-export function TechniqueAssignments({ clientId, assignments, allTechniques, adherenceByAssignment }: TechniqueAssignmentsProps) {
+export function TechniqueAssignments({ clientId, assignments, allTechniques, adherenceByAssignment, logsGridByAssignment }: TechniqueAssignmentsProps) {
   const t = useTranslations("admin.techniques")
   const router = useRouter()
   const [adding, setAdding] = useState(false)
+  const [expanded, setExpanded] = useState<Set<string>>(new Set())
 
   const assigned = new Set(assignments.map((a) => a.techniqueId))
   const available = allTechniques.filter((t) => !assigned.has(t.id))
   const categoryEmoji = Object.fromEntries(TECHNIQUE_CATEGORIES.map(({ value, emoji }) => [value, emoji]))
+
+  function toggleExpand(id: string) {
+    setExpanded((prev) => {
+      const next = new Set(prev)
+      next.has(id) ? next.delete(id) : next.add(id)
+      return next
+    })
+  }
 
   async function handleRemove(assignmentId: string) {
     if (!confirm(t("removeConfirm"))) return
@@ -84,30 +146,51 @@ export function TechniqueAssignments({ clientId, assignments, allTechniques, adh
           <p className="text-slate-400 text-sm">{t("noAssignments")}</p>
         ) : (
           <div className="flex flex-col divide-y divide-slate-100">
-            {assignments.map((a) => (
-              <div key={a.id} className="py-2.5 flex items-center justify-between gap-3">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-sm font-medium text-slate-800">{a.technique.name}</span>
-                    <span className="text-xs text-slate-400">
-                      {categoryEmoji[a.technique.category]} {t(`category.${a.technique.category}` as Parameters<typeof t>[0])}
-                    </span>
-                    <span className="text-xs text-teal-600 font-medium">
-                      {a.frequencyPerDay}× {t("perDay")}
-                    </span>
-                    <AdherenceBadge days={adherenceByAssignment[a.id] ?? 0} />
+            {assignments.map((a) => {
+              const isOpen = expanded.has(a.id)
+              return (
+                <div key={a.id} className="py-2.5">
+                  <div className="flex items-center justify-between gap-3">
+                    <button
+                      className="flex-1 min-w-0 text-left"
+                      onClick={() => toggleExpand(a.id)}
+                    >
+                      <div className="flex items-center gap-2 flex-wrap">
+                        {isOpen
+                          ? <ChevronDown className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
+                          : <ChevronRight className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
+                        }
+                        <span className="text-sm font-medium text-slate-800">{a.technique.name}</span>
+                        <span className="text-xs text-slate-400">
+                          {categoryEmoji[a.technique.category]} {t(`category.${a.technique.category}` as Parameters<typeof t>[0])}
+                        </span>
+                        <span className="text-xs text-teal-600 font-medium">
+                          {a.frequencyPerDay}× {t("perDay")}
+                        </span>
+                        <AdherenceBadge days={adherenceByAssignment[a.id] ?? 0} />
+                      </div>
+                      {a.notes && <p className="text-xs text-slate-400 mt-0.5 italic pl-5">{a.notes}</p>}
+                    </button>
+                    <button
+                      onClick={() => handleRemove(a.id)}
+                      className="p-1.5 rounded-lg hover:bg-red-50 text-slate-300 hover:text-red-500 transition-colors flex-shrink-0"
+                      title={t("remove")}
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
                   </div>
-                  {a.notes && <p className="text-xs text-slate-400 mt-0.5 italic">{a.notes}</p>}
+                  {isOpen && (
+                    <div className="pl-5">
+                      <AdherenceGrid
+                        assignmentId={a.id}
+                        frequencyPerDay={a.frequencyPerDay}
+                        logsGrid={logsGridByAssignment}
+                      />
+                    </div>
+                  )}
                 </div>
-                <button
-                  onClick={() => handleRemove(a.id)}
-                  className="p-1.5 rounded-lg hover:bg-red-50 text-slate-300 hover:text-red-500 transition-colors flex-shrink-0"
-                  title={t("remove")}
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            ))}
+              )
+            })}
           </div>
         )}
       </CardContent>

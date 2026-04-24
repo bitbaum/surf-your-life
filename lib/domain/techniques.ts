@@ -161,3 +161,23 @@ export function computeAdherenceByAssignment(
 
   return result
 }
+
+// ─── Logs grid (7-day drill-down) ────────────────────────────────────────────
+
+/** assignmentId → date (YYYY-MM-DD) → total reps completed that day */
+export type LogsGridByAssignment = Record<string, Record<string, number>>
+
+/**
+ * Build a lookup of reps-by-date per assignment from the raw log rows.
+ * Multiple same-day entries are summed (same logic as adherence computation).
+ */
+export function computeLogsGridByAssignment(
+  logs: Array<{ assignmentId: string; date: string; completedReps: number }>
+): LogsGridByAssignment {
+  const result: LogsGridByAssignment = {}
+  for (const log of logs) {
+    if (!result[log.assignmentId]) result[log.assignmentId] = {}
+    result[log.assignmentId][log.date] = (result[log.assignmentId][log.date] ?? 0) + log.completedReps
+  }
+  return result
+}

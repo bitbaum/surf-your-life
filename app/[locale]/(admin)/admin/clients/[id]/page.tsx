@@ -6,7 +6,7 @@ import { formatDate, toDateString } from "@/lib/utils"
 import { Link } from "@/i18n/navigation"
 import { PAGINATION_DEFAULT, SEVEN_DAYS_MS, SERVICES_MAX_LIMIT, CLIENT_ASSIGNMENTS_MAX, ADMIN_DASHBOARD_ALERTS_PREVIEW, CLIENT_ASSESSMENTS_LIMIT } from "@/lib/constants"
 import { CLIENT_ROLE, STAFF_ROLES } from "@/lib/domain/auth"
-import { computeAdherenceByAssignment } from "@/lib/domain/techniques"
+import { computeAdherenceByAssignment, computeLogsGridByAssignment } from "@/lib/domain/techniques"
 import { ResetLinkButton } from "./reset-link-button"
 import { NewThreadButton } from "./new-thread-button"
 import { EnrollProgramButton } from "./enroll-program-button"
@@ -102,6 +102,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
   const totalCheckIns = checkInCountResult[0]?.count ?? 0
   const profile = client.profile
   const adherenceByAssignment = computeAdherenceByAssignment(clientAssignments, recentTechniqueLogs)
+  const logsGridByAssignment = computeLogsGridByAssignment(recentTechniqueLogs)
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -156,6 +157,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
           assignments={clientAssignments}
           allTechniques={allTechniques}
           adherenceByAssignment={adherenceByAssignment}
+          logsGridByAssignment={logsGridByAssignment}
         />
       </div>
 
