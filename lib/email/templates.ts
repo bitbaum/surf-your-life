@@ -3,13 +3,18 @@ import { BRAND_NAME, COMPANY_ADDRESS, SITE_URL } from "@/lib/constants"
 import { EMAIL_SUBJECT_INVITE } from "@/lib/email/subjects"
 import { formatEnumValue } from "@/lib/utils"
 
+// ─── Brand colors (single source of truth for all email templates) ─────────────
+
+const EMAIL_BRAND_COLOR = "#0d9488"  // teal-600
+const EMAIL_ADMIN_COLOR = "#1e293b"  // slate-900
+
 // ─── Shared shell ─────────────────────────────────────────────────────────────
 
 const SHARED_CSS = `
   body { font-family: -apple-system, sans-serif; color: #1e293b; max-width: 600px; margin: 0 auto; padding: 24px; }
-  a { color: #0d9488; }
+  a { color: ${EMAIL_BRAND_COLOR}; }
   .header { color: white; padding: 20px 24px; border-radius: 12px; margin-bottom: 24px; }
-  .cta { display: inline-block; background: #0d9488; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px; margin-top: 20px; }
+  .cta { display: inline-block; background: ${EMAIL_BRAND_COLOR}; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px; margin-top: 20px; }
   .card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin: 16px 0; }
   .label { font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; }
   .value { font-size: 15px; font-weight: 600; color: #0f172a; margin-top: 2px; }
@@ -25,6 +30,19 @@ ${body}
 </html>`.trim()
 }
 
+function emailHeader(title: string, subtitle?: string, bg = EMAIL_BRAND_COLOR): string {
+  const sub = subtitle ? `<p style="margin:4px 0 0;opacity:0.85;font-size:14px;">${subtitle}</p>` : ""
+  return `<div class="header" style="background:${bg}"><h1 style="margin:0;font-size:20px;">${title}</h1>${sub}</div>`
+}
+
+function emailFooter(marginTop = "32px"): string {
+  return `<p style="font-size:12px;color:#94a3b8;margin-top:${marginTop};">${COMPANY_ADDRESS}</p>`
+}
+
+function emailCard(label: string, value: string, extra = ""): string {
+  return `<div class="card"><div class="label">${label}</div><div class="value">${value}</div>${extra}</div>`
+}
+
 // ─── Verification email ───────────────────────────────────────────────────────
 
 type VerificationEmailData = { email: string; verifyUrl: string }
@@ -32,15 +50,12 @@ type VerificationEmailData = { email: string; verifyUrl: string }
 export function verificationEmail(data: VerificationEmailData): string {
   const { verifyUrl } = data
   return emailShell(`
-  <div class="header" style="background:#0d9488">
-    <h1 style="margin:0;font-size:20px;">Verify your email address</h1>
-    <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">${BRAND_NAME}</p>
-  </div>
+  ${emailHeader("Verify your email address", BRAND_NAME)}
   <p>Hello,</p>
   <p>Thank you for registering. Please verify your email address by clicking the button below. This link expires in 24 hours.</p>
   <a href="${verifyUrl}" class="cta">Verify my email</a>
   <p style="margin-top:24px;font-size:13px;color:#64748b;">If you did not create an account, you can safely ignore this email.</p>
-  <p style="font-size:12px;color:#94a3b8;margin-top:32px;">${COMPANY_ADDRESS}</p>
+  ${emailFooter()}
 `)
 }
 
@@ -51,15 +66,12 @@ type PasswordResetEmailData = { resetUrl: string }
 export function passwordResetEmail(data: PasswordResetEmailData): string {
   const { resetUrl } = data
   return emailShell(`
-  <div class="header" style="background:#0d9488">
-    <h1 style="margin:0;font-size:20px;">Reset your password</h1>
-    <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">${BRAND_NAME}</p>
-  </div>
+  ${emailHeader("Reset your password", BRAND_NAME)}
   <p>Hello,</p>
   <p>We received a request to reset your password. Click the button below — the link expires in 1 hour.</p>
   <a href="${resetUrl}" class="cta">Reset my password</a>
   <p style="margin-top:24px;font-size:13px;color:#64748b;">If you did not request this, you can safely ignore this email. Your password will not change.</p>
-  <p style="font-size:12px;color:#94a3b8;margin-top:32px;">${COMPANY_ADDRESS}</p>
+  ${emailFooter()}
 `)
 }
 
@@ -77,25 +89,16 @@ export function bookingRequestEmail(data: BookingRequestData): string {
   const greeting = clientName ? `Hi ${clientName},` : "Hello,"
   const timeLabel = preferredTime ? ` (${preferredTime})` : ""
   const dateBlock = preferredDate
-    ? `<div class="card">
-        <div style="font-size:12px;color:#64748b;text-transform:uppercase;letter-spacing:0.05em;">Preferred date &amp; time</div>
-        <div style="font-size:15px;font-weight:600;color:#0f172a;margin-top:2px;">${preferredDate}${timeLabel}</div>
-       </div>`
+    ? emailCard("Preferred date &amp; time", `${preferredDate}${timeLabel}`)
     : ""
   return emailShell(`
-  <div class="header" style="background:#0d9488">
-    <h1 style="margin:0;font-size:18px;">Booking request received</h1>
-    <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">${BRAND_NAME} Portal</p>
-  </div>
+  ${emailHeader("Booking request received", `${BRAND_NAME} Portal`, EMAIL_BRAND_COLOR)}
   <p>${greeting}</p>
   <p>We received your booking request for <strong>${serviceName}</strong>. We'll confirm within 24 hours.</p>
-  <div class="card">
-    <div class="label">Service</div>
-    <div class="value">${serviceName}</div>
-  </div>
+  ${emailCard("Service", serviceName)}
   ${dateBlock}
   <p style="font-size:13px;color:#64748b;margin-top:16px;">If you have any questions, simply reply to this email.</p>
-  <p style="font-size:12px;color:#94a3b8;margin-top:32px;">${COMPANY_ADDRESS}</p>
+  ${emailFooter()}
 `)
 }
 
@@ -109,10 +112,7 @@ export function welcomeEmail(data: WelcomeEmailData): string {
   const dashboardUrl = `${SITE_URL}/dashboard`
 
   return emailShell(`
-  <div class="header" style="background:#0d9488">
-    <h1 style="margin:0;font-size:20px;">Welcome to ${BRAND_NAME}</h1>
-    <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">Your program starts here</p>
-  </div>
+  ${emailHeader(`Welcome to ${BRAND_NAME}`, "Your program starts here")}
 
   <p>Hello ${displayName},</p>
 
@@ -127,7 +127,7 @@ export function welcomeEmail(data: WelcomeEmailData): string {
 
   <p style="margin-top:24px;font-size:13px;color:#64748b;">If you have any questions, simply reply to this email. We respond within 24 hours.</p>
 
-  <p style="font-size:12px;color:#94a3b8;margin-top:32px;">${COMPANY_ADDRESS}</p>
+  ${emailFooter()}
 `)
 }
 
@@ -142,24 +142,11 @@ export function newUserAlertEmail(data: NewUserAlertData): string {
   const joinedAt = createdAt.toISOString().replace("T", " ").slice(0, 16) + " UTC"
 
   return emailShell(`
-  <div class="header" style="background:#1e293b;padding:16px 24px">
-    <h1 style="margin:0;font-size:16px;">New client registered</h1>
-  </div>
+  ${emailHeader("New client registered", undefined, EMAIL_ADMIN_COLOR)}
 
-  <div class="card">
-    <div class="label">Name</div>
-    <div class="value">${displayName}</div>
-  </div>
-
-  <div class="card">
-    <div class="label">Email</div>
-    <div class="value">${email}</div>
-  </div>
-
-  <div class="card">
-    <div class="label">Registered at</div>
-    <div class="value">${joinedAt}</div>
-  </div>
+  ${emailCard("Name", displayName)}
+  ${emailCard("Email", email)}
+  ${emailCard("Registered at", joinedAt)}
 
   <a href="${adminUrl}" class="cta">View in admin panel</a>
 `)
@@ -178,7 +165,7 @@ type BookingStatusData = {
 export function bookingStatusEmail(data: BookingStatusData): string {
   const { clientName, serviceName, status, preferredDate, preferredTime } = data
   const isConfirmed = status === "confirmed"
-  const headerBg = isConfirmed ? "#0d9488" : "#64748b"
+  const headerBg = isConfirmed ? EMAIL_BRAND_COLOR : "#64748b"
   const headingText = isConfirmed ? "Your booking has been confirmed" : "Your booking has been cancelled"
   const bodyText = isConfirmed
     ? "Great news — your booking has been confirmed. We look forward to seeing you."
@@ -187,22 +174,15 @@ export function bookingStatusEmail(data: BookingStatusData): string {
   const greeting = clientName ? `Hi ${clientName},` : "Hello,"
 
   return emailShell(`
-  <div class="header" style="background:${headerBg}">
-    <h1 style="margin:0;font-size:18px;">${headingText}</h1>
-    <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">${BRAND_NAME} Portal</p>
-  </div>
+  ${emailHeader(headingText, `${BRAND_NAME} Portal`, headerBg)}
 
   <p>${greeting}</p>
   <p>${bodyText}</p>
 
-  <div class="card">
-    <div class="label">Service</div>
-    <div class="value">${serviceName}</div>
-  </div>
+  ${emailCard("Service", serviceName)}
+  ${preferredDate ? emailCard("Preferred date &amp; time", `${preferredDate}${timeLabel}`) : ""}
 
-  ${preferredDate ? `<div class="card"><div class="label">Preferred date &amp; time</div><div class="value">${preferredDate}${timeLabel}</div></div>` : ""}
-
-  <p style="font-size:12px;color:#94a3b8;margin-top:24px;">${COMPANY_ADDRESS}</p>
+  ${emailFooter("24px")}
 `)
 }
 
@@ -222,23 +202,12 @@ export function newMessageEmail(data: NewMessageData): string {
   const subjectLine = threadSubject ?? "No subject"
 
   return emailShell(`
-  <div class="header" style="background:#0d9488">
-    <h1 style="margin:0;font-size:18px;">New Message</h1>
-    <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">${BRAND_NAME} Portal</p>
-  </div>
+  ${emailHeader("New Message", `${BRAND_NAME} Portal`)}
 
   <p>You have received a new message.</p>
 
-  <div class="card">
-    <div class="label">From</div>
-    <div class="value">${displayName}</div>
-    <div style="font-size:13px;color:#64748b;margin-top:2px;">${senderEmail}</div>
-  </div>
-
-  <div class="card">
-    <div class="label">Subject</div>
-    <div class="value">${subjectLine}</div>
-  </div>
+  ${emailCard("From", displayName, `<div style="font-size:13px;color:#64748b;margin-top:2px;">${senderEmail}</div>`)}
+  ${emailCard("Subject", subjectLine)}
 
   <div class="card">
     <div class="label">Message</div>
@@ -258,10 +227,7 @@ type InviteEmailData = { name: string; registerUrl: string; practitionerName: st
 export function inviteEmail(data: InviteEmailData): string {
   const { name, registerUrl, practitionerName } = data
   return emailShell(`
-  <div class="header" style="background:#0d9488">
-    <h1 style="margin:0;font-size:20px;">${EMAIL_SUBJECT_INVITE}</h1>
-    <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">Personal message from ${practitionerName}</p>
-  </div>
+  ${emailHeader(EMAIL_SUBJECT_INVITE, `Personal message from ${practitionerName}`)}
   <p>Hi ${name},</p>
   <p>Thank you for reaching out. I have reviewed your situation and I would like to personally invite you to join the ${BRAND_NAME} portal.</p>
   <p>The portal is where we work together — you will be able to track your progress, access your personalised program, and stay in touch with me directly.</p>
@@ -291,30 +257,13 @@ export function bookingNotificationEmail(data: BookingNotificationData): string 
   const timeLabel = preferredTime ? ` (${preferredTime})` : ""
 
   return emailShell(`
-  <div class="header" style="background:#0d9488">
-    <h1 style="margin:0;font-size:18px;">New Booking Request</h1>
-    <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">${BRAND_NAME} Portal</p>
-  </div>
+  ${emailHeader("New Booking Request", `${BRAND_NAME} Portal`)}
 
   <p>A new booking request has been submitted and requires confirmation.</p>
 
-  <div class="card">
-    <div class="label">Client</div>
-    <div class="value">${displayName}</div>
-    <div style="font-size:13px;color:#64748b;margin-top:2px;">${clientEmail}</div>
-  </div>
-
-  <div class="card">
-    <div class="label">Service</div>
-    <div class="value">${service.name}</div>
-    ${service.durationMinutes ? `<div style="font-size:13px;color:#64748b;margin-top:2px;">${service.durationMinutes} min</div>` : ""}
-  </div>
-
-  <div class="card">
-    <div class="label">Preferred date &amp; time</div>
-    <div class="value">${preferredDate ?? "Not specified"}${timeLabel}</div>
-  </div>
-
+  ${emailCard("Client", displayName, `<div style="font-size:13px;color:#64748b;margin-top:2px;">${clientEmail}</div>`)}
+  ${emailCard("Service", service.name, service.durationMinutes ? `<div style="font-size:13px;color:#64748b;margin-top:2px;">${service.durationMinutes} min</div>` : "")}
+  ${emailCard("Preferred date &amp; time", `${preferredDate ?? "Not specified"}${timeLabel}`)}
   ${notes ? `<div class="card"><div class="label">Notes from client</div><div style="margin-top:6px;font-size:14px;">${notes}</div></div>` : ""}
 
   <p style="font-size:13px;color:#64748b;">Booking ID: ${bookingId}</p>
@@ -336,16 +285,13 @@ export function practitionerNoteEmail(data: PractitionerNoteEmailData): string {
   const { clientName, checkInDate, note, portalUrl } = data
   const dateStr = checkInDate.toLocaleDateString("en-CH", { day: "numeric", month: "long", year: "numeric" })
   return emailShell(`
-  <div class="header" style="background:#0d9488">
-    <h1 style="margin:0;font-size:20px;">A note from your practitioner</h1>
-    <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">${BRAND_NAME}</p>
-  </div>
+  ${emailHeader("A note from your practitioner", BRAND_NAME)}
   <p>Hello ${clientName},</p>
   <p>Your practitioner left a note on your check-in from <strong>${dateStr}</strong>:</p>
   <div class="note">${note.replace(/\n/g, "<br>")}</div>
   <a href="${portalUrl}" class="cta">View in portal</a>
-  <p style="font-size:12px;color:#94a3b8;margin-top:32px;">${COMPANY_ADDRESS}</p>
-`, `  .note { background: #f0fdfa; border-left: 3px solid #0d9488; padding: 16px; border-radius: 0 8px 8px 0; margin: 20px 0; font-style: italic; color: #134e4a; line-height: 1.6; }`)
+  ${emailFooter()}
+`, `  .note { background: #f0fdfa; border-left: 3px solid ${EMAIL_BRAND_COLOR}; padding: 16px; border-radius: 0 8px 8px 0; margin: 20px 0; font-style: italic; color: #134e4a; line-height: 1.6; }`)
 }
 
 // ─── Practitioner clinical alert ──────────────────────────────────────────────
@@ -361,21 +307,17 @@ export type PractitionerAlertEmailData = {
 
 export function practitionerAlertEmail(data: PractitionerAlertEmailData): string {
   const { clientName, clientEmail, alertTitle, alertMessage, severity, adminUrl } = data
-  const severityColor = severity === "high" ? "#dc2626" : severity === "medium" ? "#d97706" : "#0d9488"
+  const severityColor = severity === "high" ? "#dc2626" : severity === "medium" ? "#d97706" : EMAIL_BRAND_COLOR
   const severityBg = severity === "high" ? "#fef2f2" : severity === "medium" ? "#fffbeb" : "#f0fdfa"
   const severityLabel = formatEnumValue(severity)
 
   return emailShell(`
-  <div class="header" style="background:#1e293b;padding:16px 24px">
+  <div class="header" style="background:${EMAIL_ADMIN_COLOR};padding:16px 24px">
     <h1 style="margin:0;font-size:16px;">Clinical alert — ${clientName}</h1>
     <span style="display:inline-block;background:${severityBg};color:${severityColor};border:1px solid ${severityColor};border-radius:9999px;padding:2px 10px;font-size:12px;font-weight:600;margin-top:6px;">${severityLabel} severity</span>
   </div>
 
-  <div class="card">
-    <div class="label">Client</div>
-    <div class="value">${clientName}</div>
-    <div style="font-size:13px;color:#64748b;margin-top:2px;">${clientEmail}</div>
-  </div>
+  ${emailCard("Client", clientName, `<div style="font-size:13px;color:#64748b;margin-top:2px;">${clientEmail}</div>`)}
 
   <div style="background:${severityBg};border-left:4px solid ${severityColor};padding:16px;border-radius:0 8px 8px 0;margin:20px 0;">
     <p style="font-weight:600;margin:0 0 6px;color:${severityColor};">${alertTitle}</p>
@@ -384,7 +326,7 @@ export function practitionerAlertEmail(data: PractitionerAlertEmailData): string
 
   <a href="${adminUrl}" class="cta">View client in admin panel</a>
 
-  <p style="font-size:12px;color:#94a3b8;margin-top:24px;">${COMPANY_ADDRESS}</p>
+  ${emailFooter("24px")}
 `)
 }
 
@@ -441,10 +383,7 @@ export function practitionerWeeklyDigestEmail(data: PractitionerWeeklyDigestData
   }).join("")
 
   return emailShell(`
-  <div class="header" style="background:#1e293b">
-    <h1 style="margin:0;font-size:18px;">Weekly client overview</h1>
-    <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">${weekStart} – ${weekEnd}</p>
-  </div>
+  ${emailHeader("Weekly client overview", `${weekStart} – ${weekEnd}`, EMAIL_ADMIN_COLOR)}
 
   <p style="color:#64748b;font-size:14px;">${clients.length} client${clients.length !== 1 ? "s" : ""} checked in this week.</p>
 
@@ -452,7 +391,7 @@ export function practitionerWeeklyDigestEmail(data: PractitionerWeeklyDigestData
 
   <a href="${adminUrl}" class="cta">Open admin panel</a>
 
-  <p style="font-size:12px;color:#94a3b8;margin-top:24px;">${COMPANY_ADDRESS}</p>
+  ${emailFooter("24px")}
 `)
 }
 
@@ -484,7 +423,7 @@ export function missedCheckInDigestEmail(data: MissedCheckInDigestData): string 
     .join("")
 
   return emailShell(`
-  <div class="header" style="background:#1e293b;padding:16px 24px">
+  <div class="header" style="background:${EMAIL_ADMIN_COLOR};padding:16px 24px">
     <h1 style="margin:0;font-size:16px;">Missed check-ins — ${clients.length} client${clients.length !== 1 ? "s" : ""}</h1>
   </div>
 
@@ -496,7 +435,7 @@ export function missedCheckInDigestEmail(data: MissedCheckInDigestData): string 
 
   <a href="${adminUrl}" class="cta">Open admin panel</a>
 
-  <p style="font-size:12px;color:#94a3b8;margin-top:24px;">${COMPANY_ADDRESS}</p>
+  ${emailFooter("24px")}
 `)
 }
 
@@ -515,15 +454,12 @@ export function checkInReminderEmail(data: CheckInReminderData): string {
     ? `You're on a ${currentStreak}-day streak — keep it going!`
     : "Start your day with a quick check-in."
   return emailShell(`
-  <div class="header" style="background:#0d9488">
-    <h1 style="margin:0;font-size:20px;">Time for your daily check-in</h1>
-    <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">${BRAND_NAME}</p>
-  </div>
+  ${emailHeader("Time for your daily check-in", BRAND_NAME)}
   <p>Hello ${name},</p>
   <p>${streakMsg} Your check-in takes less than 2 minutes and helps your practitioner track your progress.</p>
   <a href="${portalUrl}/check-in" class="cta">Check in now</a>
   <p style="margin-top:24px;font-size:13px;color:#64748b;">To turn off reminders, visit <a href="${portalUrl}/settings">Settings</a> in the portal.</p>
-  <p style="font-size:12px;color:#94a3b8;margin-top:32px;">${COMPANY_ADDRESS}</p>
+  ${emailFooter()}
 `)
 }
 
@@ -550,13 +486,10 @@ export function weeklyReportEmail(data: WeeklyReportData): string {
     ? `<li>⚠️ <strong>${pemEpisodes} PEM episode(s)</strong> this week — discuss pacing with your practitioner</li>`
     : ""
   const winNote = topWin
-    ? `<div style="margin-top:16px;padding:12px 16px;background:#f0fdf4;border-left:3px solid #0d9488;border-radius:4px;"><p style="margin:0;font-size:14px;color:#065f46;">✓ <strong>Win of the week:</strong> ${topWin}</p></div>`
+    ? `<div style="margin-top:16px;padding:12px 16px;background:#f0fdf4;border-left:3px solid ${EMAIL_BRAND_COLOR};border-radius:4px;"><p style="margin:0;font-size:14px;color:#065f46;">✓ <strong>Win of the week:</strong> ${topWin}</p></div>`
     : ""
   return emailShell(`
-  <div class="header" style="background:#0d9488">
-    <h1 style="margin:0;font-size:20px;">Your weekly summary</h1>
-    <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">${weekStart} – ${weekEnd}</p>
-  </div>
+  ${emailHeader("Your weekly summary", `${weekStart} – ${weekEnd}`)}
   <p>Hello ${name}, here's how your week went:</p>
   <div class="stats">
     <div class="stat">
@@ -580,10 +513,10 @@ export function weeklyReportEmail(data: WeeklyReportData): string {
   </ul>
   ${winNote}
   <a href="${portalUrl}/dashboard" class="cta">View full history</a>
-  <p style="font-size:12px;color:#94a3b8;margin-top:32px;">${COMPANY_ADDRESS}</p>
+  ${emailFooter()}
 `, `  .stats { display: flex; gap: 12px; margin: 20px 0; flex-wrap: wrap; }
   .stat { flex: 1; min-width: 120px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; text-align: center; }
-  .stat-value { font-size: 24px; font-weight: 700; color: #0d9488; }
+  .stat-value { font-size: 24px; font-weight: 700; color: ${EMAIL_BRAND_COLOR}; }
   .stat-label { font-size: 12px; color: #64748b; margin-top: 2px; }`)
 }
 
@@ -601,7 +534,7 @@ export function firstCheckInAlertEmail(data: FirstCheckInAlertData): string {
   const adminUrl = `${SITE_URL}/admin/clients/${clientId}`
 
   return emailShell(`
-  <div class="header" style="background:#1e293b;padding:16px 24px">
+  <div class="header" style="background:${EMAIL_ADMIN_COLOR};padding:16px 24px">
     <h1 style="margin:0;font-size:16px;">First check-in submitted</h1>
     <p style="margin:4px 0 0;opacity:0.85;font-size:14px;">${BRAND_NAME}</p>
   </div>
@@ -609,14 +542,10 @@ export function firstCheckInAlertEmail(data: FirstCheckInAlertData): string {
   <p>Your client <strong>${displayName}</strong> has just completed their <strong>first check-in</strong>.</p>
   <p style="color:#64748b;font-size:14px;">This is a great moment to review their initial data and reach out to welcome them to the programme.</p>
 
-  <div class="card">
-    <div class="label">Client</div>
-    <div class="value">${displayName}</div>
-    <div style="font-size:13px;color:#64748b;margin-top:2px;">${clientEmail}</div>
-  </div>
+  ${emailCard("Client", displayName, `<div style="font-size:13px;color:#64748b;margin-top:2px;">${clientEmail}</div>`)}
 
   <a href="${adminUrl}" class="cta">View client in admin panel</a>
 
-  <p style="font-size:12px;color:#94a3b8;margin-top:24px;">${COMPANY_ADDRESS}</p>
+  ${emailFooter("24px")}
 `)
 }
