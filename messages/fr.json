@@ -707,7 +707,9 @@
       "moodLow": "Bas",
       "moodVeryLow": "Très bas",
       "avgSleep": "Sommeil moy.",
-      "avgStress": "Stress moy."
+      "avgStress": "Stress moy.",
+      "noRecentCheckIns": "Aucun check-in ces 90 derniers jours. Commencez à suivre votre énergie et votre humeur pour voir vos tendances ici.",
+      "doCheckIn": "Faire un check-in"
     },
     "medications": {
       "title": "Médicaments",

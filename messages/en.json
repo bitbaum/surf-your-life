@@ -707,7 +707,9 @@
       "moodLow": "Low",
       "moodVeryLow": "Very low",
       "avgSleep": "Avg sleep",
-      "avgStress": "Avg stress"
+      "avgStress": "Avg stress",
+      "noRecentCheckIns": "No check-ins in the last 90 days. Start tracking your energy, mood, and sleep to see your trends here.",
+      "doCheckIn": "Do a check-in"
     },
     "medications": {
       "title": "Medications",

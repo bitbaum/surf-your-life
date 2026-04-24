@@ -140,7 +140,16 @@ export default async function ProgressPage({ params }: { params: Promise<{ local
       )}
 
       {/* 90-day summary */}
-      {totalCheckIns > 0 && (
+      {totalCheckIns === 0 ? (
+        <Card className="mt-6">
+          <CardContent className="py-12">
+            <EmptyState
+              message={t("noRecentCheckIns")}
+              action={<Link href="/check-in" className="text-sm font-medium text-teal-600 hover:text-teal-700 transition-colors">{t("doCheckIn")} →</Link>}
+            />
+          </CardContent>
+        </Card>
+      ) : (
         <Card className="mt-6">
           <CardHeader className="pb-3">
             <CardTitle className="text-base">{t("ninetyDaySummary")}</CardTitle>
@@ -189,3 +198,4 @@ export default async function ProgressPage({ params }: { params: Promise<{ local
     </div>
   )
 }
+

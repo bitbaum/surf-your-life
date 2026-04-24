@@ -707,7 +707,9 @@
       "moodLow": "Niedrig",
       "moodVeryLow": "Sehr niedrig",
       "avgSleep": "Ø Schlaf",
-      "avgStress": "Ø Stress"
+      "avgStress": "Ø Stress",
+      "noRecentCheckIns": "Keine Check-ins in den letzten 90 Tagen. Beginne jetzt mit dem Tracken, um Trends zu sehen.",
+      "doCheckIn": "Check-in durchführen"
     },
     "medications": {
       "title": "Medikamente",
