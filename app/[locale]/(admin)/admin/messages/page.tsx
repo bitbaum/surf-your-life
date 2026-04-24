@@ -73,7 +73,7 @@ export default async function AdminMessagesPage({
                 {t("clearFilter")}
               </Link>
             )}
-            <Link href={clientIdParam ? `/admin/messages/new?client=${clientIdParam}` : "/admin/messages/new"}>
+            <Link href={clientIdParam ? `/admin/messages/new?clientId=${clientIdParam}` : "/admin/messages/new"}>
               <Button>{t("newConversation")}</Button>
             </Link>
           </div>
