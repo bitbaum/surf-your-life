@@ -1,7 +1,7 @@
 "use client"
 
 import { useTranslations } from "next-intl"
-import { ACTIVITY_LEVELS, PEM_SEVERITY_SCALE, CHIP_SELECTED, CHIP_UNSELECTED } from "@/lib/constants"
+import { ACTIVITY_LEVELS, PEM_SEVERITY_SCALE, CHIP_SELECTED, CHIP_UNSELECTED, COMPACT_LABEL_CLS } from "@/lib/constants"
 
 interface Props {
   activityLevel: string | null
@@ -23,7 +23,7 @@ export function EditActivityPemSection({
   return (
     <>
       <div>
-        <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">
+        <p className={`${COMPACT_LABEL_CLS} mb-2`}>
           {t("editActivityLabel")} <span className="text-slate-400 font-normal normal-case">{t("editOptional")}</span>
         </p>
         <div className="flex gap-2 flex-wrap">
@@ -44,7 +44,7 @@ export function EditActivityPemSection({
       </div>
 
       <div>
-        <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">{t("editPemLabel")}</p>
+        <p className={`${COMPACT_LABEL_CLS} mb-2`}>{t("editPemLabel")}</p>
         <label className="flex items-center gap-2 cursor-pointer">
           <input
             type="checkbox"

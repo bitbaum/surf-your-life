@@ -1,7 +1,7 @@
 "use client"
 
 import { useTranslations } from "next-intl"
-import { SYMPTOM_SCALE } from "@/lib/constants"
+import { SYMPTOM_SCALE, COMPACT_LABEL_CLS } from "@/lib/constants"
 
 interface Props {
   fatigue: number | null
@@ -27,7 +27,7 @@ export function EditSymptomsSection({ fatigue, setFatigue, brainFog, setBrainFog
 
   return (
     <div>
-      <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">
+      <p className={`${COMPACT_LABEL_CLS} mb-1`}>
         {t("editSymptomsLabel")} <span className="text-slate-400 font-normal normal-case">{t("editOptional")}</span>
       </p>
       <p className="text-xs text-slate-400 mb-3">{t("editSymptomsHint")}</p>

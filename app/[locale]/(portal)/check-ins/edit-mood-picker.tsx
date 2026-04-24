@@ -1,7 +1,7 @@
 "use client"
 
 import { useTranslations } from "next-intl"
-import { MOODS, CHIP_SELECTED, CHIP_UNSELECTED } from "@/lib/constants"
+import { MOODS, CHIP_SELECTED, CHIP_UNSELECTED, COMPACT_LABEL_CLS } from "@/lib/constants"
 
 interface Props {
   mood: string
@@ -21,7 +21,7 @@ export function EditMoodPicker({ mood, onChange }: Props) {
 
   return (
     <div>
-      <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">{t("editMood")}</p>
+      <p className={`${COMPACT_LABEL_CLS} mb-2`}>{t("editMood")}</p>
       <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
         {MOODS.map((m) => (
           <button

@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
-import { ENERGY_SCALE } from "@/lib/constants"
+import { ENERGY_SCALE, COMPACT_LABEL_CLS } from "@/lib/constants"
 import type { CheckIn } from "@/lib/db/schema"
 import { EditMoodPicker } from "./edit-mood-picker"
 import { EditSleepSection } from "./edit-sleep-section"
@@ -88,7 +88,7 @@ export function EditCheckInModal({ checkIn, checkInId, onSave, onCancel }: EditC
       <EditMoodPicker mood={form.mood} onChange={set("mood") as (v: string) => void} />
 
       <div>
-        <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">
+        <p className={`${COMPACT_LABEL_CLS} mb-2`}>
           {t("editEnergy", { n: form.energy })}
         </p>
         <div className="flex items-center gap-4">
@@ -109,7 +109,7 @@ export function EditCheckInModal({ checkIn, checkInId, onSave, onCancel }: EditC
       <EditActivityPemSection activityLevel={form.activityLevel} setActivityLevel={set("activityLevel")} pemFlag={form.pemFlag} setPemFlag={set("pemFlag")} pemSeverity={form.pemSeverity} setPemSeverity={set("pemSeverity")} />
 
       <div>
-        <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">{t("editOrthostaticLabel")}</p>
+        <p className={`${COMPACT_LABEL_CLS} mb-2`}>{t("editOrthostaticLabel")}</p>
         <label className="flex items-center gap-2 cursor-pointer">
           <input
             type="checkbox"

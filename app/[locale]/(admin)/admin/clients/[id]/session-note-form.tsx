@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { DOC_TYPE_I18N_KEYS, DOC_TYPE_BADGE_CLASSES, FIELD_MAX_TITLE, CHIP_UNSELECTED } from "@/lib/constants"
+import { DOC_TYPE_I18N_KEYS, DOC_TYPE_BADGE_CLASSES, FIELD_MAX_TITLE, CHIP_UNSELECTED, COMPACT_LABEL_CLS } from "@/lib/constants"
 import { documentTypeEnum } from "@/lib/db/schema"
 
 // Practitioners can create these types; "upload" is reserved for client-submitted documents
@@ -57,13 +57,13 @@ export function SessionNoteForm({ clientId, onSaved, onCancel }: Props) {
         ))}
       </div>
       <div>
-        <label className="text-xs font-medium text-slate-500 uppercase tracking-wide block mb-1">
+        <label className={`${COMPACT_LABEL_CLS} block mb-1`}>
           {t("titleLabel")} <span className="text-slate-400 font-normal normal-case">{t("optional")}</span>
         </label>
         <Input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder={t("titlePlaceholder")} maxLength={FIELD_MAX_TITLE} />
       </div>
       <div>
-        <label className="text-xs font-medium text-slate-500 uppercase tracking-wide block mb-1">
+        <label className={`${COMPACT_LABEL_CLS} block mb-1`}>
           {t("contentLabel")} <span className="text-red-400">*</span>
         </label>
         <Textarea value={content} onChange={(e) => setContent(e.target.value)} placeholder={t("contentPlaceholder")} rows={5} required />

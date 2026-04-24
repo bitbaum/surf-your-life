@@ -231,6 +231,9 @@ export const ALERT_SEVERITY_ORDER = ["high", "medium", "low"] as const
 export const CHIP_SELECTED = "border-teal-500 bg-teal-50 text-teal-700"
 export const CHIP_UNSELECTED = "border-slate-200 text-slate-600 hover:border-slate-300"
 
+// Compact uppercase section label base classes — append margin (mb-1, mb-1.5, mb-2) at each use site
+export const COMPACT_LABEL_CLS = "text-xs font-medium text-slate-500 uppercase tracking-wide"
+
 // Enrollment status badge classes — used by portal program page and admin enrollment-status component
 export const ENROLLMENT_STATUS_BADGE: Record<string, string> = {
   active:    "bg-teal-50 text-teal-700 border border-teal-200",
