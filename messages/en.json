@@ -1001,7 +1001,10 @@
         "title": "Check-ins",
         "description": "All check-ins for {name} · {count} total",
         "backLink": "← {name}"
-      }
+      },
+      "sortJoined": "Newest first",
+      "sortCheckInDesc": "Most active",
+      "sortCheckInAsc": "Needs attention"
     },
     "leads": {
       "statusNew": "New",

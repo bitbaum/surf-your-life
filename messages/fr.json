@@ -1019,7 +1019,10 @@
         "title": "Check-ins",
         "description": "Tous les check-ins de {name} · {count} au total",
         "backLink": "← {name}"
-      }
+      },
+      "sortJoined": "Plus récents",
+      "sortCheckInDesc": "Plus actifs",
+      "sortCheckInAsc": "Besoin d'attention"
     },
     "leads": {
       "statusNew": "Nouveau",

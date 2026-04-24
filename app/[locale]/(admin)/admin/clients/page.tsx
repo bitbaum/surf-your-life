@@ -1,6 +1,6 @@
 import { db } from "@/lib/db"
 import { users, checkIns, profiles, clientAlerts } from "@/lib/db/schema"
-import { eq, desc, count, or, ilike, and, max, inArray } from "drizzle-orm"
+import { eq, desc, count, or, ilike, and, max, inArray, sql } from "drizzle-orm"
 import { CLIENT_ROLE } from "@/lib/domain/auth"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
@@ -8,22 +8,30 @@ import { Link } from "@/i18n/navigation"
 import { formatDate, formatEnumValue, computeTotalPages, parsePage, computeOffset } from "@/lib/utils"
 import { PAGINATION_DEFAULT } from "@/lib/constants"
 import { ClientSearch } from "./client-search"
+import { FilterTabs } from "@/components/ui/filter-tabs"
 import { Suspense } from "react"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { Pagination } from "@/components/ui/pagination"
+
+type SortOption = "joined" | "checkin_desc" | "checkin_asc"
+const SORT_OPTIONS: SortOption[] = ["joined", "checkin_desc", "checkin_asc"]
+function isValidSort(v: string | undefined): v is SortOption {
+  return SORT_OPTIONS.includes(v as SortOption)
+}
 
 export default async function ClientsPage({
   params,
   searchParams,
 }: {
   params: Promise<{ locale: string }>
-  searchParams: Promise<{ page?: string; q?: string }>
+  searchParams: Promise<{ page?: string; q?: string; sort?: string }>
 }) {
   const { locale } = await params
   setRequestLocale(locale)
   const t = await getTranslations("admin.clients")
 
-  const { page: pageParam, q } = await searchParams
+  const { page: pageParam, q, sort: sortParam } = await searchParams
+  const sort: SortOption = isValidSort(sortParam) ? sortParam : "joined"
   const page = parsePage(pageParam)
   const offset = computeOffset(page, PAGINATION_DEFAULT)
 
@@ -52,7 +60,13 @@ export default async function ClientsPage({
       .leftJoin(checkIns, eq(checkIns.userId, users.id))
       .where(whereClause)
       .groupBy(users.id, users.name, users.email, users.createdAt, profiles.mainConcern)
-      .orderBy(desc(users.createdAt))
+      .orderBy(
+        sort === "checkin_desc"
+          ? sql`max(${checkIns.createdAt}) DESC NULLS LAST`
+          : sort === "checkin_asc"
+            ? sql`max(${checkIns.createdAt}) ASC NULLS LAST`
+            : desc(users.createdAt)
+      )
       .limit(PAGINATION_DEFAULT)
       .offset(offset),
     db.select({ count: count() }).from(users).where(whereClause),
@@ -76,6 +90,14 @@ export default async function ClientsPage({
     const params = new URLSearchParams()
     params.set("page", String(p))
     if (q?.trim()) params.set("q", q.trim())
+    if (sort !== "joined") params.set("sort", sort)
+    return `/admin/clients?${params.toString()}`
+  }
+
+  function sortLink(s: SortOption) {
+    const params = new URLSearchParams()
+    if (q?.trim()) params.set("q", q.trim())
+    if (s !== "joined") params.set("sort", s)
     return `/admin/clients?${params.toString()}`
   }
 
@@ -100,6 +122,15 @@ export default async function ClientsPage({
       <Card>
         <CardHeader><CardTitle>{t("allClients")}</CardTitle></CardHeader>
         <CardContent>
+          <FilterTabs
+            tabs={[
+              { value: "joined" as SortOption, label: t("sortJoined") },
+              { value: "checkin_desc" as SortOption, label: t("sortCheckInDesc") },
+              { value: "checkin_asc" as SortOption, label: t("sortCheckInAsc") },
+            ]}
+            active={sort}
+            href={sortLink}
+          />
           <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
