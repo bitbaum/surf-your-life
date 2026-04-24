@@ -109,6 +109,14 @@ export const API_ERR_SERVICE_UNAVAILABLE = "Service not available"
 export const API_ERR_BOOKING_DUPLICATE = "You already have an active booking for this service"
 export const API_ERR_SLOT_TAKEN = "This time slot is no longer available. Please choose another."
 export const API_ERR_CHECKIN_DUPLICATE = "Already checked in today"
+export const API_ERR_BOOKING_ALREADY_CANCELLED = "Already cancelled"
+export const API_ERR_EMAIL_TAKEN = "An account with this email already exists"
+export const API_ERR_EMAIL_ALREADY_VERIFIED = "Email already verified"
+export const API_ERR_INVALID_TOKEN = "Invalid or expired token"
+export const API_ERR_PASSWORD_REQUIRED = "Password required"
+export const API_ERR_NO_PASSWORD_AUTH = "Password authentication not available"
+export const API_ERR_WRONG_PASSWORD = "Incorrect password"
+export const API_ERR_SELF_ROLE_CHANGE = "Cannot change your own role"
 
 // Time constants (milliseconds)
 export const HOUR_MS = 60 * 60 * 1000

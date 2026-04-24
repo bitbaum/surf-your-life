@@ -3,7 +3,7 @@ import { z } from "zod"
 import { eq, and, gt } from "drizzle-orm"
 import { db } from "@/lib/db"
 import { users, verificationTokens } from "@/lib/db/schema"
-import { API_ERR_INVALID_INPUT } from "@/lib/constants"
+import { API_ERR_INVALID_INPUT, API_ERR_INVALID_TOKEN } from "@/lib/constants"
 
 // POST /api/auth/verify-email — consume token and mark email as verified
 const verifySchema = z.object({
@@ -30,7 +30,7 @@ export async function POST(req: Request) {
   })
 
   if (!vt) {
-    return NextResponse.json({ success: false, error: "Invalid or expired link" }, { status: 400 })
+    return NextResponse.json({ success: false, error: API_ERR_INVALID_TOKEN }, { status: 400 })
   }
 
   await Promise.all([

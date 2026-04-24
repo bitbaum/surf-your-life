@@ -5,7 +5,7 @@ import { users, passwordResetTokens } from "@/lib/db/schema"
 import { eq, and, gt, isNull } from "drizzle-orm"
 import bcrypt from "bcryptjs"
 import { checkRateLimit, ipKey } from "@/lib/rate-limit"
-import { API_ERR_INVALID_INPUT, API_ERR_RATE_LIMITED, BCRYPT_SALT_ROUNDS, PASSWORD_MIN_LENGTH } from "@/lib/constants"
+import { API_ERR_INVALID_INPUT, API_ERR_RATE_LIMITED, BCRYPT_SALT_ROUNDS, PASSWORD_MIN_LENGTH, API_ERR_INVALID_TOKEN } from "@/lib/constants"
 
 const schema = z.object({
   token: z.string().min(1),
@@ -39,7 +39,7 @@ export async function POST(req: Request) {
   })
 
   if (!resetToken) {
-    return NextResponse.json({ success: false, error: "Invalid or expired token" }, { status: 400 })
+    return NextResponse.json({ success: false, error: API_ERR_INVALID_TOKEN }, { status: 400 })
   }
 
   const hash = await bcrypt.hash(password, BCRYPT_SALT_ROUNDS)

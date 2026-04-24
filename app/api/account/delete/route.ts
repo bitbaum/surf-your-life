@@ -16,7 +16,7 @@ import {
   accounts,
 } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
-import { API_ERR_UNAUTHORIZED, API_ERR_NOT_FOUND } from "@/lib/constants"
+import { API_ERR_UNAUTHORIZED, API_ERR_NOT_FOUND, API_ERR_PASSWORD_REQUIRED, API_ERR_NO_PASSWORD_AUTH, API_ERR_WRONG_PASSWORD } from "@/lib/constants"
 
 const deleteSchema = z.object({
   password: z.string().min(1),
@@ -31,7 +31,7 @@ export async function DELETE(req: Request) {
   const body = await req.json()
   const parsed = deleteSchema.safeParse(body)
   if (!parsed.success) {
-    return NextResponse.json({ success: false, error: "Password required" }, { status: 400 })
+    return NextResponse.json({ success: false, error: API_ERR_PASSWORD_REQUIRED }, { status: 400 })
   }
 
   const userId = session.user.id
@@ -43,14 +43,14 @@ export async function DELETE(req: Request) {
 
   if (!user.password) {
     return NextResponse.json(
-      { success: false, error: "Password authentication not available" },
+      { success: false, error: API_ERR_NO_PASSWORD_AUTH },
       { status: 400 }
     )
   }
 
   const valid = await bcrypt.compare(parsed.data.password, user.password)
   if (!valid) {
-    return NextResponse.json({ success: false, error: "Incorrect password" }, { status: 403 })
+    return NextResponse.json({ success: false, error: API_ERR_WRONG_PASSWORD }, { status: 403 })
   }
 
   // Delete in FK-safe order

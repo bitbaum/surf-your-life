@@ -7,7 +7,7 @@ import { users, profiles, verificationTokens } from "@/lib/db/schema"
 import { registerSchema, resolveRole, STAFF_ROLES } from "@/lib/domain/auth"
 import { sendEmail } from "@/lib/email"
 import { welcomeEmail, newUserAlertEmail, verificationEmail } from "@/lib/email/templates"
-import { SITE_URL, DAY_MS, API_ERR_INVALID_INPUT, API_ERR_RATE_LIMITED, BCRYPT_SALT_ROUNDS } from "@/lib/constants"
+import { SITE_URL, DAY_MS, API_ERR_INVALID_INPUT, API_ERR_RATE_LIMITED, BCRYPT_SALT_ROUNDS, API_ERR_EMAIL_TAKEN } from "@/lib/constants"
 import { EMAIL_SUBJECT_VERIFY, EMAIL_SUBJECT_WELCOME } from "@/lib/email/subjects"
 import { checkRateLimit, ipKey } from "@/lib/rate-limit"
 
@@ -35,7 +35,7 @@ export async function POST(req: Request) {
   const existing = await db.query.users.findFirst({ where: eq(users.email, email) })
   if (existing) {
     return NextResponse.json(
-      { success: false, error: "An account with this email already exists" },
+      { success: false, error: API_ERR_EMAIL_TAKEN },
       { status: 409 }
     )
   }

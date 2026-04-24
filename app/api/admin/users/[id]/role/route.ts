@@ -5,7 +5,7 @@ import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { users, roleEnum } from "@/lib/db/schema"
 import { ADMIN_ROLE } from "@/lib/domain/auth"
-import { API_ERR_FORBIDDEN, API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED, API_ERR_NOT_FOUND } from "@/lib/constants"
+import { API_ERR_FORBIDDEN, API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED, API_ERR_NOT_FOUND, API_ERR_SELF_ROLE_CHANGE } from "@/lib/constants"
 
 const bodySchema = z.object({
   role: z.enum(roleEnum.enumValues),
@@ -27,7 +27,7 @@ export async function PATCH(
 
   if (id === session.user.id) {
     return NextResponse.json(
-      { success: false, error: "Cannot change your own role" },
+      { success: false, error: API_ERR_SELF_ROLE_CHANGE },
       { status: 400 }
     )
   }

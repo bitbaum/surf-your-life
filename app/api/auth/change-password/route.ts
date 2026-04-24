@@ -6,7 +6,7 @@ import { db } from "@/lib/db"
 import { users } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { checkRateLimit, ipKey } from "@/lib/rate-limit"
-import { API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED, API_ERR_RATE_LIMITED, BCRYPT_SALT_ROUNDS, PASSWORD_MIN_LENGTH } from "@/lib/constants"
+import { API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED, API_ERR_RATE_LIMITED, BCRYPT_SALT_ROUNDS, PASSWORD_MIN_LENGTH, API_ERR_NO_PASSWORD_AUTH, API_ERR_WRONG_PASSWORD } from "@/lib/constants"
 
 const changePasswordSchema = z.object({
   currentPassword: z.string().min(1),
@@ -39,7 +39,7 @@ export async function POST(req: Request) {
 
   if (!user?.password) {
     return NextResponse.json(
-      { success: false, error: "Password authentication not available for this account" },
+      { success: false, error: API_ERR_NO_PASSWORD_AUTH },
       { status: 400 }
     )
   }
@@ -47,7 +47,7 @@ export async function POST(req: Request) {
   const valid = await bcrypt.compare(parsed.data.currentPassword, user.password)
   if (!valid) {
     return NextResponse.json(
-      { success: false, error: "Current password is incorrect" },
+      { success: false, error: API_ERR_WRONG_PASSWORD },
       { status: 400 }
     )
   }

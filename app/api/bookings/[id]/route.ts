@@ -7,7 +7,7 @@ import { bookings, users } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { sendEmail } from "@/lib/email"
 import { bookingStatusEmail } from "@/lib/email/templates"
-import { API_ERR_FORBIDDEN, API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED, API_ERR_NOT_FOUND } from "@/lib/constants"
+import { API_ERR_FORBIDDEN, API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED, API_ERR_NOT_FOUND, API_ERR_BOOKING_ALREADY_CANCELLED } from "@/lib/constants"
 
 const adminUpdateSchema = z.object({ status: z.enum(["confirmed", "cancelled"]) })
 const clientUpdateSchema = z.object({ status: z.literal("cancelled") })
@@ -48,7 +48,7 @@ export async function PATCH(
       return NextResponse.json({ success: false, error: API_ERR_FORBIDDEN }, { status: 403 })
     }
     if (booking.status === "cancelled") {
-      return NextResponse.json({ success: false, error: "Already cancelled" }, { status: 400 })
+      return NextResponse.json({ success: false, error: API_ERR_BOOKING_ALREADY_CANCELLED }, { status: 400 })
     }
   }
 
