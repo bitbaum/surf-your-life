@@ -137,7 +137,10 @@ export default async function AdminBookingsPage({
               {allBookings.length === 0 && (
                 <tr>
                   <td colSpan={6} className="py-8 text-center text-slate-400">
-                    {t("noBookings")}
+                    <p>{t("noBookings")}</p>
+                    {activeFilter !== "all" && (
+                      <Link href="/admin/bookings" className="text-sm font-medium text-teal-600 hover:text-teal-700 transition-colors mt-2 inline-block">{t("viewAll")}</Link>
+                    )}
                   </td>
                 </tr>
               )}

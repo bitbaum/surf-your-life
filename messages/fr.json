@@ -1056,7 +1056,8 @@
       "sortJoined": "Plus récents",
       "sortCheckInDesc": "Plus actifs",
       "sortCheckInAsc": "Besoin d'attention",
-      "sortMostCheckIns": "Plus de check-ins"
+      "sortMostCheckIns": "Plus de check-ins",
+      "clearSearch": "Effacer la recherche"
     },
     "leads": {
       "statusNew": "Nouveau",
@@ -1121,7 +1122,8 @@
         "Ven",
         "Sam",
         "Dim"
-      ]
+      ],
+      "viewAll": "Voir toutes les réservations"
     },
     "programs": {
       "title": "Programmes",

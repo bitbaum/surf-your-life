@@ -1038,7 +1038,8 @@
       "sortJoined": "Neueste zuerst",
       "sortCheckInDesc": "Zuletzt aktiv",
       "sortCheckInAsc": "Aufmerksamkeit nötig",
-      "sortMostCheckIns": "Meiste Check-ins"
+      "sortMostCheckIns": "Meiste Check-ins",
+      "clearSearch": "Suche löschen"
     },
     "leads": {
       "statusNew": "Neu",
@@ -1103,7 +1104,8 @@
         "Fr",
         "Sa",
         "So"
-      ]
+      ],
+      "viewAll": "Alle Buchungen anzeigen"
     },
     "users": {
       "title": "Benutzer",

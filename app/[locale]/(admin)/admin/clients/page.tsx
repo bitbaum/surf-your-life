@@ -165,7 +165,10 @@ export default async function ClientsPage({
               {clients.length === 0 && (
                 <tr>
                   <td colSpan={7} className="py-8 text-center text-slate-400">
-                    {q ? t("noResults") : t("noClients")}
+                    <p>{q ? t("noResults") : t("noClients")}</p>
+                    {q && (
+                      <Link href="/admin/clients" className="text-sm font-medium text-teal-600 hover:text-teal-700 transition-colors mt-2 inline-block">{t("clearSearch")}</Link>
+                    )}
                   </td>
                 </tr>
               )}

@@ -1038,7 +1038,8 @@
       "sortJoined": "Newest first",
       "sortCheckInDesc": "Most active",
       "sortCheckInAsc": "Needs attention",
-      "sortMostCheckIns": "Most check-ins"
+      "sortMostCheckIns": "Most check-ins",
+      "clearSearch": "Clear search"
     },
     "leads": {
       "statusNew": "New",
@@ -1103,7 +1104,8 @@
         "Fri",
         "Sat",
         "Sun"
-      ]
+      ],
+      "viewAll": "View all bookings"
     },
     "users": {
       "title": "Users",
