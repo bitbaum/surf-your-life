@@ -9,7 +9,7 @@ import { PageHeader } from "@/components/ui/page-header"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { formatDate } from "@/lib/utils"
 import { Link } from "@/i18n/navigation"
-import { NINETY_DAYS_MS } from "@/lib/constants"
+import { NINETY_DAYS_MS, MOODS, MOOD_SCORE } from "@/lib/constants"
 import { summariseCheckIns } from "@/lib/domain/check-in"
 import { EmptyState } from "@/components/ui/empty-state"
 
@@ -60,13 +60,9 @@ export default async function ProgressPage({ params }: { params: Promise<{ local
   const avgSleep = stats?.avgSleep ?? null
   const avgStress = stats?.avgStress ?? null
   const avgMoodNum = stats?.avgMoodNum ?? null
-  // Round to nearest mood score (1–5) for display — keeps consistent with summariseCheckIns
+  // Round to nearest MOOD_SCORE for display — same algorithm as summariseCheckIns
   const avgMoodLabel = avgMoodNum == null ? null
-    : avgMoodNum >= 4.5 ? "moodExcellent"
-    : avgMoodNum >= 3.5 ? "moodGood"
-    : avgMoodNum >= 2.5 ? "moodNeutral"
-    : avgMoodNum >= 1.5 ? "moodLow"
-    : "moodVeryLow"
+    : (MOODS.find((m) => MOOD_SCORE[m.value] === Math.round(avgMoodNum))?.labelKey ?? "moodNeutral")
 
   return (
     <div className="max-w-2xl mx-auto">
