@@ -138,6 +138,10 @@ export const RECENT_CLIENTS_LIMIT = 8
 export const SERVICES_MAX_LIMIT = 100
 export const TECHNIQUES_MAX = 200              // safety cap for technique library (admin)
 export const CLIENT_ASSIGNMENTS_MAX = 50       // max active technique assignments per client
+export const ADMIN_ENROLLMENTS_MAX = 200       // safety cap for program enrollment list
+
+// Active booking statuses — pending and confirmed (i.e. not yet cancelled)
+export const ACTIVE_BOOKING_STATUSES = ["pending", "confirmed"] as const
 export const DOCUMENTS_PER_CLIENT_LIMIT = PAGINATION_DEFAULT
 export const DOCUMENT_UPLOAD_MAX_CONTENT = 5000  // max chars for client-submitted upload text
 export const DOCUMENT_ADMIN_MAX_CONTENT = 10000  // max chars for practitioner-authored documents

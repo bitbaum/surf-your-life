@@ -5,7 +5,7 @@ import { bookings, services, users } from "@/lib/db/schema"
 import { and, eq, desc, inArray } from "drizzle-orm"
 import { createBookingSchema } from "@/lib/domain/booking"
 import { STAFF_ROLES } from "@/lib/domain/auth"
-import { PAGINATION_DEFAULT, API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED, API_ERR_SERVICE_UNAVAILABLE, API_ERR_BOOKING_DUPLICATE, API_ERR_SLOT_TAKEN } from "@/lib/constants"
+import { PAGINATION_DEFAULT, API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED, API_ERR_SERVICE_UNAVAILABLE, API_ERR_BOOKING_DUPLICATE, API_ERR_SLOT_TAKEN, ACTIVE_BOOKING_STATUSES } from "@/lib/constants"
 import { sendEmail } from "@/lib/email"
 import { bookingNotificationEmail, bookingRequestEmail } from "@/lib/email/templates"
 
@@ -49,7 +49,7 @@ export async function POST(req: Request) {
     where: and(
       eq(bookings.userId, session.user.id),
       eq(bookings.serviceId, parsed.data.serviceId),
-      inArray(bookings.status, ["pending", "confirmed"])
+      inArray(bookings.status, ACTIVE_BOOKING_STATUSES)
     ),
   })
   if (existingOwn) {
@@ -66,7 +66,7 @@ export async function POST(req: Request) {
         eq(bookings.serviceId, parsed.data.serviceId),
         eq(bookings.preferredDate, parsed.data.preferredDate),
         eq(bookings.preferredTime, parsed.data.preferredTime),
-        inArray(bookings.status, ["pending", "confirmed"])
+        inArray(bookings.status, ACTIVE_BOOKING_STATUSES)
       ),
     })
     if (slotTaken) {

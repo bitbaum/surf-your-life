@@ -2,6 +2,7 @@ import { notFound } from "next/navigation"
 import { db } from "@/lib/db"
 import { programs, programEnrollments, users } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
+import { ADMIN_ENROLLMENTS_MAX } from "@/lib/constants"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Link } from "@/i18n/navigation"
 import { formatDate } from "@/lib/utils"
@@ -39,6 +40,7 @@ export default async function ProgramDetailPage({
     .innerJoin(users, eq(users.id, programEnrollments.clientId))
     .where(eq(programEnrollments.programId, id))
     .orderBy(desc(programEnrollments.createdAt))
+    .limit(ADMIN_ENROLLMENTS_MAX)
 
   return (
     <div className="max-w-4xl mx-auto">

@@ -6,6 +6,8 @@ import { PageHeader } from "@/components/ui/page-header"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { ServiceRow } from "./service-row"
 import { CreateServiceForm } from "./create-service-form"
+import { EmptyState } from "@/components/ui/empty-state"
+import { SERVICES_MAX_LIMIT } from "@/lib/constants"
 
 export default async function AdminServicesPage({
   params,
@@ -20,6 +22,7 @@ export default async function AdminServicesPage({
     .select()
     .from(services)
     .orderBy(asc(services.sortOrder), asc(services.name))
+    .limit(SERVICES_MAX_LIMIT)
 
   const availableCount = allServices.filter((s) => s.available).length
   const hiddenCount = allServices.filter((s) => !s.available).length
@@ -38,7 +41,7 @@ export default async function AdminServicesPage({
         </CardHeader>
         <CardContent>
           {allServices.length === 0 ? (
-            <p className="text-sm text-slate-400 py-8 text-center">{t("noServices")}</p>
+            <EmptyState message={t("noServices")} className="py-8" action={<CreateServiceForm />} />
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
