@@ -813,7 +813,8 @@
     "sendMessage": "Nachricht senden",
     "sending": "Wird gesendet...",
     "noSubject": "(Kein Betreff)",
-    "teamName": "Surf Your Life Team"
+    "teamName": "Surf Your Life Team",
+    "failedToSend": "Senden fehlgeschlagen. Bitte erneut versuchen."
   },
   "admin": {
     "sidebar": {
@@ -861,7 +862,8 @@
       "selectClient": "Klient auswählen",
       "noThreads": "Noch keine Gespräche",
       "noSubject": "(Kein Betreff)",
-      "unknownClient": "Unbekannter Klient"
+      "unknownClient": "Unbekannter Klient",
+      "selectClientPlaceholder": "— Klient auswählen —"
     },
     "clients": {
       "searchPlaceholder": "Nach Name oder E-Mail suchen...",

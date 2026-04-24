@@ -813,7 +813,8 @@
     "sendMessage": "Envoyer un message",
     "sending": "Envoi en cours...",
     "noSubject": "(Sans objet)",
-    "teamName": "Équipe Surf Your Life"
+    "teamName": "Équipe Surf Your Life",
+    "failedToSend": "L'envoi a échoué. Veuillez réessayer."
   },
   "admin": {
     "sidebar": {
@@ -861,7 +862,8 @@
       "selectClient": "Sélectionner un client",
       "noThreads": "Aucune conversation",
       "noSubject": "(Sans objet)",
-      "unknownClient": "Client inconnu"
+      "unknownClient": "Client inconnu",
+      "selectClientPlaceholder": "— Sélectionner un client —"
     },
     "users": {
       "title": "Utilisateurs",

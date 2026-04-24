@@ -41,10 +41,10 @@ export function NewThreadForm({
         body: JSON.stringify(form),
       })
       const json = await res.json()
-      if (!json.success) throw new Error(typeof json.error === "string" ? json.error : "Failed to send")
+      if (!json.success) throw new Error(typeof json.error === "string" ? json.error : t("failedToSend"))
       router.push(`/admin/messages/${json.data.threadId}`)
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to send")
+      setError(err instanceof Error ? err.message : t("failedToSend"))
     } finally {
       setSending(false)
     }
@@ -59,7 +59,7 @@ export function NewThreadForm({
         required
         disabled={sending}
       >
-        <option value="">— Select client —</option>
+        <option value="">{at("selectClientPlaceholder")}</option>
         {clients.map((c) => (
           <option key={c.id} value={c.id}>
             {c.name ?? c.email} {c.name ? `(${c.email})` : ""}

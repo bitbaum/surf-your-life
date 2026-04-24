@@ -26,10 +26,10 @@ export function NewMessageForm() {
         body: JSON.stringify(form),
       })
       const json = await res.json()
-      if (!json.success) throw new Error(typeof json.error === "string" ? json.error : "Failed to send")
+      if (!json.success) throw new Error(typeof json.error === "string" ? json.error : t("failedToSend"))
       router.push(`/messages/${json.data.threadId}`)
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to send")
+      setError(err instanceof Error ? err.message : t("failedToSend"))
     } finally {
       setSending(false)
     }
