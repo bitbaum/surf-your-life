@@ -1,6 +1,6 @@
 export default function ProgressLoading() {
   return (
-    <div className="max-w-3xl mx-auto animate-pulse">
+    <div className="max-w-2xl mx-auto animate-pulse">
       <div className="mb-6">
         <div className="h-8 bg-slate-200 rounded w-36 mb-2" />
         <div className="h-4 bg-slate-100 rounded w-64" />

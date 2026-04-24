@@ -3,8 +3,17 @@ import { db } from "@/lib/db"
 import { leads } from "@/lib/db/schema"
 import { newsletterSchema } from "@/lib/domain/lead"
 import { API_ERR_INVALID_INPUT } from "@/lib/constants"
+import { checkRateLimit, ipKey } from "@/lib/rate-limit"
 
 export async function POST(req: Request) {
+  const { ok, retryAfterSecs } = checkRateLimit(ipKey(req, "leads"), 10)
+  if (!ok) {
+    return NextResponse.json(
+      { success: false, error: "Too many requests. Please try again later." },
+      { status: 429, headers: { "Retry-After": String(retryAfterSecs) } }
+    )
+  }
+
   const body = await req.json()
   const parsed = newsletterSchema.safeParse(body)
   if (!parsed.success) {
