@@ -1121,6 +1121,7 @@
       "weeks": "Wochen",
       "createdOn": "Erstellt am {date}",
       "enrolledClients": "Eingeschriebene Klienten",
+      "activeOf": "{active} aktiv · {total} gesamt",
       "noEnrollments": "Noch keine Klienten eingeschrieben",
       "fieldTitle": "Programmname",
       "fieldTitlePlaceholder": "z.B. 12-Wochen Burnout-Erholung",

@@ -1,6 +1,6 @@
 import { db } from "@/lib/db"
 import { programs, programEnrollments } from "@/lib/db/schema"
-import { desc, count, eq } from "drizzle-orm"
+import { desc, count, eq, sql } from "drizzle-orm"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { Link } from "@/i18n/navigation"
@@ -23,6 +23,7 @@ export default async function ProgramsPage({ params }: { params: Promise<{ local
       targetConcern: programs.targetConcern,
       createdAt: programs.createdAt,
       enrollmentCount: count(programEnrollments.id),
+      activeCount: sql<number>`count(case when ${programEnrollments.status} = 'active' then 1 end)`,
     })
     .from(programs)
     .leftJoin(programEnrollments, eq(programEnrollments.programId, programs.id))
@@ -79,7 +80,9 @@ export default async function ProgramsPage({ params }: { params: Promise<{ local
                   </div>
                   <div className="flex items-center gap-1.5 text-slate-500 flex-shrink-0 text-sm">
                     <Users className="w-3.5 h-3.5" />
-                    <span>{program.enrollmentCount}</span>
+                    <span>
+                      {t("activeOf", { active: program.activeCount, total: program.enrollmentCount })}
+                    </span>
                   </div>
                 </Link>
               ))}
