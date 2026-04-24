@@ -1,6 +1,7 @@
 import type { Service } from "@/lib/db/schema"
 import { BRAND_NAME, COMPANY_ADDRESS, SITE_URL } from "@/lib/constants"
 import { EMAIL_SUBJECT_INVITE } from "@/lib/email/subjects"
+import { formatEnumValue } from "@/lib/utils"
 
 // ─── Shared shell ─────────────────────────────────────────────────────────────
 
@@ -362,7 +363,7 @@ export function practitionerAlertEmail(data: PractitionerAlertEmailData): string
   const { clientName, clientEmail, alertTitle, alertMessage, severity, adminUrl } = data
   const severityColor = severity === "high" ? "#dc2626" : severity === "medium" ? "#d97706" : "#0d9488"
   const severityBg = severity === "high" ? "#fef2f2" : severity === "medium" ? "#fffbeb" : "#f0fdfa"
-  const severityLabel = severity.charAt(0).toUpperCase() + severity.slice(1)
+  const severityLabel = formatEnumValue(severity)
 
   return emailShell(`
   <div class="header" style="background:#1e293b;padding:16px 24px">
