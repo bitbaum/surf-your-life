@@ -117,6 +117,7 @@ export const API_ERR_PASSWORD_REQUIRED = "Password required"
 export const API_ERR_NO_PASSWORD_AUTH = "Password authentication not available"
 export const API_ERR_WRONG_PASSWORD = "Incorrect password"
 export const API_ERR_SELF_ROLE_CHANGE = "Cannot change your own role"
+export const API_ERR_SERVER_ERROR = "Something went wrong. Please try again."
 
 // Time constants (milliseconds)
 export const HOUR_MS = 60 * 60 * 1000
