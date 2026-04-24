@@ -39,16 +39,17 @@ const NAV_GROUPS = [
 
 interface Props {
   onClose: () => void
+  unreadMessages?: number
 }
 
-export function PortalSidebarNav({ onClose }: Props) {
+export function PortalSidebarNav({ onClose, unreadMessages = 0 }: Props) {
   const t = useTranslations("sidebar")
   const pathname = usePathname()
 
   const isActive = (href: string) =>
     pathname === href || (href !== "/dashboard" && pathname.startsWith(href))
 
-  const navLink = (href: string, label: string, Icon: React.ElementType) => (
+  const navLink = (href: string, label: string, Icon: React.ElementType, badge = 0) => (
     <Link
       key={href}
       href={href}
@@ -62,6 +63,11 @@ export function PortalSidebarNav({ onClose }: Props) {
     >
       <Icon className="w-4 h-4" />
       {label}
+      {badge > 0 && (
+        <span className="ml-auto text-xs bg-teal-600 text-white rounded-full px-1.5 py-0.5 min-w-[1.25rem] text-center leading-none">
+          {badge}
+        </span>
+      )}
     </Link>
   )
 
@@ -85,7 +91,7 @@ export function PortalSidebarNav({ onClose }: Props) {
             {t(group.labelKey)}
           </p>
           <div className="flex flex-col gap-0.5">
-            {group.items.map(({ href, labelKey, icon }) => navLink(href, t(labelKey), icon))}
+            {group.items.map(({ href, labelKey, icon }) => navLink(href, t(labelKey), icon, href === "/messages" ? unreadMessages : 0))}
           </div>
         </div>
       ))}
