@@ -4,7 +4,7 @@ import { users, checkIns, programs, programEnrollments, medicationLog, functiona
 import { eq, desc, isNull, and, count, inArray, gte } from "drizzle-orm"
 import { formatDate, toDateString } from "@/lib/utils"
 import { Link } from "@/i18n/navigation"
-import { PAGINATION_DEFAULT, SEVEN_DAYS_MS, SERVICES_MAX_LIMIT, CLIENT_ASSIGNMENTS_MAX, ADMIN_DASHBOARD_ALERTS_PREVIEW } from "@/lib/constants"
+import { PAGINATION_DEFAULT, SEVEN_DAYS_MS, SERVICES_MAX_LIMIT, CLIENT_ASSIGNMENTS_MAX, ADMIN_DASHBOARD_ALERTS_PREVIEW, CLIENT_ASSESSMENTS_LIMIT } from "@/lib/constants"
 import { CLIENT_ROLE, STAFF_ROLES } from "@/lib/domain/auth"
 import { computeAdherenceByAssignment } from "@/lib/domain/techniques"
 import { ResetLinkButton } from "./reset-link-button"
@@ -29,7 +29,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
 
   const sevenDaysAgo = toDateString(new Date(Date.now() - SEVEN_DAYS_MS))
 
-  const [client, clientCheckIns, checkInCountResult, allPrograms, activeEnrollment, currentMedications, latestAssessment, clientAssignments, allTechniques, currentAssignment, allPractitioners, recentTechniqueLogs, unresolvedAlerts] = await Promise.all([
+  const [client, clientCheckIns, checkInCountResult, allPrograms, activeEnrollment, currentMedications, assessments, clientAssignments, allTechniques, currentAssignment, allPractitioners, recentTechniqueLogs, unresolvedAlerts] = await Promise.all([
     db.query.users.findFirst({
       where: eq(users.id, id),
       with: { profile: true },
@@ -50,9 +50,10 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
       where: and(eq(medicationLog.userId, id), isNull(medicationLog.endDate)),
       orderBy: [desc(medicationLog.createdAt)],
     }),
-    db.query.functionalAssessments.findFirst({
+    db.query.functionalAssessments.findMany({
       where: eq(functionalAssessments.userId, id),
       orderBy: [desc(functionalAssessments.assessedAt)],
+      limit: CLIENT_ASSESSMENTS_LIMIT,
     }),
     db.query.techniqueAssignments.findMany({
       where: and(eq(techniqueAssignments.clientId, id), eq(techniqueAssignments.isActive, true)),
@@ -147,7 +148,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
         />
       </div>
 
-      <ClientMedicationsRow currentMedications={currentMedications} latestAssessment={latestAssessment} />
+      <ClientMedicationsRow currentMedications={currentMedications} assessments={assessments} />
 
       <div className="mt-6">
         <TechniqueAssignments

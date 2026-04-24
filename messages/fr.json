@@ -972,7 +972,20 @@
         "saving": "Enregistrement...",
         "energyTrend": "Tendance énergie",
         "cancel": "Annuler",
-        "viewMessages": "Voir les messages"
+        "viewMessages": "Voir les messages",
+        "existingDiagnoses": "Diagnostics",
+        "familyHistory": "Antécédents familiaux",
+        "socialSupport": "Soutien social",
+        "gender": "Genre",
+        "workHoursPerWeek": "Heures de travail / sem.",
+        "height": "Taille",
+        "weight": "Poids",
+        "sleepSchedule": "Rythme de sommeil",
+        "alcoholTobacco": "Consommation de substances",
+        "insuranceProvider": "Assurance",
+        "hoursPerWeek": "{n} h/sem.",
+        "heightWeight": "{h} cm · {w} kg",
+        "assessmentHistory": "Évaluations précédentes"
       },
       "atRisk": {
         "title": "Clients à risque",

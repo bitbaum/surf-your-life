@@ -9,7 +9,7 @@ type Assessment = typeof functionalAssessments.$inferSelect
 
 interface Props {
   currentMedications: Medication[]
-  latestAssessment: Assessment | undefined
+  assessments: Assessment[]
 }
 
 function CapacityBar({ label, value }: { label: string; value: number }) {
@@ -24,8 +24,18 @@ function CapacityBar({ label, value }: { label: string; value: number }) {
   )
 }
 
-export async function ClientMedicationsRow({ currentMedications, latestAssessment }: Props) {
+function TrendBadge({ current, previous }: { current: number; previous: number }) {
+  const delta = current - previous
+  if (delta === 0) return <span className="text-xs text-slate-400">→ {previous}</span>
+  if (delta > 0) return <span className="text-xs text-teal-600 font-medium">↑ +{delta}</span>
+  return <span className="text-xs text-red-500 font-medium">↓ {delta}</span>
+}
+
+export async function ClientMedicationsRow({ currentMedications, assessments }: Props) {
   const t = await getTranslations("admin.clients")
+
+  const latestAssessment = assessments[0]
+  const previousAssessment = assessments[1]
 
   return (
     <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -62,7 +72,12 @@ export async function ClientMedicationsRow({ currentMedications, latestAssessmen
           {latestAssessment ? (
             <div className="flex flex-col gap-3">
               <div className="flex items-center justify-between">
-                <span className="text-3xl font-bold text-teal-600">{latestAssessment.overallCapacity}<span className="text-lg text-slate-400">/10</span></span>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-3xl font-bold text-teal-600">{latestAssessment.overallCapacity}<span className="text-lg text-slate-400">/10</span></span>
+                  {previousAssessment && (
+                    <TrendBadge current={latestAssessment.overallCapacity} previous={previousAssessment.overallCapacity} />
+                  )}
+                </div>
                 <span className="text-xs text-slate-400">{formatDate(latestAssessment.assessedAt)}</span>
               </div>
               <div className="grid grid-cols-2 gap-2">
@@ -81,6 +96,19 @@ export async function ClientMedicationsRow({ currentMedications, latestAssessmen
               </div>
               {latestAssessment.notes && (
                 <p className="text-xs text-slate-500 italic leading-relaxed">{latestAssessment.notes}</p>
+              )}
+              {assessments.length > 1 && (
+                <div className="mt-1 pt-2 border-t border-slate-100">
+                  <p className="text-xs text-slate-400 mb-1.5">{t("detail.assessmentHistory")}</p>
+                  <div className="flex flex-col gap-1">
+                    {assessments.slice(1).map((a) => (
+                      <div key={a.id} className="flex items-center justify-between text-xs">
+                        <span className="text-slate-400">{formatDate(a.assessedAt)}</span>
+                        <span className="font-medium text-slate-600">{a.overallCapacity}/10</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               )}
             </div>
           ) : (
