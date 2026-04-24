@@ -1060,6 +1060,8 @@
         "typeUpload": "Téléchargement",
         "noNotes": "Aucune note pour l'instant. Ajoutez-en une après une séance.",
         "error": "Impossible d'enregistrer la note",
+        "edit": "Modifier la note",
+        "edited": "modifié",
         "showMore": "Afficher plus",
         "showLess": "Afficher moins"
       },

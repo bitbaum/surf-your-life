@@ -1042,6 +1042,8 @@
         "typeUpload": "Upload",
         "noNotes": "No notes yet. Add one after a session.",
         "error": "Failed to save note",
+        "edit": "Edit note",
+        "edited": "edited",
         "showMore": "Show more",
         "showLess": "Show less"
       },

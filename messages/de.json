@@ -1042,6 +1042,8 @@
         "typeUpload": "Upload",
         "noNotes": "Noch keine Notizen. Fügen Sie nach einer Sitzung eine hinzu.",
         "error": "Notiz konnte nicht gespeichert werden",
+        "edit": "Notiz bearbeiten",
+        "edited": "bearbeitet",
         "showMore": "Mehr anzeigen",
         "showLess": "Weniger anzeigen"
       },

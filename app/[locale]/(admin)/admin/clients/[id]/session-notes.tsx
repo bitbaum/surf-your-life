@@ -47,6 +47,20 @@ export function SessionNotes({ clientId }: Props) {
     }
   }
 
+  async function handleEdit(id: string, title: string, content: string) {
+    const res = await fetch(`/api/admin/documents/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title, content }),
+    })
+    const json = await res.json()
+    if (!json.success) throw new Error(json.error)
+    // Merge updated fields into local state — avoids a full reload
+    setDocs((prev) => prev?.map((d) =>
+      d.id === id ? { ...d, title: json.data.title, content: json.data.content, updatedAt: new Date(json.data.updatedAt) } : d
+    ) ?? null)
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -90,7 +104,7 @@ export function SessionNotes({ clientId }: Props) {
         )}
 
         {loaded && !loading && docs !== null && (
-          <SessionNotesList docs={docs} deleteError={deleteError} onDelete={handleDelete} />
+          <SessionNotesList docs={docs} deleteError={deleteError} onDelete={handleDelete} onEdit={handleEdit} />
         )}
       </CardContent>
     </Card>
