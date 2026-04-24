@@ -91,7 +91,9 @@ export default async function AdminCheckInsPage({
                 {rows.map((ci) => (
                   <tr key={ci.id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
                     <td className="py-3 font-medium text-slate-800">
-                      {ci.clientName ?? ci.clientEmail}
+                      <Link href={`/admin/clients/${ci.clientId}`} className="hover:text-teal-700 transition-colors">
+                        {ci.clientName ?? ci.clientEmail}
+                      </Link>
                     </td>
                     <td className="py-3 text-slate-500">{formatDate(ci.createdAt)}</td>
                     <td className="py-3">

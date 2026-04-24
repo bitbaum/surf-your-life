@@ -141,6 +141,7 @@ export const DOCUMENT_UPLOAD_MAX_CONTENT = 5000  // max chars for client-submitt
 export const DOCUMENT_ADMIN_MAX_CONTENT = 10000  // max chars for practitioner-authored documents
 export const EMBED_BACKFILL_BATCH = 50           // records processed per cron run during backfill
 export const ADMIN_DASHBOARD_ALERTS_PREVIEW = 10
+export const ADMIN_ALERTS_MAX = 500              // safety cap for unresolved alerts page
 export const ADMIN_DASHBOARD_INSIGHTS_PREVIEW = 6
 export const DASHBOARD_INSIGHT_ENERGY_WINDOW = 3  // recent energy levels used for portal insight calculation
 

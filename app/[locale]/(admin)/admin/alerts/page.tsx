@@ -7,6 +7,7 @@ import { eq, desc } from "drizzle-orm"
 import { PageHeader } from "@/components/ui/page-header"
 import { AlertList } from "./alert-list"
 import { getTranslations, setRequestLocale } from "next-intl/server"
+import { ADMIN_ALERTS_MAX } from "@/lib/constants"
 
 export default async function AlertsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
@@ -36,6 +37,7 @@ export default async function AlertsPage({ params }: { params: Promise<{ locale:
     .innerJoin(users, eq(users.id, clientAlerts.clientId))
     .where(eq(clientAlerts.isResolved, false))
     .orderBy(desc(clientAlerts.createdAt))
+    .limit(ADMIN_ALERTS_MAX)
 
   const total = rows.length
   const highCount = rows.filter((r) => r.severity === "high").length
