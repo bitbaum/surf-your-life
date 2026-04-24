@@ -2,15 +2,7 @@
 
 import { useState } from "react"
 import { formatDate } from "@/lib/utils"
-import { MOOD_LABEL, MOOD_NUMERIC } from "@/lib/constants"
-
-const MOOD_COLORS: Record<string, string> = {
-  very_low: "bg-red-300",
-  low: "bg-orange-300",
-  neutral: "bg-slate-300",
-  good: "bg-teal-300",
-  excellent: "bg-teal-500",
-}
+import { MOOD_LABEL, MOOD_NUMERIC, MOOD_COLOR } from "@/lib/constants"
 
 interface DataPoint {
   createdAt: Date
@@ -29,7 +21,7 @@ export function MoodChart({ data }: Props) {
       {data.map((ci, i) => {
         const value = MOOD_NUMERIC[ci.mood] ?? 0.5
         const pct = value * 100
-        const colorClass = MOOD_COLORS[ci.mood] ?? "bg-slate-300"
+        const colorClass = MOOD_COLOR[ci.mood] ?? "bg-slate-300"
         const isHovered = tooltip?.index === i
 
         return (

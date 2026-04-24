@@ -75,6 +75,13 @@ export const PAGINATION_DEFAULT = 20
 // Lookup maps derived from MOODS — import these instead of redefining inline
 export const MOOD_EMOJI = Object.fromEntries(MOODS.map((m) => [m.value, m.emoji])) as Record<string, string>
 export const MOOD_LABEL = Object.fromEntries(MOODS.map((m) => [m.value, m.label])) as Record<string, string>
+export const MOOD_COLOR: Record<string, string> = {
+  very_low: "bg-red-300",
+  low: "bg-orange-300",
+  neutral: "bg-slate-300",
+  good: "bg-teal-300",
+  excellent: "bg-teal-500",
+}
 
 export const SITE_URL = process.env.AUTH_URL ?? "https://surf-your-life.ch"
 export const BRAND_NAME = "Surf Your Life"
