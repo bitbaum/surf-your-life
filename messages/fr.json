@@ -865,7 +865,10 @@
       "noThreads": "Aucune conversation",
       "noSubject": "(Sans objet)",
       "unknownClient": "Client inconnu",
-      "selectClientPlaceholder": "— Sélectionner un client —"
+      "selectClientPlaceholder": "— Sélectionner un client —",
+      "filteringBy": "Messages pour",
+      "clearFilter": "Tout afficher",
+      "viewMessages": "Voir les messages"
     },
     "users": {
       "title": "Utilisateurs",
@@ -953,7 +956,8 @@
         "assignError": "Échec de la mise à jour de l'affectation",
         "saving": "Enregistrement...",
         "energyTrend": "Tendance énergie",
-        "cancel": "Annuler"
+        "cancel": "Annuler",
+        "viewMessages": "Voir les messages"
       },
       "atRisk": {
         "title": "Clients à risque",

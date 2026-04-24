@@ -865,7 +865,10 @@
       "noThreads": "No conversations yet",
       "noSubject": "(No subject)",
       "unknownClient": "Unknown client",
-      "selectClientPlaceholder": "— Select client —"
+      "selectClientPlaceholder": "— Select client —",
+      "filteringBy": "Showing messages for",
+      "clearFilter": "Show all",
+      "viewMessages": "View messages"
     },
     "clients": {
       "searchPlaceholder": "Search by name or email...",
@@ -935,7 +938,8 @@
         "assignError": "Failed to update assignment",
         "saving": "Saving...",
         "energyTrend": "Energy trend",
-        "cancel": "Cancel"
+        "cancel": "Cancel",
+        "viewMessages": "View messages"
       },
       "atRisk": {
         "title": "At-Risk Clients",

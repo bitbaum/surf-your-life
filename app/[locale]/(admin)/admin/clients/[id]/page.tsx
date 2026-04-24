@@ -114,6 +114,12 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
         action={
           <div className="flex items-center gap-2 flex-wrap">
             <EnrollProgramButton clientId={id} programs={allPrograms} />
+            <Link
+              href={`/admin/messages?client=${id}`}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition-colors"
+            >
+              {t("detail.viewMessages")}
+            </Link>
             <NewThreadButton clientId={id} />
             <ResetLinkButton userId={id} />
           </div>

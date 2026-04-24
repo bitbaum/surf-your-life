@@ -132,16 +132,17 @@ export default async function AdminDashboardPage({
       <PageHeader title={t("title")} description={t("description")} />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-6 gap-4 mb-8">
-        <StatCard label={t("totalClients")} value={clientCount} icon={Users} color="teal" />
-        <StatCard label={t("checkIns30d")} value={recentCheckInsCount} icon={ClipboardList} color="slate" />
+        <StatCard label={t("totalClients")} value={clientCount} icon={Users} color="teal" href="/admin/clients" />
+        <StatCard label={t("checkIns30d")} value={recentCheckInsCount} icon={ClipboardList} color="slate" href="/admin/check-ins" />
         <StatCard label={t("avgCheckIns")} value={avgCheckIns} icon={TrendingUp} color="teal" />
-        <StatCard label={t("pendingBookings")} value={pendingBookings} icon={CalendarClock} color="slate" />
-        <StatCard label={t("unreadMessages")} value={unreadMessages} icon={MessageSquare} color="teal" />
+        <StatCard label={t("pendingBookings")} value={pendingBookings} icon={CalendarClock} color="slate" href="/admin/bookings" />
+        <StatCard label={t("unreadMessages")} value={unreadMessages} icon={MessageSquare} color="teal" href="/admin/messages" />
         <StatCard
           label={t("atRiskClients")}
           value={atRiskCount}
           icon={AlertTriangle}
           color={atRiskCount > 0 ? "amber" : "slate"}
+          href="/admin/clients/at-risk"
         />
       </div>
 

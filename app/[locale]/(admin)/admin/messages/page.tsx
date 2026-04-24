@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
-import { threads, threadMessages } from "@/lib/db/schema"
-import { desc, count } from "drizzle-orm"
+import { threads, threadMessages, users } from "@/lib/db/schema"
+import { desc, count, eq } from "drizzle-orm"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { redirect } from "next/navigation"
 import { Link } from "@/i18n/navigation"
@@ -19,7 +19,7 @@ export default async function AdminMessagesPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>
-  searchParams: Promise<{ page?: string }>
+  searchParams: Promise<{ page?: string; client?: string }>
 }) {
   const { locale } = await params
   setRequestLocale(locale)
@@ -29,12 +29,15 @@ export default async function AdminMessagesPage({
 
   const t = await getTranslations("admin.messages")
 
-  const { page: pageParam } = await searchParams
+  const { page: pageParam, client: clientIdParam } = await searchParams
   const page = parsePage(pageParam)
   const offset = computeOffset(page, PAGINATION_DEFAULT)
 
-  const [allThreads, totalResult] = await Promise.all([
+  const whereClause = clientIdParam ? eq(threads.clientId, clientIdParam) : undefined
+
+  const [allThreads, totalResult, filteredClient] = await Promise.all([
     db.query.threads.findMany({
+      where: whereClause,
       orderBy: [desc(threads.updatedAt)],
       limit: PAGINATION_DEFAULT,
       offset,
@@ -47,7 +50,10 @@ export default async function AdminMessagesPage({
         },
       },
     }),
-    db.select({ value: count() }).from(threads),
+    db.select({ value: count() }).from(threads).where(whereClause),
+    clientIdParam
+      ? db.query.users.findFirst({ where: eq(users.id, clientIdParam), columns: { name: true, email: true } })
+      : Promise.resolve(null),
   ])
 
   const total = totalResult[0]?.value ?? 0
@@ -57,11 +63,20 @@ export default async function AdminMessagesPage({
     <div className="max-w-4xl mx-auto">
       <PageHeader
         title={t("title")}
-        description={t("allConversations")}
+        description={filteredClient
+          ? `${t("filteringBy")} ${filteredClient.name ?? filteredClient.email}`
+          : t("allConversations")}
         action={
-          <Link href="/admin/messages/new">
-            <Button>{t("newConversation")}</Button>
-          </Link>
+          <div className="flex items-center gap-2">
+            {clientIdParam && (
+              <Link href="/admin/messages" className="text-sm text-slate-500 hover:text-slate-700">
+                {t("clearFilter")}
+              </Link>
+            )}
+            <Link href={clientIdParam ? `/admin/messages/new?client=${clientIdParam}` : "/admin/messages/new"}>
+              <Button>{t("newConversation")}</Button>
+            </Link>
+          </div>
         }
       />
 
@@ -119,7 +134,7 @@ export default async function AdminMessagesPage({
       <Pagination
         page={page}
         totalPages={totalPages}
-        pageLink={(p) => `/admin/messages?page=${p}`}
+        pageLink={(p) => clientIdParam ? `/admin/messages?client=${clientIdParam}&page=${p}` : `/admin/messages?page=${p}`}
       />
     </div>
   )

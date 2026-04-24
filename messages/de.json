@@ -865,7 +865,10 @@
       "noThreads": "Noch keine Gespräche",
       "noSubject": "(Kein Betreff)",
       "unknownClient": "Unbekannter Klient",
-      "selectClientPlaceholder": "— Klient auswählen —"
+      "selectClientPlaceholder": "— Klient auswählen —",
+      "filteringBy": "Nachrichten für",
+      "clearFilter": "Alle anzeigen",
+      "viewMessages": "Nachrichten anzeigen"
     },
     "clients": {
       "searchPlaceholder": "Nach Name oder E-Mail suchen...",
@@ -935,7 +938,8 @@
         "assignError": "Zuweisung konnte nicht aktualisiert werden",
         "saving": "Wird gespeichert...",
         "energyTrend": "Energieverlauf",
-        "cancel": "Abbrechen"
+        "cancel": "Abbrechen",
+        "viewMessages": "Nachrichten anzeigen"
       },
       "atRisk": {
         "title": "Gefährdete Klienten",
