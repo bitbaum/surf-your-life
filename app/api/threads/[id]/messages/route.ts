@@ -26,7 +26,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
   const parsed = sendMessageSchema.safeParse(body)
   if (!parsed.success) {
-    return NextResponse.json({ success: false, error: parsed.error.flatten() }, { status: 422 })
+    return NextResponse.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })
   }
 
   const [message] = await db

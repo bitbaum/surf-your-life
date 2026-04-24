@@ -39,7 +39,7 @@ export async function POST(request: Request) {
 
   const parsed = createThreadSchema.safeParse(body)
   if (!parsed.success) {
-    return NextResponse.json({ success: false, error: "Validation failed", details: parsed.error.flatten() }, { status: 422 })
+    return NextResponse.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })
   }
 
   const isAdmin = isStaff(session.user.role)
@@ -47,7 +47,7 @@ export async function POST(request: Request) {
   let clientId: string
   if (isAdmin) {
     if (!parsed.data.clientId) {
-      return NextResponse.json({ success: false, error: "clientId required for admin" }, { status: 422 })
+      return NextResponse.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })
     }
     clientId = parsed.data.clientId
   } else {
