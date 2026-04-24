@@ -1058,7 +1058,8 @@
       "noLeads": "No leads yet",
       "invite": "Send invite",
       "inviting": "Sending...",
-      "inviteSent": "Invite sent"
+      "inviteSent": "Invite sent",
+      "viewAll": "View all leads"
     },
     "bookings": {
       "title": "Bookings",

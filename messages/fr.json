@@ -1076,7 +1076,8 @@
       "noLeads": "Aucun lead pour l'instant",
       "invite": "Inviter",
       "inviting": "Envoi...",
-      "inviteSent": "Invitation envoyée"
+      "inviteSent": "Invitation envoyée",
+      "viewAll": "Voir tous les leads"
     },
     "bookings": {
       "title": "Réservations",

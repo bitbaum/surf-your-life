@@ -11,6 +11,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server"
 import { Pagination } from "@/components/ui/pagination"
 import { FilterTabs } from "@/components/ui/filter-tabs"
 import { EmptyState } from "@/components/ui/empty-state"
+import { Link } from "@/i18n/navigation"
 
 type LeadStatusValue = (typeof leadStatusEnum.enumValues)[number]
 type StatusFilter = "all" | LeadStatusValue
@@ -86,7 +87,12 @@ export default async function LeadsPage({
         <CardContent>
           {all.length === 0 ? (
             <div className="py-8">
-              <EmptyState message={t("noLeads")} />
+              <EmptyState
+                message={t("noLeads")}
+                action={statusFilter !== "all" ? (
+                  <Link href="/admin/leads" className="text-sm font-medium text-teal-600 hover:text-teal-700 transition-colors">{t("viewAll")}</Link>
+                ) : undefined}
+              />
             </div>
           ) : (
             <div className="flex flex-col divide-y divide-slate-100">
