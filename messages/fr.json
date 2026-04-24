@@ -353,6 +353,7 @@
       "wellnessTrendSubtitle": "Humeur et énergie des 30 derniers jours",
       "streak": "Jours consécutifs",
       "days": "jours",
+      "streakDays": "{count, plural, one {# jour} other {# jours}}",
       "viewAll": "Voir tout →",
       "recentCheckIns": "Check-ins récents",
       "energy": "Énergie",

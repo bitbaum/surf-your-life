@@ -146,9 +146,9 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
         />
         <StatCard
           label={t("streak")}
-          value={streak >= 2 ? `${streak} ${t("days")}` : "—"}
+          value={streak >= 1 ? t("streakDays", { count: streak }) : "—"}
           icon={Flame}
-          color={streak >= 2 ? "teal" : "slate"}
+          color={streak >= 1 ? "teal" : "slate"}
         />
       </div>
 

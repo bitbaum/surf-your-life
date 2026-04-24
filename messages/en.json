@@ -353,6 +353,7 @@
       "wellnessTrendSubtitle": "Mood and energy over the last 30 days",
       "streak": "Day streak",
       "days": "days",
+      "streakDays": "{count, plural, one {# day} other {# days}}",
       "viewAll": "View all →",
       "recentCheckIns": "Recent check-ins",
       "energy": "Energy",
