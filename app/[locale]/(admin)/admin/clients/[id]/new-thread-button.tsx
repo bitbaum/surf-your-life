@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 import { Modal } from "@/components/ui/modal"
+import { Textarea } from "@/components/ui/textarea"
 import { MessageSquare } from "lucide-react"
 import { FIELD_MAX_TITLE, FIELD_MAX_MESSAGE } from "@/lib/constants"
 
@@ -62,7 +63,7 @@ export function NewThreadButton({ clientId }: { clientId: string }) {
 
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-medium text-slate-700">{t("messageLabel")}</label>
-              <textarea
+              <Textarea
                 value={form.body}
                 onChange={(e) => setForm((f) => ({ ...f, body: e.target.value }))}
                 placeholder={t("messagePlaceholder")}
@@ -70,7 +71,6 @@ export function NewThreadButton({ clientId }: { clientId: string }) {
                 required
                 disabled={sending}
                 maxLength={FIELD_MAX_MESSAGE}
-                className="rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 resize-none disabled:opacity-50"
               />
             </div>
 

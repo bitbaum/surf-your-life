@@ -6,6 +6,7 @@ import { Link } from "@/i18n/navigation"
 import { MarketingNav } from "@/components/marketing/nav"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 import { CheckCircle, Waves } from "lucide-react"
 
 export default function ContactPage() {
@@ -94,12 +95,11 @@ export default function ContactPage() {
                 <label className="text-sm font-medium text-slate-700 block mb-1.5">
                   {t("message")} <span className="text-slate-400 font-normal">{t("messageOptional")}</span>
                 </label>
-                <textarea
+                <Textarea
                   value={form.message}
                   onChange={(e) => set("message", e.target.value)}
                   rows={4}
                   placeholder={t("messagePlaceholder")}
-                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
                 />
               </div>
               {error && <p className="text-sm text-red-600">{error}</p>}

@@ -1,9 +1,7 @@
 "use client"
 import { useTranslations } from "next-intl"
+import { Textarea } from "@/components/ui/textarea"
 import type { FormState } from "../profile-form.helpers"
-
-const textareaClass =
-  "w-full rounded-lg border border-slate-200 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
 
 export function StepStory({
   form,
@@ -16,26 +14,20 @@ export function StepStory({
 
   return (
     <div className="flex flex-col gap-4">
-      <div>
-        <label className="text-sm font-medium text-slate-700 block mb-1.5">{t("situationLabel")}</label>
-        <textarea
-          value={form.currentSituation}
-          onChange={(e) => onChange("currentSituation", e.target.value)}
-          rows={5}
-          placeholder={t("situationPlaceholder")}
-          className={textareaClass}
-        />
-      </div>
-      <div>
-        <label className="text-sm font-medium text-slate-700 block mb-1.5">{t("goalsLabel")}</label>
-        <textarea
-          value={form.goals}
-          onChange={(e) => onChange("goals", e.target.value)}
-          rows={5}
-          placeholder={t("goalsPlaceholder")}
-          className={textareaClass}
-        />
-      </div>
+      <Textarea
+        label={t("situationLabel")}
+        value={form.currentSituation}
+        onChange={(e) => onChange("currentSituation", e.target.value)}
+        rows={5}
+        placeholder={t("situationPlaceholder")}
+      />
+      <Textarea
+        label={t("goalsLabel")}
+        value={form.goals}
+        onChange={(e) => onChange("goals", e.target.value)}
+        rows={5}
+        placeholder={t("goalsPlaceholder")}
+      />
     </div>
   )
 }

@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { useRouter } from "@/i18n/navigation"
 import { Button } from "@/components/ui/button"
+import { Textarea } from "@/components/ui/textarea"
 import { CAPACITY_SCALE, ASSESSMENT_DIMENSIONS, FIELD_MAX_LONG } from "@/lib/constants"
 
 export function NewAssessmentForm({ onDone }: { onDone: () => void }) {
@@ -111,13 +112,12 @@ export function NewAssessmentForm({ onDone }: { onDone: () => void }) {
         <label className="text-sm font-medium text-slate-700 block mb-1.5">
           {t("notes")} <span className="text-slate-400 font-normal">{t("optional")}</span>
         </label>
-        <textarea
+        <Textarea
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           placeholder={t("notesPlaceholder")}
           maxLength={FIELD_MAX_LONG}
           rows={3}
-          className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 resize-none"
         />
       </div>
 

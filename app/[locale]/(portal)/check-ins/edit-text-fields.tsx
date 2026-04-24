@@ -1,6 +1,7 @@
 "use client"
 
 import { useTranslations } from "next-intl"
+import { Textarea } from "@/components/ui/textarea"
 import { FIELD_MAX_JOURNAL } from "@/lib/constants"
 
 interface Props {
@@ -27,12 +28,11 @@ export function EditTextFields({
         <label className="text-xs font-medium text-slate-500 uppercase tracking-wide block mb-1.5">
           {t("editJournalLabel")} <span className="text-slate-400 font-normal normal-case">{t("editOptional")}</span>
         </label>
-        <textarea
+        <Textarea
           value={journalEntry}
           onChange={(e) => setJournalEntry(e.target.value)}
           rows={4}
           maxLength={FIELD_MAX_JOURNAL}
-          className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
         />
       </div>
     )
@@ -44,34 +44,19 @@ export function EditTextFields({
         <label className="text-xs font-medium text-slate-500 uppercase tracking-wide block mb-1.5">
           {t("editWinsLabel")} <span className="text-slate-400 font-normal normal-case">{t("editOptional")}</span>
         </label>
-        <textarea
-          value={wins}
-          onChange={(e) => setWins(e.target.value)}
-          rows={2}
-          className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
-        />
+        <Textarea value={wins} onChange={(e) => setWins(e.target.value)} rows={2} />
       </div>
       <div>
         <label className="text-xs font-medium text-slate-500 uppercase tracking-wide block mb-1.5">
           {t("editChallengesLabel")} <span className="text-slate-400 font-normal normal-case">{t("editOptional")}</span>
         </label>
-        <textarea
-          value={challenges}
-          onChange={(e) => setChallenges(e.target.value)}
-          rows={2}
-          className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
-        />
+        <Textarea value={challenges} onChange={(e) => setChallenges(e.target.value)} rows={2} />
       </div>
       <div>
         <label className="text-xs font-medium text-slate-500 uppercase tracking-wide block mb-1.5">
           {t("editNotesLabel")} <span className="text-slate-400 font-normal normal-case">{t("editOptional")}</span>
         </label>
-        <textarea
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-          rows={3}
-          className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
-        />
+        <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} />
       </div>
     </>
   )

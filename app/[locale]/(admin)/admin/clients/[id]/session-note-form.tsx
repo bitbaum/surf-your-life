@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
+import { Textarea } from "@/components/ui/textarea"
 import { DOC_TYPE_I18N_KEYS, DOC_TYPE_BADGE_CLASSES, FIELD_MAX_TITLE, CHIP_UNSELECTED } from "@/lib/constants"
 import { documentTypeEnum } from "@/lib/db/schema"
 
@@ -65,8 +66,7 @@ export function SessionNoteForm({ clientId, onSaved, onCancel }: Props) {
         <label className="text-xs font-medium text-slate-500 uppercase tracking-wide block mb-1">
           {t("contentLabel")} <span className="text-red-400">*</span>
         </label>
-        <textarea value={content} onChange={(e) => setContent(e.target.value)} placeholder={t("contentPlaceholder")} rows={5} required
-          className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500" />
+        <Textarea value={content} onChange={(e) => setContent(e.target.value)} placeholder={t("contentPlaceholder")} rows={5} required />
       </div>
       {error && <p className="text-sm text-red-600">{error}</p>}
       <div className="flex items-center gap-3">

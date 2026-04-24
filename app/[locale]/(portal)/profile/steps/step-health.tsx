@@ -1,10 +1,8 @@
 "use client"
 import { useTranslations } from "next-intl"
 import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 import type { FormState } from "../profile-form.helpers"
-
-const textareaClass =
-  "w-full rounded-lg border border-slate-200 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
 
 export function StepHealth({
   form,
@@ -29,26 +27,20 @@ export function StepHealth({
           {t("prevTherapyLabel")}
         </label>
       </div>
-      <div>
-        <label className="text-sm font-medium text-slate-700 block mb-1.5">{t("diagnosesLabel")}</label>
-        <textarea
-          value={form.existingDiagnoses}
-          onChange={(e) => onChange("existingDiagnoses", e.target.value)}
-          rows={2}
-          placeholder={t("diagnosesPlaceholder")}
-          className={textareaClass}
-        />
-      </div>
-      <div>
-        <label className="text-sm font-medium text-slate-700 block mb-1.5">{t("familyHistoryLabel")}</label>
-        <textarea
-          value={form.familyHistory}
-          onChange={(e) => onChange("familyHistory", e.target.value)}
-          rows={2}
-          placeholder={t("familyHistoryPlaceholder")}
-          className={textareaClass}
-        />
-      </div>
+      <Textarea
+        label={t("diagnosesLabel")}
+        value={form.existingDiagnoses}
+        onChange={(e) => onChange("existingDiagnoses", e.target.value)}
+        rows={2}
+        placeholder={t("diagnosesPlaceholder")}
+      />
+      <Textarea
+        label={t("familyHistoryLabel")}
+        value={form.familyHistory}
+        onChange={(e) => onChange("familyHistory", e.target.value)}
+        rows={2}
+        placeholder={t("familyHistoryPlaceholder")}
+      />
       <Input
         label={`${t("medicationsLabel")} ${t("medicationsOptional")}`}
         value={form.medications}

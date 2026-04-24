@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl"
 import { useRouter } from "@/i18n/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Textarea } from "@/components/ui/textarea"
 import { ENERGY_SCALE, SYMPTOM_SCALE, FIELD_MAX_JOURNAL, CHIP_SELECTED, CHIP_UNSELECTED } from "@/lib/constants"
 import { toast } from "sonner"
 import { NlpEntry, type ParsedFill } from "./nlp-entry"
@@ -167,13 +168,12 @@ export default function CheckInPage() {
             <CardDescription>{t("journalDescription")}</CardDescription>
           </CardHeader>
           <CardContent>
-            <textarea
+            <Textarea
               value={form.journalEntry}
               onChange={(e) => set("journalEntry")(e.target.value)}
               placeholder={t("journalPlaceholder")}
               maxLength={FIELD_MAX_JOURNAL}
               rows={4}
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 resize-none"
             />
           </CardContent>
         </Card>

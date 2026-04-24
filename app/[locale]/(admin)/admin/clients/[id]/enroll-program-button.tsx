@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Modal } from "@/components/ui/modal"
+import { Textarea } from "@/components/ui/textarea"
 import { Plus } from "lucide-react"
 import { FIELD_MAX_LONG } from "@/lib/constants"
 
@@ -107,20 +108,15 @@ export function EnrollProgramButton({ clientId, programs }: EnrollProgramButtonP
               />
             </div>
 
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor="notes" className="text-sm font-medium text-slate-700">
-                {t("fieldNotes")}
-              </label>
-              <textarea
-                id="notes"
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder={t("fieldNotesPlaceholder")}
-                rows={3}
-                maxLength={FIELD_MAX_LONG}
-                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 resize-none"
-              />
-            </div>
+            <Textarea
+              id="notes"
+              label={t("fieldNotes")}
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder={t("fieldNotesPlaceholder")}
+              rows={3}
+              maxLength={FIELD_MAX_LONG}
+            />
 
             {error && <p className="text-sm text-red-600">{error}</p>}
 

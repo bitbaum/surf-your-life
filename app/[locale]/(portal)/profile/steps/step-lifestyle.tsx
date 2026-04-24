@@ -1,6 +1,7 @@
 "use client"
 import { useTranslations } from "next-intl"
 import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 import { QUALITY_SCALE, HEIGHT_CM, WEIGHT_KG } from "@/lib/constants"
 import type { FormState } from "../profile-form.helpers"
 
@@ -37,9 +38,6 @@ function SliderField({
     </div>
   )
 }
-
-const textareaClass =
-  "w-full rounded-lg border border-slate-200 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
 
 export function StepLifestyle({
   form,
@@ -84,16 +82,13 @@ export function StepLifestyle({
         onChange={(e) => onChange("sleepSchedule", e.target.value)}
         placeholder={t("sleepSchedulePlaceholder")}
       />
-      <div>
-        <label className="text-sm font-medium text-slate-700 block mb-1.5">{t("alcoholTobaccoLabel")}</label>
-        <textarea
-          value={form.alcoholTobacco}
-          onChange={(e) => onChange("alcoholTobacco", e.target.value)}
-          rows={2}
-          placeholder={t("alcoholTobaccoPlaceholder")}
-          className={textareaClass}
-        />
-      </div>
+      <Textarea
+        label={t("alcoholTobaccoLabel")}
+        value={form.alcoholTobacco}
+        onChange={(e) => onChange("alcoholTobacco", e.target.value)}
+        rows={2}
+        placeholder={t("alcoholTobaccoPlaceholder")}
+      />
       <SliderField
         label={t("sleepQualityLabel")}
         value={form.sleepQuality}

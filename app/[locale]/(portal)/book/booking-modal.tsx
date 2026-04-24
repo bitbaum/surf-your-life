@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
+import { Textarea } from "@/components/ui/textarea"
 import { CheckCircle, X } from "lucide-react"
 import type { Service } from "@/lib/db/schema"
 import { toDateString } from "@/lib/utils"
@@ -84,12 +85,11 @@ export function BookingModal({ selected, form, setForm, loading, submitted, erro
               <label className="text-sm font-medium text-slate-700 block mb-1.5">
                 {t("notes")} <span className="text-slate-400 font-normal">{t("notesOptional")}</span>
               </label>
-              <textarea
+              <Textarea
                 value={form.notes}
                 onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
                 rows={3}
                 placeholder={t("notesPlaceholder")}
-                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
               />
             </div>
             <div className="flex gap-3 pt-1">

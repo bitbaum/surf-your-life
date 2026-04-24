@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl"
 import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 import { MAIN_CONCERNS, FIELD_MAX_TITLE, FIELD_MAX_LONG, PROGRAM_DURATION_WEEKS_MAX } from "@/lib/constants"
 import { formatEnumValue } from "@/lib/utils"
 
@@ -34,17 +35,14 @@ export function ProgramBasicFields({ form, onChange }: Props) {
         />
       </div>
 
-      <div className="flex flex-col gap-1.5">
-        <label htmlFor="edit-description" className="text-sm font-medium text-slate-700">{t("fieldDescription")}</label>
-        <textarea
-          id="edit-description"
-          value={form.description}
-          onChange={(e) => onChange("description", e.target.value)}
-          maxLength={FIELD_MAX_LONG}
-          rows={3}
-          className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 resize-none"
-        />
-      </div>
+      <Textarea
+        id="edit-description"
+        label={t("fieldDescription")}
+        value={form.description}
+        onChange={(e) => onChange("description", e.target.value)}
+        maxLength={FIELD_MAX_LONG}
+        rows={3}
+      />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="flex flex-col gap-1.5">
