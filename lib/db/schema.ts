@@ -433,6 +433,7 @@ export const clientAlerts = pgTable(
     title: text("title").notNull(),
     message: text("message").notNull(),
     isResolved: boolean("is_resolved").default(false).notNull(),
+    resolvedAt: timestamp("resolved_at", { mode: "date" }),
     checkInId: uuid("check_in_id").references(() => checkIns.id, { onDelete: "set null" }),
     createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
   },

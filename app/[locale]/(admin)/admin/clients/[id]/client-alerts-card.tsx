@@ -17,6 +17,7 @@ export type ClientAlertRow = {
   title: string
   message: string
   createdAt: Date
+  resolvedAt: Date | string | null
   isResolved: boolean
 }
 
@@ -41,11 +42,16 @@ function AlertRow({ alert, onResolved, showResolveButton }: {
         <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">{alert.message}</p>
         <p className="text-xs text-slate-400 mt-1">{formatDate(alert.createdAt)}</p>
       </div>
-      <div className="flex-shrink-0 pt-0.5">
+      <div className="flex-shrink-0 pt-0.5 text-right">
         {showResolveButton && onResolved ? (
           <ResolveAlertButton alertId={alert.id} onResolved={onResolved} />
         ) : (
-          <span className="text-xs text-slate-400 font-medium">{t("resolvedLabel")}</span>
+          <div className="flex flex-col items-end gap-0.5">
+            <span className="text-xs text-slate-400 font-medium">{t("resolvedLabel")}</span>
+            {alert.resolvedAt && (
+              <span className="text-[10px] text-slate-300">{formatDate(alert.resolvedAt)}</span>
+            )}
+          </div>
         )}
       </div>
     </div>

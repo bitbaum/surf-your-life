@@ -16,9 +16,10 @@ export async function PATCH(
     return NextResponse.json({ success: false, error: API_ERR_FORBIDDEN }, { status: 403 })
   }
 
+  const now = new Date()
   const result = await db
     .update(clientAlerts)
-    .set({ isResolved: true })
+    .set({ isResolved: true, resolvedAt: now })
     .where(and(eq(clientAlerts.id, id), eq(clientAlerts.isResolved, false)))
     .returning({ id: clientAlerts.id })
 
