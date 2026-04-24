@@ -18,6 +18,7 @@ import { ClientEnrollmentCard } from "./client-enrollment-card"
 import { PractitionerAssignmentCard } from "./practitioner-assignment-card"
 import { ClientProfileCard } from "./client-profile-card"
 import { ClientCheckInsCard } from "./client-check-ins-card"
+import { PageHeader } from "@/components/ui/page-header"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 
 export default async function ClientDetailPage({ params }: { params: Promise<{ locale: string; id: string }> }) {
@@ -101,17 +102,17 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
         </Link>
       </div>
 
-      <div className="mb-8 flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">{client.name ?? t("detail.unnamed")}</h1>
-          <p className="text-slate-500">{client.email} · {t("detail.joinedOn", { date: formatDate(client.createdAt) })}</p>
-        </div>
-        <div className="flex items-center gap-2 flex-wrap">
-          <EnrollProgramButton clientId={id} programs={allPrograms} />
-          <NewThreadButton clientId={id} />
-          <ResetLinkButton userId={id} />
-        </div>
-      </div>
+      <PageHeader
+        title={client.name ?? t("detail.unnamed")}
+        description={`${client.email} · ${t("detail.joinedOn", { date: formatDate(client.createdAt) })}`}
+        action={
+          <div className="flex items-center gap-2 flex-wrap">
+            <EnrollProgramButton clientId={id} programs={allPrograms} />
+            <NewThreadButton clientId={id} />
+            <ResetLinkButton userId={id} />
+          </div>
+        }
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <ClientProfileCard profile={profile} />

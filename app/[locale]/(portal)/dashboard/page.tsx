@@ -21,6 +21,7 @@ import {
   computeInsightKey,
 } from "@/lib/domain/check-in"
 import { EmailVerificationBanner } from "@/components/portal/EmailVerificationBanner"
+import { PageHeader } from "@/components/ui/page-header"
 import { ProgressBar } from "@/components/ui/progress-bar"
 import { DashboardBanners } from "./dashboard-banners"
 import { DashboardCharts } from "./dashboard-charts"
@@ -119,12 +120,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-900">
-          {t(greetingKey, { name: firstName })}
-        </h1>
-        <p className="text-slate-500 mt-1">{t("subtitle")}</p>
-      </div>
+      <PageHeader title={t(greetingKey, { name: firstName })} description={t("subtitle")} />
 
       {!dbUser?.emailVerified && <EmailVerificationBanner />}
 

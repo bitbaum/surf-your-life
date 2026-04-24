@@ -56,16 +56,14 @@ export default async function TechniquesPage({ params }: { params: Promise<{ loc
 
   return (
     <div className="max-w-2xl mx-auto">
-      <div className="mb-6">
-        <PageHeader
-          title={t("title")}
-          description={
-            assignments.length > 0
-              ? t("progress", { done: totalToday, total: assignments.length })
-              : t("description")
-          }
-        />
-      </div>
+      <PageHeader
+        title={t("title")}
+        description={
+          assignments.length > 0
+            ? t("progress", { done: totalToday, total: assignments.length })
+            : t("description")
+        }
+      />
 
       <TechniqueTracker
         assignments={assignments}
