@@ -11,13 +11,6 @@ interface Props {
 export function EditMoodPicker({ mood, onChange }: Props) {
   const t = useTranslations("portal.checkIns")
   const tCheckIn = useTranslations("portal.checkIn")
-  const labels: Record<string, string> = {
-    very_low: tCheckIn("moodVeryLow"),
-    low: tCheckIn("moodLow"),
-    neutral: tCheckIn("moodNeutral"),
-    good: tCheckIn("moodGood"),
-    excellent: tCheckIn("moodExcellent"),
-  }
 
   return (
     <div>
@@ -33,7 +26,7 @@ export function EditMoodPicker({ mood, onChange }: Props) {
             }`}
           >
             <span className="text-xl">{m.emoji}</span>
-            <span className="text-xs text-slate-600">{labels[m.value]}</span>
+            <span className="text-xs text-slate-600">{tCheckIn(m.labelKey)}</span>
           </button>
         ))}
       </div>

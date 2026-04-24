@@ -4,11 +4,11 @@
 import { mainConcernEnum } from "@/lib/db/schema"
 
 export const MOODS = [
-  { value: "very_low", label: "Very low", emoji: "😔" },
-  { value: "low", label: "Low", emoji: "😕" },
-  { value: "neutral", label: "Neutral", emoji: "😐" },
-  { value: "good", label: "Good", emoji: "🙂" },
-  { value: "excellent", label: "Excellent", emoji: "😄" },
+  { value: "very_low", label: "Very low", emoji: "😔", labelKey: "moodVeryLow" },
+  { value: "low", label: "Low", emoji: "😕", labelKey: "moodLow" },
+  { value: "neutral", label: "Neutral", emoji: "😐", labelKey: "moodNeutral" },
+  { value: "good", label: "Good", emoji: "🙂", labelKey: "moodGood" },
+  { value: "excellent", label: "Excellent", emoji: "😄", labelKey: "moodExcellent" },
 ] as const
 
 export const MAIN_CONCERNS = mainConcernEnum.enumValues

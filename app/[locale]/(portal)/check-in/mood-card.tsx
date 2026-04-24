@@ -11,14 +11,6 @@ interface Props {
 
 export function MoodCard({ value, onChange }: Props) {
   const t = useTranslations("portal.checkIn")
-  const labels: Record<string, string> = {
-    very_low: t("moodVeryLow"),
-    low: t("moodLow"),
-    neutral: t("moodNeutral"),
-    good: t("moodGood"),
-    excellent: t("moodExcellent"),
-  }
-
   return (
     <Card>
       <CardHeader><CardTitle>{t("mood")}</CardTitle></CardHeader>
@@ -34,7 +26,7 @@ export function MoodCard({ value, onChange }: Props) {
               }`}
             >
               <span className="text-2xl">{m.emoji}</span>
-              <span className="text-xs text-slate-600">{labels[m.value]}</span>
+              <span className="text-xs text-slate-600">{t(m.labelKey)}</span>
             </button>
           ))}
         </div>
