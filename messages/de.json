@@ -961,7 +961,8 @@
         "placeholder": "Notiz für diesen Klienten schreiben…",
         "save": "Speichern & Klient benachrichtigen",
         "saving": "Wird gespeichert…",
-        "cancel": "Abbrechen"
+        "cancel": "Abbrechen",
+        "error": "Notiz konnte nicht gespeichert werden"
       },
       "resetLink": {
         "button": "Passwort-Reset-Link",

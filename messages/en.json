@@ -961,7 +961,8 @@
         "placeholder": "Write a note for this client…",
         "save": "Save & notify client",
         "saving": "Saving…",
-        "cancel": "Cancel"
+        "cancel": "Cancel",
+        "error": "Could not save note"
       },
       "resetLink": {
         "button": "Reset password link",

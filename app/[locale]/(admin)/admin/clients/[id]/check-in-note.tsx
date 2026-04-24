@@ -33,7 +33,7 @@ export function CheckInNote({ checkInId, existingNote, existingNoteAt }: Props) 
       })
       const data = await res.json()
       if (!res.ok) {
-        setError(data.error ?? t("saving"))
+        setError(data.error ?? t("error"))
         return
       }
       setSaved(text.trim())

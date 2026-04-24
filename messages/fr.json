@@ -979,7 +979,8 @@
         "placeholder": "Rédiger une note pour ce client…",
         "save": "Enregistrer et notifier le client",
         "saving": "Enregistrement…",
-        "cancel": "Annuler"
+        "cancel": "Annuler",
+        "error": "Impossible de sauvegarder la note"
       },
       "resetLink": {
         "button": "Lien de réinitialisation",
