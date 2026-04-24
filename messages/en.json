@@ -601,7 +601,8 @@
       "bookingCancelled": "Booking cancelled",
       "cancelBooking": "Cancel booking",
       "cancelling": "Cancelling…",
-      "cancelError": "Could not cancel. Please try again."
+      "cancelError": "Could not cancel. Please try again.",
+      "noServices": "No services are available for booking at this time. Check back soon or contact your practitioner."
     },
     "settings": {
       "title": "Account Settings",

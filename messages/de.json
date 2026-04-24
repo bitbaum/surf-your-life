@@ -601,7 +601,8 @@
       "bookingCancelled": "Buchung abgesagt",
       "cancelBooking": "Buchung stornieren",
       "cancelling": "Wird storniert…",
-      "cancelError": "Stornierung fehlgeschlagen. Bitte erneut versuchen."
+      "cancelError": "Stornierung fehlgeschlagen. Bitte erneut versuchen.",
+      "noServices": "Derzeit sind keine Dienstleistungen buchbar. Schaue bald wieder vorbei oder kontaktiere deinen Therapeuten."
     },
     "settings": {
       "title": "Kontoeinstellungen",

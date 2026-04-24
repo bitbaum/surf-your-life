@@ -58,6 +58,12 @@ export function BookingGrid({ services }: { services: Service[] }) {
     }
   }
 
+  if (services.length === 0) {
+    return (
+      <p className="text-sm text-slate-400 py-6 text-center">{t("noServices")}</p>
+    )
+  }
+
   return (
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

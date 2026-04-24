@@ -601,7 +601,8 @@
       "bookingCancelled": "Réservation annulée",
       "cancelBooking": "Annuler la réservation",
       "cancelling": "Annulation…",
-      "cancelError": "Impossible d'annuler. Veuillez réessayer."
+      "cancelError": "Impossible d'annuler. Veuillez réessayer.",
+      "noServices": "Aucun service n'est disponible à la réservation pour l'instant. Revenez bientôt ou contactez votre praticien."
     },
     "settings": {
       "title": "Paramètres du compte",
