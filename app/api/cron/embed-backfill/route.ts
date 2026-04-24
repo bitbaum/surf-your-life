@@ -35,23 +35,38 @@ export async function GET(req: Request) {
     .where(isNull(documents.embedding))
     .limit(EMBED_BACKFILL_BATCH)
 
-  // Process sequentially to avoid hammering the OpenAI rate limit
+  // Process sequentially to avoid hammering the OpenAI rate limit.
+  // Per-item try-catch ensures one failure doesn't abort the entire batch.
   let checkInsProcessed = 0
+  let checkInsFailed = 0
   for (const { id } of unembeddedCheckIns) {
-    await embedCheckIn(id)
-    checkInsProcessed++
+    try {
+      await embedCheckIn(id)
+      checkInsProcessed++
+    } catch (err) {
+      console.error("[embed-backfill] check-in", id, err)
+      checkInsFailed++
+    }
   }
 
   let docsProcessed = 0
+  let docsFailed = 0
   for (const { id } of unembeddedDocs) {
-    await embedDocument(id)
-    docsProcessed++
+    try {
+      await embedDocument(id)
+      docsProcessed++
+    } catch (err) {
+      console.error("[embed-backfill] document", id, err)
+      docsFailed++
+    }
   }
 
   return NextResponse.json({
     success: true,
     checkInsProcessed,
     docsProcessed,
+    ...(checkInsFailed > 0 && { checkInsFailed }),
+    ...(docsFailed > 0 && { docsFailed }),
     remaining: unembeddedCheckIns.length === EMBED_BACKFILL_BATCH || unembeddedDocs.length === EMBED_BACKFILL_BATCH
       ? "more records may exist"
       : "fully caught up",
