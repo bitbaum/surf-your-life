@@ -4,7 +4,7 @@ import { users, checkIns, programs, programEnrollments, medicationLog, functiona
 import { eq, desc, isNull, and, count, inArray, gte } from "drizzle-orm"
 import { formatDate, toDateString } from "@/lib/utils"
 import { Link } from "@/i18n/navigation"
-import { PAGINATION_DEFAULT, SEVEN_DAYS_MS } from "@/lib/constants"
+import { PAGINATION_DEFAULT, SEVEN_DAYS_MS, SERVICES_MAX_LIMIT } from "@/lib/constants"
 import { CLIENT_ROLE, STAFF_ROLES } from "@/lib/domain/auth"
 import { computeAdherenceByAssignment } from "@/lib/domain/techniques"
 import { ResetLinkButton } from "./reset-link-button"
@@ -39,7 +39,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
       limit: PAGINATION_DEFAULT,
     }),
     db.select({ count: count() }).from(checkIns).where(eq(checkIns.userId, id)),
-    db.query.programs.findMany({ orderBy: [desc(programs.createdAt)] }),
+    db.query.programs.findMany({ orderBy: [desc(programs.createdAt)], limit: SERVICES_MAX_LIMIT }),
     db.query.programEnrollments.findFirst({
       where: eq(programEnrollments.clientId, id),
       with: { program: true },
@@ -61,6 +61,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
     db.query.techniques.findMany({
       where: eq(techniques.isActive, true),
       orderBy: (t, { asc }) => [asc(t.category), asc(t.name)],
+      limit: SERVICES_MAX_LIMIT,
     }),
     db
       .select({
