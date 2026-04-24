@@ -54,6 +54,7 @@ export function ChatInterface({ initialMessages }: Props) {
       if (!data.success) {
         setError(t("sendError"))
         setMessages((prev) => prev.filter((m) => m.id !== tempId))
+        setInput(content)
         return
       }
       setMessages((prev) => [
@@ -63,6 +64,7 @@ export function ChatInterface({ initialMessages }: Props) {
     } catch {
       setError(t("sendError"))
       setMessages((prev) => prev.filter((m) => m.id !== tempId))
+      setInput(content)
     } finally {
       setSending(false)
     }

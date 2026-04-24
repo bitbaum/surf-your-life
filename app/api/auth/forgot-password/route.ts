@@ -49,11 +49,11 @@ export async function POST(req: Request) {
     const host = req.headers.get("x-forwarded-host") ?? req.headers.get("host") ?? "localhost:3000"
     const proto = req.headers.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https")
     const resetUrl = `${proto}://${host}/reset-password?token=${token}`
-    await sendEmail({
+    void sendEmail({
       to: email,
       subject: EMAIL_SUBJECT_RESET_PASSWORD,
       html: passwordResetEmail({ resetUrl }),
-    })
+    }).catch((e) => console.error("[forgot-password] email failed", e))
   }
 
   return NextResponse.json({ success: true })
