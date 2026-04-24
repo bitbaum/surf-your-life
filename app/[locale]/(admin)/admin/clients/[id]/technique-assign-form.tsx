@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
+import { Select } from "@/components/ui/select"
 import type { Technique } from "@/lib/db/schema"
 import { toDateString } from "@/lib/utils"
 import { FIELD_MAX_TITLE, TECHNIQUE_DAILY_FREQUENCY_MAX } from "@/lib/constants"
@@ -54,11 +55,10 @@ export function TechniqueAssignForm({ clientId, available, categoryEmoji, onSave
     <form onSubmit={handleSubmit} className="mb-4 p-3 bg-slate-50 rounded-lg flex flex-col gap-3">
       <div>
         <label className="block text-xs font-medium text-slate-700 mb-1">{t("fieldSelectTechnique")}</label>
-        <select
+        <Select
           required
           value={form.techniqueId}
           onChange={(e) => setForm((f) => ({ ...f, techniqueId: e.target.value }))}
-          className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal-500"
         >
           <option value="">{t("selectPlaceholder")}</option>
           {available.map((tech) => (
@@ -66,7 +66,7 @@ export function TechniqueAssignForm({ clientId, available, categoryEmoji, onSave
               {categoryEmoji[tech.category]} {tech.name}
             </option>
           ))}
-        </select>
+        </Select>
       </div>
       <div>
         <label className="block text-xs font-medium text-slate-700 mb-1">{t("fieldFrequency")}</label>

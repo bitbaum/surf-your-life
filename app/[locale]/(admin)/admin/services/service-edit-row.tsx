@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
+import { Select } from "@/components/ui/select"
 import { SERVICE_CATEGORIES } from "@/lib/domain/services"
 import { SERVICE_DURATION_MINUTES } from "@/lib/constants"
 import type { InferSelectModel } from "drizzle-orm"
@@ -55,15 +56,14 @@ export function ServiceEditRow({ form, saving, onChange, onSave, onCancel }: Ser
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-xs font-medium text-slate-500 block mb-1">{t("fieldCategory")}</label>
-              <select
+              <Select
                 value={form.category}
                 onChange={(e) => onChange({ ...form, category: e.target.value as Service["category"] })}
-                className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white"
               >
                 {SERVICE_CATEGORIES.map((c) => (
                   <option key={c} value={c}>{t(`categoryLabels.${c}`)}</option>
                 ))}
-              </select>
+              </Select>
             </div>
             <div>
               <label className="text-xs font-medium text-slate-500 block mb-1">{t("fieldDescription")}</label>

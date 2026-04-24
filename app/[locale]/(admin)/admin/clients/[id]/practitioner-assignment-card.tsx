@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 import { UserCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Select } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { formatDate } from "@/lib/utils"
 
@@ -77,10 +78,10 @@ export function PractitionerAssignmentCard({ clientId, current, practitioners }:
       <CardContent>
         {editing ? (
           <div className="flex items-center gap-2">
-            <select
+            <Select
               value={selected}
               onChange={(e) => setSelected(e.target.value)}
-              className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal-500"
+              className="flex-1"
             >
               <option value="">{t("selectPractitioner")}</option>
               {practitioners.map((p) => (
@@ -88,7 +89,7 @@ export function PractitionerAssignmentCard({ clientId, current, practitioners }:
                   {p.name ?? p.email}
                 </option>
               ))}
-            </select>
+            </Select>
             <Button size="sm" onClick={handleAssign} disabled={!selected || saving}>
               {saving ? t("saving") : t("assignPractitioner")}
             </Button>

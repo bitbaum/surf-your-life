@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Modal } from "@/components/ui/modal"
+import { Select } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { Plus } from "lucide-react"
 import { FIELD_MAX_LONG } from "@/lib/constants"
@@ -76,25 +77,20 @@ export function EnrollProgramButton({ clientId, programs }: EnrollProgramButtonP
       {open && (
         <Modal title={t("enrollTitle")} onClose={() => setOpen(false)} closeLabel={t("cancel")}>
           <form onSubmit={handleEnroll} className="flex flex-col gap-4">
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor="programId" className="text-sm font-medium text-slate-700">
-                {t("fieldSelectProgram")} *
-              </label>
-              <select
-                id="programId"
-                value={programId}
-                onChange={(e) => setProgramId(e.target.value)}
-                required
-                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 min-h-[44px]"
-              >
-                <option value="">{t("fieldSelectProgramPlaceholder")}</option>
-                {programs.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.title}{p.durationWeeks ? ` (${p.durationWeeks}w)` : ""}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <Select
+              id="programId"
+              label={`${t("fieldSelectProgram")} *`}
+              value={programId}
+              onChange={(e) => setProgramId(e.target.value)}
+              required
+            >
+              <option value="">{t("fieldSelectProgramPlaceholder")}</option>
+              {programs.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.title}{p.durationWeeks ? ` (${p.durationWeeks}w)` : ""}
+                </option>
+              ))}
+            </Select>
 
             <div className="flex flex-col gap-1.5">
               <label htmlFor="startDate" className="text-sm font-medium text-slate-700">

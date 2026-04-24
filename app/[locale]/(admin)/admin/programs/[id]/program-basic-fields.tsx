@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { Select } from "@/components/ui/select"
 import { MAIN_CONCERNS, FIELD_MAX_TITLE, FIELD_MAX_LONG, PROGRAM_DURATION_WEEKS_MAX } from "@/lib/constants"
 import { formatEnumValue } from "@/lib/utils"
 
@@ -57,20 +58,17 @@ export function ProgramBasicFields({ form, onChange }: Props) {
             placeholder={t("fieldDurationPlaceholder")}
           />
         </div>
-        <div className="flex flex-col gap-1.5">
-          <label htmlFor="edit-concern" className="text-sm font-medium text-slate-700">{t("fieldTargetConcern")}</label>
-          <select
-            id="edit-concern"
-            value={form.targetConcern}
-            onChange={(e) => onChange("targetConcern", e.target.value)}
-            className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 min-h-[44px]"
-          >
-            <option value="">{t("fieldTargetConcernAny")}</option>
-            {MAIN_CONCERNS.map((c) => (
-              <option key={c} value={c}>{formatEnumValue(c)}</option>
-            ))}
-          </select>
-        </div>
+        <Select
+          id="edit-concern"
+          label={t("fieldTargetConcern")}
+          value={form.targetConcern}
+          onChange={(e) => onChange("targetConcern", e.target.value)}
+        >
+          <option value="">{t("fieldTargetConcernAny")}</option>
+          {MAIN_CONCERNS.map((c) => (
+            <option key={c} value={c}>{formatEnumValue(c)}</option>
+          ))}
+        </Select>
       </div>
 
       <label className="flex items-center gap-3 cursor-pointer">

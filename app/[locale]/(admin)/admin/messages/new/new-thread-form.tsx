@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
+import { Select } from "@/components/ui/select"
 import { FIELD_MAX_TITLE, FIELD_MAX_MESSAGE } from "@/lib/constants"
 
 type Client = { id: string; name: string | null; email: string }
@@ -50,23 +51,20 @@ export function NewThreadForm({
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      <div className="flex flex-col gap-1.5">
-        <label className="text-sm font-medium text-slate-700">{at("selectClient")}</label>
-        <select
-          value={form.clientId}
-          onChange={(e) => setForm((f) => ({ ...f, clientId: e.target.value }))}
-          required
-          disabled={sending}
-          className="rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:opacity-50"
-        >
-          <option value="">— Select client —</option>
-          {clients.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.name ?? c.email} {c.name ? `(${c.email})` : ""}
-            </option>
-          ))}
-        </select>
-      </div>
+      <Select
+        label={at("selectClient")}
+        value={form.clientId}
+        onChange={(e) => setForm((f) => ({ ...f, clientId: e.target.value }))}
+        required
+        disabled={sending}
+      >
+        <option value="">— Select client —</option>
+        {clients.map((c) => (
+          <option key={c.id} value={c.id}>
+            {c.name ?? c.email} {c.name ? `(${c.email})` : ""}
+          </option>
+        ))}
+      </Select>
 
       <div className="flex flex-col gap-1.5">
         <label className="text-sm font-medium text-slate-700">{t("subject")}</label>
