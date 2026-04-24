@@ -4,7 +4,7 @@ import { asc } from "drizzle-orm"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { getTranslations, setRequestLocale } from "next-intl/server"
-import { TECHNIQUE_CATEGORIES } from "@/lib/constants"
+import { TECHNIQUE_CATEGORIES, DIFFICULTY_BADGE_CLASSES } from "@/lib/constants"
 import { formatEnumValue } from "@/lib/utils"
 import { TechniqueActions } from "./technique-actions"
 import { TechniqueCreateButton } from "./technique-create-button"
@@ -67,13 +67,7 @@ export default async function TechniquesPage({ params }: { params: Promise<{ loc
                           <p className={`text-sm font-medium ${technique.isActive ? "text-slate-900" : "text-slate-400 line-through"}`}>
                             {technique.name}
                           </p>
-                          <span className={`text-xs px-2 py-0.5 rounded-full border ${
-                            technique.difficulty === "easy"
-                              ? "bg-teal-50 text-teal-700 border-teal-200"
-                              : technique.difficulty === "moderate"
-                              ? "bg-amber-50 text-amber-700 border-amber-200"
-                              : "bg-red-50 text-red-700 border-red-200"
-                          }`}>
+                          <span className={`text-xs px-2 py-0.5 rounded-full border ${DIFFICULTY_BADGE_CLASSES[technique.difficulty] ?? DIFFICULTY_BADGE_CLASSES.easy}`}>
                             {formatEnumValue(technique.difficulty)}
                           </span>
                           {technique.durationMinutes && (

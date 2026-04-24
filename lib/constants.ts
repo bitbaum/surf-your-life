@@ -215,6 +215,12 @@ export const TECHNIQUE_DIFFICULTIES = [
   { value: "challenging", labelKey: "difficultyChallenging" },
 ] as const
 
+export const DIFFICULTY_BADGE_CLASSES: Record<string, string> = {
+  easy:        "bg-teal-50 text-teal-700 border-teal-200",
+  moderate:    "bg-amber-50 text-amber-700 border-amber-200",
+  challenging: "bg-red-50 text-red-700 border-red-200",
+}
+
 // Technique debt / catch-up safety defaults (clinical: protect Long COVID / PEM clients)
 // safetyCapMultiplier: stored ×100 in DB. 150 = 1.5× the daily target max catch-up per day.
 export const TECHNIQUE_DEFAULT_FREQUENCY = 1
