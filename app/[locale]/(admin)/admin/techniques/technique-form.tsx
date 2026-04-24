@@ -4,8 +4,8 @@ import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
+import { Modal } from "@/components/ui/modal"
 import type { Technique } from "@/lib/db/schema"
-import { X } from "lucide-react"
 import { TechniqueFormFields } from "./technique-form-fields"
 
 interface TechniqueFormProps {
@@ -56,27 +56,21 @@ export function TechniqueForm({ technique, onClose, onSaved }: TechniqueFormProp
   })
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <div className="bg-white rounded-xl shadow-lg w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-6 border-b border-slate-200">
-          <h2 className="text-lg font-semibold text-slate-900">
-            {technique ? t("editTitle") : t("createTitle")}
-          </h2>
-          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-slate-100">
-            <X className="w-4 h-4 text-slate-500" />
-          </button>
+    <Modal
+      title={technique ? t("editTitle") : t("createTitle")}
+      onClose={onClose}
+      size="lg"
+      scrollable
+    >
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <TechniqueFormFields field={field} />
+        <div className="flex justify-end gap-3 pt-2 border-t border-slate-100">
+          <Button type="button" variant="ghost" onClick={onClose}>{t("cancel")}</Button>
+          <Button type="submit" disabled={saving}>
+            {saving ? t("saving") : t("save")}
+          </Button>
         </div>
-
-        <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-4">
-          <TechniqueFormFields field={field} />
-          <div className="flex justify-end gap-3 pt-2 border-t border-slate-100">
-            <Button type="button" variant="ghost" onClick={onClose}>{t("cancel")}</Button>
-            <Button type="submit" disabled={saving}>
-              {saving ? t("saving") : t("save")}
-            </Button>
-          </div>
-        </form>
-      </div>
-    </div>
+      </form>
+    </Modal>
   )
 }

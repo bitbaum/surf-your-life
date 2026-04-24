@@ -241,12 +241,16 @@ Every pixel follows these rules. If it's not in the system, add it to the system
 
 ## What's Not Built Yet (Do Not Add Prematurely)
 
-- AI analysis / embeddings generation (AI chat + parse work via `ANTHROPIC_API_KEY`; embeddings for semantic search are not yet generated)
-- Document upload by clients (practitioners can create documents via admin; client upload not built)
-- Practitioner assignment UI (schema exists, no UI)
 - Notifications (in-app or push)
 
 These will be built in order of user value. Do not add scaffolding for them ahead of time.
+
+## What IS Built (Updated from "not yet" list)
+
+- **AI chat + embeddings** — `app/(portal)/ai-chat/` (client-facing), `lib/domain/ai-chat.ts` (Claude API + rule-based fallback), `lib/domain/embeddings.ts` (OpenAI text-embedding-3-small). Embeddings generated on check-in create/update, document upload, and via cron backfill at `app/api/cron/embed-backfill/`.
+- **Document upload by clients** — `app/(portal)/documents/` with `document-upload-form.tsx`; admin side at `app/(admin)/admin/clients/[id]/`. API routes at `app/api/portal/documents/` and `app/api/admin/clients/[id]/documents/`.
+- **Practitioner assignment UI** — `practitioner-assignment-card.tsx` on client detail page.
+- **At-risk clients page** — `app/(admin)/admin/clients/at-risk/` with SQL HAVING clause for efficient filtering.
 
 ---
 
