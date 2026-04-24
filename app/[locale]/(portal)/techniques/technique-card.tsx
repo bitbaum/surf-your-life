@@ -1,7 +1,7 @@
 "use client"
 
 import { useTranslations } from "next-intl"
-import { CheckCircle2, Circle, RotateCcw } from "lucide-react"
+import { CheckCircle2, Circle, RotateCcw, Minus } from "lucide-react"
 import type { computeTechniqueDebt, AssignmentWithTechnique } from "@/lib/domain/techniques"
 type Debt = ReturnType<typeof computeTechniqueDebt>
 
@@ -11,9 +11,10 @@ interface TechniqueCardProps {
   categoryEmoji: Record<string, string>
   submitting: string | null
   onLog: (a: AssignmentWithTechnique) => void
+  onUndo: (a: AssignmentWithTechnique) => void
 }
 
-export function TechniqueCard({ assignment: a, debt, categoryEmoji, submitting, onLog }: TechniqueCardProps) {
+export function TechniqueCard({ assignment: a, debt, categoryEmoji, submitting, onLog, onUndo }: TechniqueCardProps) {
   const t = useTranslations("portal.techniques")
   const todayDone = debt.todayCompleted
   const targetMet = todayDone >= debt.dailyTarget
@@ -43,26 +44,38 @@ export function TechniqueCard({ assignment: a, debt, categoryEmoji, submitting, 
         </div>
 
         {/* Rep counter */}
-        <div className="flex flex-col items-center gap-1 flex-shrink-0">
-          <button
-            onClick={() => onLog(a)}
-            disabled={!!submitting}
-            className={`w-11 h-11 rounded-full flex items-center justify-center transition-colors ${
-              targetMet
-                ? "bg-teal-600 text-white"
-                : "bg-white border-2 border-teal-300 text-teal-600 hover:bg-teal-50"
-            } disabled:opacity-50`}
-            title={t("logOne")}
-          >
-            {targetMet ? (
-              <CheckCircle2 className="w-5 h-5" />
-            ) : (
-              <Circle className="w-5 h-5" />
-            )}
-          </button>
-          <span className="text-xs text-slate-500">
-            {todayDone}/{debt.dailyTarget}
-          </span>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          {todayDone > 0 && (
+            <button
+              onClick={() => onUndo(a)}
+              disabled={!!submitting}
+              className="w-7 h-7 rounded-full flex items-center justify-center border border-slate-200 text-slate-400 hover:border-slate-300 hover:text-slate-600 transition-colors disabled:opacity-50"
+              title={t("undoRep")}
+            >
+              <Minus className="w-3.5 h-3.5" />
+            </button>
+          )}
+          <div className="flex flex-col items-center gap-1">
+            <button
+              onClick={() => onLog(a)}
+              disabled={!!submitting}
+              className={`w-11 h-11 rounded-full flex items-center justify-center transition-colors ${
+                targetMet
+                  ? "bg-teal-600 text-white"
+                  : "bg-white border-2 border-teal-300 text-teal-600 hover:bg-teal-50"
+              } disabled:opacity-50`}
+              title={t("logOne")}
+            >
+              {targetMet ? (
+                <CheckCircle2 className="w-5 h-5" />
+              ) : (
+                <Circle className="w-5 h-5" />
+              )}
+            </button>
+            <span className="text-xs text-slate-500">
+              {todayDone}/{debt.dailyTarget}
+            </span>
+          </div>
         </div>
       </div>
 

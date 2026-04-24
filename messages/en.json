@@ -757,6 +757,7 @@
       "logOne": "Log one rep",
       "catchUp": "Catch up: {reps} rep(s) from earlier this week",
       "howTo": "How to do this",
+      "undoRep": "Undo last rep",
       "messagePractitioner": "Message your practitioner →"
     },
     "documents": {

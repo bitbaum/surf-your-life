@@ -52,6 +52,33 @@ export function TechniqueTracker({ assignments, logsByAssignment, today }: Techn
     }
   }
 
+  async function undoRep(assignment: AssignmentWithTechnique) {
+    if (submitting) return
+    const current = logs[assignment.id]?.[today] ?? 0
+    if (current === 0) return
+    setSubmitting(assignment.id)
+    try {
+      const res = await fetch("/api/technique-logs", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ assignmentId: assignment.id, date: today }),
+      })
+      if (!res.ok) throw new Error()
+      const json = await res.json()
+      setLogs((prev) => ({
+        ...prev,
+        [assignment.id]: {
+          ...(prev[assignment.id] ?? {}),
+          [today]: json.data.newCount,
+        },
+      }))
+    } catch {
+      toast.error(t("logError"))
+    } finally {
+      setSubmitting(null)
+    }
+  }
+
   if (assignments.length === 0) {
     return (
       <EmptyState
@@ -72,6 +99,7 @@ export function TechniqueTracker({ assignments, logsByAssignment, today }: Techn
           categoryEmoji={categoryEmoji}
           submitting={submitting}
           onLog={logRep}
+          onUndo={undoRep}
         />
       ))}
     </div>

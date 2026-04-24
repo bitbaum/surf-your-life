@@ -1,11 +1,17 @@
 import { NextResponse } from "next/server"
+import { z } from "zod"
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { techniqueLogs, techniqueAssignments } from "@/lib/db/schema"
-import { eq, and, gte } from "drizzle-orm"
+import { eq, and, gte, desc } from "drizzle-orm"
 import { logTechniqueSchema } from "@/lib/domain/techniques"
 import { toDateString } from "@/lib/utils"
 import { API_ERR_UNAUTHORIZED, API_ERR_NOT_FOUND, API_ERR_INVALID_INPUT, TECHNIQUE_LOG_WINDOW_DAYS } from "@/lib/constants"
+
+const undoSchema = z.object({
+  assignmentId: z.string().uuid(),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+})
 
 export async function GET(req: Request) {
   const session = await auth()
@@ -61,4 +67,56 @@ export async function POST(req: Request) {
     .returning()
 
   return NextResponse.json({ success: true, data: log }, { status: 201 })
+}
+
+export async function DELETE(req: Request) {
+  const session = await auth()
+  if (!session) return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
+
+  const body = await req.json()
+  const parsed = undoSchema.safeParse(body)
+  if (!parsed.success) {
+    return NextResponse.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })
+  }
+
+  const { assignmentId, date } = parsed.data
+
+  // Verify assignment belongs to this user
+  const assignment = await db.query.techniqueAssignments.findFirst({
+    where: and(
+      eq(techniqueAssignments.id, assignmentId),
+      eq(techniqueAssignments.clientId, session.user.id)
+    ),
+  })
+  if (!assignment) {
+    return NextResponse.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
+  }
+
+  // Find the row with the highest completedReps for today — that's the one to delete
+  const topRow = await db.query.techniqueLogs.findFirst({
+    where: and(
+      eq(techniqueLogs.userId, session.user.id),
+      eq(techniqueLogs.assignmentId, assignmentId),
+      eq(techniqueLogs.date, date)
+    ),
+    orderBy: [desc(techniqueLogs.completedReps)],
+  })
+
+  if (!topRow) {
+    return NextResponse.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
+  }
+
+  await db.delete(techniqueLogs).where(eq(techniqueLogs.id, topRow.id))
+
+  // Return the new effective count (max of remaining rows, or 0)
+  const newTopRow = await db.query.techniqueLogs.findFirst({
+    where: and(
+      eq(techniqueLogs.userId, session.user.id),
+      eq(techniqueLogs.assignmentId, assignmentId),
+      eq(techniqueLogs.date, date)
+    ),
+    orderBy: [desc(techniqueLogs.completedReps)],
+  })
+
+  return NextResponse.json({ success: true, data: { newCount: newTopRow?.completedReps ?? 0 } })
 }

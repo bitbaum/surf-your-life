@@ -757,6 +757,7 @@
       "logOne": "Eine Wiederholung loggen",
       "catchUp": "Nachholbedarf: {reps} Wiederholung(en) aus dieser Woche",
       "howTo": "Wie geht das?",
+      "undoRep": "Letzte Wiederholung rückgängig",
       "messagePractitioner": "Therapeuten kontaktieren →"
     },
     "documents": {

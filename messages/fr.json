@@ -757,6 +757,7 @@
       "logOne": "Enregistrer une répétition",
       "catchUp": "Rattrapage : {reps} répétition(s) de cette semaine",
       "howTo": "Comment faire ?",
+      "undoRep": "Annuler la dernière répétition",
       "messagePractitioner": "Contacter votre praticien →"
     },
     "documents": {
