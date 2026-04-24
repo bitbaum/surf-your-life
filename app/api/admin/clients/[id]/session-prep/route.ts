@@ -9,7 +9,7 @@ import { isStaff } from "@/lib/domain/auth"
 import { formatEnumValue, roundOne } from "@/lib/utils"
 import { db } from "@/lib/db"
 import { users, checkIns, clientAlerts } from "@/lib/db/schema"
-import { eq, desc } from "drizzle-orm"
+import { eq, desc, and } from "drizzle-orm"
 import { callClaude } from "@/lib/domain/anthropic"
 import { toDateString } from "@/lib/utils"
 import { SESSION_PREP_CHECKIN_LIMIT, SESSION_PREP_ALERTS_LIMIT, SESSION_PREP_ENERGY_AVG_WINDOW, API_ERR_UNAUTHORIZED, API_ERR_NOT_FOUND } from "@/lib/constants"
@@ -37,7 +37,7 @@ export async function GET(
       limit: SESSION_PREP_CHECKIN_LIMIT,
     }),
     db.query.clientAlerts.findMany({
-      where: eq(clientAlerts.clientId, clientId),
+      where: and(eq(clientAlerts.clientId, clientId), eq(clientAlerts.isResolved, false)),
       orderBy: [desc(clientAlerts.createdAt)],
       limit: SESSION_PREP_ALERTS_LIMIT,
     }),
