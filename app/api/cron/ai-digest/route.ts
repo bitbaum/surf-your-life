@@ -11,6 +11,7 @@ import { users, checkIns, clientAlerts } from "@/lib/db/schema"
 import { eq, and, gte, desc, inArray, count } from "drizzle-orm"
 import { STAFF_ROLES, CLIENT_ROLE } from "@/lib/domain/auth"
 import { SEVEN_DAYS_MS, SITE_URL, AI_DIGEST_MIN_CHECKINS, API_ERR_UNAUTHORIZED } from "@/lib/constants"
+import { roundOne } from "@/lib/utils"
 import { summariseCheckIns } from "@/lib/domain/check-in"
 import { generateWeeklyDigest } from "@/lib/domain/digest"
 import { sendEmail } from "@/lib/email"
@@ -117,10 +118,10 @@ export async function GET(req: Request) {
 
     // Collect stats for the practitioner digest email
     const stats = summariseCheckIns(weekCheckIns)!
-    const avgEnergy = Math.round(stats.avgEnergy * 10) / 10
+    const avgEnergy = roundOne(stats.avgEnergy)
     const avgMood = stats.avgMood
-    const avgSleep = stats.avgSleep != null ? Math.round(stats.avgSleep * 10) / 10 : null
-    const avgStress = stats.avgStress != null ? Math.round(stats.avgStress * 10) / 10 : null
+    const avgSleep = stats.avgSleep != null ? roundOne(stats.avgSleep) : null
+    const avgStress = stats.avgStress != null ? roundOne(stats.avgStress) : null
     const pemEpisodes = stats.pemCount
 
     digestRows.push({

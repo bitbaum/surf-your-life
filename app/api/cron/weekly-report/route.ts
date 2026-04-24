@@ -10,6 +10,7 @@ import { eq, and, gte, inArray } from "drizzle-orm"
 import { sendEmail } from "@/lib/email"
 import { weeklyReportEmail } from "@/lib/email/templates"
 import { SITE_URL, SEVEN_DAYS_MS, API_ERR_UNAUTHORIZED } from "@/lib/constants"
+import { roundOne } from "@/lib/utils"
 import { CLIENT_ROLE } from "@/lib/domain/auth"
 import { summariseCheckIns } from "@/lib/domain/check-in"
 
@@ -54,8 +55,8 @@ export async function GET(req: Request) {
     const stats = summariseCheckIns(weekCheckIns)!
     const avgEnergy = Math.round(stats.avgEnergy)
     const avgMood = stats.avgMood
-    const avgSleep = stats.avgSleep != null ? Math.round(stats.avgSleep * 10) / 10 : null
-    const avgStress = stats.avgStress != null ? Math.round(stats.avgStress * 10) / 10 : null
+    const avgSleep = stats.avgSleep != null ? roundOne(stats.avgSleep) : null
+    const avgStress = stats.avgStress != null ? roundOne(stats.avgStress) : null
     const pemEpisodes = stats.pemCount
     const topWin = weekCheckIns.find((ci) => ci.wins)?.wins ?? null
 

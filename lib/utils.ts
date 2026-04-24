@@ -25,6 +25,11 @@ export function toDateString(date: Date): string {
   return date.toISOString().split("T")[0]
 }
 
+// Rounds a number to one decimal place for display in stats / summaries.
+export function roundOne(n: number): number {
+  return Math.round(n * 10) / 10
+}
+
 // Pagination helpers — all three used together on every paginated page.
 // Centralised here so a change to pagination logic touches one place.
 

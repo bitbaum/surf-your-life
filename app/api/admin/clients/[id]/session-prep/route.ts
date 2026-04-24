@@ -6,7 +6,7 @@
 import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { isStaff } from "@/lib/domain/auth"
-import { formatEnumValue } from "@/lib/utils"
+import { formatEnumValue, roundOne } from "@/lib/utils"
 import { db } from "@/lib/db"
 import { users, checkIns, clientAlerts } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
@@ -74,10 +74,10 @@ Write in a professional, clinical tone. Be specific and actionable.`,
   const energyWindow = recentCheckIns.slice(0, SESSION_PREP_ENERGY_AVG_WINDOW)
   const latestEnergy = recentCheckIns[0]?.energyLevel ?? null
   const avgEnergy = energyWindow.length > 0
-    ? Math.round(energyWindow.reduce((s, ci) => s + ci.energyLevel, 0) / energyWindow.length * 10) / 10
+    ? roundOne(energyWindow.reduce((s, ci) => s + ci.energyLevel, 0) / energyWindow.length)
     : null
   const prevAvgEnergy = recentCheckIns.length > 1
-    ? Math.round(recentCheckIns.slice(1, SESSION_PREP_ENERGY_AVG_WINDOW + 1).reduce((s, ci) => s + ci.energyLevel, 0) / Math.min(SESSION_PREP_ENERGY_AVG_WINDOW, recentCheckIns.length - 1) * 10) / 10
+    ? roundOne(recentCheckIns.slice(1, SESSION_PREP_ENERGY_AVG_WINDOW + 1).reduce((s, ci) => s + ci.energyLevel, 0) / Math.min(SESSION_PREP_ENERGY_AVG_WINDOW, recentCheckIns.length - 1))
     : null
   const energyDirection: "up" | "down" | "stable" =
     avgEnergy == null || prevAvgEnergy == null ? "stable"
