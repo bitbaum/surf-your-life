@@ -71,7 +71,7 @@ export default async function AtRiskClientsPage({ params }: { params: Promise<{ 
                   <th className="text-left py-2 font-medium text-slate-500">{t("columnName")}</th>
                   <th className="text-left py-2 font-medium text-slate-500">{t("columnEmail")}</th>
                   <th className="text-left py-2 font-medium text-slate-500">{t("atRisk.lastCheckIn")}</th>
-                  <th className="text-left py-2 font-medium text-slate-500">{t("columnJoined")}</th>
+                  <th className="text-left py-2 font-medium text-slate-500">{t("atRisk.inactiveFor")}</th>
                   <th />
                 </tr>
               </thead>

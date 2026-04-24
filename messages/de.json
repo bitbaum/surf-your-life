@@ -938,7 +938,8 @@
         "never": "Noch nie",
         "noAtRisk": "Alle Klienten haben sich kürzlich eingeloggt",
         "viewAtRisk": "Gefährdete Klienten",
-        "sendMessage": "Nachricht senden"
+        "sendMessage": "Nachricht senden",
+        "inactiveFor": "Inaktiv seit"
       },
       "newThread": {
         "button": "Nachricht senden",

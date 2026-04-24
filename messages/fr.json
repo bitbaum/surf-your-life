@@ -956,7 +956,8 @@
         "never": "Jamais",
         "noAtRisk": "Tous les clients se sont connectés récemment",
         "viewAtRisk": "Clients à risque",
-        "sendMessage": "Envoyer un message"
+        "sendMessage": "Envoyer un message",
+        "inactiveFor": "Inactif depuis"
       },
       "newThread": {
         "button": "Envoyer un message",
