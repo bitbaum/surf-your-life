@@ -174,13 +174,26 @@ describe("computeAdherenceByAssignment", () => {
     expect(result["a2"]).toBeUndefined()
   })
 
-  it("sums multiple same-day log entries before checking goal", () => {
+  it("uses MAX of cumulative same-day rows to check goal (each tap inserts a cumulative row)", () => {
+    // Real data model: 2 taps produce rows [1, 2], not [1, 1]. MAX=2 meets goal of 2.
     const logs = [
       { assignmentId: "a2", date: "2024-01-01", completedReps: 1 },
-      { assignmentId: "a2", date: "2024-01-01", completedReps: 1 }, // 1+1 = 2 meets goal
+      { assignmentId: "a2", date: "2024-01-01", completedReps: 2 }, // cumulative tap 2 → MAX=2 meets goal
     ]
     const result = computeAdherenceByAssignment(assignments, logs)
     expect(result["a2"]).toBe(1)
+  })
+
+  it("does not triple-count reps from additive rows (old SUM bug guard)", () => {
+    // If someone somehow had [1,1,1], SUM=3 would wrongly count 3 days — MAX=1 correctly sees only 1 rep
+    const logs = [
+      { assignmentId: "a2", date: "2024-01-01", completedReps: 1 },
+      { assignmentId: "a2", date: "2024-01-01", completedReps: 1 },
+      { assignmentId: "a2", date: "2024-01-01", completedReps: 1 },
+    ]
+    const result = computeAdherenceByAssignment(assignments, logs)
+    // MAX=1, goal=2 → not met → undefined
+    expect(result["a2"]).toBeUndefined()
   })
 
   it("counts each distinct day separately", () => {
