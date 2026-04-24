@@ -5,14 +5,10 @@ import { useRouter } from "next/navigation"
 import { useTranslations } from "next-intl"
 import type { Booking, Service } from "@/lib/db/schema"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { BOOKING_STATUS_BADGE_VARIANT } from "@/lib/constants"
 
 type BookingWithService = Booking & { service: Service }
-
-const STATUS_COLORS: Record<string, string> = {
-  pending: "bg-slate-100 text-slate-600",
-  confirmed: "bg-teal-50 text-teal-700",
-  cancelled: "bg-red-50 text-red-600",
-}
 
 function CancelButton({ bookingId }: { bookingId: string }) {
   const t = useTranslations("portal.book")
@@ -78,11 +74,10 @@ export function BookingList({ bookings }: { bookings: BookingWithService[] }) {
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span
-                    className={`text-xs font-medium px-2.5 py-1 rounded-full ${STATUS_COLORS[b.status] ?? STATUS_COLORS.pending}`}
-                  >
-                    {t(`status${b.status.charAt(0).toUpperCase() + b.status.slice(1)}` as Parameters<typeof t>[0])}
-                  </span>
+                  <Badge
+                    variant={BOOKING_STATUS_BADGE_VARIANT[b.status] ?? "slate"}
+                    label={t(`status${b.status.charAt(0).toUpperCase() + b.status.slice(1)}` as Parameters<typeof t>[0])}
+                  />
                   {b.status !== "cancelled" && <CancelButton bookingId={b.id} />}
                 </div>
               </div>

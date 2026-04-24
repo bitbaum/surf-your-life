@@ -243,6 +243,13 @@ export const ENROLLMENT_STATUS_BADGE: Record<string, string> = {
   completed: "bg-slate-100 text-slate-600 border border-slate-200",
 }
 
+// Booking status → Badge variant — used by portal booking list and admin bookings page
+export const BOOKING_STATUS_BADGE_VARIANT: Record<string, "yellow" | "teal" | "slate"> = {
+  pending:   "yellow",
+  confirmed: "teal",
+  cancelled: "slate",
+}
+
 // Alert severity color config — canonical mapping used by all alert UI components
 // Dot = filled circle indicator; Badge = label pill with border
 export const ALERT_SEVERITY_DOT: Record<string, string> = {

@@ -4,7 +4,7 @@ import { eq, desc, count } from "drizzle-orm"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { formatDate, computeTotalPages, parsePage, computeOffset } from "@/lib/utils"
-import { PAGINATION_DEFAULT } from "@/lib/constants"
+import { PAGINATION_DEFAULT, BOOKING_STATUS_BADGE_VARIANT } from "@/lib/constants"
 import { BookingActions } from "./booking-actions"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { Badge } from "@/components/ui/badge"
@@ -51,12 +51,6 @@ export default async function AdminBookingsPage({
 
   const total = totalResult[0]?.value ?? 0
   const totalPages = computeTotalPages(total, PAGINATION_DEFAULT)
-
-  const statusVariant: Record<BookingStatus, "yellow" | "teal" | "slate"> = {
-    pending: "yellow",
-    confirmed: "teal",
-    cancelled: "slate",
-  }
 
   return (
     <div className="max-w-5xl mx-auto">
@@ -119,7 +113,7 @@ export default async function AdminBookingsPage({
                   <td className="py-3">
                     <Badge
                       label={STATUS_FILTERS.find((f) => f.value === booking.status)?.label ?? booking.status}
-                      variant={statusVariant[booking.status]}
+                      variant={BOOKING_STATUS_BADGE_VARIANT[booking.status] ?? "slate"}
                     />
                   </td>
                   <td className="py-3 text-slate-400 text-xs">{formatDate(booking.createdAt)}</td>
