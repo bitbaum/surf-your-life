@@ -83,6 +83,7 @@ export async function GET(req: Request) {
 
   let processed = 0
   let skipped = 0
+  let failed = 0
   const digestRows: PractitionerDigestClientRow[] = []
 
   for (const client of allClients) {
@@ -99,13 +100,18 @@ export async function GET(req: Request) {
       continue
     }
 
-    // Store on the most recent check-in
+    // Store on the most recent check-in — count only on success
     const mostRecentId = weekCheckIns[0].id
-    await db
-      .update(checkIns)
-      .set({ aiInsight: digest })
-      .where(eq(checkIns.id, mostRecentId))
-      .catch(() => {})
+    try {
+      await db
+        .update(checkIns)
+        .set({ aiInsight: digest })
+        .where(eq(checkIns.id, mostRecentId))
+    } catch (err) {
+      console.error("[ai-digest] DB write failed for client", client.id, err)
+      failed++
+      continue
+    }
 
     processed++
 
@@ -163,5 +169,5 @@ export async function GET(req: Request) {
     }
   }
 
-  return NextResponse.json({ success: true, processed, skipped, emailedPractitioners: digestRows.length > 0 })
+  return NextResponse.json({ success: true, processed, skipped, ...(failed > 0 && { failed }), emailedPractitioners: digestRows.length > 0 })
 }
