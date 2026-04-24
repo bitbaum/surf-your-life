@@ -3,7 +3,7 @@ import { leads, leadStatusEnum } from "@/lib/db/schema"
 import { desc, count, eq } from "drizzle-orm"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
-import { formatDate, computeTotalPages } from "@/lib/utils"
+import { formatDate, computeTotalPages, parsePage, computeOffset } from "@/lib/utils"
 import { PAGINATION_DEFAULT } from "@/lib/constants"
 import { LeadStatus } from "./lead-status"
 import { InviteButton } from "./invite-button"
@@ -33,8 +33,8 @@ export default async function LeadsPage({
   ]
 
   const { page: pageParam, status: statusParam } = await searchParams
-  const page = Math.max(1, parseInt(pageParam ?? "1") || 1)
-  const offset = (page - 1) * PAGINATION_DEFAULT
+  const page = parsePage(pageParam)
+  const offset = computeOffset(page, PAGINATION_DEFAULT)
 
   const statusFilter = (leadStatusEnum.enumValues as readonly string[]).includes(statusParam ?? "")
     ? (statusParam as LeadStatusValue)

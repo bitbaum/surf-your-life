@@ -25,6 +25,19 @@ export function toDateString(date: Date): string {
   return date.toISOString().split("T")[0]
 }
 
+// Pagination helpers — all three used together on every paginated page.
+// Centralised here so a change to pagination logic touches one place.
+
+// Parses the ?page= query param safely, clamping to a minimum of 1.
+export function parsePage(param: string | undefined): number {
+  return Math.max(1, parseInt(param ?? "1") || 1)
+}
+
+// Computes the SQL offset for a given 1-based page number and page size.
+export function computeOffset(page: number, pageSize: number): number {
+  return (page - 1) * pageSize
+}
+
 // Computes total page count for pagination given a total row count and page size.
 export function computeTotalPages(total: number, pageSize: number): number {
   return Math.ceil(total / pageSize)

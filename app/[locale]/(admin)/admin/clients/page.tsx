@@ -5,7 +5,7 @@ import { CLIENT_ROLE } from "@/lib/domain/auth"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { Link } from "@/i18n/navigation"
-import { formatDate, formatEnumValue, computeTotalPages } from "@/lib/utils"
+import { formatDate, formatEnumValue, computeTotalPages, parsePage, computeOffset } from "@/lib/utils"
 import { PAGINATION_DEFAULT } from "@/lib/constants"
 import { ClientSearch } from "./client-search"
 import { Suspense } from "react"
@@ -24,8 +24,8 @@ export default async function ClientsPage({
   const t = await getTranslations("admin.clients")
 
   const { page: pageParam, q } = await searchParams
-  const page = Math.max(1, parseInt(pageParam ?? "1") || 1)
-  const offset = (page - 1) * PAGINATION_DEFAULT
+  const page = parsePage(pageParam)
+  const offset = computeOffset(page, PAGINATION_DEFAULT)
 
   const searchFilter = q?.trim()
     ? or(
