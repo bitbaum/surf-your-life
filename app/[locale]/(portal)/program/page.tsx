@@ -11,6 +11,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server"
 import { SEVEN_DAYS_MS, ENROLLMENT_STATUS_BADGE } from "@/lib/constants"
 import { CheckCircle, Clock, Pause } from "lucide-react"
 import { PhaseTimeline } from "./phase-timeline"
+import { EmptyState } from "@/components/ui/empty-state"
 
 export default async function ProgramPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
@@ -31,11 +32,11 @@ export default async function ProgramPage({ params }: { params: Promise<{ locale
       <div className="max-w-2xl mx-auto">
         <PageHeader title={t("title")} description={t("noProgram")} />
         <Card>
-          <CardContent className="py-12 text-center">
-            <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center mx-auto mb-4">
-              <Clock className="w-6 h-6 text-slate-400" />
-            </div>
-            <p className="text-slate-500 text-sm">{t("noProgramDescription")}</p>
+          <CardContent className="py-12">
+            <EmptyState
+              icon={<div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center"><Clock className="w-6 h-6 text-slate-400" /></div>}
+              message={t("noProgramDescription")}
+            />
           </CardContent>
         </Card>
       </div>

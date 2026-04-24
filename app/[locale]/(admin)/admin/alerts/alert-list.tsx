@@ -7,6 +7,8 @@ import { ResolveAlertButton } from "./resolve-button"
 import { formatDate } from "@/lib/utils"
 import { ALERT_SEVERITY_DOT, ALERT_SEVERITY_BADGE, ALERT_SEVERITY_ORDER } from "@/lib/constants"
 import type { AlertType, AlertSeverity } from "@/lib/db/schema"
+import { EmptyState } from "@/components/ui/empty-state"
+import { Card } from "@/components/ui/card"
 
 export type AlertRow = {
   id: string
@@ -32,13 +34,13 @@ export function AlertList({ initialAlerts }: Props) {
 
   if (alerts.length === 0) {
     return (
-      <div className="rounded-xl border border-slate-200 bg-white py-16 flex flex-col items-center gap-2 text-center">
-        <div className="w-10 h-10 rounded-full bg-teal-50 flex items-center justify-center">
-          <span className="text-teal-600 text-lg">✓</span>
-        </div>
-        <p className="font-medium text-slate-700">{t("allClear")}</p>
-        <p className="text-sm text-slate-400">{t("allClearSubtext")}</p>
-      </div>
+      <Card className="py-16">
+        <EmptyState
+          icon={<div className="w-10 h-10 rounded-full bg-teal-50 flex items-center justify-center"><span className="text-teal-600 text-lg">✓</span></div>}
+          message={t("allClear")}
+          description={t("allClearSubtext")}
+        />
+      </Card>
     )
   }
 

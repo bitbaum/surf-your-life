@@ -11,6 +11,8 @@ import { Button } from "@/components/ui/button"
 import { formatDate, computeTotalPages, parsePage, computeOffset } from "@/lib/utils"
 import { MessageSquare } from "lucide-react"
 import { PAGINATION_DEFAULT } from "@/lib/constants"
+import { EmptyState } from "@/components/ui/empty-state"
+import { Card } from "@/components/ui/card"
 
 export default async function PortalMessagesPage({
   params,
@@ -64,14 +66,14 @@ export default async function PortalMessagesPage({
       />
 
       {myThreads.length === 0 ? (
-        <div className="rounded-xl border border-slate-200 bg-white shadow-sm p-12 text-center">
-          <MessageSquare className="w-10 h-10 text-slate-300 mx-auto mb-3" />
-          <p className="text-slate-500 font-medium">{t("noMessages")}</p>
-          <p className="text-sm text-slate-400 mt-1">{t("noMessagesDescription")}</p>
-          <Link href="/messages/new" className="inline-block mt-4">
-            <Button variant="outline">{t("startConversation")}</Button>
-          </Link>
-        </div>
+        <Card className="p-12">
+          <EmptyState
+            icon={<MessageSquare className="w-10 h-10" />}
+            message={t("noMessages")}
+            description={t("noMessagesDescription")}
+            action={<Link href="/messages/new"><Button variant="outline">{t("startConversation")}</Button></Link>}
+          />
+        </Card>
       ) : (
         <div className="flex flex-col gap-2">
           {myThreads.map((thread) => {

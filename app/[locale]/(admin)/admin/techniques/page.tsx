@@ -8,6 +8,7 @@ import { TECHNIQUE_CATEGORIES } from "@/lib/constants"
 import { formatEnumValue } from "@/lib/utils"
 import { TechniqueActions } from "./technique-actions"
 import { TechniqueCreateButton } from "./technique-create-button"
+import { EmptyState } from "@/components/ui/empty-state"
 
 export default async function TechniquesPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
@@ -39,9 +40,11 @@ export default async function TechniquesPage({ params }: { params: Promise<{ loc
 
       {rows.length === 0 ? (
         <Card>
-          <CardContent className="py-12 text-center">
-            <p className="text-slate-400 text-sm mb-4">{t("empty")}</p>
-            <TechniqueCreateButton />
+          <CardContent className="py-12">
+            <EmptyState
+              message={t("empty")}
+              action={<TechniqueCreateButton />}
+            />
           </CardContent>
         </Card>
       ) : (

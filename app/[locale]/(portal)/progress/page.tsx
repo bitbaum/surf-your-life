@@ -11,6 +11,7 @@ import { formatDate } from "@/lib/utils"
 import { Link } from "@/i18n/navigation"
 import { NINETY_DAYS_MS } from "@/lib/constants"
 import { summariseCheckIns } from "@/lib/domain/check-in"
+import { EmptyState } from "@/components/ui/empty-state"
 
 export default async function ProgressPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
@@ -74,14 +75,11 @@ export default async function ProgressPage({ params }: { params: Promise<{ local
       {/* Recovery arc */}
       {assessments.length === 0 ? (
         <Card className="mt-4">
-          <CardContent className="py-12 text-center flex flex-col items-center gap-4">
-            <p className="text-slate-400 max-w-sm">{t("noAssessments")}</p>
-            <Link
-              href="/assessments"
-              className="text-sm font-medium text-teal-600 hover:text-teal-700 transition-colors"
-            >
-              {t("doAssessment")} →
-            </Link>
+          <CardContent className="py-12">
+            <EmptyState
+              message={t("noAssessments")}
+              action={<Link href="/assessments" className="text-sm font-medium text-teal-600 hover:text-teal-700 transition-colors">{t("doAssessment")} →</Link>}
+            />
           </CardContent>
         </Card>
       ) : (

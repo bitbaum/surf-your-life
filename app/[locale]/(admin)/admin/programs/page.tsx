@@ -7,6 +7,7 @@ import { Link } from "@/i18n/navigation"
 import { formatDate, formatEnumValue } from "@/lib/utils"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { Plus, Users } from "lucide-react"
+import { EmptyState } from "@/components/ui/empty-state"
 
 export default async function ProgramsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
@@ -48,16 +49,11 @@ export default async function ProgramsPage({ params }: { params: Promise<{ local
         <CardHeader><CardTitle>{t("title")} ({rows.length})</CardTitle></CardHeader>
         <CardContent>
           {rows.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-slate-400 text-sm mb-4">{t("empty")}</p>
-              <Link
-                href="/admin/programs/new"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-teal-600 text-white text-sm font-medium hover:bg-teal-700 transition-colors"
-              >
-                <Plus className="w-4 h-4" />
-                {t("new")}
-              </Link>
-            </div>
+            <EmptyState
+              className="py-12"
+              message={t("empty")}
+              action={<Link href="/admin/programs/new" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-teal-600 text-white text-sm font-medium hover:bg-teal-700 transition-colors"><Plus className="w-4 h-4" />{t("new")}</Link>}
+            />
           ) : (
             <div className="flex flex-col divide-y divide-slate-100">
               {rows.map((program) => (

@@ -11,6 +11,8 @@ import { Button } from "@/components/ui/button"
 import { formatDate, computeTotalPages, parsePage, computeOffset } from "@/lib/utils"
 import { MessageSquare } from "lucide-react"
 import { Pagination } from "@/components/ui/pagination"
+import { EmptyState } from "@/components/ui/empty-state"
+import { Card } from "@/components/ui/card"
 
 export default async function AdminMessagesPage({
   params,
@@ -64,10 +66,12 @@ export default async function AdminMessagesPage({
       />
 
       {allThreads.length === 0 ? (
-        <div className="rounded-xl border border-slate-200 bg-white shadow-sm p-12 text-center">
-          <MessageSquare className="w-10 h-10 text-slate-300 mx-auto mb-3" />
-          <p className="text-slate-500">{t("noThreads")}</p>
-        </div>
+        <Card className="p-12">
+          <EmptyState
+            icon={<MessageSquare className="w-10 h-10" />}
+            message={t("noThreads")}
+          />
+        </Card>
       ) : (
         <div className="flex flex-col gap-2">
           {allThreads.map((thread) => {
