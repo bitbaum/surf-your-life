@@ -1,5 +1,5 @@
 import { db } from "@/lib/db"
-import { threadMessages, users, clientAlerts } from "@/lib/db/schema"
+import { threadMessages, users, clientAlerts, leads } from "@/lib/db/schema"
 import { count, isNull, eq, and } from "drizzle-orm"
 import { CLIENT_ROLE } from "@/lib/domain/auth"
 
@@ -17,6 +17,14 @@ export async function getUnreadCount(): Promise<number> {
     .from(threadMessages)
     .innerJoin(users, eq(threadMessages.senderId, users.id))
     .where(and(isNull(threadMessages.readAt), eq(users.role, CLIENT_ROLE)))
+  return result?.value ?? 0
+}
+
+export async function getNewLeadsCount(): Promise<number> {
+  const [result] = await db
+    .select({ value: count() })
+    .from(leads)
+    .where(eq(leads.status, "new"))
   return result?.value ?? 0
 }
 

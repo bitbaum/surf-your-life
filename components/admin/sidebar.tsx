@@ -12,9 +12,10 @@ import { LayoutDashboard, Users, LogOut, Waves, Menu, X, Inbox, MessageSquare, U
 interface AdminSidebarProps {
   unreadMessages?: number
   unresolvedAlerts?: number
+  newLeads?: number
 }
 
-export function AdminSidebar({ unreadMessages = 0, unresolvedAlerts = 0 }: AdminSidebarProps) {
+export function AdminSidebar({ unreadMessages = 0, unresolvedAlerts = 0, newLeads = 0 }: AdminSidebarProps) {
   const t = useTranslations("admin.sidebar")
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
@@ -28,7 +29,7 @@ export function AdminSidebar({ unreadMessages = 0, unresolvedAlerts = 0 }: Admin
     { href: "/admin/messages", label: t("messages"), icon: MessageSquare, badge: unreadMessages },
     { href: "/admin/programs", label: t("programs"), icon: BookOpen, badge: 0 },
     { href: "/admin/techniques", label: t("techniques"), icon: Sparkles, badge: 0 },
-    { href: "/admin/leads", label: t("leads"), icon: Inbox, badge: 0 },
+    { href: "/admin/leads", label: t("leads"), icon: Inbox, badge: newLeads },
     { href: "/admin/users", label: t("users"), icon: UserCog, badge: 0 },
   ]
 
