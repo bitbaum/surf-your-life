@@ -28,12 +28,13 @@ function AdherenceGrid({ assignmentId, frequencyPerDay, logsGrid }: {
   frequencyPerDay: number
   logsGrid: LogsGridByAssignment
 }) {
-  // Build the last 7 days ending today
+  // Build the last 7 days ending today using local date (not UTC) so the
+  // grid keys match the YYYY-MM-DD dates that clients log against locally.
   const days: { iso: string; label: string }[] = []
   for (let i = 6; i >= 0; i--) {
     const d = new Date()
     d.setDate(d.getDate() - i)
-    const iso = d.toISOString().slice(0, 10)
+    const iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`
     const label = DAY_LABELS[d.getDay()]
     days.push({ iso, label })
   }
