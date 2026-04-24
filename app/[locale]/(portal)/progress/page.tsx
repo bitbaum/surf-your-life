@@ -9,7 +9,7 @@ import { PageHeader } from "@/components/ui/page-header"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { formatDate } from "@/lib/utils"
 import { Link } from "@/i18n/navigation"
-import { NINETY_DAYS_MS, MOODS, MOOD_SCORE } from "@/lib/constants"
+import { NINETY_DAYS_MS, MOODS, MOOD_SCORE, ASSESSMENTS_MAX } from "@/lib/constants"
 import { summariseCheckIns } from "@/lib/domain/check-in"
 import { EmptyState } from "@/components/ui/empty-state"
 
@@ -28,6 +28,7 @@ export default async function ProgressPage({ params }: { params: Promise<{ local
     db.query.functionalAssessments.findMany({
       where: eq(functionalAssessments.userId, userId),
       orderBy: [asc(functionalAssessments.assessedAt)],
+      limit: ASSESSMENTS_MAX,
     }),
     db.query.checkIns.findMany({
       where: (table, { and }) => and(

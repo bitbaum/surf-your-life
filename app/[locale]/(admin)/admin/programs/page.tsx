@@ -1,6 +1,7 @@
 import { db } from "@/lib/db"
 import { programs, programEnrollments } from "@/lib/db/schema"
 import { desc, count, eq, sql } from "drizzle-orm"
+import { ADMIN_PROGRAMS_MAX } from "@/lib/constants"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { Link } from "@/i18n/navigation"
@@ -29,6 +30,7 @@ export default async function ProgramsPage({ params }: { params: Promise<{ local
     .leftJoin(programEnrollments, eq(programEnrollments.programId, programs.id))
     .groupBy(programs.id)
     .orderBy(desc(programs.createdAt))
+    .limit(ADMIN_PROGRAMS_MAX)
 
   return (
     <div className="max-w-4xl mx-auto">

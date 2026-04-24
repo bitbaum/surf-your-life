@@ -7,6 +7,7 @@ import type { Booking, Service } from "@/lib/db/schema"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { BOOKING_STATUS_BADGE_VARIANT } from "@/lib/constants"
+import { EmptyState } from "@/components/ui/empty-state"
 
 type BookingWithService = Booking & { service: Service }
 
@@ -58,7 +59,9 @@ export function BookingList({ bookings }: { bookings: BookingWithService[] }) {
       </CardHeader>
       <CardContent>
         {bookings.length === 0 ? (
-          <p className="text-sm text-slate-400 py-4">{t("noBookings")}</p>
+          <div className="py-6">
+            <EmptyState message={t("noBookings")} />
+          </div>
         ) : (
           <div className="flex flex-col gap-3">
             {bookings.map((b) => (

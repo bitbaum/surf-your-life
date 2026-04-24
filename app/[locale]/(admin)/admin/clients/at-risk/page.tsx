@@ -7,8 +7,9 @@ import { PageHeader } from "@/components/ui/page-header"
 import { Link } from "@/i18n/navigation"
 import { formatDate } from "@/lib/utils"
 import { getTranslations, setRequestLocale } from "next-intl/server"
-import { SEVEN_DAYS_MS, DAY_MS } from "@/lib/constants"
+import { SEVEN_DAYS_MS, DAY_MS, ADMIN_AT_RISK_MAX } from "@/lib/constants"
 import { NewThreadButton } from "../[id]/new-thread-button"
+import { EmptyState } from "@/components/ui/empty-state"
 
 export default async function AtRiskClientsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
@@ -37,6 +38,7 @@ export default async function AtRiskClientsPage({ params }: { params: Promise<{ 
       )
     )
     .orderBy(sql`max(${checkIns.createdAt}) ASC NULLS FIRST`)
+    .limit(ADMIN_AT_RISK_MAX)
 
   function daysSince(date: Date | null): string {
     if (!date) return "—"
@@ -62,9 +64,9 @@ export default async function AtRiskClientsPage({ params }: { params: Promise<{ 
         </CardHeader>
         <CardContent>
           {atRisk.length === 0 ? (
-            <p className="text-slate-400 text-sm py-8 text-center">
-              {t("atRisk.noAtRisk")}
-            </p>
+            <div className="py-8">
+              <EmptyState message={t("atRisk.noAtRisk")} />
+            </div>
           ) : (
             <div className="overflow-x-auto">
             <table className="w-full text-sm">

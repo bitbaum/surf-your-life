@@ -7,6 +7,7 @@ import { Plus, Square, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 import { AddMedicationForm } from "./add-medication-form"
 import { MedicationHistoricalList } from "./medication-historical-list"
+import { EmptyState } from "@/components/ui/empty-state"
 import { toDateString } from "@/lib/utils"
 import type { MedicationEntry } from "@/lib/db/schema"
 
@@ -82,7 +83,9 @@ export function MedicationManager({ medications: initial }: Props) {
         )}
 
         {current.length === 0 && !showForm && (
-          <p className="text-sm text-slate-400">{t("empty")}</p>
+          <div className="py-4">
+            <EmptyState message={t("empty")} />
+          </div>
         )}
 
         <div className="flex flex-col gap-2">

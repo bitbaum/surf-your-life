@@ -142,6 +142,9 @@ export const DOCUMENT_ADMIN_MAX_CONTENT = 10000  // max chars for practitioner-a
 export const EMBED_BACKFILL_BATCH = 50           // records processed per cron run during backfill
 export const ADMIN_DASHBOARD_ALERTS_PREVIEW = 10
 export const ADMIN_ALERTS_MAX = 500              // safety cap for unresolved alerts page
+export const ADMIN_AT_RISK_MAX = 500             // safety cap for full at-risk clients page
+export const ADMIN_PROGRAMS_MAX = 200            // safety cap for programs list
+export const ASSESSMENTS_MAX = 200               // safety cap for functional assessments per user
 export const ADMIN_DASHBOARD_INSIGHTS_PREVIEW = 6
 export const DASHBOARD_INSIGHT_ENERGY_WINDOW = 3  // recent energy levels used for portal insight calculation
 
