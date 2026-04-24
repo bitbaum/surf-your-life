@@ -134,6 +134,8 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
         isOnboarded={isOnboarded}
         completionPct={completionPct}
         checkedInToday={checkedInToday}
+        streak={streak}
+        lastEnergy={recentCheckIns[0]?.energyLevel ?? null}
       />
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">

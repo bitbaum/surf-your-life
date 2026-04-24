@@ -346,6 +346,8 @@
       "subtitle": "Here's how your journey is going",
       "checkedInTodayTitle": "You've already checked in today",
       "checkedInTodayBody": "Come back tomorrow to keep your streak going.",
+      "checkedInEnergy": "Energy today: {energy}/10",
+      "checkedInStreak": "{count, plural, one {# day streak} other {# day streak}} 🔥",
       "completeProfile": "Complete your profile",
       "completeProfileBody": "{pct}% done — add your situation and goals so we can tailor your program",
       "completeProfileCta": "Complete profile",

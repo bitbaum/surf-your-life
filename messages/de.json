@@ -346,6 +346,8 @@
       "subtitle": "So verläuft Ihre Reise",
       "checkedInTodayTitle": "Sie haben heute bereits eingecheckt",
       "checkedInTodayBody": "Kommen Sie morgen wieder, um Ihre Serie fortzusetzen.",
+      "checkedInEnergy": "Energie heute: {energy}/10",
+      "checkedInStreak": "{count, plural, one {# Tag in Folge} other {# Tage in Folge}} 🔥",
       "completeProfile": "Profil vervollständigen",
       "completeProfileBody": "{pct}% erledigt – fügen Sie Ihre Situation und Ziele hinzu, damit wir Ihr Programm anpassen können",
       "completeProfileCta": "Profil vervollständigen",

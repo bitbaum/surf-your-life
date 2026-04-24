@@ -346,6 +346,8 @@
       "subtitle": "Voici comment votre parcours se déroule",
       "checkedInTodayTitle": "Vous avez déjà enregistré votre check-in aujourd'hui",
       "checkedInTodayBody": "Revenez demain pour continuer votre série.",
+      "checkedInEnergy": "Énergie aujourd'hui : {energy}/10",
+      "checkedInStreak": "{count, plural, one {# jour d'affilée} other {# jours d'affilée}} 🔥",
       "completeProfile": "Complétez votre profil",
       "completeProfileBody": "{pct}% complété — ajoutez votre situation et vos objectifs pour que nous puissions adapter votre programme",
       "completeProfileCta": "Compléter le profil",

@@ -9,9 +9,11 @@ interface Props {
   isOnboarded: boolean
   completionPct: number
   checkedInToday: boolean
+  streak: number
+  lastEnergy: number | null
 }
 
-export async function DashboardBanners({ milestone, isOnboarded, completionPct, checkedInToday }: Props) {
+export async function DashboardBanners({ milestone, isOnboarded, completionPct, checkedInToday, streak, lastEnergy }: Props) {
   const t = await getTranslations("portal.dashboard")
 
   return (
@@ -44,11 +46,25 @@ export async function DashboardBanners({ milestone, isOnboarded, completionPct, 
       )}
 
       {checkedInToday ? (
-        <div className="mb-6 rounded-xl bg-teal-50 border border-teal-200 p-4 flex items-center gap-3">
-          <CheckCircle2 className="w-5 h-5 text-teal-600 flex-shrink-0" />
-          <div>
+        <div className="mb-6 rounded-xl bg-teal-50 border border-teal-200 p-4 flex items-start gap-3">
+          <CheckCircle2 className="w-5 h-5 text-teal-600 flex-shrink-0 mt-0.5" />
+          <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold text-teal-900">{t("checkedInTodayTitle")}</p>
-            <p className="text-xs text-teal-700 mt-0.5">{t("checkedInTodayBody")}</p>
+            <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-0.5">
+              {lastEnergy != null && (
+                <span className="text-xs text-teal-700">
+                  {t("checkedInEnergy", { energy: lastEnergy })}
+                </span>
+              )}
+              {streak >= 2 && (
+                <span className="text-xs text-teal-700 font-medium">
+                  {t("checkedInStreak", { count: streak })}
+                </span>
+              )}
+              {streak < 2 && (
+                <span className="text-xs text-teal-600">{t("checkedInTodayBody")}</span>
+              )}
+            </div>
           </div>
         </div>
       ) : (
