@@ -1,8 +1,11 @@
-import { formatDate, formatEnumValue } from "@/lib/utils"
-import { MOOD_EMOJI } from "@/lib/constants"
+import { formatDate } from "@/lib/utils"
+import { MOOD_EMOJI, MOODS, ACTIVITY_LEVELS } from "@/lib/constants"
 import { CheckInNote } from "./check-in-note"
 import type { CheckIn } from "@/lib/db/schema"
 import { getTranslations } from "next-intl/server"
+
+const moodMap = Object.fromEntries(MOODS.map((m) => [m.value, m]))
+const activityLevelMap = Object.fromEntries(ACTIVITY_LEVELS.map((a) => [a.value, a]))
 
 type Props = {
   ci: CheckIn
@@ -10,20 +13,21 @@ type Props = {
 
 export async function CheckInRow({ ci }: Props) {
   const t = await getTranslations("admin.clients")
+  const tCheckIn = await getTranslations("portal.checkIn")
 
   return (
     <div className="py-3">
       <div className="flex items-center justify-between mb-1">
         <span className="text-sm font-medium text-slate-700 flex items-center gap-1.5">
           <span>{MOOD_EMOJI[ci.mood] ?? "😐"}</span>
-          {formatEnumValue(ci.mood)}
+          {tCheckIn(moodMap[ci.mood]?.labelKey ?? "moodNeutral")}
         </span>
         <span className="text-xs text-slate-400">{formatDate(ci.createdAt)}</span>
       </div>
       <div className="flex flex-wrap gap-3 text-xs text-slate-500 mt-1">
         <span>{t("detail.energy")}: <strong className="text-slate-700">{ci.energyLevel}/10</strong></span>
         {ci.sleepHours != null && <span>{t("detail.sleep")}: <strong className="text-slate-700">{ci.sleepHours}h</strong></span>}
-        {ci.activityLevel && <span>{t("detail.activityLevel")}: <strong className="text-slate-700">{formatEnumValue(ci.activityLevel)}</strong></span>}
+        {ci.activityLevel && activityLevelMap[ci.activityLevel] && <span>{t("detail.activityLevel")}: <strong className="text-slate-700">{tCheckIn(activityLevelMap[ci.activityLevel].labelKey)}</strong></span>}
         {ci.sleepQuality != null && <span>{t("detail.sleepQuality")}: <strong className="text-slate-700">{ci.sleepQuality}/5</strong></span>}
         {ci.pemFlag && (
           <span className="text-red-600 font-medium">

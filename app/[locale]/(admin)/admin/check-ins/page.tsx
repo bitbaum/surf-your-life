@@ -9,8 +9,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { Link } from "@/i18n/navigation"
 import { Pagination } from "@/components/ui/pagination"
-import { formatDate, formatEnumValue, computeTotalPages, parsePage, computeOffset } from "@/lib/utils"
-import { PAGINATION_DEFAULT, MOOD_EMOJI } from "@/lib/constants"
+import { formatDate, computeTotalPages, parsePage, computeOffset } from "@/lib/utils"
+import { PAGINATION_DEFAULT, MOOD_EMOJI, MOODS } from "@/lib/constants"
 import { FilterTabs } from "@/components/ui/filter-tabs"
 
 export default async function AdminCheckInsPage({
@@ -23,6 +23,8 @@ export default async function AdminCheckInsPage({
   const { locale } = await params
   setRequestLocale(locale)
   const t = await getTranslations("admin.checkIns")
+  const tCheckIn = await getTranslations("portal.checkIn")
+  const moodMap = Object.fromEntries(MOODS.map((m) => [m.value, m]))
 
   const session = await auth()
   if (!session?.user || !isStaff(session.user.role)) redirect("/login")
@@ -99,7 +101,7 @@ export default async function AdminCheckInsPage({
                     <td className="py-3">
                       <span className="flex items-center gap-1.5">
                         <span>{MOOD_EMOJI[ci.mood] ?? "😐"}</span>
-                        <span className="text-slate-600">{formatEnumValue(ci.mood)}</span>
+                        <span className="text-slate-600">{tCheckIn(moodMap[ci.mood]?.labelKey ?? "moodNeutral")}</span>
                         {ci.pemFlag && (
                           <span className="text-xs font-semibold text-red-600 ml-1">
                             PEM{ci.pemSeverity ? ` ${ci.pemSeverity}/10` : ""}

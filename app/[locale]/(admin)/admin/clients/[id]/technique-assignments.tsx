@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import type { Technique } from "@/lib/db/schema"
 import type { AssignmentWithTechnique } from "@/lib/domain/techniques"
-import { formatEnumValue } from "@/lib/utils"
 import { TECHNIQUE_CATEGORIES, ADHERENCE_GOOD_DAYS, ADHERENCE_OK_DAYS } from "@/lib/constants"
 import { TechniqueAssignForm } from "./technique-assign-form"
 
@@ -91,7 +90,7 @@ export function TechniqueAssignments({ clientId, assignments, allTechniques, adh
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="text-sm font-medium text-slate-800">{a.technique.name}</span>
                     <span className="text-xs text-slate-400">
-                      {categoryEmoji[a.technique.category]} {formatEnumValue(a.technique.category)}
+                      {categoryEmoji[a.technique.category]} {t(`category.${a.technique.category}` as Parameters<typeof t>[0])}
                     </span>
                     <span className="text-xs text-teal-600 font-medium">
                       {a.frequencyPerDay}× {t("perDay")}

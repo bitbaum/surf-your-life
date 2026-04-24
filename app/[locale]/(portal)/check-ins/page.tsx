@@ -6,8 +6,8 @@ import { getTranslations, setRequestLocale } from "next-intl/server"
 import { Card, CardContent } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
-import { formatDate, formatEnumValue, computeTotalPages, parsePage, computeOffset } from "@/lib/utils"
-import { PAGINATION_DEFAULT, MOOD_EMOJI, SLEEP_QUALITY_OPTIONS, ACTIVITY_LEVELS } from "@/lib/constants"
+import { formatDate, computeTotalPages, parsePage, computeOffset } from "@/lib/utils"
+import { PAGINATION_DEFAULT, MOOD_EMOJI, MOODS, SLEEP_QUALITY_OPTIONS, ACTIVITY_LEVELS } from "@/lib/constants"
 import { EmptyState } from "@/components/ui/empty-state"
 
 const FIELD_LABEL_CLS = "text-xs font-medium text-slate-400 uppercase tracking-wide"
@@ -48,6 +48,7 @@ export default async function CheckInsPage({
   const total = totalResult[0]?.count ?? 0
   const totalPages = computeTotalPages(total, PAGINATION_DEFAULT)
   const activityLevelMap = Object.fromEntries(ACTIVITY_LEVELS.map((a) => [a.value, a]))
+  const moodMap = Object.fromEntries(MOODS.map((m) => [m.value, m]))
 
   return (
     <div className="max-w-3xl mx-auto">
@@ -78,7 +79,7 @@ export default async function CheckInsPage({
                     <div className="flex items-center gap-3">
                       <span className="text-2xl">{MOOD_EMOJI[ci.mood] ?? "😐"}</span>
                       <div>
-                        <p className="font-medium text-slate-900">{formatEnumValue(ci.mood)}</p>
+                        <p className="font-medium text-slate-900">{tCheckIn(moodMap[ci.mood]?.labelKey ?? "moodNeutral")}</p>
                         <p className="text-xs text-slate-400">{formatDate(ci.createdAt)}</p>
                       </div>
                     </div>

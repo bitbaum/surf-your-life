@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { TECHNIQUE_CATEGORIES, DIFFICULTY_BADGE_CLASSES, TECHNIQUES_MAX } from "@/lib/constants"
-import { formatEnumValue } from "@/lib/utils"
 import { TechniqueActions } from "./technique-actions"
 import { TechniqueCreateButton } from "./technique-create-button"
 import { EmptyState } from "@/components/ui/empty-state"
@@ -69,7 +68,7 @@ export default async function TechniquesPage({ params }: { params: Promise<{ loc
                             {technique.name}
                           </p>
                           <span className={`text-xs px-2 py-0.5 rounded-full border ${DIFFICULTY_BADGE_CLASSES[technique.difficulty] ?? DIFFICULTY_BADGE_CLASSES.easy}`}>
-                            {formatEnumValue(technique.difficulty)}
+                            {t(`difficulty.${technique.difficulty}` as Parameters<typeof t>[0])}
                           </span>
                           {technique.durationMinutes && (
                             <span className="text-xs text-slate-400">{technique.durationMinutes} min</span>
