@@ -8,6 +8,9 @@ import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
 import { formatDate, formatEnumValue, computeTotalPages, parsePage, computeOffset } from "@/lib/utils"
 import { PAGINATION_DEFAULT, MOOD_EMOJI, SLEEP_QUALITY_OPTIONS } from "@/lib/constants"
+
+const FIELD_LABEL_CLS = "text-xs font-medium text-slate-400 uppercase tracking-wide"
+
 import { Link } from "@/i18n/navigation"
 import { Pagination } from "@/components/ui/pagination"
 import { CheckInActions } from "./check-in-actions"
@@ -96,26 +99,26 @@ export default async function CheckInsPage({
                     <div className="mt-4 flex flex-col gap-2 text-sm text-slate-600">
                       {ci.journalEntry ? (
                         <div>
-                          <span className="text-xs font-medium text-slate-400 uppercase tracking-wide">{t("journal")}</span>
+                          <span className={FIELD_LABEL_CLS}>{t("journal")}</span>
                           <p className="mt-0.5 leading-relaxed">{ci.journalEntry}</p>
                         </div>
                       ) : (
                         <>
                           {ci.wins && (
                             <div>
-                              <span className="text-xs font-medium text-slate-400 uppercase tracking-wide">{t("wins")}</span>
+                              <span className={FIELD_LABEL_CLS}>{t("wins")}</span>
                               <p className="mt-0.5">{ci.wins}</p>
                             </div>
                           )}
                           {ci.challenges && (
                             <div>
-                              <span className="text-xs font-medium text-slate-400 uppercase tracking-wide">{t("challenges")}</span>
+                              <span className={FIELD_LABEL_CLS}>{t("challenges")}</span>
                               <p className="mt-0.5">{ci.challenges}</p>
                             </div>
                           )}
                           {ci.notes && (
                             <div>
-                              <span className="text-xs font-medium text-slate-400 uppercase tracking-wide">{t("notes")}</span>
+                              <span className={FIELD_LABEL_CLS}>{t("notes")}</span>
                               <p className="mt-0.5 italic">{ci.notes}</p>
                             </div>
                           )}
