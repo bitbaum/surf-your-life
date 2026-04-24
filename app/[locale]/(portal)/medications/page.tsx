@@ -3,6 +3,7 @@ import { redirect } from "next/navigation"
 import { db } from "@/lib/db"
 import { medicationLog } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
+import { SERVICES_MAX_LIMIT } from "@/lib/constants"
 import { Card, CardContent } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { getTranslations, setRequestLocale } from "next-intl/server"
@@ -19,6 +20,7 @@ export default async function MedicationsPage({ params }: { params: Promise<{ lo
   const medications = await db.query.medicationLog.findMany({
     where: eq(medicationLog.userId, session.user.id),
     orderBy: [desc(medicationLog.createdAt)],
+    limit: SERVICES_MAX_LIMIT,
   })
 
   return (

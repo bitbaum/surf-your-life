@@ -22,7 +22,6 @@ export default async function AdminNewMessagePage({
 
   const { clientId } = await searchParams
   const t = await getTranslations("admin.messages")
-  const mt = await getTranslations("messages")
 
   // Fetch all clients for the select dropdown
   const clients = await db
@@ -34,7 +33,7 @@ export default async function AdminNewMessagePage({
     <div className="max-w-2xl mx-auto">
       <div className="mb-6">
         <Link href="/admin/messages" className="text-sm text-slate-400 hover:text-slate-600">
-          ← {mt("backToMessages")}
+          ← {t("backToMessages")}
         </Link>
       </div>
 

@@ -871,7 +871,8 @@
       "selectClientPlaceholder": "— Klient auswählen —",
       "filteringBy": "Nachrichten für",
       "clearFilter": "Alle anzeigen",
-      "viewMessages": "Nachrichten anzeigen"
+      "viewMessages": "Nachrichten anzeigen",
+      "backToMessages": "Zurück zu Nachrichten"
     },
     "clients": {
       "searchPlaceholder": "Nach Name oder E-Mail suchen...",

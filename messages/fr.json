@@ -871,7 +871,8 @@
       "selectClientPlaceholder": "— Sélectionner un client —",
       "filteringBy": "Messages pour",
       "clearFilter": "Tout afficher",
-      "viewMessages": "Voir les messages"
+      "viewMessages": "Voir les messages",
+      "backToMessages": "Retour aux messages"
     },
     "users": {
       "title": "Utilisateurs",

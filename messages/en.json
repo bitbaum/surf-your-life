@@ -871,7 +871,8 @@
       "selectClientPlaceholder": "— Select client —",
       "filteringBy": "Showing messages for",
       "clearFilter": "Show all",
-      "viewMessages": "View messages"
+      "viewMessages": "View messages",
+      "backToMessages": "Back to messages"
     },
     "clients": {
       "searchPlaceholder": "Search by name or email...",
