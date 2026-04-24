@@ -24,7 +24,9 @@ export function ClientTableRow({ client, alert, viewLabel }: Props) {
     <tr className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
       <td className="py-3 font-medium text-slate-800">
         <span className="flex items-center gap-2">
-          {client.name ?? "—"}
+          <Link href={`/admin/clients/${client.id}`} className="hover:text-teal-700 transition-colors">
+            {client.name ?? "—"}
+          </Link>
           {(alert?.count ?? 0) > 0 && (
             <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full leading-none ${alert!.hasHigh ? "text-white bg-red-600" : "text-red-600 bg-red-50"}`}>
               {alert!.count}
