@@ -1306,7 +1306,11 @@
         "stress_spike": "Pic de stress",
         "orthostatic_intolerance": "Symptômes orthostatiques"
       },
-      "filterAll": "Tous"
+      "filterAll": "Tous",
+      "showHistory": "Afficher les résolus",
+      "hideHistory": "Masquer les résolus",
+      "resolvedLabel": "Résolu",
+      "noHistory": "Aucune alerte résolue"
     },
     "checkIns": {
       "title": "Activité récente",

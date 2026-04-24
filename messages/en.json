@@ -1306,7 +1306,11 @@
         "stress_spike": "Stress spike",
         "orthostatic_intolerance": "Orthostatic symptoms"
       },
-      "filterAll": "All"
+      "filterAll": "All",
+      "showHistory": "Show resolved",
+      "hideHistory": "Hide resolved",
+      "resolvedLabel": "Resolved",
+      "noHistory": "No resolved alerts"
     },
     "checkIns": {
       "title": "Recent Activity",

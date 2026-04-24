@@ -137,7 +137,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
 
       {unresolvedAlerts.length > 0 && (
         <div className="mt-6">
-          <ClientAlertsCard initialAlerts={unresolvedAlerts} />
+          <ClientAlertsCard initialAlerts={unresolvedAlerts} clientId={id} />
         </div>
       )}
 

@@ -148,6 +148,7 @@ export const DOCUMENT_ADMIN_MAX_CONTENT = 10000  // max chars for practitioner-a
 export const EMBED_BACKFILL_BATCH = 50           // records processed per cron run during backfill
 export const ADMIN_DASHBOARD_ALERTS_PREVIEW = 10
 export const CLIENT_ASSESSMENTS_LIMIT = 10        // assessments shown in admin client detail
+export const CLIENT_ALERTS_HISTORY_LIMIT = 50    // resolved alerts shown in client detail history toggle
 export const ADMIN_ALERTS_MAX = 500              // safety cap for unresolved alerts page
 export const ADMIN_AT_RISK_MAX = 500             // safety cap for full at-risk clients page
 export const ADMIN_PROGRAMS_MAX = 200            // safety cap for programs list

@@ -1306,7 +1306,11 @@
         "stress_spike": "Stressspitze",
         "orthostatic_intolerance": "Orthostatische Symptome"
       },
-      "filterAll": "Alle"
+      "filterAll": "Alle",
+      "showHistory": "Erledigte anzeigen",
+      "hideHistory": "Erledigte ausblenden",
+      "resolvedLabel": "Erledigt",
+      "noHistory": "Keine erledigten Meldungen"
     },
     "checkIns": {
       "title": "Letzte Aktivitäten",
