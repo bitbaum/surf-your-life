@@ -1,5 +1,6 @@
 "use client"
 
+import { useTranslations } from "next-intl"
 import { PASSWORD_MIN_LENGTH } from "@/lib/constants"
 
 type Props = { password: string }
@@ -16,7 +17,6 @@ function computeScore(password: string): number {
   return Math.min(4, score > 0 ? score - 1 : 0)
 }
 
-const LABELS = ["Weak", "Fair", "Good", "Strong"] as const
 const COLORS = [
   "bg-red-500",
   "bg-orange-400",
@@ -31,9 +31,11 @@ const TEXT_COLORS = [
 ] as const
 
 export function PasswordStrength({ password }: Props) {
+  const t = useTranslations("auth.passwordStrength")
   if (password.length === 0) return null
 
   const score = computeScore(password)
+  const labels = [t("weak"), t("fair"), t("good"), t("strong")] as const
 
   return (
     <div className="flex flex-col gap-1.5 mt-1">
@@ -48,7 +50,7 @@ export function PasswordStrength({ password }: Props) {
         ))}
       </div>
       <p className={`text-xs font-medium ${TEXT_COLORS[score]}`}>
-        {LABELS[score]}
+        {labels[score]}
       </p>
     </div>
   )

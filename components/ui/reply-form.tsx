@@ -24,11 +24,11 @@ export function ReplyForm({ threadId }: { threadId: string }) {
         body: JSON.stringify({ body: body.trim() }),
       })
       const json = await res.json()
-      if (!json.success) throw new Error(json.error ?? "Failed to send")
+      if (!json.success) throw new Error(json.error ?? t("failedToSend"))
       setBody("")
       router.refresh()
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to send")
+      setError(err instanceof Error ? err.message : t("failedToSend"))
     } finally {
       setSending(false)
     }

@@ -310,7 +310,13 @@
     "unverifiedBanner": "Veuillez vérifier votre adresse e-mail.",
     "resendVerification": "Renvoyer l'e-mail de vérification",
     "resendSent": "E-mail de vérification envoyé",
-    "dismiss": "Fermer"
+    "dismiss": "Fermer",
+    "passwordStrength": {
+      "weak": "Faible",
+      "fair": "Passable",
+      "good": "Bien",
+      "strong": "Fort"
+    }
   },
   "contact": {
     "title": "Prendre contact",

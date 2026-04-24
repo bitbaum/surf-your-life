@@ -36,7 +36,7 @@ export async function PATCH(
   const parsed = bodySchema.safeParse(body)
   if (!parsed.success) {
     return NextResponse.json(
-      { success: false, error: API_ERR_INVALID_INPUT, details: parsed.error.flatten() },
+      { success: false, error: API_ERR_INVALID_INPUT },
       { status: 400 }
     )
   }

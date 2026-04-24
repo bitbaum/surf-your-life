@@ -310,7 +310,13 @@
     "unverifiedBanner": "Please verify your email address.",
     "resendVerification": "Resend verification email",
     "resendSent": "Verification email sent",
-    "dismiss": "Dismiss"
+    "dismiss": "Dismiss",
+    "passwordStrength": {
+      "weak": "Weak",
+      "fair": "Fair",
+      "good": "Good",
+      "strong": "Strong"
+    }
   },
   "contact": {
     "title": "Get in touch",
