@@ -1,6 +1,7 @@
 import { db } from "@/lib/db"
 import { threadMessages, users, clientAlerts } from "@/lib/db/schema"
 import { count, isNull, eq, and } from "drizzle-orm"
+import { CLIENT_ROLE } from "@/lib/domain/auth"
 
 export async function getUnresolvedAlertCount(): Promise<number> {
   const [result] = await db
@@ -15,7 +16,7 @@ export async function getUnreadCount(): Promise<number> {
     .select({ value: count() })
     .from(threadMessages)
     .innerJoin(users, eq(threadMessages.senderId, users.id))
-    .where(and(isNull(threadMessages.readAt), eq(users.role, "client")))
+    .where(and(isNull(threadMessages.readAt), eq(users.role, CLIENT_ROLE)))
   return result?.value ?? 0
 }
 
