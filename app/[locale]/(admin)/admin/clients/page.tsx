@@ -76,14 +76,18 @@ export default async function ClientsPage({
   const totalPages = computeTotalPages(total, PAGINATION_DEFAULT)
 
   const clientIds = clients.map((c) => c.id)
-  const alertCountMap = new Map<string, number>()
+  const alertCountMap = new Map<string, { count: number; hasHigh: boolean }>()
   if (clientIds.length > 0) {
     const alertCountRows = await db
-      .select({ clientId: clientAlerts.clientId, alertCount: count() })
+      .select({
+        clientId: clientAlerts.clientId,
+        alertCount: count(),
+        hasHigh: sql<boolean>`bool_or(${clientAlerts.severity} = 'high')`,
+      })
       .from(clientAlerts)
       .where(and(eq(clientAlerts.isResolved, false), inArray(clientAlerts.clientId, clientIds)))
       .groupBy(clientAlerts.clientId)
-    for (const r of alertCountRows) alertCountMap.set(r.clientId, r.alertCount)
+    for (const r of alertCountRows) alertCountMap.set(r.clientId, { count: r.alertCount, hasHigh: r.hasHigh })
   }
 
   function pageLink(p: number) {
@@ -149,11 +153,14 @@ export default async function ClientsPage({
                   <td className="py-3 font-medium text-slate-800">
                     <span className="flex items-center gap-2">
                       {client.name ?? "—"}
-                      {(alertCountMap.get(client.id) ?? 0) > 0 && (
-                        <span className="text-[10px] font-semibold text-red-600 bg-red-50 px-1.5 py-0.5 rounded-full leading-none">
-                          {alertCountMap.get(client.id)}
-                        </span>
-                      )}
+                      {(alertCountMap.get(client.id)?.count ?? 0) > 0 && (() => {
+                        const a = alertCountMap.get(client.id)!
+                        return (
+                          <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full leading-none ${a.hasHigh ? "text-white bg-red-600" : "text-red-600 bg-red-50"}`}>
+                            {a.count}
+                          </span>
+                        )
+                      })()}
                     </span>
                   </td>
                   <td className="py-3 text-slate-600">{client.email}</td>
