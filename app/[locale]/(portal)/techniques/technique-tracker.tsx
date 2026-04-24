@@ -3,12 +3,9 @@
 import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { toast } from "sonner"
-import type { Technique, TechniqueAssignment } from "@/lib/db/schema"
-import { computeTechniqueDebt, type LogByDate } from "@/lib/domain/techniques"
+import { computeTechniqueDebt, type LogByDate, type AssignmentWithTechnique } from "@/lib/domain/techniques"
 import { TECHNIQUE_CATEGORIES } from "@/lib/constants"
 import { TechniqueCard } from "./technique-card"
-
-type AssignmentWithTechnique = TechniqueAssignment & { technique: Technique }
 
 interface TechniqueTrackerProps {
   assignments: AssignmentWithTechnique[]

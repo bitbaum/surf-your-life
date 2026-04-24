@@ -1,5 +1,8 @@
 import { z } from "zod"
 import { techniqueCategoryEnum, techniqueDifficultyEnum } from "@/lib/db/schema"
+import type { Technique, TechniqueAssignment } from "@/lib/db/schema"
+
+export type AssignmentWithTechnique = TechniqueAssignment & { technique: Technique }
 import { toDateString } from "@/lib/utils"
 import {
   TECHNIQUE_DEFAULT_FREQUENCY,

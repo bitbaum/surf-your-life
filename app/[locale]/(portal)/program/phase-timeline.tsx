@@ -1,11 +1,10 @@
 import { CheckCircle, Circle, Clock } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { getTranslations } from "next-intl/server"
-
-type Phase = { week: number; title: string; guidance: string }
+import type { ProgramPhase } from "@/lib/domain/program"
 
 interface Props {
-  phases: Phase[]
+  phases: ProgramPhase[]
   currentWeek: number | null
   totalWeeks: number | null
 }

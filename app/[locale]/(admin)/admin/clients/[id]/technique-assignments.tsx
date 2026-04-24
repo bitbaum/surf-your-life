@@ -7,12 +7,11 @@ import { toast } from "sonner"
 import { Plus, Trash2, BookOpen } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import type { Technique, TechniqueAssignment } from "@/lib/db/schema"
+import type { Technique } from "@/lib/db/schema"
+import type { AssignmentWithTechnique } from "@/lib/domain/techniques"
 import { formatEnumValue } from "@/lib/utils"
 import { TECHNIQUE_CATEGORIES } from "@/lib/constants"
 import { TechniqueAssignForm } from "./technique-assign-form"
-
-type AssignmentWithTechnique = TechniqueAssignment & { technique: Technique }
 
 function AdherenceBadge({ days }: { days: number }) {
   const color = days >= 6 ? "text-teal-600 bg-teal-50" : days >= 4 ? "text-amber-600 bg-amber-50" : "text-red-500 bg-red-50"

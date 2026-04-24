@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { SYMPTOM_SCALE, CHIP_SELECTED, CHIP_UNSELECTED } from "@/lib/constants"
 
-type Symptoms = { fatigue: number; brainFog: number; pain: number; stress: number }
+export type Symptoms = { fatigue: number; brainFog: number; pain: number; stress: number }
 
 interface Props {
   trackSymptoms: boolean

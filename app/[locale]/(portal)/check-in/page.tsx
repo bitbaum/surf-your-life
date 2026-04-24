@@ -12,9 +12,7 @@ import { MoodCard } from "./mood-card"
 import { EnergyCard } from "./energy-card"
 import { ActivityPemCard } from "./activity-pem-card"
 import { SleepCard } from "./sleep-card"
-import { SymptomsCard } from "./symptoms-card"
-
-type Symptoms = { fatigue: number; brainFog: number; pain: number; stress: number }
+import { SymptomsCard, type Symptoms } from "./symptoms-card"
 
 export default function CheckInPage() {
   const t = useTranslations("portal.checkIn")

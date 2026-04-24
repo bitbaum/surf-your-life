@@ -2,10 +2,7 @@
 
 import { useTranslations } from "next-intl"
 import { CheckCircle2, Circle, RotateCcw } from "lucide-react"
-import type { Technique, TechniqueAssignment } from "@/lib/db/schema"
-import type { computeTechniqueDebt } from "@/lib/domain/techniques"
-
-type AssignmentWithTechnique = TechniqueAssignment & { technique: Technique }
+import type { computeTechniqueDebt, AssignmentWithTechnique } from "@/lib/domain/techniques"
 type Debt = ReturnType<typeof computeTechniqueDebt>
 
 interface TechniqueCardProps {
