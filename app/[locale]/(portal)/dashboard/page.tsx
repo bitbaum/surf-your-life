@@ -158,7 +158,9 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
             <div className="flex items-center justify-between">
               <CardTitle className="text-teal-800">{programProgress.programTitle}</CardTitle>
               <span className="text-xs font-medium text-teal-600 bg-teal-50 border border-teal-200 px-2 py-1 rounded-full">
-                {t("programWeek", { current: programProgress.currentWeek, total: programProgress.totalWeeks || "?" })}
+                {programProgress.totalWeeks
+                  ? t("programWeek", { current: programProgress.currentWeek, total: programProgress.totalWeeks })
+                  : t("programWeekOpen", { current: programProgress.currentWeek })}
               </span>
             </div>
           </CardHeader>

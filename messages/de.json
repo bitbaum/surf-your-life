@@ -382,7 +382,8 @@
       "insightConsistent": "Du hast diese Woche 5+ Mal eingecheckt — diese Kontinuität treibt langfristige Genesung an.",
       "programWeek": "Woche {current} von {total}",
       "programProgress": "{pct}% abgeschlossen",
-      "programNoPhase": "Für diese Woche wurde noch keine Anleitung festgelegt."
+      "programNoPhase": "Für diese Woche wurde noch keine Anleitung festgelegt.",
+      "programWeekOpen": "Woche {current}"
     },
     "checkIn": {
       "title": "Wie geht es Ihnen heute?",

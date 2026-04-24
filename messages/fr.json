@@ -382,7 +382,8 @@
       "insightConsistent": "Vous avez effectué 5+ check-ins cette semaine — cette régularité favorise une guérison durable.",
       "programWeek": "Semaine {current} sur {total}",
       "programProgress": "{pct}% terminé",
-      "programNoPhase": "Aucun guide défini pour cette semaine."
+      "programNoPhase": "Aucun guide défini pour cette semaine.",
+      "programWeekOpen": "Semaine {current}"
     },
     "checkIn": {
       "title": "Comment allez-vous aujourd'hui?",

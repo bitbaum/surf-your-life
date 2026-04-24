@@ -382,7 +382,8 @@
       "insightConsistent": "You've checked in 5+ times this week — consistency like this is what drives long-term recovery.",
       "programWeek": "Week {current} of {total}",
       "programProgress": "{pct}% complete",
-      "programNoPhase": "No guidance set for this week yet."
+      "programNoPhase": "No guidance set for this week yet.",
+      "programWeekOpen": "Week {current}"
     },
     "checkIn": {
       "title": "How are you today?",
