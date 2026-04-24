@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils"
 import { BRAND_NAME } from "@/lib/constants"
 import { LocaleSwitcher } from "@/components/ui/locale-switcher"
 import { useTranslations } from "next-intl"
-import { LayoutDashboard, Users, LogOut, Waves, Menu, X, Inbox, MessageSquare, UserCog, CalendarCheck, BookOpen, Wrench, User, Sparkles, Bell } from "lucide-react"
+import { LayoutDashboard, Users, LogOut, Waves, Menu, X, Inbox, MessageSquare, UserCog, CalendarCheck, BookOpen, Wrench, User, Sparkles, Bell, Activity } from "lucide-react"
 
 interface AdminSidebarProps {
   unreadMessages?: number
@@ -23,6 +23,7 @@ export function AdminSidebar({ unreadMessages = 0, unresolvedAlerts = 0, newLead
   const navItems = [
     { href: "/admin/dashboard", label: t("dashboard"), icon: LayoutDashboard, badge: 0 },
     { href: "/admin/clients", label: t("clients"), icon: Users, badge: 0 },
+    { href: "/admin/check-ins", label: t("checkIns"), icon: Activity, badge: 0 },
     { href: "/admin/alerts", label: t("alerts"), icon: Bell, badge: unresolvedAlerts },
     { href: "/admin/bookings", label: t("bookings"), icon: CalendarCheck, badge: 0 },
     { href: "/admin/services", label: t("services"), icon: Wrench, badge: 0 },

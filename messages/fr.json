@@ -831,7 +831,8 @@
       "techniques": "Techniques",
       "alerts": "Alertes",
       "openMenu": "Ouvrir le menu",
-      "closeMenu": "Fermer le menu"
+      "closeMenu": "Fermer le menu",
+      "checkIns": "Activité"
     },
     "dashboard": {
       "title": "Tableau de bord Admin",
@@ -1258,6 +1259,18 @@
         "orthostatic_intolerance": "Symptômes orthostatiques"
       },
       "filterAll": "Tous"
+    },
+    "checkIns": {
+      "title": "Activité récente",
+      "description": "Tous les check-ins de vos clients",
+      "noActivity": "Pas encore de check-ins",
+      "client": "Client",
+      "date": "Date",
+      "mood": "Humeur",
+      "energy": "Énergie",
+      "sleep": "Sommeil",
+      "pemFlag": "SPE",
+      "viewClient": "Voir"
     }
   },
   "concerns": {

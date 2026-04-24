@@ -831,7 +831,8 @@
       "techniques": "Techniken",
       "alerts": "Alarme",
       "openMenu": "Menü öffnen",
-      "closeMenu": "Menü schließen"
+      "closeMenu": "Menü schließen",
+      "checkIns": "Aktivität"
     },
     "dashboard": {
       "title": "Admin-Übersicht",
@@ -1258,6 +1259,18 @@
         "orthostatic_intolerance": "Orthostatische Symptome"
       },
       "filterAll": "Alle"
+    },
+    "checkIns": {
+      "title": "Letzte Aktivitäten",
+      "description": "Alle Check-ins Ihrer Klienten",
+      "noActivity": "Noch keine Check-ins",
+      "client": "Klient",
+      "date": "Datum",
+      "mood": "Stimmung",
+      "energy": "Energie",
+      "sleep": "Schlaf",
+      "pemFlag": "PEM",
+      "viewClient": "Ansehen"
     }
   },
   "concerns": {

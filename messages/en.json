@@ -831,7 +831,8 @@
       "techniques": "Techniques",
       "alerts": "Alerts",
       "openMenu": "Open menu",
-      "closeMenu": "Close menu"
+      "closeMenu": "Close menu",
+      "checkIns": "Activity"
     },
     "dashboard": {
       "title": "Admin Dashboard",
@@ -1258,6 +1259,18 @@
         "orthostatic_intolerance": "Orthostatic symptoms"
       },
       "filterAll": "All"
+    },
+    "checkIns": {
+      "title": "Recent Activity",
+      "description": "All client check-ins across your caseload",
+      "noActivity": "No check-ins yet",
+      "client": "Client",
+      "date": "Date",
+      "mood": "Mood",
+      "energy": "Energy",
+      "sleep": "Sleep",
+      "pemFlag": "PEM",
+      "viewClient": "View"
     }
   },
   "concerns": {
