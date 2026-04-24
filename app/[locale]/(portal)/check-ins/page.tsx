@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
 import { formatDate, formatEnumValue, computeTotalPages, parsePage, computeOffset } from "@/lib/utils"
-import { PAGINATION_DEFAULT, MOOD_EMOJI, SLEEP_QUALITY_OPTIONS } from "@/lib/constants"
+import { PAGINATION_DEFAULT, MOOD_EMOJI, SLEEP_QUALITY_OPTIONS, ACTIVITY_LEVELS } from "@/lib/constants"
 
 const FIELD_LABEL_CLS = "text-xs font-medium text-slate-400 uppercase tracking-wide"
 
@@ -28,6 +28,7 @@ export default async function CheckInsPage({
   if (!session) return null
 
   const t = await getTranslations("portal.checkIns")
+  const tCheckIn = await getTranslations("portal.checkIn")
 
   const { page: pageParam } = await searchParams
   const page = parsePage(pageParam)
@@ -45,6 +46,7 @@ export default async function CheckInsPage({
 
   const total = totalResult[0]?.count ?? 0
   const totalPages = computeTotalPages(total, PAGINATION_DEFAULT)
+  const activityLevelMap = Object.fromEntries(ACTIVITY_LEVELS.map((a) => [a.value, a]))
 
   return (
     <div className="max-w-3xl mx-auto">
@@ -87,6 +89,9 @@ export default async function CheckInsPage({
                       {ci.sleepQuality != null && (
                         <span>{SLEEP_QUALITY_OPTIONS[ci.sleepQuality - 1]?.emoji ?? "😴"} <strong className="text-slate-800">{ci.sleepQuality}/5</strong></span>
                       )}
+                      {ci.activityLevel && activityLevelMap[ci.activityLevel] && (
+                        <span>{activityLevelMap[ci.activityLevel].emoji} <strong className="text-slate-800">{tCheckIn(activityLevelMap[ci.activityLevel].labelKey)}</strong></span>
+                      )}
                       {ci.orthostaticSymptoms && (
                         <span className="text-orange-500 font-medium text-xs self-center">⬆ {t("orthostaticShort")}</span>
                       )}
@@ -94,6 +99,14 @@ export default async function CheckInsPage({
                         <span className="text-red-500 font-medium text-xs self-center">PEM{ci.pemSeverity ? ` ${ci.pemSeverity}/10` : ""}</span>
                       )}
                     </div>
+                    {(ci.symptomFatigue != null || ci.symptomBrainFog != null || ci.symptomPain != null || ci.stressLevel != null) && (
+                      <div className="flex flex-wrap gap-3 text-xs text-slate-400 mt-1">
+                        {ci.symptomFatigue != null && <span>{tCheckIn("symptomFatigue")}: <strong className="text-slate-600">{ci.symptomFatigue}/10</strong></span>}
+                        {ci.symptomBrainFog != null && <span>{tCheckIn("symptomBrainFog")}: <strong className="text-slate-600">{ci.symptomBrainFog}/10</strong></span>}
+                        {ci.symptomPain != null && <span>{tCheckIn("symptomPain")}: <strong className="text-slate-600">{ci.symptomPain}/10</strong></span>}
+                        {ci.stressLevel != null && <span>{tCheckIn("stressLevel")}: <strong className="text-slate-600">{ci.stressLevel}/10</strong></span>}
+                      </div>
+                    )}
                   </div>
                   {(ci.journalEntry || ci.wins || ci.challenges || ci.notes) && (
                     <div className="mt-4 flex flex-col gap-2 text-sm text-slate-600">
