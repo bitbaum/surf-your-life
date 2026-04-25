@@ -1,12 +1,11 @@
 "use client"
 
 import { useState, useRef } from "react"
-import { useTranslations } from "next-intl"
 import { formatDate } from "@/lib/utils"
 import {
   CHART_W, CHART_H, CHART_PAD, CHART_PLOT_H,
   toPath, toX, findClosestIndex, computeDateIndices, tooltipTransform,
-} from "./chart-utils"
+} from "@/lib/chart-utils"
 
 interface DataPoint {
   createdAt: Date
@@ -16,27 +15,27 @@ interface DataPoint {
   stressLevel: number | null
 }
 
-interface Props {
-  data: DataPoint[]
+export interface SymptomsChartLabels {
+  fatigue: string
+  brainFog: string
+  pain: string
+  stress: string
 }
 
-// Each symptom line: color, data key, i18n label key
+interface Props {
+  data: DataPoint[]
+  labels: SymptomsChartLabels
+}
+
+// Each symptom line: color, data key, label key in `SymptomsChartLabels`
 const SYMPTOM_LINES = [
-  { key: "symptomFatigue" as const, stroke: "#f59e0b", gradId: "syl-fatigue-grad" },
-  { key: "symptomBrainFog" as const, stroke: "#8b5cf6", gradId: "syl-brainfog-grad" },
-  { key: "symptomPain" as const, stroke: "#f43f5e", gradId: "syl-pain-grad" },
-  { key: "stressLevel" as const, stroke: "#64748b", gradId: "syl-stress-grad" },
+  { key: "symptomFatigue" as const, label: "fatigue" as const, stroke: "#f59e0b", gradId: "syl-fatigue-grad" },
+  { key: "symptomBrainFog" as const, label: "brainFog" as const, stroke: "#8b5cf6", gradId: "syl-brainfog-grad" },
+  { key: "symptomPain" as const, label: "pain" as const, stroke: "#f43f5e", gradId: "syl-pain-grad" },
+  { key: "stressLevel" as const, label: "stress" as const, stroke: "#64748b", gradId: "syl-stress-grad" },
 ] as const
 
-const LABEL_KEYS = {
-  symptomFatigue: "chartFatigue",
-  symptomBrainFog: "chartBrainFog",
-  symptomPain: "chartPain",
-  stressLevel: "chartStress",
-} as const
-
-export function SymptomsChart({ data }: Props) {
-  const t = useTranslations("portal.dashboard")
+export function SymptomsChart({ data, labels }: Props) {
   const [hovered, setHovered] = useState<number | null>(null)
   const svgRef = useRef<SVGSVGElement>(null)
 
@@ -80,7 +79,7 @@ export function SymptomsChart({ data }: Props) {
               className="inline-block w-4 h-0.5 rounded-full"
               style={{ backgroundColor: line.stroke }}
             />
-            {t(LABEL_KEYS[line.key])}
+            {labels[line.label]}
           </span>
         ))}
       </div>
@@ -172,7 +171,7 @@ export function SymptomsChart({ data }: Props) {
               return (
                 <p key={line.key} className="flex items-center justify-between gap-3 mb-0.5 last:mb-0">
                   <span style={{ color: line.stroke }} className="font-medium">
-                    {t(LABEL_KEYS[line.key])}
+                    {labels[line.label]}
                   </span>
                   <span>{val}/10</span>
                 </p>

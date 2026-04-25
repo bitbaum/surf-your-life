@@ -5,7 +5,7 @@ import { Link } from "@/i18n/navigation"
 import { formatDate } from "@/lib/utils"
 import { WellnessTrendChart } from "./wellness-trend-chart"
 import { SleepChart } from "./sleep-chart"
-import { SymptomsChart } from "./symptoms-chart"
+import { SymptomsChart } from "@/components/ui/symptoms-chart"
 
 type TrendPoint = {
   createdAt: Date
@@ -71,7 +71,15 @@ export async function DashboardCharts({ trendCheckIns, hasSymptomData, insight, 
             <p className="text-xs text-slate-400 mt-0.5">{t("symptomsSubtitle")}</p>
           </CardHeader>
           <CardContent>
-            <SymptomsChart data={trendCheckIns} />
+            <SymptomsChart
+              data={trendCheckIns}
+              labels={{
+                fatigue: t("chartFatigue"),
+                brainFog: t("chartBrainFog"),
+                pain: t("chartPain"),
+                stress: t("chartStress"),
+              }}
+            />
           </CardContent>
         </Card>
       )}

@@ -1023,6 +1023,14 @@
           "insightWeekEnergyDown": "Avg energy down {delta} pts vs last week — consider reaching out.",
           "insightWeekStressUp": "Avg stress up {delta} pts vs last week — consider reaching out.",
           "insightWeekStressDown": "Avg stress down {delta} pts vs last week."
+        },
+        "symptomsChart": {
+          "title": "Symptom trends",
+          "subtitle": "Fatigue, brain fog, pain and stress across recent check-ins",
+          "fatigue": "Fatigue",
+          "brainFog": "Brain fog",
+          "pain": "Pain",
+          "stress": "Stress"
         }
       },
       "atRisk": {

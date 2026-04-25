@@ -7,7 +7,7 @@ import { MOOD_LABEL, MOOD_EMOJI, MOOD_NUMERIC } from "@/lib/constants"
 import {
   CHART_W, CHART_H, CHART_PAD, CHART_PLOT_H,
   toPath, toX, findClosestIndex, computeDateIndices, tooltipTransform,
-} from "./chart-utils"
+} from "@/lib/chart-utils"
 
 interface DataPoint {
   createdAt: Date

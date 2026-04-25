@@ -1023,6 +1023,14 @@
           "insightWeekEnergyDown": "Ø Energie {delta} Punkte niedriger als letzte Woche — evtl. Kontakt aufnehmen.",
           "insightWeekStressUp": "Ø Stress {delta} Punkte höher als letzte Woche — evtl. Kontakt aufnehmen.",
           "insightWeekStressDown": "Ø Stress {delta} Punkte niedriger als letzte Woche."
+        },
+        "symptomsChart": {
+          "title": "Symptomverlauf",
+          "subtitle": "Erschöpfung, Brain Fog, Schmerzen und Stress über die letzten Check-ins",
+          "fatigue": "Erschöpfung",
+          "brainFog": "Brain Fog",
+          "pain": "Schmerzen",
+          "stress": "Stress"
         }
       },
       "atRisk": {

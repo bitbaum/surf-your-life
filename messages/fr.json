@@ -1041,6 +1041,14 @@
           "insightWeekEnergyDown": "Énergie moy. en baisse de {delta} pts vs sem. dernière — penser à reprendre contact.",
           "insightWeekStressUp": "Stress moy. en hausse de {delta} pts vs sem. dernière — penser à reprendre contact.",
           "insightWeekStressDown": "Stress moy. en baisse de {delta} pts vs sem. dernière."
+        },
+        "symptomsChart": {
+          "title": "Tendances des symptômes",
+          "subtitle": "Fatigue, brouillard cérébral, douleur et stress sur les check-ins récents",
+          "fatigue": "Fatigue",
+          "brainFog": "Brouillard cérébral",
+          "pain": "Douleur",
+          "stress": "Stress"
         }
       },
       "atRisk": {
