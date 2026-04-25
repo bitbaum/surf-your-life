@@ -45,6 +45,17 @@ function weekDeltaWithPem(currentPem: number, priorPem: number, currentCount = 5
     hasPriorWindow: priorCount > 0,
   }
 }
+
+function weekDeltaWithStress(currentAvg: number, priorAvg: number, currentCount = 5, priorCount = 5): WeekDelta {
+  return {
+    window: { avgEnergy: 5, pemCount: 0, avgStress: currentAvg, count: currentCount },
+    prior: { avgEnergy: 5, pemCount: 0, avgStress: priorAvg, count: priorCount },
+    energyDelta: 0,
+    pemDelta: 0,
+    stressDelta: Math.round((currentAvg - priorAvg) * 10) / 10,
+    hasPriorWindow: priorCount > 0,
+  }
+}
 import { DAY_MS, SEVEN_DAYS_MS } from "@/lib/constants"
 
 // ─── computeStreak ────────────────────────────────────────────────────────────
@@ -404,6 +415,70 @@ describe("computeInsight", () => {
     }
     expect(computeInsight([4, 4, 4], 5, delta)).toEqual({ key: "insightPemCluster", count: 2 })
   })
+
+  it("fires week stress up when stress is climbing ≥ 1.0", () => {
+    expect(computeInsight([5, 5, 5], 5, weekDeltaWithStress(7.5, 5.0))).toEqual({
+      key: "insightWeekStressUp",
+      delta: 2.5,
+    })
+  })
+
+  it("fires week stress down when stress is dropping ≤ -1.0", () => {
+    expect(computeInsight([5, 5, 5], 5, weekDeltaWithStress(4.0, 6.5))).toEqual({
+      key: "insightWeekStressDown",
+      delta: 2.5,
+    })
+  })
+
+  it("does not fire stress branches below the 1.0 threshold", () => {
+    // delta = 0.8 → no stress signal; falls back to consistency
+    expect(computeInsight([5, 5, 5], 5, weekDeltaWithStress(5.8, 5.0))).toEqual({
+      key: "insightConsistent",
+    })
+  })
+
+  it("stress UP outranks energy DOWN (concerning > concerning, stress is more proximal)", () => {
+    const delta: WeekDelta = {
+      window: { avgEnergy: 4, pemCount: 0, avgStress: 7, count: 5 },
+      prior: { avgEnergy: 6, pemCount: 0, avgStress: 5, count: 5 },
+      energyDelta: -2,
+      pemDelta: 0,
+      stressDelta: 2,
+      hasPriorWindow: true,
+    }
+    expect(computeInsight([4, 4, 4], 5, delta)).toEqual({
+      key: "insightWeekStressUp",
+      delta: 2,
+    })
+  })
+
+  it("energy DOWN outranks energy UP outranks stress DOWN (concerning > positive)", () => {
+    // Energy up + stress down (both positive); energy up wins
+    const positiveOnly: WeekDelta = {
+      window: { avgEnergy: 7, pemCount: 0, avgStress: 4, count: 5 },
+      prior: { avgEnergy: 5, pemCount: 0, avgStress: 6, count: 5 },
+      energyDelta: 2,
+      pemDelta: 0,
+      stressDelta: -2,
+      hasPriorWindow: true,
+    }
+    expect(computeInsight([7, 7, 7], 5, positiveOnly)).toEqual({
+      key: "insightWeekEnergyUp",
+      delta: 2,
+    })
+  })
+
+  it("PEM cluster still outranks both stress and energy concerning signals", () => {
+    const delta: WeekDelta = {
+      window: { avgEnergy: 4, pemCount: 2, avgStress: 8, count: 5 },
+      prior: { avgEnergy: 6, pemCount: 0, avgStress: 5, count: 5 },
+      energyDelta: -2,
+      pemDelta: 2,
+      stressDelta: 3,
+      hasPriorWindow: true,
+    }
+    expect(computeInsight([4, 4, 4], 5, delta)).toEqual({ key: "insightPemCluster", count: 2 })
+  })
 })
 
 // ─── isComparativeInsight ────────────────────────────────────────────────────
@@ -414,6 +489,8 @@ describe("isComparativeInsight", () => {
     expect(isComparativeInsight({ key: "insightPemImproving" })).toBe(true)
     expect(isComparativeInsight({ key: "insightWeekEnergyUp", delta: 1.2 })).toBe(true)
     expect(isComparativeInsight({ key: "insightWeekEnergyDown", delta: 1.5 })).toBe(true)
+    expect(isComparativeInsight({ key: "insightWeekStressUp", delta: 1.8 })).toBe(true)
+    expect(isComparativeInsight({ key: "insightWeekStressDown", delta: 1.2 })).toBe(true)
   })
 
   it("returns false for short-term and consistency signals", () => {

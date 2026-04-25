@@ -391,6 +391,8 @@
       "insightPemImproving": "Weniger Crash-Tage als letzte Woche — dein Pacing zahlt sich aus. Hör weiter auf deinen Körper.",
       "insightWeekEnergyUp": "Deine durchschnittliche Energie ist {delta} Punkte höher als letzte Woche. Mach genau so weiter.",
       "insightWeekEnergyDown": "Deine durchschnittliche Energie ist {delta} Punkte niedriger als letzte Woche. Eine kurze Reflexion — oder ein Austausch mit deinem Therapeuten — kann helfen.",
+      "insightWeekStressUp": "Dein durchschnittlicher Stress ist {delta} Punkte höher als letzte Woche. Ein Atemzug, ein Spaziergang oder ein Gespräch mit deinem Therapeuten kann etwas Last nehmen.",
+      "insightWeekStressDown": "Dein durchschnittlicher Stress ist {delta} Punkte niedriger als letzte Woche. Etwas funktioniert — versuche zu erkennen, was.",
       "insightEnergyUp": "Deine Energie ist in den letzten Check-ins gestiegen. Weiter so!",
       "insightEnergyDown": "Deine Energie ist zuletzt gesunken. Besprich das mit deinem Therapeuten.",
       "insightConsistent": "Du hast diese Woche 5+ Mal eingecheckt — diese Kontinuität treibt langfristige Genesung an.",
@@ -1008,7 +1010,9 @@
           "insightPemCluster": "{count, plural, one {# PEM-Tag} other {# PEM-Tage}} diese Woche — Pacing-Hinweis, evtl. Kontakt aufnehmen.",
           "insightPemImproving": "PEM-Tage rückläufig vs. letzter Woche — Pacing verbessert sich.",
           "insightWeekEnergyUp": "Ø Energie {delta} Punkte höher als letzte Woche.",
-          "insightWeekEnergyDown": "Ø Energie {delta} Punkte niedriger als letzte Woche — evtl. Kontakt aufnehmen."
+          "insightWeekEnergyDown": "Ø Energie {delta} Punkte niedriger als letzte Woche — evtl. Kontakt aufnehmen.",
+          "insightWeekStressUp": "Ø Stress {delta} Punkte höher als letzte Woche — evtl. Kontakt aufnehmen.",
+          "insightWeekStressDown": "Ø Stress {delta} Punkte niedriger als letzte Woche."
         }
       },
       "atRisk": {

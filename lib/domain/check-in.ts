@@ -250,6 +250,8 @@ export function detectMilestone(
 export type InsightKey =
   | "insightPemCluster"
   | "insightPemImproving"
+  | "insightWeekStressUp"
+  | "insightWeekStressDown"
   | "insightWeekEnergyUp"
   | "insightWeekEnergyDown"
   | "insightEnergyUp"
@@ -259,21 +261,26 @@ export type InsightKey =
 /** A keyed insight, optionally carrying numeric params for ICU interpolation. */
 export type Insight =
   | { key: "insightPemCluster"; count: number }
-  | { key: "insightWeekEnergyUp" | "insightWeekEnergyDown"; delta: number }
+  | { key: "insightWeekEnergyUp" | "insightWeekEnergyDown" | "insightWeekStressUp" | "insightWeekStressDown"; delta: number }
   | { key: "insightPemImproving" | "insightEnergyUp" | "insightEnergyDown" | "insightConsistent" }
 
-const WEEK_ENERGY_THRESHOLD = 1.0  // 1 point on the 10-scale weekly avg = meaningful
+const WEEK_DELTA_THRESHOLD = 1.0  // 1 point on the 10-scale weekly avg = meaningful
 
 /**
  * Pick the most informative dashboard insight for the user.
  * Priority order (most actionable first):
  *   1. PEM cluster (clinical safety — uses the same 2+ threshold as practitioner alerts)
  *   2. PEM improving (positive reinforcement when recovering from a cluster week)
- *   3. Week-over-week energy shift (stable, comparative)
- *   4. Short-term direction across the last 3 check-ins
- *   5. Consistency callout for clients checking in often
+ *   3. Week-over-week stress UP (concerning — proximal to burnout)
+ *   4. Week-over-week energy DOWN (concerning)
+ *   5. Week-over-week energy UP (positive)
+ *   6. Week-over-week stress DOWN (positive)
+ *   7. Short-term direction across the last 3 check-ins (fallback)
+ *   8. Consistency callout for clients checking in often (fallback)
  *
- * `weekDelta` is optional — falls back to non-week behaviour when omitted.
+ * Concerning beats positive within each metric pair so the insight surfaces
+ * what most needs attention. `weekDelta` is optional — falls back to
+ * non-week behaviour when omitted.
  */
 export function computeInsight(
   recentEnergyLevels: (number | null)[],
@@ -297,12 +304,20 @@ export function computeInsight(
       return { key: "insightPemImproving" }
     }
 
-    if (weekDelta.hasPriorWindow && weekDelta.energyDelta != null) {
-      if (weekDelta.energyDelta >= WEEK_ENERGY_THRESHOLD) {
+    if (weekDelta.hasPriorWindow) {
+      // Concerning signals first (stress up, energy down)
+      if (weekDelta.stressDelta != null && weekDelta.stressDelta >= WEEK_DELTA_THRESHOLD) {
+        return { key: "insightWeekStressUp", delta: weekDelta.stressDelta }
+      }
+      if (weekDelta.energyDelta != null && weekDelta.energyDelta <= -WEEK_DELTA_THRESHOLD) {
+        return { key: "insightWeekEnergyDown", delta: Math.abs(weekDelta.energyDelta) }
+      }
+      // Positive signals next
+      if (weekDelta.energyDelta != null && weekDelta.energyDelta >= WEEK_DELTA_THRESHOLD) {
         return { key: "insightWeekEnergyUp", delta: weekDelta.energyDelta }
       }
-      if (weekDelta.energyDelta <= -WEEK_ENERGY_THRESHOLD) {
-        return { key: "insightWeekEnergyDown", delta: Math.abs(weekDelta.energyDelta) }
+      if (weekDelta.stressDelta != null && weekDelta.stressDelta <= -WEEK_DELTA_THRESHOLD) {
+        return { key: "insightWeekStressDown", delta: Math.abs(weekDelta.stressDelta) }
       }
     }
   }
@@ -332,6 +347,8 @@ export function isComparativeInsight(insight: Insight): boolean {
     case "insightPemImproving":
     case "insightWeekEnergyUp":
     case "insightWeekEnergyDown":
+    case "insightWeekStressUp":
+    case "insightWeekStressDown":
       return true
     default:
       return false

@@ -391,6 +391,8 @@
       "insightPemImproving": "Fewer crash days this week than last — your pacing is paying off. Keep listening to your body.",
       "insightWeekEnergyUp": "Your average energy is up {delta} points vs last week. Whatever you're doing, keep it up.",
       "insightWeekEnergyDown": "Your average energy is down {delta} points vs last week. A short reflection — or a quick word with your practitioner — can help.",
+      "insightWeekStressUp": "Your average stress is up {delta} points vs last week. A breath, a walk, or a chat with your practitioner can take some load off.",
+      "insightWeekStressDown": "Your average stress is down {delta} points vs last week. Something's working — try to notice what.",
       "insightEnergyUp": "Your energy has been trending up over the last few check-ins. Keep up whatever you're doing!",
       "insightEnergyDown": "Your energy has dipped recently. Consider discussing this with your practitioner.",
       "insightConsistent": "You've checked in 5+ times this week — consistency like this is what drives long-term recovery.",
@@ -1008,7 +1010,9 @@
           "insightPemCluster": "{count, plural, one {# PEM day} other {# PEM days}} this week — pacing concern, consider reaching out.",
           "insightPemImproving": "PEM days down vs last week — pacing improving.",
           "insightWeekEnergyUp": "Avg energy up {delta} pts vs last week.",
-          "insightWeekEnergyDown": "Avg energy down {delta} pts vs last week — consider reaching out."
+          "insightWeekEnergyDown": "Avg energy down {delta} pts vs last week — consider reaching out.",
+          "insightWeekStressUp": "Avg stress up {delta} pts vs last week — consider reaching out.",
+          "insightWeekStressDown": "Avg stress down {delta} pts vs last week."
         }
       },
       "atRisk": {

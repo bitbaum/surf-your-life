@@ -391,6 +391,8 @@
       "insightPemImproving": "Moins de jours de crash que la semaine dernière — ton dosage porte ses fruits. Continue d'écouter ton corps.",
       "insightWeekEnergyUp": "Ta moyenne d'énergie a progressé de {delta} points par rapport à la semaine dernière. Continue ainsi.",
       "insightWeekEnergyDown": "Ta moyenne d'énergie a baissé de {delta} points par rapport à la semaine dernière. Une courte réflexion — ou un échange avec ton praticien — peut aider.",
+      "insightWeekStressUp": "Ta moyenne de stress a augmenté de {delta} points par rapport à la semaine dernière. Une respiration, une marche, ou un échange avec ton praticien peut alléger un peu la charge.",
+      "insightWeekStressDown": "Ta moyenne de stress a baissé de {delta} points par rapport à la semaine dernière. Quelque chose fonctionne — essaie de remarquer quoi.",
       "insightEnergyUp": "Votre énergie a progressé lors des derniers check-ins. Continuez ainsi !",
       "insightEnergyDown": "Votre énergie a baissé récemment. Envisagez d'en parler avec votre praticien.",
       "insightConsistent": "Vous avez effectué 5+ check-ins cette semaine — cette régularité favorise une guérison durable.",
@@ -1026,7 +1028,9 @@
           "insightPemCluster": "{count, plural, one {# jour PEM} other {# jours PEM}} cette semaine — vigilance dosage, penser à reprendre contact.",
           "insightPemImproving": "Jours PEM en baisse vs sem. dernière — dosage en amélioration.",
           "insightWeekEnergyUp": "Énergie moy. en hausse de {delta} pts vs sem. dernière.",
-          "insightWeekEnergyDown": "Énergie moy. en baisse de {delta} pts vs sem. dernière — penser à reprendre contact."
+          "insightWeekEnergyDown": "Énergie moy. en baisse de {delta} pts vs sem. dernière — penser à reprendre contact.",
+          "insightWeekStressUp": "Stress moy. en hausse de {delta} pts vs sem. dernière — penser à reprendre contact.",
+          "insightWeekStressDown": "Stress moy. en baisse de {delta} pts vs sem. dernière."
         }
       },
       "atRisk": {
