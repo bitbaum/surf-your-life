@@ -1,4 +1,4 @@
-import { DAY_MS, SEVEN_DAYS_MS, MOOD_SCORE, MOODS } from "@/lib/constants"
+import { DAY_MS, SEVEN_DAYS_MS, MOOD_SCORE, MOODS, ALERT_PEM_CLUSTER_COUNT } from "@/lib/constants"
 import type { ProgramPhase } from "./program"
 
 // ─── Check-in stats summary ────────────────────────────────────────────────
@@ -248,6 +248,8 @@ export function detectMilestone(
 // ─── Rule-based insight ────────────────────────────────────────────────────
 
 export type InsightKey =
+  | "insightPemCluster"
+  | "insightPemImproving"
   | "insightWeekEnergyUp"
   | "insightWeekEnergyDown"
   | "insightEnergyUp"
@@ -256,31 +258,52 @@ export type InsightKey =
 
 /** A keyed insight, optionally carrying numeric params for ICU interpolation. */
 export type Insight =
+  | { key: "insightPemCluster"; count: number }
   | { key: "insightWeekEnergyUp" | "insightWeekEnergyDown"; delta: number }
-  | { key: "insightEnergyUp" | "insightEnergyDown" | "insightConsistent" }
+  | { key: "insightPemImproving" | "insightEnergyUp" | "insightEnergyDown" | "insightConsistent" }
 
 const WEEK_ENERGY_THRESHOLD = 1.0  // 1 point on the 10-scale weekly avg = meaningful
 
 /**
  * Pick the most informative dashboard insight for the user.
  * Priority order (most actionable first):
- *   1. Week-over-week energy shift (stable, comparative)
- *   2. Short-term direction across the last 3 check-ins
- *   3. Consistency callout for clients checking in often
+ *   1. PEM cluster (clinical safety — uses the same 2+ threshold as practitioner alerts)
+ *   2. PEM improving (positive reinforcement when recovering from a cluster week)
+ *   3. Week-over-week energy shift (stable, comparative)
+ *   4. Short-term direction across the last 3 check-ins
+ *   5. Consistency callout for clients checking in often
  *
- * `weekDelta` is optional — falls back to short-term-only behaviour when omitted.
+ * `weekDelta` is optional — falls back to non-week behaviour when omitted.
  */
 export function computeInsight(
   recentEnergyLevels: (number | null)[],
   weekCheckInCount: number,
   weekDelta: WeekDelta | null = null
 ): Insight | null {
-  if (weekDelta?.hasPriorWindow && weekDelta.energyDelta != null) {
-    if (weekDelta.energyDelta >= WEEK_ENERGY_THRESHOLD) {
-      return { key: "insightWeekEnergyUp", delta: weekDelta.energyDelta }
+  if (weekDelta) {
+    // Cluster: 2+ PEM days in the current week, and not improving vs prior
+    if (
+      weekDelta.window.pemCount >= ALERT_PEM_CLUSTER_COUNT &&
+      weekDelta.pemDelta >= 0
+    ) {
+      return { key: "insightPemCluster", count: weekDelta.window.pemCount }
     }
-    if (weekDelta.energyDelta <= -WEEK_ENERGY_THRESHOLD) {
-      return { key: "insightWeekEnergyDown", delta: Math.abs(weekDelta.energyDelta) }
+
+    // Improving: prior week had a cluster, current week is clearly down
+    if (
+      weekDelta.prior.pemCount >= ALERT_PEM_CLUSTER_COUNT &&
+      weekDelta.pemDelta <= -1
+    ) {
+      return { key: "insightPemImproving" }
+    }
+
+    if (weekDelta.hasPriorWindow && weekDelta.energyDelta != null) {
+      if (weekDelta.energyDelta >= WEEK_ENERGY_THRESHOLD) {
+        return { key: "insightWeekEnergyUp", delta: weekDelta.energyDelta }
+      }
+      if (weekDelta.energyDelta <= -WEEK_ENERGY_THRESHOLD) {
+        return { key: "insightWeekEnergyDown", delta: Math.abs(weekDelta.energyDelta) }
+      }
     }
   }
 

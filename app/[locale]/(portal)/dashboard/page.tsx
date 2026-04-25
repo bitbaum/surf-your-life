@@ -131,7 +131,9 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
   const insight = insightHit
     ? "delta" in insightHit
       ? t(insightHit.key, { delta: insightHit.delta.toFixed(1) })
-      : t(insightHit.key)
+      : "count" in insightHit
+        ? t(insightHit.key, { count: insightHit.count })
+        : t(insightHit.key)
     : null
 
   const firstName = session.user.name?.split(" ")[0] ?? session.user.email?.split("@")[0] ?? ""

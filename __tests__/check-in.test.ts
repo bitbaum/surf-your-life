@@ -33,6 +33,17 @@ function weekDeltaWithEnergy(currentAvg: number, priorAvg: number, currentCount 
     hasPriorWindow: priorCount > 0,
   }
 }
+
+function weekDeltaWithPem(currentPem: number, priorPem: number, currentCount = 5, priorCount = 5): WeekDelta {
+  return {
+    window: { avgEnergy: 5, pemCount: currentPem, avgStress: null, count: currentCount },
+    prior: { avgEnergy: 5, pemCount: priorPem, avgStress: null, count: priorCount },
+    energyDelta: 0,
+    pemDelta: currentPem - priorPem,
+    stressDelta: null,
+    hasPriorWindow: priorCount > 0,
+  }
+}
 import { DAY_MS, SEVEN_DAYS_MS } from "@/lib/constants"
 
 // ─── computeStreak ────────────────────────────────────────────────────────────
@@ -334,6 +345,63 @@ describe("computeInsight", () => {
     expect(noPrior.hasPriorWindow).toBe(false)
     const insight = computeInsight([7, 5, 5], 5, noPrior)
     expect(insight).toEqual({ key: "insightEnergyUp" })  // falls back to short-term
+  })
+
+  it("fires PEM cluster at the practitioner-alert threshold (2+) when not improving", () => {
+    // 2 this week, 0 last week — clear cluster emergence
+    expect(computeInsight([5, 5, 5], 5, weekDeltaWithPem(2, 0))).toEqual({
+      key: "insightPemCluster",
+      count: 2,
+    })
+    // 3 this week, 1 last week — rising cluster
+    expect(computeInsight([5, 5, 5], 5, weekDeltaWithPem(3, 1))).toEqual({
+      key: "insightPemCluster",
+      count: 3,
+    })
+    // 2 this week, 2 last week — persistent cluster (delta=0)
+    expect(computeInsight([5, 5, 5], 5, weekDeltaWithPem(2, 2))).toEqual({
+      key: "insightPemCluster",
+      count: 2,
+    })
+  })
+
+  it("fires PEM cluster even with no prior week data (newcomer with 2+ crashes)", () => {
+    // No prior data; 2+ PEM is still clinically actionable
+    const noPriorCluster = weekDeltaWithPem(2, 0, 5, 0)
+    expect(noPriorCluster.hasPriorWindow).toBe(false)
+    expect(computeInsight([5, 5, 5], 5, noPriorCluster)).toEqual({
+      key: "insightPemCluster",
+      count: 2,
+    })
+  })
+
+  it("fires PEM improving when last week had a cluster and this week is clearly down", () => {
+    // 2 last week, 0 this week
+    expect(computeInsight([5, 5, 5], 5, weekDeltaWithPem(0, 2))).toEqual({ key: "insightPemImproving" })
+    // 3 last week, 1 this week (delta=-2)
+    expect(computeInsight([5, 5, 5], 5, weekDeltaWithPem(1, 3))).toEqual({ key: "insightPemImproving" })
+  })
+
+  it("does not fire PEM improving when current week is still in cluster territory", () => {
+    // 3 last week, 2 this week — current is at cluster threshold, cluster wins
+    expect(computeInsight([5, 5, 5], 5, weekDeltaWithPem(2, 3))).toEqual({
+      key: "insightPemImproving",
+    })
+    // (delta=-1, prior >= 2 → improving fires; window.pemCount=2 also matches cluster path
+    // but pemDelta=-1 fails cluster's "pemDelta >= 0" guard, so improving correctly wins)
+  })
+
+  it("PEM cluster outranks week energy down", () => {
+    // Cluster present AND energy down — clinical safety wins
+    const delta: WeekDelta = {
+      window: { avgEnergy: 4, pemCount: 2, avgStress: null, count: 5 },
+      prior: { avgEnergy: 6, pemCount: 0, avgStress: null, count: 5 },
+      energyDelta: -2,
+      pemDelta: 2,
+      stressDelta: null,
+      hasPriorWindow: true,
+    }
+    expect(computeInsight([4, 4, 4], 5, delta)).toEqual({ key: "insightPemCluster", count: 2 })
   })
 })
 

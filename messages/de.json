@@ -387,6 +387,8 @@
       "milestoneCheckIns": "Du hast {n} Check-ins abgeschlossen. Das ist echtes Engagement für deine Genesung.",
       "milestoneStreak": "{n} Tage in Folge! Kontinuität ist eines der wirkungsvollsten Mittel bei der Genesung.",
       "insightTitle": "Dein Fortschritt",
+      "insightPemCluster": "Du hattest diese Woche {count, plural, one {# Crash-Tag} other {# Crash-Tage}}. Geh es ruhig an — gib deinem Körper Zeit, sich zu erholen, bevor du weiter machst.",
+      "insightPemImproving": "Weniger Crash-Tage als letzte Woche — dein Pacing zahlt sich aus. Hör weiter auf deinen Körper.",
       "insightWeekEnergyUp": "Deine durchschnittliche Energie ist {delta} Punkte höher als letzte Woche. Mach genau so weiter.",
       "insightWeekEnergyDown": "Deine durchschnittliche Energie ist {delta} Punkte niedriger als letzte Woche. Eine kurze Reflexion — oder ein Austausch mit deinem Therapeuten — kann helfen.",
       "insightEnergyUp": "Deine Energie ist in den letzten Check-ins gestiegen. Weiter so!",

@@ -387,6 +387,8 @@
       "milestoneCheckIns": "You've completed {n} check-ins. That's real dedication to your recovery.",
       "milestoneStreak": "{n}-day streak! Consistency is one of the most powerful tools in your recovery.",
       "insightTitle": "Your progress insight",
+      "insightPemCluster": "You've had {count, plural, one {# crash day} other {# crash days}} this week. Take it gentle — give your body time to catch up before pushing further.",
+      "insightPemImproving": "Fewer crash days this week than last — your pacing is paying off. Keep listening to your body.",
       "insightWeekEnergyUp": "Your average energy is up {delta} points vs last week. Whatever you're doing, keep it up.",
       "insightWeekEnergyDown": "Your average energy is down {delta} points vs last week. A short reflection — or a quick word with your practitioner — can help.",
       "insightEnergyUp": "Your energy has been trending up over the last few check-ins. Keep up whatever you're doing!",
