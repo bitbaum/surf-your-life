@@ -1101,8 +1101,9 @@
       },
       "sortJoined": "Neueste zuerst",
       "sortCheckInDesc": "Zuletzt aktiv",
-      "sortCheckInAsc": "Aufmerksamkeit nötig",
       "sortMostCheckIns": "Meiste Check-ins",
+      "sortNeedsAttention": "Aufmerksamkeit nötig",
+      "noNeedsAttention": "Alle Klienten sind auf dem neuesten Stand — derzeit nichts markiert.",
       "clearSearch": "Suche löschen"
     },
     "leads": {

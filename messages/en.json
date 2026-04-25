@@ -1101,8 +1101,9 @@
       },
       "sortJoined": "Newest first",
       "sortCheckInDesc": "Most active",
-      "sortCheckInAsc": "Needs attention",
       "sortMostCheckIns": "Most check-ins",
+      "sortNeedsAttention": "Needs attention",
+      "noNeedsAttention": "All clients are up to date — nothing flagged right now.",
       "clearSearch": "Clear search"
     },
     "leads": {

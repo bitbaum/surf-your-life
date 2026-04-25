@@ -14,8 +14,8 @@ import { getTranslations, setRequestLocale } from "next-intl/server"
 import { Pagination } from "@/components/ui/pagination"
 import { ClientTableRow } from "./client-table-row"
 
-type SortOption = "joined" | "checkin_desc" | "checkin_asc" | "most_checkins"
-const SORT_OPTIONS: SortOption[] = ["joined", "checkin_desc", "checkin_asc", "most_checkins"]
+type SortOption = "joined" | "checkin_desc" | "most_checkins" | "needs_attention"
+const SORT_OPTIONS: SortOption[] = ["joined", "checkin_desc", "most_checkins", "needs_attention"]
 function isValidSort(v: string | undefined): v is SortOption {
   return SORT_OPTIONS.includes(v as SortOption)
 }
@@ -44,7 +44,29 @@ export default async function ClientsPage({
     : undefined
 
   const roleFilter = eq(users.role, CLIENT_ROLE)
-  const whereClause = searchFilter ? and(roleFilter, searchFilter) : roleFilter
+  const staleCutoff = new Date(Date.now() - SEVEN_DAYS_MS)
+
+  // "Needs attention" = stale 7+ days (or never checked in) OR has any unresolved alert.
+  // EXISTS subqueries keep the main groupBy clean and the count query identical.
+  const needsAttentionFilter = sort === "needs_attention"
+    ? sql`(
+        NOT EXISTS (
+          SELECT 1 FROM ${checkIns}
+          WHERE ${checkIns.userId} = ${users.id}
+            AND ${checkIns.createdAt} >= ${staleCutoff}
+        )
+        OR EXISTS (
+          SELECT 1 FROM ${clientAlerts}
+          WHERE ${clientAlerts.clientId} = ${users.id}
+            AND ${clientAlerts.isResolved} = false
+        )
+      )`
+    : undefined
+
+  const whereParts = [roleFilter, searchFilter, needsAttentionFilter].filter(
+    (p): p is NonNullable<typeof p> => p != null
+  )
+  const whereClause = whereParts.length > 1 ? and(...whereParts) : whereParts[0]
 
   const [clients, totalResult] = await Promise.all([
     db
@@ -65,10 +87,10 @@ export default async function ClientsPage({
       .orderBy(
         sort === "checkin_desc"
           ? sql`max(${checkIns.createdAt}) DESC NULLS LAST`
-          : sort === "checkin_asc"
-            ? sql`max(${checkIns.createdAt}) ASC NULLS LAST`
-            : sort === "most_checkins"
-              ? sql`count(${checkIns.id}) DESC`
+          : sort === "most_checkins"
+            ? sql`count(${checkIns.id}) DESC`
+            : sort === "needs_attention"
+              ? sql`max(${checkIns.createdAt}) ASC NULLS FIRST`
               : desc(users.createdAt)
       )
       .limit(PAGINATION_DEFAULT)
@@ -78,8 +100,6 @@ export default async function ClientsPage({
 
   const total = totalResult[0]?.count ?? 0
   const totalPages = computeTotalPages(total, PAGINATION_DEFAULT)
-
-  const staleCutoff = new Date(Date.now() - SEVEN_DAYS_MS)
 
   const clientIds = clients.map((c) => c.id)
   const alertCountMap = new Map<string, { count: number; hasHigh: boolean }>()
@@ -136,8 +156,8 @@ export default async function ClientsPage({
             tabs={[
               { value: "joined" as SortOption, label: t("sortJoined") },
               { value: "checkin_desc" as SortOption, label: t("sortCheckInDesc") },
-              { value: "checkin_asc" as SortOption, label: t("sortCheckInAsc") },
               { value: "most_checkins" as SortOption, label: t("sortMostCheckIns") },
+              { value: "needs_attention" as SortOption, label: t("sortNeedsAttention") },
             ]}
             active={sort}
             href={sortLink}
@@ -169,7 +189,13 @@ export default async function ClientsPage({
               {clients.length === 0 && (
                 <tr>
                   <td colSpan={7} className="py-8 text-center text-slate-400">
-                    <p>{q ? t("noResults") : t("noClients")}</p>
+                    <p>
+                      {q
+                        ? t("noResults")
+                        : sort === "needs_attention"
+                          ? t("noNeedsAttention")
+                          : t("noClients")}
+                    </p>
                     {q && (
                       <Link href="/admin/clients" className="text-sm font-medium text-teal-600 hover:text-teal-700 transition-colors mt-2 inline-block">{t("clearSearch")}</Link>
                     )}
