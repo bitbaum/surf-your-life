@@ -1031,6 +1031,11 @@
           "brainFog": "Brain fog",
           "pain": "Pain",
           "stress": "Stress"
+        },
+        "sleepChart": {
+          "title": "Sleep",
+          "subtitle": "Hours slept across recent check-ins",
+          "hoursTooltip": "{n}h sleep"
         }
       },
       "atRisk": {

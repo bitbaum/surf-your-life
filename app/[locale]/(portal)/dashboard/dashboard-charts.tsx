@@ -4,7 +4,7 @@ import { InsightBanner } from "@/components/ui/insight-banner"
 import { Link } from "@/i18n/navigation"
 import { formatDate } from "@/lib/utils"
 import { WellnessTrendChart } from "./wellness-trend-chart"
-import { SleepChart } from "./sleep-chart"
+import { SleepChart } from "@/components/ui/sleep-chart"
 import { SymptomsChart } from "@/components/ui/symptoms-chart"
 
 type TrendPoint = {
@@ -27,6 +27,7 @@ interface Props {
 
 export async function DashboardCharts({ trendCheckIns, hasSymptomData, insight, hasRecentCheckIns }: Props) {
   const t = await getTranslations("portal.dashboard")
+  const tCheckIns = await getTranslations("portal.checkIns")
 
   return (
     <>
@@ -55,7 +56,10 @@ export async function DashboardCharts({ trendCheckIns, hasSymptomData, insight, 
             <CardTitle>{t("sleepTrend")}</CardTitle>
           </CardHeader>
           <CardContent>
-            <SleepChart data={trendCheckIns} />
+            <SleepChart
+              data={trendCheckIns}
+              formatHours={(n) => tCheckIns("sleepHoursTooltip", { n })}
+            />
             <div className="flex items-center justify-between mt-2 text-xs text-slate-400">
               <span>{formatDate(trendCheckIns[0].createdAt)}</span>
               <span>{formatDate(trendCheckIns[trendCheckIns.length - 1].createdAt)}</span>

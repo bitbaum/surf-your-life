@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { useTranslations } from "next-intl"
 import { formatDate } from "@/lib/utils"
 import { SLEEP_CHART_MAX_HOURS } from "@/lib/constants"
 
@@ -12,10 +11,11 @@ interface DataPoint {
 
 interface Props {
   data: DataPoint[]
+  /** Localized tooltip formatter, e.g. `(n) => t("sleepHoursTooltip", { n })`. */
+  formatHours: (n: number) => string
 }
 
-export function SleepChart({ data }: Props) {
-  const t = useTranslations("portal.checkIns")
+export function SleepChart({ data, formatHours }: Props) {
   const [tooltip, setTooltip] = useState<{ index: number } | null>(null)
 
   const filtered = data.filter((d) => d.sleepHours != null)
@@ -42,7 +42,7 @@ export function SleepChart({ data }: Props) {
             />
             {isHovered && (
               <div className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs rounded px-2 py-1 whitespace-nowrap z-10 pointer-events-none">
-                {t("sleepHoursTooltip", { n: ci.sleepHours! })}
+                {formatHours(ci.sleepHours!)}
                 <br />
                 {formatDate(ci.createdAt)}
               </div>

@@ -1049,6 +1049,11 @@
           "brainFog": "Brouillard cérébral",
           "pain": "Douleur",
           "stress": "Stress"
+        },
+        "sleepChart": {
+          "title": "Sommeil",
+          "subtitle": "Heures de sommeil sur les check-ins récents",
+          "hoursTooltip": "{n}h de sommeil"
         }
       },
       "atRisk": {

@@ -22,6 +22,7 @@ import { ClientProfileCard } from "./client-profile-card"
 import { ClientCheckInsCard } from "./client-check-ins-card"
 import { TrendCard } from "@/components/ui/trend-card"
 import { SymptomsChart } from "@/components/ui/symptoms-chart"
+import { SleepChart } from "@/components/ui/sleep-chart"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ClientAlertsCard } from "./client-alerts-card"
 import { PageHeader } from "@/components/ui/page-header"
@@ -113,8 +114,9 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
   const logsGridByAssignment = computeLogsGridByAssignment(recentTechniqueLogs)
   const weekDelta = computeWeekDelta(clientCheckIns)
 
-  // Symptom chart data: oldest-first; chart needs ≥2 points with any symptom value
-  const symptomData = [...clientCheckIns].reverse().map((ci) => ({
+  // Chart data: oldest-first
+  const chartData = [...clientCheckIns].reverse()
+  const symptomData = chartData.map((ci) => ({
     createdAt: ci.createdAt,
     symptomFatigue: ci.symptomFatigue,
     symptomBrainFog: ci.symptomBrainFog,
@@ -124,6 +126,8 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
   const hasSymptomData = symptomData.some(
     (c) => c.symptomFatigue != null || c.symptomBrainFog != null || c.symptomPain != null || c.stressLevel != null
   )
+  const sleepData = chartData.map((ci) => ({ createdAt: ci.createdAt, sleepHours: ci.sleepHours }))
+  const sleepCount = sleepData.filter((c) => c.sleepHours != null).length
 
   const sevenDaysAgoMs = Date.now() - SEVEN_DAYS_MS // eslint-disable-line react-hooks/purity -- server component
   const weekCheckInCount = clientCheckIns.filter(
@@ -198,6 +202,23 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
                   pain: t("detail.symptomsChart.pain"),
                   stress: t("detail.symptomsChart.stress"),
                 }}
+              />
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {sleepCount >= 2 && (
+        <div className="mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>{t("detail.sleepChart.title")}</CardTitle>
+              <p className="text-xs text-slate-400 mt-0.5">{t("detail.sleepChart.subtitle")}</p>
+            </CardHeader>
+            <CardContent>
+              <SleepChart
+                data={sleepData}
+                formatHours={(n) => t("detail.sleepChart.hoursTooltip", { n })}
               />
             </CardContent>
           </Card>
