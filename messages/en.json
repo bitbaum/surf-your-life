@@ -400,6 +400,9 @@
       "programProgress": "{pct}% complete",
       "programNoPhase": "No guidance set for this week yet.",
       "programWeekOpen": "Week {current}",
+      "thisWeek": "This week",
+      "cadenceHint": "Your last 7 days (oldest left, today right)",
+      "daysOfSeven": "{count} of 7 days",
       "trend": {
         "title": "Your last 7 days",
         "checkInsCount": "{count, plural, one {# check-in} other {# check-ins}}",

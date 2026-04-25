@@ -23,6 +23,7 @@ import {
   computeInsight,
 } from "@/lib/domain/check-in"
 import { TrendCard } from "@/components/ui/trend-card"
+import { buildLastNDayStrings, toDateString } from "@/lib/utils"
 import { EmailVerificationBanner } from "@/components/portal/EmailVerificationBanner"
 import { PageHeader } from "@/components/ui/page-header"
 import { ProgressBar } from "@/components/ui/progress-bar"
@@ -105,6 +106,10 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
     : computeReturnNudge(recentCheckIns[0]?.createdAt ?? null, streak)
   const weekDelta = computeWeekDelta(trendCheckIns)
 
+  const sparkDays = buildLastNDayStrings(7)
+  const sparkCheckedIn = new Set(recentCheckIns.map((ci) => toDateString(new Date(ci.createdAt))))
+  const sparkCount = sparkDays.filter((d) => sparkCheckedIn.has(d)).length
+
   const hasSymptomData = trendCheckIns.some(
     (c) => c.symptomFatigue != null || c.symptomBrainFog != null || c.symptomPain != null || c.stressLevel != null
   )
@@ -169,6 +174,21 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
           color={streak >= 1 ? "teal" : "slate"}
         />
       </div>
+
+      {sparkCount > 0 && (
+        <div className="mb-6 flex items-center gap-3 text-sm">
+          <span className="font-medium text-slate-700">{t("thisWeek")}</span>
+          <span className="inline-flex items-center gap-1" aria-label={t("cadenceHint")} title={t("cadenceHint")}>
+            {sparkDays.map((day) => (
+              <span
+                key={day}
+                className={`w-2 h-2 rounded-full ${sparkCheckedIn.has(day) ? "bg-teal-500" : "bg-slate-200"}`}
+              />
+            ))}
+          </span>
+          <span className="text-xs text-slate-500">{t("daysOfSeven", { count: sparkCount })}</span>
+        </div>
+      )}
 
       {weekDelta.window.count > 0 && (
         <div className="mb-6">
