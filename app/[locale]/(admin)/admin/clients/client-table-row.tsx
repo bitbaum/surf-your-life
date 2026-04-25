@@ -1,6 +1,7 @@
 import { Link } from "@/i18n/navigation"
 import { formatDate } from "@/lib/utils"
 import { getTranslations } from "next-intl/server"
+import { NewThreadButton } from "./[id]/new-thread-button"
 
 type ClientRow = {
   id: string
@@ -14,15 +15,23 @@ type ClientRow = {
 
 type AlertInfo = { count: number; hasHigh: boolean }
 
+type NudgeProps = {
+  label: string
+  modalTitle: string
+  subject: string
+  body: string
+}
+
 interface Props {
   client: ClientRow
   alert: AlertInfo | undefined
   isStale: boolean
   staleHint: string
   viewLabel: string
+  nudge?: NudgeProps | null
 }
 
-export async function ClientTableRow({ client, alert, isStale, staleHint, viewLabel }: Props) {
+export async function ClientTableRow({ client, alert, isStale, staleHint, viewLabel, nudge }: Props) {
   const tConcerns = await getTranslations("concerns")
   return (
     <tr className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
@@ -59,12 +68,23 @@ export async function ClientTableRow({ client, alert, isStale, staleHint, viewLa
       </td>
       <td className="py-3 text-slate-400">{formatDate(client.createdAt)}</td>
       <td className="py-3 text-right">
-        <Link
-          href={`/admin/clients/${client.id}`}
-          className="text-teal-600 hover:underline text-xs font-medium"
-        >
-          {viewLabel}
-        </Link>
+        <div className="flex items-center justify-end gap-3">
+          <Link
+            href={`/admin/clients/${client.id}`}
+            className="text-teal-600 hover:underline text-xs font-medium"
+          >
+            {viewLabel}
+          </Link>
+          {nudge && (
+            <NewThreadButton
+              clientId={client.id}
+              label={nudge.label}
+              modalTitle={nudge.modalTitle}
+              defaultSubject={nudge.subject}
+              defaultBody={nudge.body}
+            />
+          )}
+        </div>
       </td>
     </tr>
   )

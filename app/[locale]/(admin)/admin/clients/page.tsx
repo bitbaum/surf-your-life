@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { Link } from "@/i18n/navigation"
 import { computeTotalPages, parsePage, computeOffset } from "@/lib/utils"
-import { PAGINATION_DEFAULT, SEVEN_DAYS_MS } from "@/lib/constants"
+import { PAGINATION_DEFAULT, SEVEN_DAYS_MS, DAY_MS } from "@/lib/constants"
 import { ClientSearch } from "./client-search"
 import { FilterTabs } from "@/components/ui/filter-tabs"
 import { Suspense } from "react"
@@ -176,16 +176,41 @@ export default async function ClientsPage({
               </tr>
             </thead>
             <tbody>
-              {clients.map((client) => (
-                <ClientTableRow
-                  key={client.id}
-                  client={client}
-                  alert={alertCountMap.get(client.id)}
-                  isStale={client.lastCheckIn == null || client.lastCheckIn < staleCutoff}
-                  staleHint={t("staleHint")}
-                  viewLabel={t("viewLink")}
-                />
-              ))}
+              {clients.map((client) => {
+                const isStale = client.lastCheckIn == null || client.lastCheckIn < staleCutoff
+                const days = client.lastCheckIn
+                  ? Math.floor((Date.now() - client.lastCheckIn.getTime()) / DAY_MS)
+                  : null
+                const nudgeBody = isStale
+                  ? days != null
+                    ? t("atRisk.nudgeBodyWithDays", {
+                        name: client.name ?? client.email.split("@")[0],
+                        days,
+                      })
+                    : t("atRisk.nudgeBodyNever", {
+                        name: client.name ?? client.email.split("@")[0],
+                      })
+                  : null
+                return (
+                  <ClientTableRow
+                    key={client.id}
+                    client={client}
+                    alert={alertCountMap.get(client.id)}
+                    isStale={isStale}
+                    staleHint={t("staleHint")}
+                    viewLabel={t("viewLink")}
+                    nudge={isStale && nudgeBody
+                      ? {
+                          label: t("atRisk.nudgeButton"),
+                          modalTitle: t("atRisk.nudgeModalTitle"),
+                          subject: t("atRisk.nudgeSubject"),
+                          body: nudgeBody,
+                        }
+                      : null
+                    }
+                  />
+                )
+              })}
               {clients.length === 0 && (
                 <tr>
                   <td colSpan={7} className="py-8 text-center text-slate-400">
