@@ -25,6 +25,19 @@ export function toDateString(date: Date): string {
   return date.toISOString().split("T")[0]
 }
 
+// Returns the last N UTC day strings ("YYYY-MM-DD"), oldest first, ending today.
+// UTC-anchored so DST transitions don't shift bucket boundaries — same approach
+// as computeWeekDelta uses.
+export function buildLastNDayStrings(n: number, now: Date = new Date()): string[] {
+  const DAY = 86_400_000
+  const todayUtc = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
+  const days: string[] = []
+  for (let i = n - 1; i >= 0; i--) {
+    days.push(new Date(todayUtc - i * DAY).toISOString().slice(0, 10))
+  }
+  return days
+}
+
 // Rounds a number to one decimal place for display in stats / summaries.
 export function roundOne(n: number): number {
   return Math.round(n * 10) / 10

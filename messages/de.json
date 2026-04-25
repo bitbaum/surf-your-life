@@ -924,6 +924,7 @@
       "atRiskLink": "Gefährdete Klienten →",
       "viewLink": "Ansehen →",
       "staleHint": "Inaktiv seit 7+ Tagen",
+      "cadenceHint": "Check-ins der letzten 7 Tage (links: ältester, rechts: heute)",
       "detail": {
         "backLink": "← Klienten",
         "unnamed": "Unbekannt",

@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest"
 import {
   formatEnumValue,
   toDateString,
+  buildLastNDayStrings,
   parsePage,
   computeOffset,
   computeTotalPages,
@@ -107,5 +108,48 @@ describe("computeTotalPages", () => {
     expect(computeTotalPages(100, 20)).toBe(5)
     expect(computeTotalPages(101, 20)).toBe(6)
     expect(computeTotalPages(99, 20)).toBe(5)
+  })
+})
+
+// ─── buildLastNDayStrings ────────────────────────────────────────────────────
+
+describe("buildLastNDayStrings", () => {
+  it("returns N day strings, oldest first, ending today", () => {
+    const now = new Date(Date.UTC(2026, 3, 25, 12, 0, 0))
+    expect(buildLastNDayStrings(7, now)).toEqual([
+      "2026-04-19",
+      "2026-04-20",
+      "2026-04-21",
+      "2026-04-22",
+      "2026-04-23",
+      "2026-04-24",
+      "2026-04-25",
+    ])
+  })
+
+  it("crosses month boundaries cleanly", () => {
+    const now = new Date(Date.UTC(2026, 4, 2, 9, 0, 0)) // 2026-05-02
+    expect(buildLastNDayStrings(5, now)).toEqual([
+      "2026-04-28",
+      "2026-04-29",
+      "2026-04-30",
+      "2026-05-01",
+      "2026-05-02",
+    ])
+  })
+
+  it("DST-safe across spring-forward (Europe DST = March 29 2026)", () => {
+    // Spans March 28 → April 3 — includes the DST transition. Should yield 7 distinct daily strings.
+    const now = new Date(Date.UTC(2026, 3, 3, 12, 0, 0)) // 2026-04-03
+    const days = buildLastNDayStrings(7, now)
+    expect(days).toHaveLength(7)
+    expect(new Set(days).size).toBe(7) // all distinct
+    expect(days[0]).toBe("2026-03-28")
+    expect(days[6]).toBe("2026-04-03")
+  })
+
+  it("returns N=1 as just today", () => {
+    const now = new Date(Date.UTC(2026, 3, 25, 12, 0, 0))
+    expect(buildLastNDayStrings(1, now)).toEqual(["2026-04-25"])
   })
 })

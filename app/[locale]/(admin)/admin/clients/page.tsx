@@ -1,11 +1,11 @@
 import { db } from "@/lib/db"
 import { users, checkIns, profiles, clientAlerts } from "@/lib/db/schema"
-import { eq, desc, count, or, ilike, and, max, inArray, sql } from "drizzle-orm"
+import { eq, desc, count, or, ilike, and, max, inArray, sql, gte } from "drizzle-orm"
 import { CLIENT_ROLE } from "@/lib/domain/auth"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { Link } from "@/i18n/navigation"
-import { computeTotalPages, parsePage, computeOffset } from "@/lib/utils"
+import { computeTotalPages, parsePage, computeOffset, buildLastNDayStrings } from "@/lib/utils"
 import { PAGINATION_DEFAULT, SEVEN_DAYS_MS, DAY_MS } from "@/lib/constants"
 import { ClientSearch } from "./client-search"
 import { FilterTabs } from "@/components/ui/filter-tabs"
@@ -103,18 +103,41 @@ export default async function ClientsPage({
 
   const clientIds = clients.map((c) => c.id)
   const alertCountMap = new Map<string, { count: number; hasHigh: boolean }>()
+  const checkInDayMap = new Map<string, Set<string>>()
   if (clientIds.length > 0) {
-    const alertCountRows = await db
-      .select({
-        clientId: clientAlerts.clientId,
-        alertCount: count(),
-        hasHigh: sql<boolean>`bool_or(${clientAlerts.severity} = 'high')`,
-      })
-      .from(clientAlerts)
-      .where(and(eq(clientAlerts.isResolved, false), inArray(clientAlerts.clientId, clientIds)))
-      .groupBy(clientAlerts.clientId)
+    const [alertCountRows, dayRows] = await Promise.all([
+      db
+        .select({
+          clientId: clientAlerts.clientId,
+          alertCount: count(),
+          hasHigh: sql<boolean>`bool_or(${clientAlerts.severity} = 'high')`,
+        })
+        .from(clientAlerts)
+        .where(and(eq(clientAlerts.isResolved, false), inArray(clientAlerts.clientId, clientIds)))
+        .groupBy(clientAlerts.clientId),
+      db
+        .select({
+          userId: checkIns.userId,
+          day: sql<string>`to_char(${checkIns.createdAt}, 'YYYY-MM-DD')`,
+        })
+        .from(checkIns)
+        .where(and(
+          gte(checkIns.createdAt, staleCutoff),
+          inArray(checkIns.userId, clientIds)
+        )),
+    ])
     for (const r of alertCountRows) alertCountMap.set(r.clientId, { count: r.alertCount, hasHigh: r.hasHigh })
+    for (const r of dayRows) {
+      let set = checkInDayMap.get(r.userId)
+      if (!set) {
+        set = new Set()
+        checkInDayMap.set(r.userId, set)
+      }
+      set.add(r.day)
+    }
   }
+
+  const sparkDays = buildLastNDayStrings(7)
 
   function pageLink(p: number) {
     const params = new URLSearchParams()
@@ -199,6 +222,9 @@ export default async function ClientsPage({
                     isStale={isStale}
                     staleHint={t("staleHint")}
                     viewLabel={t("viewLink")}
+                    sparkDays={sparkDays}
+                    sparkCheckedIn={checkInDayMap.get(client.id) ?? new Set<string>()}
+                    sparkHint={t("cadenceHint")}
                     nudge={isStale && nudgeBody
                       ? {
                           label: t("atRisk.nudgeButton"),

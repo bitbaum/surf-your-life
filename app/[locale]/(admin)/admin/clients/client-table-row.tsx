@@ -28,10 +28,13 @@ interface Props {
   isStale: boolean
   staleHint: string
   viewLabel: string
+  sparkDays: string[]
+  sparkCheckedIn: Set<string>
+  sparkHint: string
   nudge?: NudgeProps | null
 }
 
-export async function ClientTableRow({ client, alert, isStale, staleHint, viewLabel, nudge }: Props) {
+export async function ClientTableRow({ client, alert, isStale, staleHint, viewLabel, sparkDays, sparkCheckedIn, sparkHint, nudge }: Props) {
   const tConcerns = await getTranslations("concerns")
   return (
     <tr className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
@@ -52,15 +55,29 @@ export async function ClientTableRow({ client, alert, isStale, staleHint, viewLa
         {client.mainConcern ? tConcerns(client.mainConcern as Parameters<typeof tConcerns>[0]) : "—"}
       </td>
       <td className="py-3 text-slate-500">
-        <span className="inline-flex items-center gap-1.5">
-          {isStale && (
-            <span
-              aria-label={staleHint}
-              title={staleHint}
-              className="w-1.5 h-1.5 rounded-full bg-amber-500 flex-shrink-0"
-            />
-          )}
-          {client.lastCheckIn ? formatDate(client.lastCheckIn) : <span className="text-slate-300">—</span>}
+        <span className="inline-flex items-center gap-2">
+          <span className="inline-flex items-center gap-1.5">
+            {isStale && (
+              <span
+                aria-label={staleHint}
+                title={staleHint}
+                className="w-1.5 h-1.5 rounded-full bg-amber-500 flex-shrink-0"
+              />
+            )}
+            {client.lastCheckIn ? formatDate(client.lastCheckIn) : <span className="text-slate-300">—</span>}
+          </span>
+          <span
+            className="inline-flex items-center gap-0.5"
+            aria-label={sparkHint}
+            title={sparkHint}
+          >
+            {sparkDays.map((day) => (
+              <span
+                key={day}
+                className={`w-1.5 h-1.5 rounded-full ${sparkCheckedIn.has(day) ? "bg-teal-500" : "bg-slate-200"}`}
+              />
+            ))}
+          </span>
         </span>
       </td>
       <td className="py-3 text-slate-500">

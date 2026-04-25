@@ -942,6 +942,7 @@
       "atRiskLink": "Clients à risque →",
       "viewLink": "Voir →",
       "staleHint": "Inactif depuis 7+ jours",
+      "cadenceHint": "Check-ins des 7 derniers jours (plus ancien à gauche, aujourd'hui à droite)",
       "detail": {
         "backLink": "← Clients",
         "unnamed": "Sans nom",

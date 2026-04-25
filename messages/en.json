@@ -924,6 +924,7 @@
       "atRiskLink": "At-risk clients →",
       "viewLink": "View →",
       "staleHint": "Inactive 7+ days",
+      "cadenceHint": "Check-ins last 7 days (oldest left, today right)",
       "detail": {
         "backLink": "← Clients",
         "unnamed": "Unnamed",
