@@ -7,7 +7,8 @@ import { Link } from "@/i18n/navigation"
 import { PAGINATION_DEFAULT, SEVEN_DAYS_MS, SERVICES_MAX_LIMIT, CLIENT_ASSIGNMENTS_MAX, ADMIN_DASHBOARD_ALERTS_PREVIEW, CLIENT_ASSESSMENTS_LIMIT } from "@/lib/constants"
 import { CLIENT_ROLE, STAFF_ROLES } from "@/lib/domain/auth"
 import { computeAdherenceByAssignment, computeLogsGridByAssignment } from "@/lib/domain/techniques"
-import { computeWeekDelta } from "@/lib/domain/check-in"
+import { computeWeekDelta, computeInsight, isComparativeInsight } from "@/lib/domain/check-in"
+import { InsightBanner } from "@/components/ui/insight-banner"
 import { ResetLinkButton } from "./reset-link-button"
 import { NewThreadButton } from "./new-thread-button"
 import { EnrollProgramButton } from "./enroll-program-button"
@@ -110,6 +111,23 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
   const logsGridByAssignment = computeLogsGridByAssignment(recentTechniqueLogs)
   const weekDelta = computeWeekDelta(clientCheckIns)
 
+  const sevenDaysAgoMs = Date.now() - SEVEN_DAYS_MS // eslint-disable-line react-hooks/purity -- server component
+  const weekCheckInCount = clientCheckIns.filter(
+    (ci) => ci.createdAt.getTime() >= sevenDaysAgoMs
+  ).length
+  const insightHit = computeInsight(
+    clientCheckIns.slice(0, 3).map((ci) => ci.energyLevel),
+    weekCheckInCount,
+    weekDelta
+  )
+  const adminInsight = insightHit && isComparativeInsight(insightHit)
+    ? "delta" in insightHit
+      ? t(`detail.insights.${insightHit.key}`, { delta: insightHit.delta.toFixed(1) })
+      : "count" in insightHit
+        ? t(`detail.insights.${insightHit.key}`, { count: insightHit.count })
+        : t(`detail.insights.${insightHit.key}`)
+    : null
+
   return (
     <div className="max-w-4xl mx-auto">
       <div className="mb-6">
@@ -142,7 +160,10 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
       </div>
 
       {weekDelta.window.count > 0 && (
-        <div className="mt-6">
+        <div className="mt-6 space-y-4">
+          {adminInsight && (
+            <InsightBanner title={t("detail.insights.title")} body={adminInsight} />
+          )}
           <TrendCard delta={weekDelta} namespace="admin.clients.detail.trend" />
         </div>
       )}

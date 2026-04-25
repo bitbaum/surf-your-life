@@ -1001,6 +1001,13 @@
           "pemEpisodes": "PEM episodes",
           "avgStress": "Avg stress",
           "noPriorWindow": "Not enough prior data to compare yet."
+        },
+        "insights": {
+          "title": "Notable this week",
+          "insightPemCluster": "{count, plural, one {# PEM day} other {# PEM days}} this week — pacing concern, consider reaching out.",
+          "insightPemImproving": "PEM days down vs last week — pacing improving.",
+          "insightWeekEnergyUp": "Avg energy up {delta} pts vs last week.",
+          "insightWeekEnergyDown": "Avg energy down {delta} pts vs last week — consider reaching out."
         }
       },
       "atRisk": {

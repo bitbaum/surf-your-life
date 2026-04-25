@@ -1001,6 +1001,13 @@
           "pemEpisodes": "PEM-Episoden",
           "avgStress": "Ø Stress",
           "noPriorWindow": "Noch zu wenig Vorwochendaten für einen Vergleich."
+        },
+        "insights": {
+          "title": "Auffällig diese Woche",
+          "insightPemCluster": "{count, plural, one {# PEM-Tag} other {# PEM-Tage}} diese Woche — Pacing-Hinweis, evtl. Kontakt aufnehmen.",
+          "insightPemImproving": "PEM-Tage rückläufig vs. letzter Woche — Pacing verbessert sich.",
+          "insightWeekEnergyUp": "Ø Energie {delta} Punkte höher als letzte Woche.",
+          "insightWeekEnergyDown": "Ø Energie {delta} Punkte niedriger als letzte Woche — evtl. Kontakt aufnehmen."
         }
       },
       "atRisk": {

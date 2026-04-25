@@ -6,6 +6,7 @@ import {
   computeWeekDelta,
   detectMilestone,
   computeInsight,
+  isComparativeInsight,
   summariseCheckIns,
   CHECKIN_MILESTONES,
   STREAK_MILESTONES,
@@ -402,6 +403,23 @@ describe("computeInsight", () => {
       hasPriorWindow: true,
     }
     expect(computeInsight([4, 4, 4], 5, delta)).toEqual({ key: "insightPemCluster", count: 2 })
+  })
+})
+
+// ─── isComparativeInsight ────────────────────────────────────────────────────
+
+describe("isComparativeInsight", () => {
+  it("returns true for week-over-week and PEM signals", () => {
+    expect(isComparativeInsight({ key: "insightPemCluster", count: 2 })).toBe(true)
+    expect(isComparativeInsight({ key: "insightPemImproving" })).toBe(true)
+    expect(isComparativeInsight({ key: "insightWeekEnergyUp", delta: 1.2 })).toBe(true)
+    expect(isComparativeInsight({ key: "insightWeekEnergyDown", delta: 1.5 })).toBe(true)
+  })
+
+  it("returns false for short-term and consistency signals", () => {
+    expect(isComparativeInsight({ key: "insightEnergyUp" })).toBe(false)
+    expect(isComparativeInsight({ key: "insightEnergyDown" })).toBe(false)
+    expect(isComparativeInsight({ key: "insightConsistent" })).toBe(false)
   })
 })
 

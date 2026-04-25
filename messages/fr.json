@@ -1019,6 +1019,13 @@
           "pemEpisodes": "Épisodes PEM",
           "avgStress": "Stress moy.",
           "noPriorWindow": "Pas encore assez de données antérieures pour comparer."
+        },
+        "insights": {
+          "title": "Notable cette semaine",
+          "insightPemCluster": "{count, plural, one {# jour PEM} other {# jours PEM}} cette semaine — vigilance dosage, penser à reprendre contact.",
+          "insightPemImproving": "Jours PEM en baisse vs sem. dernière — dosage en amélioration.",
+          "insightWeekEnergyUp": "Énergie moy. en hausse de {delta} pts vs sem. dernière.",
+          "insightWeekEnergyDown": "Énergie moy. en baisse de {delta} pts vs sem. dernière — penser à reprendre contact."
         }
       },
       "atRisk": {

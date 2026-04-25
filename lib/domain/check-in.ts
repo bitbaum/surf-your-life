@@ -319,3 +319,21 @@ export function computeInsight(
   if (weekCheckInCount >= 5) return { key: "insightConsistent" }
   return null
 }
+
+/**
+ * True when an insight is built on the week-over-week comparison —
+ * the signals practitioners want at-a-glance. Excludes the short-term
+ * 3-checkin nudges and the consistency callout, which are encouragement
+ * for clients rather than actionable for admin.
+ */
+export function isComparativeInsight(insight: Insight): boolean {
+  switch (insight.key) {
+    case "insightPemCluster":
+    case "insightPemImproving":
+    case "insightWeekEnergyUp":
+    case "insightWeekEnergyDown":
+      return true
+    default:
+      return false
+  }
+}

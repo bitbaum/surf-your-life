@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { InsightBanner } from "@/components/ui/insight-banner"
 import { Link } from "@/i18n/navigation"
 import { formatDate } from "@/lib/utils"
 import { WellnessTrendChart } from "./wellness-trend-chart"
@@ -76,15 +77,9 @@ export async function DashboardCharts({ trendCheckIns, hasSymptomData, insight, 
       )}
 
       {insight && (
-        <Card className="mb-6 bg-teal-50 border-teal-200">
-          <CardContent className="pt-5 flex items-start gap-3">
-            <span className="text-xl">💡</span>
-            <div>
-              <p className="text-sm font-medium text-teal-900">{t("insightTitle")}</p>
-              <p className="text-sm text-teal-700 mt-0.5">{insight}</p>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="mb-6">
+          <InsightBanner title={t("insightTitle")} body={insight} />
+        </div>
       )}
 
       {hasRecentCheckIns && (
