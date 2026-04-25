@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest"
 import {
   computeStreak,
   computeProgramProgress,
+  computeReturnNudge,
   detectMilestone,
   computeInsightKey,
   summariseCheckIns,
@@ -59,6 +60,59 @@ describe("computeStreak", () => {
     const dayBefore = new Date()
     dayBefore.setDate(dayBefore.getDate() - 2)
     expect(computeStreak([yesterday, dayBefore])).toBe(2)
+  })
+})
+
+// ─── computeReturnNudge ──────────────────────────────────────────────────────
+
+describe("computeReturnNudge", () => {
+  // Anchor `now` at noon to keep the "start of day" math far from boundaries
+  const now = new Date(2026, 3, 25, 12, 0, 0)
+  const dayAt = (offset: number, hour = 9) =>
+    new Date(2026, 3, 25 + offset, hour, 0, 0)
+
+  it("returns null for first-time clients (no last check-in)", () => {
+    expect(computeReturnNudge(null, 0, now)).toBeNull()
+  })
+
+  it("returns null when last check-in was today (caller should not call this)", () => {
+    expect(computeReturnNudge(dayAt(0), 1, now)).toBeNull()
+  })
+
+  it("returns streak-keep when last was yesterday and streak >= 2", () => {
+    expect(computeReturnNudge(dayAt(-1), 5, now)).toEqual({
+      kind: "streak-keep",
+      streak: 5,
+      days: 1,
+    })
+  })
+
+  it("returns yesterday (no streak) when last was yesterday and streak < 2", () => {
+    expect(computeReturnNudge(dayAt(-1), 1, now)).toEqual({
+      kind: "yesterday",
+      days: 1,
+    })
+  })
+
+  it("returns gap for 2-6 day absences", () => {
+    expect(computeReturnNudge(dayAt(-3), 0, now)).toEqual({ kind: "gap", days: 3 })
+    expect(computeReturnNudge(dayAt(-6), 0, now)).toEqual({ kind: "gap", days: 6 })
+  })
+
+  it("returns long-gap for absences of 7+ days", () => {
+    expect(computeReturnNudge(dayAt(-7), 0, now)).toEqual({ kind: "long-gap", days: 7 })
+    expect(computeReturnNudge(dayAt(-30), 0, now)).toEqual({ kind: "long-gap", days: 30 })
+  })
+
+  it("ignores time-of-day when computing the day gap", () => {
+    // Last check-in late yesterday, "now" is early morning today → still 1 day
+    const lastLateYesterday = new Date(2026, 3, 24, 23, 30, 0)
+    const earlyToday = new Date(2026, 3, 25, 0, 30, 0)
+    expect(computeReturnNudge(lastLateYesterday, 3, earlyToday)).toEqual({
+      kind: "streak-keep",
+      streak: 3,
+      days: 1,
+    })
   })
 })
 

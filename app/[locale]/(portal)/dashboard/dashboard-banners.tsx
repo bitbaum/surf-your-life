@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Link } from "@/i18n/navigation"
 import { ProgressBar } from "@/components/ui/progress-bar"
 import { CheckCircle2 } from "lucide-react"
+import type { ReturnNudge } from "@/lib/domain/check-in"
 
 interface Props {
   milestone: string | null
@@ -11,10 +12,25 @@ interface Props {
   checkedInToday: boolean
   streak: number
   lastEnergy: number | null
+  returnNudge: ReturnNudge | null
 }
 
-export async function DashboardBanners({ milestone, isOnboarded, completionPct, checkedInToday, streak, lastEnergy }: Props) {
+export async function DashboardBanners({ milestone, isOnboarded, completionPct, checkedInToday, streak, lastEnergy, returnNudge }: Props) {
   const t = await getTranslations("portal.dashboard")
+
+  const readyTitle =
+    returnNudge?.kind === "streak-keep" ? t("nudgeStreakKeepTitle", { count: returnNudge.streak })
+    : returnNudge?.kind === "yesterday" ? t("nudgeYesterdayTitle")
+    : returnNudge?.kind === "gap" ? t("nudgeGapTitle", { count: returnNudge.days })
+    : returnNudge?.kind === "long-gap" ? t("nudgeLongGapTitle")
+    : t("readyTitle")
+
+  const readySubtitle =
+    returnNudge?.kind === "streak-keep" ? t("nudgeStreakKeepSubtitle")
+    : returnNudge?.kind === "yesterday" ? t("nudgeYesterdaySubtitle")
+    : returnNudge?.kind === "gap" ? t("nudgeGapSubtitle")
+    : returnNudge?.kind === "long-gap" ? t("nudgeLongGapSubtitle")
+    : t("readySubtitle")
 
   return (
     <>
@@ -69,9 +85,9 @@ export async function DashboardBanners({ milestone, isOnboarded, completionPct, 
         </div>
       ) : (
         <div className="mb-6 rounded-xl border border-slate-200 bg-white shadow-sm p-4 flex items-center justify-between gap-4">
-          <div>
-            <p className="text-sm font-semibold text-slate-800">{t("readyTitle")}</p>
-            <p className="text-xs text-slate-400 mt-0.5">{t("readySubtitle")}</p>
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-slate-800">{readyTitle}</p>
+            <p className="text-xs text-slate-500 mt-0.5">{readySubtitle}</p>
           </div>
           <Link href="/check-in">
             <Button size="sm">{t("checkIn")}</Button>

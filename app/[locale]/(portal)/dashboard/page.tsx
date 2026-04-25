@@ -17,6 +17,7 @@ import {
 import {
   computeStreak,
   computeProgramProgress,
+  computeReturnNudge,
   detectMilestone,
   computeInsightKey,
 } from "@/lib/domain/check-in"
@@ -96,6 +97,9 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
   const completionPct = Math.round((completedFields / PROFILE_COMPLETION_FIELDS.length) * 100)
 
   const streak = computeStreak(recentCheckIns.map((ci) => new Date(ci.createdAt)))
+  const returnNudge = checkedInToday
+    ? null
+    : computeReturnNudge(recentCheckIns[0]?.createdAt ?? null, streak)
 
   const hasSymptomData = trendCheckIns.some(
     (c) => c.symptomFatigue != null || c.symptomBrainFog != null || c.symptomPain != null || c.stressLevel != null
@@ -136,6 +140,7 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
         checkedInToday={checkedInToday}
         streak={streak}
         lastEnergy={recentCheckIns[0]?.energyLevel ?? null}
+        returnNudge={returnNudge}
       />
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">

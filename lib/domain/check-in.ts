@@ -69,6 +69,47 @@ export function computeStreak(checkInDates: Date[]): number {
   return s
 }
 
+// ─── Return nudge ──────────────────────────────────────────────────────────
+
+export type ReturnNudge =
+  | { kind: "streak-keep"; streak: number; days: 1 }
+  | { kind: "yesterday"; days: 1 }
+  | { kind: "gap"; days: number }
+  | { kind: "long-gap"; days: number }
+
+/**
+ * Decide which return nudge to show on the dashboard when the client
+ * has not checked in today. Pure — `now` is injected for testability.
+ * Returns null for first-time clients (caller falls back to the default copy).
+ */
+export function computeReturnNudge(
+  lastCheckInDate: Date | null,
+  streak: number,
+  now: Date = new Date()
+): ReturnNudge | null {
+  if (!lastCheckInDate) return null
+
+  // Anchor both calendar days to UTC midnight so DST transitions don't skew
+  // the day count (otherwise spring-forward yields N-1 across the boundary).
+  const startOfToday = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())
+  const startOfLast = Date.UTC(
+    lastCheckInDate.getFullYear(),
+    lastCheckInDate.getMonth(),
+    lastCheckInDate.getDate()
+  )
+
+  const days = Math.round((startOfToday - startOfLast) / DAY_MS)
+  if (days <= 0) return null
+
+  if (days === 1) {
+    return streak >= 2
+      ? { kind: "streak-keep", streak, days: 1 }
+      : { kind: "yesterday", days: 1 }
+  }
+  if (days < 7) return { kind: "gap", days }
+  return { kind: "long-gap", days }
+}
+
 // ─── Program progress ──────────────────────────────────────────────────────
 
 export type ProgramProgress = {
