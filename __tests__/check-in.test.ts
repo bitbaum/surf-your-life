@@ -160,6 +160,43 @@ describe("computeReturnNudge", () => {
       days: 1,
     })
   })
+
+  // ─── DST safety ────────────────────────────────────────────────────────────
+  // European DST 2026: spring-forward Sun 2026-03-29, fall-back Sun 2026-10-25.
+  // The function pins both timestamps to UTC midnight of their local calendar
+  // date, so day-counting must stay exact across these transitions.
+
+  it("DST-safe: 2-day gap spanning the spring-forward transition", () => {
+    // Sat 2026-03-28 → Mon 2026-03-30 = 2 calendar days (DST starts in between)
+    const lastBefore = new Date(2026, 2, 28, 9, 0, 0)
+    const nowAfter = new Date(2026, 2, 30, 12, 0, 0)
+    expect(computeReturnNudge(lastBefore, 0, nowAfter)).toEqual({ kind: "gap", days: 2 })
+  })
+
+  it("DST-safe: 7-day gap spanning spring-forward yields exactly 7 days (long-gap)", () => {
+    // Wed 2026-03-25 → Wed 2026-04-01 = 7 calendar days
+    const last = new Date(2026, 2, 25, 9, 0, 0)
+    const nowAfter = new Date(2026, 3, 1, 9, 0, 0)
+    expect(computeReturnNudge(last, 0, nowAfter)).toEqual({ kind: "long-gap", days: 7 })
+  })
+
+  it("DST-safe: yesterday across the spring-forward boundary", () => {
+    // Last: late Sat 2026-03-28 23:30. Now: Sun 2026-03-29 12:00 (post-DST).
+    const last = new Date(2026, 2, 28, 23, 30, 0)
+    const nowDstDay = new Date(2026, 2, 29, 12, 0, 0)
+    expect(computeReturnNudge(last, 3, nowDstDay)).toEqual({
+      kind: "streak-keep",
+      streak: 3,
+      days: 1,
+    })
+  })
+
+  it("DST-safe: 2-day gap spanning the fall-back transition", () => {
+    // Sat 2026-10-24 → Mon 2026-10-26 = 2 calendar days (DST ends in between)
+    const lastBefore = new Date(2026, 9, 24, 9, 0, 0)
+    const nowAfter = new Date(2026, 9, 26, 12, 0, 0)
+    expect(computeReturnNudge(lastBefore, 0, nowAfter)).toEqual({ kind: "gap", days: 2 })
+  })
 })
 
 // ─── computeWeekDelta ────────────────────────────────────────────────────────
