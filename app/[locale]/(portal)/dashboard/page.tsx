@@ -109,6 +109,11 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
 
   const sparkDays = buildLastNDayStrings(7)
   const sparkCheckedIn = new Set(recentCheckIns.map((ci) => toDateString(new Date(ci.createdAt))))
+  const sparkPemDays = new Set(
+    recentCheckIns
+      .filter((ci) => ci.pemFlag === true)
+      .map((ci) => toDateString(new Date(ci.createdAt)))
+  )
   const sparkCount = sparkDays.filter((d) => sparkCheckedIn.has(d)).length
 
   const hasSymptomData = trendCheckIns.some(
@@ -182,6 +187,7 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
           <DayCadenceSparkline
             days={sparkDays}
             checkedIn={sparkCheckedIn}
+            pemDays={sparkPemDays}
             hint={t("cadenceHint")}
             size="md"
           />

@@ -104,7 +104,9 @@ export default async function ClientsPage({
   const clientIds = clients.map((c) => c.id)
   const alertCountMap = new Map<string, { count: number; hasHigh: boolean }>()
   const checkInDayMap = new Map<string, Set<string>>()
+  const pemDayMap = new Map<string, Set<string>>()
   if (clientIds.length > 0) {
+    const dayExpr = sql<string>`to_char(${checkIns.createdAt}, 'YYYY-MM-DD')`
     const [alertCountRows, dayRows] = await Promise.all([
       db
         .select({
@@ -118,13 +120,15 @@ export default async function ClientsPage({
       db
         .select({
           userId: checkIns.userId,
-          day: sql<string>`to_char(${checkIns.createdAt}, 'YYYY-MM-DD')`,
+          day: dayExpr,
+          hadPem: sql<boolean>`bool_or(${checkIns.pemFlag})`,
         })
         .from(checkIns)
         .where(and(
           gte(checkIns.createdAt, staleCutoff),
           inArray(checkIns.userId, clientIds)
-        )),
+        ))
+        .groupBy(checkIns.userId, dayExpr),
     ])
     for (const r of alertCountRows) alertCountMap.set(r.clientId, { count: r.alertCount, hasHigh: r.hasHigh })
     for (const r of dayRows) {
@@ -134,6 +138,14 @@ export default async function ClientsPage({
         checkInDayMap.set(r.userId, set)
       }
       set.add(r.day)
+      if (r.hadPem) {
+        let pemSet = pemDayMap.get(r.userId)
+        if (!pemSet) {
+          pemSet = new Set()
+          pemDayMap.set(r.userId, pemSet)
+        }
+        pemSet.add(r.day)
+      }
     }
   }
 
@@ -224,6 +236,7 @@ export default async function ClientsPage({
                     viewLabel={t("viewLink")}
                     sparkDays={sparkDays}
                     sparkCheckedIn={checkInDayMap.get(client.id) ?? new Set<string>()}
+                    sparkPemDays={pemDayMap.get(client.id) ?? new Set<string>()}
                     sparkHint={t("cadenceHint")}
                     nudge={isStale && nudgeBody
                       ? {

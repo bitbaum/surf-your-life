@@ -31,11 +31,12 @@ interface Props {
   viewLabel: string
   sparkDays: string[]
   sparkCheckedIn: Set<string>
+  sparkPemDays: Set<string>
   sparkHint: string
   nudge?: NudgeProps | null
 }
 
-export async function ClientTableRow({ client, alert, isStale, staleHint, viewLabel, sparkDays, sparkCheckedIn, sparkHint, nudge }: Props) {
+export async function ClientTableRow({ client, alert, isStale, staleHint, viewLabel, sparkDays, sparkCheckedIn, sparkPemDays, sparkHint, nudge }: Props) {
   const tConcerns = await getTranslations("concerns")
   return (
     <tr className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
@@ -67,7 +68,7 @@ export async function ClientTableRow({ client, alert, isStale, staleHint, viewLa
             )}
             {client.lastCheckIn ? formatDate(client.lastCheckIn) : <span className="text-slate-300">—</span>}
           </span>
-          <DayCadenceSparkline days={sparkDays} checkedIn={sparkCheckedIn} hint={sparkHint} />
+          <DayCadenceSparkline days={sparkDays} checkedIn={sparkCheckedIn} pemDays={sparkPemDays} hint={sparkHint} />
         </span>
       </td>
       <td className="py-3 text-slate-500">

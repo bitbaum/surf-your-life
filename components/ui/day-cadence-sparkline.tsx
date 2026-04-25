@@ -3,6 +3,8 @@ interface Props {
   days: string[]
   /** The subset of `days` the user actually checked in on. */
   checkedIn: Set<string>
+  /** Days within `checkedIn` that were marked as PEM/crash days. Optional. */
+  pemDays?: Set<string>
   /** Tooltip + accessible label. */
   hint: string
   /** Dot size — "sm" for tight admin tables, "md" for standalone widgets. Defaults to "sm". */
@@ -19,19 +21,25 @@ const GAP_SIZE = {
   md: "gap-1",
 } as const
 
-export function DayCadenceSparkline({ days, checkedIn, hint, size = "sm" }: Props) {
+export function DayCadenceSparkline({ days, checkedIn, pemDays, hint, size = "sm" }: Props) {
   return (
     <span
       className={`inline-flex items-center ${GAP_SIZE[size]}`}
       aria-label={hint}
       title={hint}
     >
-      {days.map((day) => (
-        <span
-          key={day}
-          className={`${DOT_SIZE[size]} rounded-full ${checkedIn.has(day) ? "bg-teal-500" : "bg-slate-200"}`}
-        />
-      ))}
+      {days.map((day) => {
+        const fill =
+          pemDays?.has(day) ? "bg-red-500"
+          : checkedIn.has(day) ? "bg-teal-500"
+          : "bg-slate-200"
+        return (
+          <span
+            key={day}
+            className={`${DOT_SIZE[size]} rounded-full ${fill}`}
+          />
+        )
+      })}
     </span>
   )
 }
