@@ -7,6 +7,7 @@ import { Link } from "@/i18n/navigation"
 import { PAGINATION_DEFAULT, SEVEN_DAYS_MS, SERVICES_MAX_LIMIT, CLIENT_ASSIGNMENTS_MAX, ADMIN_DASHBOARD_ALERTS_PREVIEW, CLIENT_ASSESSMENTS_LIMIT } from "@/lib/constants"
 import { CLIENT_ROLE, STAFF_ROLES } from "@/lib/domain/auth"
 import { computeAdherenceByAssignment, computeLogsGridByAssignment } from "@/lib/domain/techniques"
+import { computeWeekDelta } from "@/lib/domain/check-in"
 import { ResetLinkButton } from "./reset-link-button"
 import { NewThreadButton } from "./new-thread-button"
 import { EnrollProgramButton } from "./enroll-program-button"
@@ -18,6 +19,7 @@ import { ClientEnrollmentCard } from "./client-enrollment-card"
 import { PractitionerAssignmentCard } from "./practitioner-assignment-card"
 import { ClientProfileCard } from "./client-profile-card"
 import { ClientCheckInsCard } from "./client-check-ins-card"
+import { ClientTrendCard } from "./client-trend-card"
 import { ClientAlertsCard } from "./client-alerts-card"
 import { PageHeader } from "@/components/ui/page-header"
 import { getTranslations, setRequestLocale } from "next-intl/server"
@@ -106,6 +108,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
   const profile = client.profile
   const adherenceByAssignment = computeAdherenceByAssignment(clientAssignments, recentTechniqueLogs)
   const logsGridByAssignment = computeLogsGridByAssignment(recentTechniqueLogs)
+  const weekDelta = computeWeekDelta(clientCheckIns)
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -137,6 +140,12 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
         <ClientProfileCard profile={profile} />
         <ClientCheckInsCard clientId={id} checkIns={clientCheckIns} totalCheckIns={totalCheckIns} />
       </div>
+
+      {weekDelta.window.count > 0 && (
+        <div className="mt-6">
+          <ClientTrendCard delta={weekDelta} />
+        </div>
+      )}
 
       {(unresolvedAlerts.length > 0 || hasAlertHistory) && (
         <div className="mt-6">

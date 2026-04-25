@@ -110,6 +110,91 @@ export function computeReturnNudge(
   return { kind: "long-gap", days }
 }
 
+// ─── Week-over-week delta ──────────────────────────────────────────────────
+
+/** Minimal row shape required by computeWeekDelta. */
+export type WeekDeltaRow = {
+  createdAt: Date
+  energyLevel: number
+  pemFlag: boolean | null
+  stressLevel: number | null
+}
+
+export type WeekAggregate = {
+  avgEnergy: number | null
+  pemCount: number
+  avgStress: number | null
+  count: number
+}
+
+export type WeekDelta = {
+  window: WeekAggregate     // last 7 days (today and the 6 days before)
+  prior: WeekAggregate      // the 7 days before the window
+  energyDelta: number | null
+  pemDelta: number          // current - prior; meaningful even with no prior window (= window count)
+  stressDelta: number | null
+  hasPriorWindow: boolean   // prior.count > 0
+}
+
+const round1 = (n: number) => Math.round(n * 10) / 10
+
+function aggregateWeek(rows: WeekDeltaRow[]): WeekAggregate {
+  const energyVals = rows.map((r) => r.energyLevel)
+  const stressVals = rows.filter((r) => r.stressLevel != null).map((r) => r.stressLevel as number)
+  return {
+    avgEnergy: energyVals.length > 0
+      ? energyVals.reduce((s, v) => s + v, 0) / energyVals.length
+      : null,
+    pemCount: rows.filter((r) => r.pemFlag === true).length,
+    avgStress: stressVals.length > 0
+      ? stressVals.reduce((s, v) => s + v, 0) / stressVals.length
+      : null,
+    count: rows.length,
+  }
+}
+
+/**
+ * Compare check-ins from the last 7 days against the 7 days before that.
+ * Pure — `now` is injected for testability.
+ * Day boundaries are anchored to UTC midnight so DST transitions don't shift buckets.
+ */
+export function computeWeekDelta(
+  rows: WeekDeltaRow[],
+  now: Date = new Date()
+): WeekDelta {
+  const startOfToday = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())
+  const sevenDaysAgo = startOfToday - 6 * DAY_MS    // include today + 6 days back = 7 days
+  const fourteenDaysAgo = startOfToday - 13 * DAY_MS // prior window: 7 days, ending 7 days ago
+
+  const dayOf = (d: Date) =>
+    Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())
+
+  const windowRows = rows.filter((r) => {
+    const d = dayOf(r.createdAt)
+    return d >= sevenDaysAgo && d <= startOfToday
+  })
+  const priorRows = rows.filter((r) => {
+    const d = dayOf(r.createdAt)
+    return d >= fourteenDaysAgo && d < sevenDaysAgo
+  })
+
+  const window = aggregateWeek(windowRows)
+  const prior = aggregateWeek(priorRows)
+
+  return {
+    window,
+    prior,
+    energyDelta: window.avgEnergy != null && prior.avgEnergy != null
+      ? round1(window.avgEnergy - prior.avgEnergy)
+      : null,
+    pemDelta: window.pemCount - prior.pemCount,
+    stressDelta: window.avgStress != null && prior.avgStress != null
+      ? round1(window.avgStress - prior.avgStress)
+      : null,
+    hasPriorWindow: prior.count > 0,
+  }
+}
+
 // ─── Program progress ──────────────────────────────────────────────────────
 
 export type ProgramProgress = {

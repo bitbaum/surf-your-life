@@ -981,7 +981,15 @@
         "insuranceProvider": "Krankenkasse",
         "hoursPerWeek": "{n} Std./Woche",
         "heightWeight": "{h} cm · {w} kg",
-        "assessmentHistory": "Frühere Assessments"
+        "assessmentHistory": "Frühere Assessments",
+        "trend": {
+          "title": "Letzte 7 Tage",
+          "checkInsCount": "{count, plural, one {# Check-in} other {# Check-ins}}",
+          "avgEnergy": "Ø Energie",
+          "pemEpisodes": "PEM-Episoden",
+          "avgStress": "Ø Stress",
+          "noPriorWindow": "Noch zu wenig Vorwochendaten für einen Vergleich."
+        }
       },
       "atRisk": {
         "title": "Gefährdete Klienten",

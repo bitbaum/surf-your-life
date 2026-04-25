@@ -981,7 +981,15 @@
         "insuranceProvider": "Insurance",
         "hoursPerWeek": "{n} h/week",
         "heightWeight": "{h} cm · {w} kg",
-        "assessmentHistory": "Previous assessments"
+        "assessmentHistory": "Previous assessments",
+        "trend": {
+          "title": "Last 7 days",
+          "checkInsCount": "{count, plural, one {# check-in} other {# check-ins}}",
+          "avgEnergy": "Avg energy",
+          "pemEpisodes": "PEM episodes",
+          "avgStress": "Avg stress",
+          "noPriorWindow": "Not enough prior data to compare yet."
+        }
       },
       "atRisk": {
         "title": "At-Risk Clients",

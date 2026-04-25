@@ -3,12 +3,14 @@ import {
   computeStreak,
   computeProgramProgress,
   computeReturnNudge,
+  computeWeekDelta,
   detectMilestone,
   computeInsightKey,
   summariseCheckIns,
   CHECKIN_MILESTONES,
   STREAK_MILESTONES,
   type CheckInSummaryRow,
+  type WeekDeltaRow,
 } from "@/lib/domain/check-in"
 import { DAY_MS, SEVEN_DAYS_MS } from "@/lib/constants"
 
@@ -113,6 +115,103 @@ describe("computeReturnNudge", () => {
       streak: 3,
       days: 1,
     })
+  })
+})
+
+// ─── computeWeekDelta ────────────────────────────────────────────────────────
+
+describe("computeWeekDelta", () => {
+  const now = new Date(2026, 3, 25, 12, 0, 0)
+  const dayAt = (offset: number, hour = 9): Date =>
+    new Date(2026, 3, 25 + offset, hour, 0, 0)
+  const row = (offset: number, fields: Partial<WeekDeltaRow> = {}): WeekDeltaRow => ({
+    createdAt: dayAt(offset),
+    energyLevel: 5,
+    pemFlag: false,
+    stressLevel: null,
+    ...fields,
+  })
+
+  it("returns empty aggregates when there are no rows", () => {
+    const r = computeWeekDelta([], now)
+    expect(r.window).toEqual({ avgEnergy: null, pemCount: 0, avgStress: null, count: 0 })
+    expect(r.prior).toEqual({ avgEnergy: null, pemCount: 0, avgStress: null, count: 0 })
+    expect(r.energyDelta).toBeNull()
+    expect(r.pemDelta).toBe(0)
+    expect(r.hasPriorWindow).toBe(false)
+  })
+
+  it("buckets rows into the correct 7-day window", () => {
+    // Window: -6..0 (today). Prior: -13..-7. Anything older or in the future is excluded.
+    const r = computeWeekDelta(
+      [
+        row(0, { energyLevel: 8 }),
+        row(-3, { energyLevel: 6 }),
+        row(-6, { energyLevel: 4 }),
+        row(-7, { energyLevel: 5 }),   // boundary → prior
+        row(-13, { energyLevel: 3 }),  // boundary → prior
+        row(-14, { energyLevel: 9 }),  // out of both windows
+      ],
+      now
+    )
+    expect(r.window.count).toBe(3)
+    expect(r.prior.count).toBe(2)
+  })
+
+  it("computes avg energy and pem count correctly per window", () => {
+    const r = computeWeekDelta(
+      [
+        row(0, { energyLevel: 7, pemFlag: true }),
+        row(-1, { energyLevel: 5 }),
+        row(-7, { energyLevel: 6, pemFlag: true }),
+        row(-8, { energyLevel: 4, pemFlag: true }),
+      ],
+      now
+    )
+    expect(r.window.avgEnergy).toBe(6)
+    expect(r.window.pemCount).toBe(1)
+    expect(r.prior.avgEnergy).toBe(5)
+    expect(r.prior.pemCount).toBe(2)
+    expect(r.energyDelta).toBe(1)
+    expect(r.pemDelta).toBe(-1)
+  })
+
+  it("handles null stress values without poisoning the average", () => {
+    const r = computeWeekDelta(
+      [
+        row(0, { stressLevel: 8 }),
+        row(-1, { stressLevel: null }),
+        row(-2, { stressLevel: 6 }),
+        row(-7, { stressLevel: 4 }),
+        row(-8, { stressLevel: null }),
+      ],
+      now
+    )
+    expect(r.window.avgStress).toBe(7)   // (8 + 6) / 2
+    expect(r.prior.avgStress).toBe(4)
+    expect(r.stressDelta).toBe(3)
+  })
+
+  it("returns null deltas when one side has no data for that metric", () => {
+    const r = computeWeekDelta([row(0, { stressLevel: 7 })], now)
+    expect(r.energyDelta).toBeNull()    // prior has 0 rows
+    expect(r.stressDelta).toBeNull()
+    expect(r.pemDelta).toBe(0)          // counts: 0 - 0
+    expect(r.hasPriorWindow).toBe(false)
+  })
+
+  it("rounds delta values to one decimal place", () => {
+    const r = computeWeekDelta(
+      [
+        row(0, { energyLevel: 7 }),
+        row(-1, { energyLevel: 8 }),
+        row(-2, { energyLevel: 7 }),  // window avg = 7.333...
+        row(-7, { energyLevel: 5 }),
+        row(-8, { energyLevel: 6 }),  // prior avg = 5.5
+      ],
+      now
+    )
+    expect(r.energyDelta).toBe(1.8)   // 7.333... - 5.5 = 1.833... → 1.8
   })
 })
 
