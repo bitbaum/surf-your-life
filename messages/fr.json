@@ -393,7 +393,15 @@
       "programWeek": "Semaine {current} sur {total}",
       "programProgress": "{pct}% terminé",
       "programNoPhase": "Aucun guide défini pour cette semaine.",
-      "programWeekOpen": "Semaine {current}"
+      "programWeekOpen": "Semaine {current}",
+      "trend": {
+        "title": "Tes 7 derniers jours",
+        "checkInsCount": "{count, plural, one {# check-in} other {# check-ins}}",
+        "avgEnergy": "Énergie",
+        "pemEpisodes": "Jours de crash",
+        "avgStress": "Stress",
+        "noPriorWindow": "Continue tes check-ins — ta tendance hebdomadaire apparaîtra ici dès que tu auras deux semaines de données."
+      }
     },
     "checkIn": {
       "title": "Comment allez-vous aujourd'hui?",

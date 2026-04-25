@@ -19,7 +19,7 @@ import { ClientEnrollmentCard } from "./client-enrollment-card"
 import { PractitionerAssignmentCard } from "./practitioner-assignment-card"
 import { ClientProfileCard } from "./client-profile-card"
 import { ClientCheckInsCard } from "./client-check-ins-card"
-import { ClientTrendCard } from "./client-trend-card"
+import { TrendCard } from "@/components/ui/trend-card"
 import { ClientAlertsCard } from "./client-alerts-card"
 import { PageHeader } from "@/components/ui/page-header"
 import { getTranslations, setRequestLocale } from "next-intl/server"
@@ -143,7 +143,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
 
       {weekDelta.window.count > 0 && (
         <div className="mt-6">
-          <ClientTrendCard delta={weekDelta} />
+          <TrendCard delta={weekDelta} namespace="admin.clients.detail.trend" />
         </div>
       )}
 

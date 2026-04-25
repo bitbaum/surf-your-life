@@ -18,9 +18,11 @@ import {
   computeStreak,
   computeProgramProgress,
   computeReturnNudge,
+  computeWeekDelta,
   detectMilestone,
   computeInsightKey,
 } from "@/lib/domain/check-in"
+import { TrendCard } from "@/components/ui/trend-card"
 import { EmailVerificationBanner } from "@/components/portal/EmailVerificationBanner"
 import { PageHeader } from "@/components/ui/page-header"
 import { ProgressBar } from "@/components/ui/progress-bar"
@@ -60,6 +62,7 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
         symptomBrainFog: true,
         symptomPain: true,
         stressLevel: true,
+        pemFlag: true,
       },
     }),
     db.select({ value: count() }).from(checkIns).where(eq(checkIns.userId, session.user.id)),
@@ -100,6 +103,7 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
   const returnNudge = checkedInToday
     ? null
     : computeReturnNudge(recentCheckIns[0]?.createdAt ?? null, streak)
+  const weekDelta = computeWeekDelta(trendCheckIns)
 
   const hasSymptomData = trendCheckIns.some(
     (c) => c.symptomFatigue != null || c.symptomBrainFog != null || c.symptomPain != null || c.stressLevel != null
@@ -158,6 +162,12 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
           color={streak >= 1 ? "teal" : "slate"}
         />
       </div>
+
+      {weekDelta.window.count > 0 && (
+        <div className="mb-6">
+          <TrendCard delta={weekDelta} namespace="portal.dashboard.trend" />
+        </div>
+      )}
 
       {programProgress && (
         <Card className="mb-6 border-teal-200">

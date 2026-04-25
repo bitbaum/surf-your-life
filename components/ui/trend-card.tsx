@@ -6,6 +6,12 @@ import type { WeekDelta } from "@/lib/domain/check-in"
 
 interface Props {
   delta: WeekDelta
+  /**
+   * i18n namespace containing the trend card keys: title, checkInsCount,
+   * avgEnergy, pemEpisodes, avgStress, noPriorWindow.
+   * Lets the same card serve admin and portal contexts with different copy.
+   */
+  namespace: string
 }
 
 type DeltaTone = "good" | "bad" | "neutral"
@@ -41,8 +47,8 @@ function DeltaBadge({ value, higherIsBetter, format }: {
   )
 }
 
-export async function ClientTrendCard({ delta }: Props) {
-  const t = await getTranslations("admin.clients.detail.trend")
+export async function TrendCard({ delta, namespace }: Props) {
+  const t = await getTranslations(namespace)
 
   // Hide entirely when there's no current-window data — the check-ins card
   // already covers the "no recent activity" case.
