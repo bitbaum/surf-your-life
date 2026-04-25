@@ -991,7 +991,12 @@
         "never": "Noch nie",
         "noAtRisk": "Alle Klienten haben sich kürzlich eingeloggt",
         "viewAtRisk": "Gefährdete Klienten",
-        "inactiveFor": "Inaktiv seit"
+        "inactiveFor": "Inaktiv seit",
+        "nudgeButton": "Erinnern",
+        "nudgeModalTitle": "Check-in-Erinnerung senden",
+        "nudgeSubject": "Wie geht es dir?",
+        "nudgeBodyWithDays": "Hallo {name}, dein letzter Check-in liegt {days} Tage zurück. Auch eine kurze Reflexion hilft uns zu sehen, wie es dir geht — antworte, wann immer du bereit bist.",
+        "nudgeBodyNever": "Hallo {name}, wir würden gerne hören, wie es dir geht. Auch ein kurzer Check-in hilft uns zu verstehen, wo du gerade stehst."
       },
       "newThread": {
         "button": "Nachricht senden",

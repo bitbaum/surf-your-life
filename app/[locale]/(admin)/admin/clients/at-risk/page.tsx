@@ -40,10 +40,21 @@ export default async function AtRiskClientsPage({ params }: { params: Promise<{ 
     .orderBy(sql`max(${checkIns.createdAt}) ASC NULLS FIRST`)
     .limit(ADMIN_AT_RISK_MAX)
 
+  function daysSinceCount(date: Date | null): number | null {
+    if (!date) return null
+    return Math.floor((nowMs - date.getTime()) / DAY_MS)
+  }
+
   function daysSince(date: Date | null): string {
-    if (!date) return "—"
-    const days = Math.floor((nowMs - date.getTime()) / DAY_MS)
-    return t("atRisk.daysSince", { n: days })
+    const days = daysSinceCount(date)
+    return days == null ? "—" : t("atRisk.daysSince", { n: days })
+  }
+
+  function nudgeBody(name: string | null, email: string, days: number | null): string {
+    const who = name ?? email.split("@")[0]
+    return days != null
+      ? t("atRisk.nudgeBodyWithDays", { name: who, days })
+      : t("atRisk.nudgeBodyNever", { name: who })
   }
 
   return (
@@ -83,34 +94,43 @@ export default async function AtRiskClientsPage({ params }: { params: Promise<{ 
                 </tr>
               </thead>
               <tbody>
-                {atRisk.map((client) => (
-                  <tr
-                    key={client.id}
-                    className="border-b border-slate-50 hover:bg-slate-50 transition-colors"
-                  >
-                    <td className="py-3 font-medium text-slate-800">
-                      <Link href={`/admin/clients/${client.id}`} className="hover:text-teal-700 transition-colors">
-                        {client.name ?? "—"}
-                      </Link>
-                    </td>
-                    <td className="py-3 text-slate-600">{client.email}</td>
-                    <td className="py-3 text-slate-500">
-                      {client.lastCheckIn ? formatDate(client.lastCheckIn) : t("atRisk.never")}
-                    </td>
-                    <td className="py-3 text-slate-400">{daysSince(client.lastCheckIn)}</td>
-                    <td className="py-3 text-right">
-                      <div className="flex items-center justify-end gap-3">
-                        <Link
-                          href={`/admin/clients/${client.id}`}
-                          className="text-teal-600 hover:underline text-xs font-medium"
-                        >
-                          {t("viewLink")}
+                {atRisk.map((client) => {
+                  const days = daysSinceCount(client.lastCheckIn)
+                  return (
+                    <tr
+                      key={client.id}
+                      className="border-b border-slate-50 hover:bg-slate-50 transition-colors"
+                    >
+                      <td className="py-3 font-medium text-slate-800">
+                        <Link href={`/admin/clients/${client.id}`} className="hover:text-teal-700 transition-colors">
+                          {client.name ?? "—"}
                         </Link>
-                        <NewThreadButton clientId={client.id} />
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                      <td className="py-3 text-slate-600">{client.email}</td>
+                      <td className="py-3 text-slate-500">
+                        {client.lastCheckIn ? formatDate(client.lastCheckIn) : t("atRisk.never")}
+                      </td>
+                      <td className="py-3 text-slate-400">{daysSince(client.lastCheckIn)}</td>
+                      <td className="py-3 text-right">
+                        <div className="flex items-center justify-end gap-3">
+                          <Link
+                            href={`/admin/clients/${client.id}`}
+                            className="text-teal-600 hover:underline text-xs font-medium"
+                          >
+                            {t("viewLink")}
+                          </Link>
+                          <NewThreadButton
+                            clientId={client.id}
+                            label={t("atRisk.nudgeButton")}
+                            modalTitle={t("atRisk.nudgeModalTitle")}
+                            defaultSubject={t("atRisk.nudgeSubject")}
+                            defaultBody={nudgeBody(client.name, client.email, days)}
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
             </div>

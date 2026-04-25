@@ -1009,7 +1009,12 @@
         "never": "Jamais",
         "noAtRisk": "Tous les clients se sont connectés récemment",
         "viewAtRisk": "Clients à risque",
-        "inactiveFor": "Inactif depuis"
+        "inactiveFor": "Inactif depuis",
+        "nudgeButton": "Relancer",
+        "nudgeModalTitle": "Envoyer une relance",
+        "nudgeSubject": "Comment vas-tu?",
+        "nudgeBodyWithDays": "Bonjour {name}, ton dernier check-in remonte à {days} jours. Même une courte réflexion nous aide à voir comment tu vas — réponds quand tu te sens prêt(e).",
+        "nudgeBodyNever": "Bonjour {name}, nous aimerions savoir comment tu vas. Même un court check-in nous aide à comprendre où tu en es."
       },
       "newThread": {
         "button": "Envoyer un message",

@@ -991,7 +991,12 @@
         "never": "Never",
         "noAtRisk": "All clients have checked in recently",
         "viewAtRisk": "At-risk clients",
-        "inactiveFor": "Inactive for"
+        "inactiveFor": "Inactive for",
+        "nudgeButton": "Nudge",
+        "nudgeModalTitle": "Send check-in nudge",
+        "nudgeSubject": "Checking in",
+        "nudgeBodyWithDays": "Hi {name}, it's been {days} days since your last check-in. Even a short reflection helps us see how you're doing — write back whenever you're up for it.",
+        "nudgeBodyNever": "Hi {name}, we'd love to hear how you're doing. Even a short check-in helps us understand where you are right now."
       },
       "newThread": {
         "button": "Send message",
