@@ -150,6 +150,11 @@ export default async function ClientsPage({
   }
 
   const sparkDays = buildLastNDayStrings(7)
+  const sparkDayLabels = {
+    missed: t("dotMissed"),
+    checkedIn: t("dotCheckedIn"),
+    pem: t("dotPem"),
+  }
 
   function pageLink(p: number) {
     const params = new URLSearchParams()
@@ -238,6 +243,7 @@ export default async function ClientsPage({
                     sparkCheckedIn={checkInDayMap.get(client.id) ?? new Set<string>()}
                     sparkPemDays={pemDayMap.get(client.id) ?? new Set<string>()}
                     sparkHint={t("cadenceHint")}
+                    sparkDayLabels={sparkDayLabels}
                     nudge={isStale && nudgeBody
                       ? {
                           label: t("atRisk.nudgeButton"),

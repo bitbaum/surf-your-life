@@ -189,6 +189,11 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
             checkedIn={sparkCheckedIn}
             pemDays={sparkPemDays}
             hint={t("cadenceHint")}
+            dayLabels={{
+              missed: t("dotMissed"),
+              checkedIn: t("dotCheckedIn"),
+              pem: t("dotPem"),
+            }}
             size="md"
           />
           <span className="text-xs text-slate-500">{t("daysOfSeven", { count: sparkCount })}</span>

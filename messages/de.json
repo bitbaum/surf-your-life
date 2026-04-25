@@ -403,6 +403,9 @@
       "thisWeek": "Diese Woche",
       "cadenceHint": "Deine letzten 7 Tage (links: ältester, rechts: heute)",
       "daysOfSeven": "{count} von 7 Tagen",
+      "dotMissed": "kein Check-in",
+      "dotCheckedIn": "eingecheckt",
+      "dotPem": "Crash-Tag",
       "trend": {
         "title": "Deine letzten 7 Tage",
         "checkInsCount": "{count, plural, one {# Check-in} other {# Check-ins}}",
@@ -928,6 +931,9 @@
       "viewLink": "Ansehen →",
       "staleHint": "Inaktiv seit 7+ Tagen",
       "cadenceHint": "Check-ins der letzten 7 Tage (links: ältester, rechts: heute)",
+      "dotMissed": "kein Check-in",
+      "dotCheckedIn": "eingecheckt",
+      "dotPem": "Crash-Tag",
       "detail": {
         "backLink": "← Klienten",
         "unnamed": "Unbekannt",

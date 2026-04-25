@@ -1,3 +1,7 @@
+import { formatDate } from "@/lib/utils"
+
+export type DayState = "missed" | "checkedIn" | "pem"
+
 interface Props {
   /** Day-string keys to render, oldest first (e.g. from `buildLastNDayStrings`). */
   days: string[]
@@ -5,8 +9,14 @@ interface Props {
   checkedIn: Set<string>
   /** Days within `checkedIn` that were marked as PEM/crash days. Optional. */
   pemDays?: Set<string>
-  /** Tooltip + accessible label. */
+  /** Tooltip + accessible label for the whole sparkline. */
   hint: string
+  /**
+   * Localized labels per state. When provided, each dot gets its own
+   * tooltip "{date} · {stateLabel}" — much more useful than a single
+   * wrapper-level hint when scanning many sparklines.
+   */
+  dayLabels?: Record<DayState, string>
   /** Dot size — "sm" for tight admin tables, "md" for standalone widgets. Defaults to "sm". */
   size?: "sm" | "md"
 }
@@ -21,22 +31,28 @@ const GAP_SIZE = {
   md: "gap-1",
 } as const
 
-export function DayCadenceSparkline({ days, checkedIn, pemDays, hint, size = "sm" }: Props) {
+export function DayCadenceSparkline({ days, checkedIn, pemDays, hint, dayLabels, size = "sm" }: Props) {
   return (
     <span
       className={`inline-flex items-center ${GAP_SIZE[size]}`}
       aria-label={hint}
-      title={hint}
+      // Wrapper hint stays as the accessible label; per-dot titles take over visually when provided.
+      title={dayLabels ? undefined : hint}
     >
       {days.map((day) => {
+        const state: DayState =
+          pemDays?.has(day) ? "pem"
+          : checkedIn.has(day) ? "checkedIn"
+          : "missed"
         const fill =
-          pemDays?.has(day) ? "bg-red-500"
-          : checkedIn.has(day) ? "bg-teal-500"
+          state === "pem" ? "bg-red-500"
+          : state === "checkedIn" ? "bg-teal-500"
           : "bg-slate-200"
         return (
           <span
             key={day}
             className={`${DOT_SIZE[size]} rounded-full ${fill}`}
+            title={dayLabels ? `${formatDate(day)} · ${dayLabels[state]}` : undefined}
           />
         )
       })}
