@@ -387,6 +387,8 @@
       "milestoneCheckIns": "Du hast {n} Check-ins abgeschlossen. Das ist echtes Engagement für deine Genesung.",
       "milestoneStreak": "{n} Tage in Folge! Kontinuität ist eines der wirkungsvollsten Mittel bei der Genesung.",
       "insightTitle": "Dein Fortschritt",
+      "insightWeekEnergyUp": "Deine durchschnittliche Energie ist {delta} Punkte höher als letzte Woche. Mach genau so weiter.",
+      "insightWeekEnergyDown": "Deine durchschnittliche Energie ist {delta} Punkte niedriger als letzte Woche. Eine kurze Reflexion — oder ein Austausch mit deinem Therapeuten — kann helfen.",
       "insightEnergyUp": "Deine Energie ist in den letzten Check-ins gestiegen. Weiter so!",
       "insightEnergyDown": "Deine Energie ist zuletzt gesunken. Besprich das mit deinem Therapeuten.",
       "insightConsistent": "Du hast diese Woche 5+ Mal eingecheckt — diese Kontinuität treibt langfristige Genesung an.",

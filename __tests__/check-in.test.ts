@@ -5,13 +5,34 @@ import {
   computeReturnNudge,
   computeWeekDelta,
   detectMilestone,
-  computeInsightKey,
+  computeInsight,
   summariseCheckIns,
   CHECKIN_MILESTONES,
   STREAK_MILESTONES,
   type CheckInSummaryRow,
+  type WeekDelta,
   type WeekDeltaRow,
 } from "@/lib/domain/check-in"
+
+const emptyAggregate = { avgEnergy: null, pemCount: 0, avgStress: null, count: 0 }
+const noWeekDelta: WeekDelta = {
+  window: emptyAggregate,
+  prior: emptyAggregate,
+  energyDelta: null,
+  pemDelta: 0,
+  stressDelta: null,
+  hasPriorWindow: false,
+}
+function weekDeltaWithEnergy(currentAvg: number, priorAvg: number, currentCount = 5, priorCount = 5): WeekDelta {
+  return {
+    window: { avgEnergy: currentAvg, pemCount: 0, avgStress: null, count: currentCount },
+    prior: { avgEnergy: priorAvg, pemCount: 0, avgStress: null, count: priorCount },
+    energyDelta: Math.round((currentAvg - priorAvg) * 10) / 10,
+    pemDelta: 0,
+    stressDelta: null,
+    hasPriorWindow: priorCount > 0,
+  }
+}
 import { DAY_MS, SEVEN_DAYS_MS } from "@/lib/constants"
 
 // ─── computeStreak ────────────────────────────────────────────────────────────
@@ -247,42 +268,72 @@ describe("detectMilestone", () => {
   })
 })
 
-// ─── computeInsightKey ───────────────────────────────────────────────────────
+// ─── computeInsight ──────────────────────────────────────────────────────────
 
-describe("computeInsightKey", () => {
-  it("returns null for fewer than 3 data points", () => {
-    expect(computeInsightKey([5, 6], 4)).toBeNull()
-    expect(computeInsightKey([], 7)).toBeNull()
+describe("computeInsight", () => {
+  it("returns null when there's not enough data and no consistency signal", () => {
+    expect(computeInsight([5, 6], 4)).toBeNull()
+    expect(computeInsight([], 4)).toBeNull()
+    expect(computeInsight([5, 6], 4, noWeekDelta)).toBeNull()
   })
 
-  it("returns null when recent or oldest energy is null", () => {
-    expect(computeInsightKey([null, 5, 6], 7)).toBeNull()
-    expect(computeInsightKey([5, 5, null], 7)).toBeNull()
+  it("returns null when recent or oldest energy is null and no other signal applies", () => {
+    expect(computeInsight([null, 5, 6], 4)).toBeNull()
+    expect(computeInsight([5, 5, null], 4)).toBeNull()
   })
 
-  it("detects energy improvement (recent higher than old by ≥2)", () => {
-    // [a, _, c] — a is most recent, c is oldest
-    expect(computeInsightKey([7, 5, 5], 3)).toBe("insightEnergyUp")
-    expect(computeInsightKey([9, 6, 6], 3)).toBe("insightEnergyUp")
+  it("falls back to short-term up trend when there's no prior week", () => {
+    expect(computeInsight([7, 5, 5], 3)).toEqual({ key: "insightEnergyUp" })
+    expect(computeInsight([9, 6, 6], 3, noWeekDelta)).toEqual({ key: "insightEnergyUp" })
   })
 
-  it("does not trigger improvement for trend < 2", () => {
-    expect(computeInsightKey([6, 5, 5], 3)).not.toBe("insightEnergyUp")
+  it("falls back to short-term down trend when there's no prior week", () => {
+    expect(computeInsight([3, 5, 6], 3)).toEqual({ key: "insightEnergyDown" })
+    expect(computeInsight([2, 5, 8], 3, noWeekDelta)).toEqual({ key: "insightEnergyDown" })
   })
 
-  it("detects energy decline (recent lower than old by ≥2)", () => {
-    expect(computeInsightKey([3, 5, 6], 3)).toBe("insightEnergyDown")
-    expect(computeInsightKey([2, 5, 8], 3)).toBe("insightEnergyDown")
+  it("does not fire short-term trend when the swing is < 2", () => {
+    expect(computeInsight([6, 5, 5], 3)).toBeNull()
   })
 
-  it("returns insightConsistent for 5+ check-ins with no trend", () => {
-    expect(computeInsightKey([5, 5, 5], 5)).toBe("insightConsistent")
-    expect(computeInsightKey([5, 5, 5], 7)).toBe("insightConsistent")
+  it("returns insightConsistent for 5+ weekly check-ins with no trend", () => {
+    expect(computeInsight([5, 5, 5], 5)).toEqual({ key: "insightConsistent" })
+    expect(computeInsight([5, 5, 5], 7)).toEqual({ key: "insightConsistent" })
   })
 
   it("returns null when no trend and fewer than 5 weekly check-ins", () => {
-    expect(computeInsightKey([5, 5, 5], 4)).toBeNull()
-    expect(computeInsightKey([6, 5, 5], 3)).toBeNull() // trend=1, not ≥2
+    expect(computeInsight([5, 5, 5], 4)).toBeNull()
+  })
+
+  it("prefers week-over-week energy up when delta ≥ 1.0 and prior window exists", () => {
+    // Short-term would say nothing; week says up
+    const insight = computeInsight([6, 6, 6], 5, weekDeltaWithEnergy(6.5, 5.0))
+    expect(insight).toEqual({ key: "insightWeekEnergyUp", delta: 1.5 })
+  })
+
+  it("prefers week-over-week energy down when delta ≤ -1.0", () => {
+    const insight = computeInsight([5, 5, 5], 5, weekDeltaWithEnergy(4.0, 5.5))
+    expect(insight).toEqual({ key: "insightWeekEnergyDown", delta: 1.5 })
+  })
+
+  it("week signal overrides a contradictory short-term signal", () => {
+    // Last 3: 7,5,5 → short-term would say up. But week is clearly down.
+    const insight = computeInsight([7, 5, 5], 5, weekDeltaWithEnergy(4.0, 6.0))
+    expect(insight).toEqual({ key: "insightWeekEnergyDown", delta: 2 })
+  })
+
+  it("does not fire week-over-week below the 1.0 threshold", () => {
+    // delta = 0.8 → not enough; falls back to short-term (which here also doesn't fire) → consistency
+    const insight = computeInsight([5, 5, 5], 5, weekDeltaWithEnergy(5.8, 5.0))
+    expect(insight).toEqual({ key: "insightConsistent" })
+  })
+
+  it("ignores the prior window when it has no data", () => {
+    // hasPriorWindow=false → week signal cannot fire even if energyDelta were defined
+    const noPrior = weekDeltaWithEnergy(7.0, 5.0, 5, 0)
+    expect(noPrior.hasPriorWindow).toBe(false)
+    const insight = computeInsight([7, 5, 5], 5, noPrior)
+    expect(insight).toEqual({ key: "insightEnergyUp" })  // falls back to short-term
   })
 })
 

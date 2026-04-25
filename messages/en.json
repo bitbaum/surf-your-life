@@ -387,6 +387,8 @@
       "milestoneCheckIns": "You've completed {n} check-ins. That's real dedication to your recovery.",
       "milestoneStreak": "{n}-day streak! Consistency is one of the most powerful tools in your recovery.",
       "insightTitle": "Your progress insight",
+      "insightWeekEnergyUp": "Your average energy is up {delta} points vs last week. Whatever you're doing, keep it up.",
+      "insightWeekEnergyDown": "Your average energy is down {delta} points vs last week. A short reflection — or a quick word with your practitioner — can help.",
       "insightEnergyUp": "Your energy has been trending up over the last few check-ins. Keep up whatever you're doing!",
       "insightEnergyDown": "Your energy has dipped recently. Consider discussing this with your practitioner.",
       "insightConsistent": "You've checked in 5+ times this week — consistency like this is what drives long-term recovery.",

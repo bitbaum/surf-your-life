@@ -248,20 +248,51 @@ export function detectMilestone(
 // ─── Rule-based insight ────────────────────────────────────────────────────
 
 export type InsightKey =
+  | "insightWeekEnergyUp"
+  | "insightWeekEnergyDown"
   | "insightEnergyUp"
   | "insightEnergyDown"
   | "insightConsistent"
 
-export function computeInsightKey(
+/** A keyed insight, optionally carrying numeric params for ICU interpolation. */
+export type Insight =
+  | { key: "insightWeekEnergyUp" | "insightWeekEnergyDown"; delta: number }
+  | { key: "insightEnergyUp" | "insightEnergyDown" | "insightConsistent" }
+
+const WEEK_ENERGY_THRESHOLD = 1.0  // 1 point on the 10-scale weekly avg = meaningful
+
+/**
+ * Pick the most informative dashboard insight for the user.
+ * Priority order (most actionable first):
+ *   1. Week-over-week energy shift (stable, comparative)
+ *   2. Short-term direction across the last 3 check-ins
+ *   3. Consistency callout for clients checking in often
+ *
+ * `weekDelta` is optional — falls back to short-term-only behaviour when omitted.
+ */
+export function computeInsight(
   recentEnergyLevels: (number | null)[],
-  weekCheckInCount: number
-): InsightKey | null {
-  if (recentEnergyLevels.length < 3) return null
-  const [a, , c] = recentEnergyLevels
-  if (a == null || c == null) return null
-  const trend = a - c
-  if (trend >= 2) return "insightEnergyUp"
-  if (trend <= -2) return "insightEnergyDown"
-  if (weekCheckInCount >= 5) return "insightConsistent"
+  weekCheckInCount: number,
+  weekDelta: WeekDelta | null = null
+): Insight | null {
+  if (weekDelta?.hasPriorWindow && weekDelta.energyDelta != null) {
+    if (weekDelta.energyDelta >= WEEK_ENERGY_THRESHOLD) {
+      return { key: "insightWeekEnergyUp", delta: weekDelta.energyDelta }
+    }
+    if (weekDelta.energyDelta <= -WEEK_ENERGY_THRESHOLD) {
+      return { key: "insightWeekEnergyDown", delta: Math.abs(weekDelta.energyDelta) }
+    }
+  }
+
+  if (recentEnergyLevels.length >= 3) {
+    const [a, , c] = recentEnergyLevels
+    if (a != null && c != null) {
+      const trend = a - c
+      if (trend >= 2) return { key: "insightEnergyUp" }
+      if (trend <= -2) return { key: "insightEnergyDown" }
+    }
+  }
+
+  if (weekCheckInCount >= 5) return { key: "insightConsistent" }
   return null
 }

@@ -20,7 +20,7 @@ import {
   computeReturnNudge,
   computeWeekDelta,
   detectMilestone,
-  computeInsightKey,
+  computeInsight,
 } from "@/lib/domain/check-in"
 import { TrendCard } from "@/components/ui/trend-card"
 import { EmailVerificationBanner } from "@/components/portal/EmailVerificationBanner"
@@ -123,11 +123,16 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
 
   const sevenDaysAgo = new Date(Date.now() - SEVEN_DAYS_MS) // eslint-disable-line react-hooks/purity -- server component
   const weekCheckInCount = trendCheckIns.filter((ci) => ci.createdAt >= sevenDaysAgo).length
-  const insightKey = computeInsightKey(
+  const insightHit = computeInsight(
     recentCheckIns.slice(0, DASHBOARD_INSIGHT_ENERGY_WINDOW).map((ci) => ci.energyLevel),
-    weekCheckInCount
+    weekCheckInCount,
+    weekDelta
   )
-  const insight = insightKey ? t(insightKey) : null
+  const insight = insightHit
+    ? "delta" in insightHit
+      ? t(insightHit.key, { delta: insightHit.delta.toFixed(1) })
+      : t(insightHit.key)
+    : null
 
   const firstName = session.user.name?.split(" ")[0] ?? session.user.email?.split("@")[0] ?? ""
 

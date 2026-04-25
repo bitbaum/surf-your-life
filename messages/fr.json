@@ -387,6 +387,8 @@
       "milestoneCheckIns": "Vous avez effectué {n} check-ins. C'est un vrai engagement envers votre rétablissement.",
       "milestoneStreak": "{n} jours consécutifs ! La régularité est l'un des outils les plus puissants pour votre rétablissement.",
       "insightTitle": "Votre progression",
+      "insightWeekEnergyUp": "Ta moyenne d'énergie a progressé de {delta} points par rapport à la semaine dernière. Continue ainsi.",
+      "insightWeekEnergyDown": "Ta moyenne d'énergie a baissé de {delta} points par rapport à la semaine dernière. Une courte réflexion — ou un échange avec ton praticien — peut aider.",
       "insightEnergyUp": "Votre énergie a progressé lors des derniers check-ins. Continuez ainsi !",
       "insightEnergyDown": "Votre énergie a baissé récemment. Envisagez d'en parler avec votre praticien.",
       "insightConsistent": "Vous avez effectué 5+ check-ins cette semaine — cette régularité favorise une guérison durable.",
