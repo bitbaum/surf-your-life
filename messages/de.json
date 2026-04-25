@@ -1042,6 +1042,10 @@
           "subtitle": "Stimmung und Energie über die letzten Check-ins",
           "mood": "Stimmung",
           "energy": "Energie"
+        },
+        "cadence": {
+          "title": "Letzte 7 Tage",
+          "daysOfSeven": "{count} von 7 Tagen"
         }
       },
       "atRisk": {

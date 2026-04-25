@@ -2,7 +2,7 @@ import { notFound } from "next/navigation"
 import { db } from "@/lib/db"
 import { users, checkIns, programs, programEnrollments, medicationLog, functionalAssessments, techniqueAssignments, techniques, assignments, techniqueLogs, clientAlerts } from "@/lib/db/schema"
 import { eq, desc, isNull, and, count, inArray, gte } from "drizzle-orm"
-import { formatDate, toDateString } from "@/lib/utils"
+import { formatDate, toDateString, buildLastNDayStrings } from "@/lib/utils"
 import { Link } from "@/i18n/navigation"
 import { PAGINATION_DEFAULT, SEVEN_DAYS_MS, SERVICES_MAX_LIMIT, CLIENT_ASSIGNMENTS_MAX, ADMIN_DASHBOARD_ALERTS_PREVIEW, CLIENT_ASSESSMENTS_LIMIT } from "@/lib/constants"
 import { CLIENT_ROLE, STAFF_ROLES } from "@/lib/domain/auth"
@@ -21,6 +21,7 @@ import { PractitionerAssignmentCard } from "./practitioner-assignment-card"
 import { ClientProfileCard } from "./client-profile-card"
 import { ClientCheckInsCard } from "./client-check-ins-card"
 import { TrendCard } from "@/components/ui/trend-card"
+import { DayCadenceSparkline } from "@/components/ui/day-cadence-sparkline"
 import { SymptomsChart } from "@/components/ui/symptoms-chart"
 import { SleepChart } from "@/components/ui/sleep-chart"
 import { WellnessTrendChart } from "@/components/ui/wellness-trend-chart"
@@ -131,6 +132,15 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
   const sleepCount = sleepData.filter((c) => c.sleepHours != null).length
   const wellnessData = chartData.map((ci) => ({ createdAt: ci.createdAt, mood: ci.mood, energyLevel: ci.energyLevel }))
 
+  const sparkDays = buildLastNDayStrings(7)
+  const sparkCheckedIn = new Set(clientCheckIns.map((ci) => toDateString(new Date(ci.createdAt))))
+  const sparkPemDays = new Set(
+    clientCheckIns
+      .filter((ci) => ci.pemFlag === true)
+      .map((ci) => toDateString(new Date(ci.createdAt)))
+  )
+  const sparkCount = sparkDays.filter((d) => sparkCheckedIn.has(d)).length
+
   const sevenDaysAgoMs = Date.now() - SEVEN_DAYS_MS // eslint-disable-line react-hooks/purity -- server component
   const weekCheckInCount = clientCheckIns.filter(
     (ci) => ci.createdAt.getTime() >= sevenDaysAgoMs
@@ -179,14 +189,32 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
         <ClientCheckInsCard clientId={id} checkIns={clientCheckIns} totalCheckIns={totalCheckIns} />
       </div>
 
-      {weekDelta.window.count > 0 && (
-        <div className="mt-6 space-y-4">
-          {adminInsight && (
-            <InsightBanner title={t("detail.insights.title")} body={adminInsight} />
-          )}
-          <TrendCard delta={weekDelta} namespace="admin.clients.detail.trend" />
+      <div className="mt-6 space-y-4">
+        <div className="flex items-center gap-3 text-sm">
+          <span className="font-medium text-slate-700">{t("detail.cadence.title")}</span>
+          <DayCadenceSparkline
+            days={sparkDays}
+            checkedIn={sparkCheckedIn}
+            pemDays={sparkPemDays}
+            hint={t("cadenceHint")}
+            dayLabels={{
+              missed: t("dotMissed"),
+              checkedIn: t("dotCheckedIn"),
+              pem: t("dotPem"),
+            }}
+            size="md"
+          />
+          <span className="text-xs text-slate-500">
+            {t("detail.cadence.daysOfSeven", { count: sparkCount })}
+          </span>
         </div>
-      )}
+        {adminInsight && (
+          <InsightBanner title={t("detail.insights.title")} body={adminInsight} />
+        )}
+        {weekDelta.window.count > 0 && (
+          <TrendCard delta={weekDelta} namespace="admin.clients.detail.trend" />
+        )}
+      </div>
 
       {hasSymptomData && symptomData.length >= 2 && (
         <div className="mt-6">

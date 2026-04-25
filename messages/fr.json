@@ -1060,6 +1060,10 @@
           "subtitle": "Humeur et énergie sur les check-ins récents",
           "mood": "Humeur",
           "energy": "Énergie"
+        },
+        "cadence": {
+          "title": "7 derniers jours",
+          "daysOfSeven": "{count} sur 7 jours"
         }
       },
       "atRisk": {

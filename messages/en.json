@@ -1042,6 +1042,10 @@
           "subtitle": "Mood and energy across recent check-ins",
           "mood": "Mood",
           "energy": "Energy"
+        },
+        "cadence": {
+          "title": "Last 7 days",
+          "daysOfSeven": "{count} of 7 days"
         }
       },
       "atRisk": {
