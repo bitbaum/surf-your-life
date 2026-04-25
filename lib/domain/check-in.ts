@@ -45,23 +45,29 @@ export function summariseCheckIns(rows: CheckInSummaryRow[]) {
 
 // ─── Streak ────────────────────────────────────────────────────────────────
 
-/** Consecutive days with at least one check-in, ending today or yesterday. */
-export function computeStreak(checkInDates: Date[]): number {
+/**
+ * Consecutive days with at least one check-in, ending today or yesterday.
+ * `now` is injectable for testability.
+ *
+ * Day keys are UTC-anchored (`Date.UTC(year, month, date)` of the local
+ * calendar date) so DAY_MS-step arithmetic stays exact across DST — local
+ * midnights are NOT all 86_400_000 ms apart on transition days.
+ */
+export function computeStreak(checkInDates: Date[], now: Date = new Date()): number {
   if (checkInDates.length === 0) return 0
 
-  const days = checkInDates.map((d) =>
-    new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime()
-  )
+  const dayKey = (d: Date) => Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())
+
+  const days = checkInDates.map(dayKey)
   const unique = [...new Set(days)].sort((a, b) => b - a)
 
-  const today = new Date()
-  const todayMs = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime()
+  const todayKey = dayKey(now)
 
   // Streak must end today or yesterday
-  if (unique[0] !== todayMs && unique[0] !== todayMs - DAY_MS) return 0
+  if (unique[0] !== todayKey && unique[0] !== todayKey - DAY_MS) return 0
 
   let s = 0
-  let expected = unique[0] === todayMs ? todayMs : todayMs - DAY_MS
+  let expected = unique[0] === todayKey ? todayKey : todayKey - DAY_MS
   for (const d of unique) {
     if (d === expected) { s++; expected -= DAY_MS }
     else break

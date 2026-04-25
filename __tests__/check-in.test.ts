@@ -107,6 +107,39 @@ describe("computeStreak", () => {
     dayBefore.setDate(dayBefore.getDate() - 2)
     expect(computeStreak([yesterday, dayBefore])).toBe(2)
   })
+
+  // ─── DST safety ──────────────────────────────────────────────────────────
+  // European DST 2026: spring-forward 2026-03-29, fall-back 2026-10-25.
+  // Tests run with TZ=Europe/Zurich (set in vitest.config.ts) so the local
+  // calendar in these dates corresponds to actual DST transitions.
+
+  it("DST-safe: counts a 3-day streak that spans spring-forward", () => {
+    const today = new Date(2026, 2, 30, 12, 0, 0)
+    const dates = [
+      new Date(2026, 2, 28, 9, 0, 0),
+      new Date(2026, 2, 29, 9, 0, 0),
+      new Date(2026, 2, 30, 9, 0, 0),
+    ]
+    expect(computeStreak(dates, today)).toBe(3)
+  })
+
+  it("DST-safe: counts a 3-day streak that spans fall-back", () => {
+    const today = new Date(2026, 9, 26, 12, 0, 0)
+    const dates = [
+      new Date(2026, 9, 24, 9, 0, 0),
+      new Date(2026, 9, 25, 9, 0, 0),
+      new Date(2026, 9, 26, 9, 0, 0),
+    ]
+    expect(computeStreak(dates, today)).toBe(3)
+  })
+
+  it("DST-safe: streak ending yesterday (post-DST day) when last was the DST day itself", () => {
+    // today=2026-03-30 (post-DST), last check-in=2026-03-29 (DST day)
+    // → streak = 1 ending yesterday
+    const today = new Date(2026, 2, 30, 12, 0, 0)
+    const yesterday = new Date(2026, 2, 29, 9, 0, 0)
+    expect(computeStreak([yesterday], today)).toBe(1)
+  })
 })
 
 // ─── computeReturnNudge ──────────────────────────────────────────────────────
