@@ -17,10 +17,12 @@ type AlertInfo = { count: number; hasHigh: boolean }
 interface Props {
   client: ClientRow
   alert: AlertInfo | undefined
+  isStale: boolean
+  staleHint: string
   viewLabel: string
 }
 
-export async function ClientTableRow({ client, alert, viewLabel }: Props) {
+export async function ClientTableRow({ client, alert, isStale, staleHint, viewLabel }: Props) {
   const tConcerns = await getTranslations("concerns")
   return (
     <tr className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
@@ -41,7 +43,16 @@ export async function ClientTableRow({ client, alert, viewLabel }: Props) {
         {client.mainConcern ? tConcerns(client.mainConcern as Parameters<typeof tConcerns>[0]) : "—"}
       </td>
       <td className="py-3 text-slate-500">
-        {client.lastCheckIn ? formatDate(client.lastCheckIn) : <span className="text-slate-300">—</span>}
+        <span className="inline-flex items-center gap-1.5">
+          {isStale && (
+            <span
+              aria-label={staleHint}
+              title={staleHint}
+              className="w-1.5 h-1.5 rounded-full bg-amber-500 flex-shrink-0"
+            />
+          )}
+          {client.lastCheckIn ? formatDate(client.lastCheckIn) : <span className="text-slate-300">—</span>}
+        </span>
       </td>
       <td className="py-3 text-slate-500">
         {client.checkInCount > 0 ? client.checkInCount : <span className="text-slate-300">0</span>}

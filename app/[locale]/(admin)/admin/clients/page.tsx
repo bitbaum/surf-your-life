@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { Link } from "@/i18n/navigation"
 import { computeTotalPages, parsePage, computeOffset } from "@/lib/utils"
-import { PAGINATION_DEFAULT } from "@/lib/constants"
+import { PAGINATION_DEFAULT, SEVEN_DAYS_MS } from "@/lib/constants"
 import { ClientSearch } from "./client-search"
 import { FilterTabs } from "@/components/ui/filter-tabs"
 import { Suspense } from "react"
@@ -78,6 +78,8 @@ export default async function ClientsPage({
 
   const total = totalResult[0]?.count ?? 0
   const totalPages = computeTotalPages(total, PAGINATION_DEFAULT)
+
+  const staleCutoff = new Date(Date.now() - SEVEN_DAYS_MS)
 
   const clientIds = clients.map((c) => c.id)
   const alertCountMap = new Map<string, { count: number; hasHigh: boolean }>()
@@ -159,6 +161,8 @@ export default async function ClientsPage({
                   key={client.id}
                   client={client}
                   alert={alertCountMap.get(client.id)}
+                  isStale={client.lastCheckIn == null || client.lastCheckIn < staleCutoff}
+                  staleHint={t("staleHint")}
                   viewLabel={t("viewLink")}
                 />
               ))}

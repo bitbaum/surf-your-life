@@ -939,6 +939,7 @@
       "noClients": "Aucun client pour l'instant",
       "atRiskLink": "Clients à risque →",
       "viewLink": "Voir →",
+      "staleHint": "Inactif depuis 7+ jours",
       "detail": {
         "backLink": "← Clients",
         "unnamed": "Sans nom",

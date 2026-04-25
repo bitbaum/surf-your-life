@@ -921,6 +921,7 @@
       "noClients": "Noch keine Klienten",
       "atRiskLink": "Gefährdete Klienten →",
       "viewLink": "Ansehen →",
+      "staleHint": "Inaktiv seit 7+ Tagen",
       "detail": {
         "backLink": "← Klienten",
         "unnamed": "Unbekannt",
