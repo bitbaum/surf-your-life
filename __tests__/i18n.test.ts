@@ -80,6 +80,27 @@ describe("i18n key parity", () => {
     }
   })
 
+  it("every leaf value is non-empty (no blank translations)", () => {
+    const issues: string[] = []
+    for (const [name, locale] of [
+      ["en", en] as const,
+      ["de", de] as const,
+      ["fr", fr] as const,
+    ]) {
+      for (const path of collectLeafPaths(locale)) {
+        const v = getLeafValue(locale, path)
+        if (typeof v === "string" && v.trim() === "") {
+          issues.push(`  ${path} (${name}) — empty string`)
+        } else if (Array.isArray(v) && v.length === 0) {
+          issues.push(`  ${path} (${name}) — empty array`)
+        }
+      }
+    }
+    if (issues.length > 0) {
+      throw new Error(`Empty translation values:\n${issues.join("\n")}`)
+    }
+  })
+
   it("string values use the same placeholder identifiers across locales", () => {
     const issues: string[] = []
     for (const path of enPaths) {
