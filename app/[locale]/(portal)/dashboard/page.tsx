@@ -23,6 +23,7 @@ import {
   computeInsight,
 } from "@/lib/domain/check-in"
 import { TrendCard } from "@/components/ui/trend-card"
+import { DayCadenceSparkline } from "@/components/ui/day-cadence-sparkline"
 import { buildLastNDayStrings, toDateString } from "@/lib/utils"
 import { EmailVerificationBanner } from "@/components/portal/EmailVerificationBanner"
 import { PageHeader } from "@/components/ui/page-header"
@@ -178,14 +179,12 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
       {sparkCount > 0 && (
         <div className="mb-6 flex items-center gap-3 text-sm">
           <span className="font-medium text-slate-700">{t("thisWeek")}</span>
-          <span className="inline-flex items-center gap-1" aria-label={t("cadenceHint")} title={t("cadenceHint")}>
-            {sparkDays.map((day) => (
-              <span
-                key={day}
-                className={`w-2 h-2 rounded-full ${sparkCheckedIn.has(day) ? "bg-teal-500" : "bg-slate-200"}`}
-              />
-            ))}
-          </span>
+          <DayCadenceSparkline
+            days={sparkDays}
+            checkedIn={sparkCheckedIn}
+            hint={t("cadenceHint")}
+            size="md"
+          />
           <span className="text-xs text-slate-500">{t("daysOfSeven", { count: sparkCount })}</span>
         </div>
       )}

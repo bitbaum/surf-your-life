@@ -2,6 +2,7 @@ import { Link } from "@/i18n/navigation"
 import { formatDate } from "@/lib/utils"
 import { getTranslations } from "next-intl/server"
 import { NewThreadButton } from "./[id]/new-thread-button"
+import { DayCadenceSparkline } from "@/components/ui/day-cadence-sparkline"
 
 type ClientRow = {
   id: string
@@ -66,18 +67,7 @@ export async function ClientTableRow({ client, alert, isStale, staleHint, viewLa
             )}
             {client.lastCheckIn ? formatDate(client.lastCheckIn) : <span className="text-slate-300">—</span>}
           </span>
-          <span
-            className="inline-flex items-center gap-0.5"
-            aria-label={sparkHint}
-            title={sparkHint}
-          >
-            {sparkDays.map((day) => (
-              <span
-                key={day}
-                className={`w-1.5 h-1.5 rounded-full ${sparkCheckedIn.has(day) ? "bg-teal-500" : "bg-slate-200"}`}
-              />
-            ))}
-          </span>
+          <DayCadenceSparkline days={sparkDays} checkedIn={sparkCheckedIn} hint={sparkHint} />
         </span>
       </td>
       <td className="py-3 text-slate-500">
