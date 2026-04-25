@@ -1054,6 +1054,12 @@
           "title": "Sommeil",
           "subtitle": "Heures de sommeil sur les check-ins récents",
           "hoursTooltip": "{n}h de sommeil"
+        },
+        "wellnessChart": {
+          "title": "Humeur & énergie",
+          "subtitle": "Humeur et énergie sur les check-ins récents",
+          "mood": "Humeur",
+          "energy": "Énergie"
         }
       },
       "atRisk": {

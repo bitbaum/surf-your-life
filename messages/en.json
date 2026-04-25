@@ -1036,6 +1036,12 @@
           "title": "Sleep",
           "subtitle": "Hours slept across recent check-ins",
           "hoursTooltip": "{n}h sleep"
+        },
+        "wellnessChart": {
+          "title": "Mood & energy",
+          "subtitle": "Mood and energy across recent check-ins",
+          "mood": "Mood",
+          "energy": "Energy"
         }
       },
       "atRisk": {

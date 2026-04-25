@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { InsightBanner } from "@/components/ui/insight-banner"
 import { Link } from "@/i18n/navigation"
 import { formatDate } from "@/lib/utils"
-import { WellnessTrendChart } from "./wellness-trend-chart"
+import { WellnessTrendChart } from "@/components/ui/wellness-trend-chart"
 import { SleepChart } from "@/components/ui/sleep-chart"
 import { SymptomsChart } from "@/components/ui/symptoms-chart"
 
@@ -45,7 +45,10 @@ export async function DashboardCharts({ trendCheckIns, hasSymptomData, insight, 
             </div>
           </CardHeader>
           <CardContent>
-            <WellnessTrendChart data={trendCheckIns} />
+            <WellnessTrendChart
+              data={trendCheckIns}
+              labels={{ mood: t("chartMood"), energy: t("chartEnergy") }}
+            />
           </CardContent>
         </Card>
       )}

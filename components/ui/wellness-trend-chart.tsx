@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useRef } from "react"
-import { useTranslations } from "next-intl"
 import { formatDate } from "@/lib/utils"
 import { MOOD_LABEL, MOOD_EMOJI, MOOD_NUMERIC } from "@/lib/constants"
 import {
@@ -15,12 +14,17 @@ interface DataPoint {
   energyLevel: number
 }
 
-interface Props {
-  data: DataPoint[]
+export interface WellnessTrendLabels {
+  mood: string
+  energy: string
 }
 
-export function WellnessTrendChart({ data }: Props) {
-  const t = useTranslations("portal.dashboard")
+interface Props {
+  data: DataPoint[]
+  labels: WellnessTrendLabels
+}
+
+export function WellnessTrendChart({ data, labels }: Props) {
   const [hovered, setHovered] = useState<number | null>(null)
   const svgRef = useRef<SVGSVGElement>(null)
 
@@ -59,11 +63,11 @@ export function WellnessTrendChart({ data }: Props) {
       <div className="flex items-center gap-5 mb-3">
         <span className="flex items-center gap-1.5 text-xs text-slate-500">
           <span className="inline-block w-4 h-0.5 rounded-full bg-teal-500" />
-          {t("chartMood")}
+          {labels.mood}
         </span>
         <span className="flex items-center gap-1.5 text-xs text-slate-500">
           <span className="inline-block w-4 h-0.5 rounded-full bg-violet-400" />
-          {t("chartEnergy")}
+          {labels.energy}
         </span>
       </div>
 
@@ -159,11 +163,11 @@ export function WellnessTrendChart({ data }: Props) {
           <div className="bg-slate-900 text-white text-xs rounded-xl px-3 py-2.5 shadow-xl min-w-[120px]">
             <p className="text-slate-400 mb-1.5 font-medium">{formatDate(ci.createdAt)}</p>
             <p className="flex items-center gap-1.5 mb-1">
-              <span className="text-teal-400 font-medium">{t("chartMood")}</span>
+              <span className="text-teal-400 font-medium">{labels.mood}</span>
               <span>{MOOD_EMOJI[ci.mood]} {MOOD_LABEL[ci.mood]}</span>
             </p>
             <p className="flex items-center gap-1.5">
-              <span className="text-violet-300 font-medium">{t("chartEnergy")}</span>
+              <span className="text-violet-300 font-medium">{labels.energy}</span>
               <span>{ci.energyLevel}/10</span>
             </p>
           </div>

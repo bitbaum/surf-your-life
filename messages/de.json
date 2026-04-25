@@ -1036,6 +1036,12 @@
           "title": "Schlaf",
           "subtitle": "Schlafstunden über die letzten Check-ins",
           "hoursTooltip": "{n}h Schlaf"
+        },
+        "wellnessChart": {
+          "title": "Stimmung & Energie",
+          "subtitle": "Stimmung und Energie über die letzten Check-ins",
+          "mood": "Stimmung",
+          "energy": "Energie"
         }
       },
       "atRisk": {

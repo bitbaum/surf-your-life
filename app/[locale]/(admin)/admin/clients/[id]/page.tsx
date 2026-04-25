@@ -23,6 +23,7 @@ import { ClientCheckInsCard } from "./client-check-ins-card"
 import { TrendCard } from "@/components/ui/trend-card"
 import { SymptomsChart } from "@/components/ui/symptoms-chart"
 import { SleepChart } from "@/components/ui/sleep-chart"
+import { WellnessTrendChart } from "@/components/ui/wellness-trend-chart"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ClientAlertsCard } from "./client-alerts-card"
 import { PageHeader } from "@/components/ui/page-header"
@@ -128,6 +129,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
   )
   const sleepData = chartData.map((ci) => ({ createdAt: ci.createdAt, sleepHours: ci.sleepHours }))
   const sleepCount = sleepData.filter((c) => c.sleepHours != null).length
+  const wellnessData = chartData.map((ci) => ({ createdAt: ci.createdAt, mood: ci.mood, energyLevel: ci.energyLevel }))
 
   const sevenDaysAgoMs = Date.now() - SEVEN_DAYS_MS // eslint-disable-line react-hooks/purity -- server component
   const weekCheckInCount = clientCheckIns.filter(
@@ -219,6 +221,26 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
               <SleepChart
                 data={sleepData}
                 formatHours={(n) => t("detail.sleepChart.hoursTooltip", { n })}
+              />
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {wellnessData.length >= 2 && (
+        <div className="mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>{t("detail.wellnessChart.title")}</CardTitle>
+              <p className="text-xs text-slate-400 mt-0.5">{t("detail.wellnessChart.subtitle")}</p>
+            </CardHeader>
+            <CardContent>
+              <WellnessTrendChart
+                data={wellnessData}
+                labels={{
+                  mood: t("detail.wellnessChart.mood"),
+                  energy: t("detail.wellnessChart.energy"),
+                }}
               />
             </CardContent>
           </Card>
