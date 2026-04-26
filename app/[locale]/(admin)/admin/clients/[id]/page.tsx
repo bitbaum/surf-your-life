@@ -2,7 +2,7 @@ import { notFound } from "next/navigation"
 import { db } from "@/lib/db"
 import { users, checkIns, programs, programEnrollments, medicationLog, functionalAssessments, techniqueAssignments, techniques, assignments, techniqueLogs, clientAlerts } from "@/lib/db/schema"
 import { eq, desc, isNull, and, count, inArray, gte } from "drizzle-orm"
-import { formatDate, toDateString, localDateString, buildLastNDayStrings } from "@/lib/utils"
+import { formatDate, localDateString, addDaysISO, buildLastNDayStrings } from "@/lib/utils"
 import { Link } from "@/i18n/navigation"
 import { PAGINATION_DEFAULT, SEVEN_DAYS_MS, SERVICES_MAX_LIMIT, CLIENT_ASSIGNMENTS_MAX, ADMIN_DASHBOARD_ALERTS_PREVIEW, CLIENT_ASSESSMENTS_LIMIT } from "@/lib/constants"
 import { CLIENT_ROLE, STAFF_ROLES } from "@/lib/domain/auth"
@@ -35,7 +35,9 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
   setRequestLocale(locale)
   const t = await getTranslations("admin.clients")
 
-  const sevenDaysAgo = toDateString(new Date(Date.now() - SEVEN_DAYS_MS)) // eslint-disable-line react-hooks/purity -- server component
+  // 7 calendar days back in clinic-local — matches the user's "last week" perception
+  // and keeps adherence scores from being off-by-one at midnight boundaries.
+  const sevenDaysAgo = addDaysISO(localDateString(new Date()), -7)
 
   const [client, clientCheckIns, checkInCountResult, allPrograms, activeEnrollment, currentMedications, assessments, clientAssignments, allTechniques, currentAssignment, allPractitioners, recentTechniqueLogs, unresolvedAlerts, resolvedAlertCountResult] = await Promise.all([
     db.query.users.findFirst({

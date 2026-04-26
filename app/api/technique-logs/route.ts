@@ -5,7 +5,7 @@ import { db } from "@/lib/db"
 import { techniqueLogs, techniqueAssignments } from "@/lib/db/schema"
 import { eq, and, gte, desc } from "drizzle-orm"
 import { logTechniqueSchema } from "@/lib/domain/techniques"
-import { toDateString } from "@/lib/utils"
+import { localDateString, addDaysISO } from "@/lib/utils"
 import { API_ERR_UNAUTHORIZED, API_ERR_NOT_FOUND, API_ERR_INVALID_INPUT, TECHNIQUE_LOG_WINDOW_DAYS } from "@/lib/constants"
 
 const undoSchema = z.object({
@@ -18,12 +18,9 @@ export async function GET(req: Request) {
   if (!session) return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
 
   const { searchParams } = new URL(req.url)
-  // Default to TECHNIQUE_LOG_WINDOW_DAYS so debt can be computed client-side
-  const since = searchParams.get("since") ?? (() => {
-    const d = new Date()
-    d.setDate(d.getDate() - TECHNIQUE_LOG_WINDOW_DAYS)
-    return toDateString(d)
-  })()
+  // Default to TECHNIQUE_LOG_WINDOW_DAYS back from clinic-local today so the
+  // debt-window cutoff matches the user's perceived calendar.
+  const since = searchParams.get("since") ?? addDaysISO(localDateString(new Date()), -TECHNIQUE_LOG_WINDOW_DAYS)
 
   const rows = await db.query.techniqueLogs.findMany({
     where: and(
