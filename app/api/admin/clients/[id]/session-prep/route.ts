@@ -11,7 +11,7 @@ import { db } from "@/lib/db"
 import { users, checkIns, clientAlerts } from "@/lib/db/schema"
 import { eq, desc, and } from "drizzle-orm"
 import { callClaude } from "@/lib/domain/anthropic"
-import { toDateString } from "@/lib/utils"
+import { localDateString } from "@/lib/utils"
 import { SESSION_PREP_CHECKIN_LIMIT, SESSION_PREP_ALERTS_LIMIT, SESSION_PREP_ENERGY_AVG_WINDOW, API_ERR_UNAUTHORIZED, API_ERR_NOT_FOUND } from "@/lib/constants"
 
 export async function GET(
@@ -115,7 +115,7 @@ function buildClinicalContext(
   if (recentCheckIns.length > 0) {
     lines.push(`\nLast ${recentCheckIns.length} check-ins:`)
     for (const ci of recentCheckIns) {
-      const date = toDateString(ci.createdAt)
+      const date = localDateString(ci.createdAt)
       const pem = ci.pemFlag ? ` | PEM${ci.pemSeverity ? ` ${ci.pemSeverity}/10` : ""}` : ""
       const fatigue = ci.symptomFatigue != null ? ` | fatigue ${ci.symptomFatigue}` : ""
       const stress = ci.stressLevel != null ? ` | stress ${ci.stressLevel}` : ""

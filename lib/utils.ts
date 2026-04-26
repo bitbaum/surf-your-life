@@ -20,11 +20,20 @@ export function formatEnumValue(value: string): string {
   return value.replace(/_/g, " ").replace(/^\w/, (c) => c.toUpperCase())
 }
 
-// Returns the date portion of a Date as an ISO string "YYYY-MM-DD".
-// Use for SQL cutoff-string filters and internal date arithmetic where the
-// "few-hours UTC offset from local" doesn't change the result set.
-// For user-facing day bucketing (cadence, streak, "today" UI) where the day
-// must match the user's wall clock, use `localDateString` instead.
+// ─── Date helpers ────────────────────────────────────────────────────────────
+// The five functions below form a related set; pick by what you need:
+//   localDateString(d, tz?)  → day-string in CLINIC_TZ for user-facing dates
+//   toDateString(d)          → day-string in UTC for SQL cutoffs / arithmetic
+//   dayKey(d)                → stable numeric key for the LOCAL calendar day
+//   addDaysISO(s, n)         → shift "YYYY-MM-DD" by N days (DST-safe)
+//   buildLastNDayStrings(n)  → last N day-strings ending today in CLINIC_TZ
+// All five are DST-safe by construction.
+
+// UTC calendar day of `date` as "YYYY-MM-DD". Use for SQL cutoff filters and
+// internal date arithmetic where the "few-hours UTC offset from local" doesn't
+// change the result set. For user-facing day bucketing (cadence, streak,
+// "today" UI) where the day must match the user's wall clock, use
+// `localDateString` instead.
 export function toDateString(date: Date): string {
   return date.toISOString().split("T")[0]
 }
@@ -39,10 +48,10 @@ export function addDaysISO(isoDate: string, n: number): string {
   return new Date(Date.UTC(y, m - 1, d) + n * 86_400_000).toISOString().slice(0, 10)
 }
 
-// Returns the calendar day of `date` in the given timezone as "YYYY-MM-DD".
-// Defaults to CLINIC_TZ (Europe/Zurich) so check-ins at 00:30 local count
-// against today (not yesterday's UTC day). Uses Intl with sv-SE which formats
-// short dates as ISO YYYY-MM-DD.
+// Calendar day of `date` in the given timezone as "YYYY-MM-DD". Defaults to
+// CLINIC_TZ (Europe/Zurich) so check-ins at 00:30 local count against today
+// (not yesterday's UTC day). Uses Intl with sv-SE which formats short dates
+// as ISO YYYY-MM-DD. Companion to `toDateString` — same shape, different TZ.
 export function localDateString(date: Date, tz: string = CLINIC_TZ): string {
   return new Intl.DateTimeFormat("sv-SE", {
     timeZone: tz,
@@ -52,17 +61,15 @@ export function localDateString(date: Date, tz: string = CLINIC_TZ): string {
   }).format(date)
 }
 
-// Returns a stable numeric key for the LOCAL calendar day of `d`, anchored at
-// UTC midnight (so DAY_MS-step arithmetic stays exact across DST — local
+// Stable numeric key for the LOCAL calendar day of `d`, anchored at UTC
+// midnight (so DAY_MS-step arithmetic stays exact across DST — local
 // midnights are not all 86_400_000 ms apart on transition days).
 //
-// Two Date objects on the same local calendar day always return the same key,
-// regardless of time-of-day. Two Dates one local calendar day apart always
-// differ by exactly DAY_MS.
+// Two Date objects on the same local calendar day always return the same key.
+// Two Dates one local calendar day apart always differ by exactly DAY_MS.
 //
-// Use for streak / gap computations on Date arrays. For UTC-anchored day
-// *strings* matching Postgres `to_char(created_at, 'YYYY-MM-DD')`, see
-// `buildLastNDayStrings` (different semantic — UTC calendar day, not local).
+// Use for streak / gap computations on Date arrays. For day-strings, see
+// `localDateString` (single date) or `buildLastNDayStrings` (a sequence).
 export function dayKey(d: Date): number {
   return Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())
 }
@@ -71,13 +78,13 @@ export function dayKey(d: Date): number {
 // calendar day of `now` in the given timezone (defaults to CLINIC_TZ).
 // Iterates back via UTC-step arithmetic so DST transitions don't shift bucket
 // boundaries — only the *anchor* (today) is local; the back-walk is exact.
+// Result is consistent with `localDateString` per check-in for set-membership
+// comparisons in the cadence sparkline pipeline.
 export function buildLastNDayStrings(n: number, now: Date = new Date(), tz: string = CLINIC_TZ): string[] {
-  const DAY = 86_400_000
-  const [yyyy, mm, dd] = localDateString(now, tz).split("-").map(Number)
-  const todayUtc = Date.UTC(yyyy, mm - 1, dd)
+  const todayStr = localDateString(now, tz)
   const days: string[] = []
   for (let i = n - 1; i >= 0; i--) {
-    days.push(new Date(todayUtc - i * DAY).toISOString().slice(0, 10))
+    days.push(addDaysISO(todayStr, -i))
   }
   return days
 }
