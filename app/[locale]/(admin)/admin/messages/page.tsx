@@ -1,11 +1,12 @@
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { threads, threadMessages, users } from "@/lib/db/schema"
-import { desc, count, eq } from "drizzle-orm"
+import { desc, count, eq, and, sql } from "drizzle-orm"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { redirect } from "next/navigation"
 import { Link } from "@/i18n/navigation"
 import { PAGINATION_DEFAULT } from "@/lib/constants"
+import { CLIENT_ROLE } from "@/lib/domain/auth"
 import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
 import { formatDate, computeTotalPages, parsePage, computeOffset } from "@/lib/utils"
@@ -13,13 +14,20 @@ import { MessageSquare } from "lucide-react"
 import { Pagination } from "@/components/ui/pagination"
 import { EmptyState } from "@/components/ui/empty-state"
 import { Card } from "@/components/ui/card"
+import { FilterTabs } from "@/components/ui/filter-tabs"
+
+type FilterMode = "all" | "unread"
+const FILTER_MODES: FilterMode[] = ["all", "unread"]
+function isValidFilter(v: string | undefined): v is FilterMode {
+  return FILTER_MODES.includes(v as FilterMode)
+}
 
 export default async function AdminMessagesPage({
   params,
   searchParams,
 }: {
   params: Promise<{ locale: string }>
-  searchParams: Promise<{ page?: string; client?: string }>
+  searchParams: Promise<{ page?: string; client?: string; filter?: string }>
 }) {
   const { locale } = await params
   setRequestLocale(locale)
@@ -29,11 +37,29 @@ export default async function AdminMessagesPage({
 
   const t = await getTranslations("admin.messages")
 
-  const { page: pageParam, client: clientIdParam } = await searchParams
+  const { page: pageParam, client: clientIdParam, filter: filterParam } = await searchParams
+  const filter: FilterMode = isValidFilter(filterParam) ? filterParam : "all"
   const page = parsePage(pageParam)
   const offset = computeOffset(page, PAGINATION_DEFAULT)
 
-  const whereClause = clientIdParam ? eq(threads.clientId, clientIdParam) : undefined
+  // "Unread": at least one unread message in this thread sent by a client
+  // (not staff). Per-thread global property; matches the practitioner intent
+  // of "needs my reply".
+  const unreadFilter = filter === "unread"
+    ? sql`EXISTS (
+        SELECT 1 FROM ${threadMessages}
+        JOIN ${users} ON ${users.id} = ${threadMessages.senderId}
+        WHERE ${threadMessages.threadId} = ${threads.id}
+          AND ${threadMessages.readAt} IS NULL
+          AND ${users.role} = ${CLIENT_ROLE}
+      )`
+    : undefined
+
+  const whereParts = [
+    clientIdParam ? eq(threads.clientId, clientIdParam) : undefined,
+    unreadFilter,
+  ].filter((p): p is NonNullable<typeof p> => p != null)
+  const whereClause = whereParts.length > 1 ? and(...whereParts) : whereParts[0]
 
   const [allThreads, totalResult, filteredClient] = await Promise.all([
     db.query.threads.findMany({
@@ -80,11 +106,26 @@ export default async function AdminMessagesPage({
         }
       />
 
+      <FilterTabs
+        tabs={[
+          { value: "all" as FilterMode, label: t("filterAll") },
+          { value: "unread" as FilterMode, label: t("filterUnread") },
+        ]}
+        active={filter}
+        href={(v) => {
+          const params = new URLSearchParams()
+          if (clientIdParam) params.set("client", clientIdParam)
+          if (v !== "all") params.set("filter", v)
+          const qs = params.toString()
+          return qs ? `/admin/messages?${qs}` : "/admin/messages"
+        }}
+      />
+
       {allThreads.length === 0 ? (
         <Card className="p-12">
           <EmptyState
             icon={<MessageSquare className="w-10 h-10" />}
-            message={t("noThreads")}
+            message={filter === "unread" ? t("noUnreadThreads") : t("noThreads")}
           />
         </Card>
       ) : (
@@ -134,7 +175,13 @@ export default async function AdminMessagesPage({
       <Pagination
         page={page}
         totalPages={totalPages}
-        pageLink={(p) => clientIdParam ? `/admin/messages?client=${clientIdParam}&page=${p}` : `/admin/messages?page=${p}`}
+        pageLink={(p) => {
+          const params = new URLSearchParams()
+          params.set("page", String(p))
+          if (clientIdParam) params.set("client", clientIdParam)
+          if (filter !== "all") params.set("filter", filter)
+          return `/admin/messages?${params.toString()}`
+        }}
       />
     </div>
   )
