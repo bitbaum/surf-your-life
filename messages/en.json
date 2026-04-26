@@ -914,7 +914,7 @@
       "filteringBy": "Showing messages for",
       "clearFilter": "Show all",
       "filterAll": "All",
-      "filterUnread": "Unread",
+      "filterUnread": "Unread ({count})",
       "viewMessages": "View messages",
       "backToMessages": "Back to messages"
     },

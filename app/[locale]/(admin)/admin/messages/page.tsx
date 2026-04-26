@@ -44,24 +44,28 @@ export default async function AdminMessagesPage({
 
   // "Unread": at least one unread message in this thread sent by a client
   // (not staff). Per-thread global property; matches the practitioner intent
-  // of "needs my reply".
-  const unreadFilter = filter === "unread"
-    ? sql`EXISTS (
-        SELECT 1 FROM ${threadMessages}
-        JOIN ${users} ON ${users.id} = ${threadMessages.senderId}
-        WHERE ${threadMessages.threadId} = ${threads.id}
-          AND ${threadMessages.readAt} IS NULL
-          AND ${users.role} = ${CLIENT_ROLE}
-      )`
-    : undefined
+  // of "needs my reply". Built unconditionally so the badge count query can
+  // reuse it regardless of the active filter.
+  const unreadExists = sql`EXISTS (
+    SELECT 1 FROM ${threadMessages}
+    JOIN ${users} ON ${users.id} = ${threadMessages.senderId}
+    WHERE ${threadMessages.threadId} = ${threads.id}
+      AND ${threadMessages.readAt} IS NULL
+      AND ${users.role} = ${CLIENT_ROLE}
+  )`
 
+  const clientFilter = clientIdParam ? eq(threads.clientId, clientIdParam) : undefined
   const whereParts = [
-    clientIdParam ? eq(threads.clientId, clientIdParam) : undefined,
-    unreadFilter,
+    clientFilter,
+    filter === "unread" ? unreadExists : undefined,
   ].filter((p): p is NonNullable<typeof p> => p != null)
   const whereClause = whereParts.length > 1 ? and(...whereParts) : whereParts[0]
 
-  const [allThreads, totalResult, filteredClient] = await Promise.all([
+  // Badge count: always computed, scoped to the same client filter, so the tab
+  // shows e.g. "Unread (3)" regardless of which tab is active.
+  const unreadCountWhere = clientFilter ? and(clientFilter, unreadExists) : unreadExists
+
+  const [allThreads, totalResult, unreadCountResult, filteredClient] = await Promise.all([
     db.query.threads.findMany({
       where: whereClause,
       orderBy: [desc(threads.updatedAt)],
@@ -77,12 +81,14 @@ export default async function AdminMessagesPage({
       },
     }),
     db.select({ value: count() }).from(threads).where(whereClause),
+    db.select({ value: count() }).from(threads).where(unreadCountWhere),
     clientIdParam
       ? db.query.users.findFirst({ where: eq(users.id, clientIdParam), columns: { name: true, email: true } })
       : Promise.resolve(null),
   ])
 
   const total = totalResult[0]?.value ?? 0
+  const unreadCount = unreadCountResult[0]?.value ?? 0
   const totalPages = computeTotalPages(total, PAGINATION_DEFAULT)
 
   return (
@@ -109,7 +115,7 @@ export default async function AdminMessagesPage({
       <FilterTabs
         tabs={[
           { value: "all" as FilterMode, label: t("filterAll") },
-          { value: "unread" as FilterMode, label: t("filterUnread") },
+          { value: "unread" as FilterMode, label: t("filterUnread", { count: unreadCount }) },
         ]}
         active={filter}
         href={(v) => {
