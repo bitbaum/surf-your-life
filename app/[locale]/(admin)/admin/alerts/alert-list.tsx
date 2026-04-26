@@ -9,6 +9,7 @@ import { ALERT_SEVERITY_DOT, ALERT_SEVERITY_BADGE, ALERT_SEVERITY_ORDER } from "
 import type { AlertType, AlertSeverity } from "@/lib/db/schema"
 import { EmptyState } from "@/components/ui/empty-state"
 import { Card } from "@/components/ui/card"
+import { DayCadenceSparkline, type DayState } from "@/components/ui/day-cadence-sparkline"
 
 const ALL_FILTER = "all" as const
 type TypeFilter = AlertType | typeof ALL_FILTER
@@ -25,9 +26,13 @@ export type AlertRow = {
 
 interface Props {
   initialAlerts: AlertRow[]
+  sparkDays: string[]
+  sparkData: Record<string, { checkedIn: string[]; pemDays: string[] }>
+  sparkLabels: Record<DayState, string>
+  sparkHint: string
 }
 
-export function AlertList({ initialAlerts }: Props) {
+export function AlertList({ initialAlerts, sparkDays, sparkData, sparkLabels, sparkHint }: Props) {
   const t = useTranslations("admin.alerts")
   const [alerts, setAlerts] = useState(initialAlerts)
   const [typeFilter, setTypeFilter] = useState<TypeFilter>(ALL_FILTER)
@@ -91,38 +96,50 @@ export function AlertList({ initialAlerts }: Props) {
             </div>
 
             <div className="flex flex-col gap-2">
-              {group.map((alert) => (
-                <div
-                  key={alert.id}
-                  className="bg-white rounded-xl border border-slate-200 p-4 flex items-start gap-4"
-                >
-                  {/* Severity badge */}
-                  <span className={`flex-shrink-0 text-xs px-2 py-0.5 rounded-full border font-medium mt-0.5 ${ALERT_SEVERITY_BADGE[alert.severity]}`}>
-                    {t(`severity.${alert.severity}`)}
-                  </span>
+              {group.map((alert) => {
+                const spark = sparkData[alert.client.id]
+                const checkedInSet = new Set(spark?.checkedIn ?? [])
+                const pemSet = new Set(spark?.pemDays ?? [])
+                return (
+                  <div
+                    key={alert.id}
+                    className="bg-white rounded-xl border border-slate-200 p-4 flex items-start gap-4"
+                  >
+                    {/* Severity badge */}
+                    <span className={`flex-shrink-0 text-xs px-2 py-0.5 rounded-full border font-medium mt-0.5 ${ALERT_SEVERITY_BADGE[alert.severity]}`}>
+                      {t(`severity.${alert.severity}`)}
+                    </span>
 
-                  {/* Content */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-0.5">
-                      <Link
-                        href={`/admin/clients/${alert.client.id}`}
-                        className="text-sm font-semibold text-slate-900 hover:text-teal-600 transition-colors"
-                      >
-                        {alert.client.name ?? alert.client.email}
-                      </Link>
-                      <span className="text-xs text-slate-400">{alert.client.email}</span>
+                    {/* Content */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mb-0.5">
+                        <Link
+                          href={`/admin/clients/${alert.client.id}`}
+                          className="text-sm font-semibold text-slate-900 hover:text-teal-600 transition-colors"
+                        >
+                          {alert.client.name ?? alert.client.email}
+                        </Link>
+                        <span className="text-xs text-slate-400">{alert.client.email}</span>
+                        <DayCadenceSparkline
+                          days={sparkDays}
+                          checkedIn={checkedInSet}
+                          pemDays={pemSet}
+                          hint={sparkHint}
+                          dayLabels={sparkLabels}
+                        />
+                      </div>
+                      <p className="text-sm font-medium text-slate-800">{alert.title}</p>
+                      <p className="text-sm text-slate-500 mt-0.5 leading-relaxed">{alert.message}</p>
+                      <p className="text-xs text-slate-400 mt-1.5">{formatDate(alert.createdAt)}</p>
                     </div>
-                    <p className="text-sm font-medium text-slate-800">{alert.title}</p>
-                    <p className="text-sm text-slate-500 mt-0.5 leading-relaxed">{alert.message}</p>
-                    <p className="text-xs text-slate-400 mt-1.5">{formatDate(alert.createdAt)}</p>
-                  </div>
 
-                  {/* Resolve */}
-                  <div className="flex-shrink-0 pt-0.5">
-                    <ResolveAlertButton alertId={alert.id} onResolved={handleResolved} />
+                    {/* Resolve */}
+                    <div className="flex-shrink-0 pt-0.5">
+                      <ResolveAlertButton alertId={alert.id} onResolved={handleResolved} />
+                    </div>
                   </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           </section>
         )
