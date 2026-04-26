@@ -1,7 +1,8 @@
 import { db } from "@/lib/db"
 import { users, checkIns } from "@/lib/db/schema"
-import { eq, max, or, isNull, lt, sql } from "drizzle-orm"
+import { eq, max, sql } from "drizzle-orm"
 import { CLIENT_ROLE } from "@/lib/domain/auth"
+import { atRiskHaving } from "@/lib/db/at-risk"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { Link } from "@/i18n/navigation"
@@ -31,12 +32,7 @@ export default async function AtRiskClientsPage({ params }: { params: Promise<{ 
     .leftJoin(checkIns, eq(checkIns.userId, users.id))
     .where(eq(users.role, CLIENT_ROLE))
     .groupBy(users.id, users.name, users.email, users.createdAt)
-    .having(
-      or(
-        isNull(max(checkIns.createdAt)),
-        lt(max(checkIns.createdAt), sevenDaysAgo)
-      )
-    )
+    .having(atRiskHaving(sevenDaysAgo))
     .orderBy(sql`max(${checkIns.createdAt}) ASC NULLS FIRST`)
     .limit(ADMIN_AT_RISK_MAX)
 

@@ -1,6 +1,6 @@
 import { db } from "@/lib/db"
 import { users, checkIns, bookings, threadMessages, clientAlerts } from "@/lib/db/schema"
-import { eq, desc, gte, count, and, isNull, max, or, lt, sql } from "drizzle-orm"
+import { eq, desc, gte, count, and, isNull, max, sql } from "drizzle-orm"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { StatCard } from "@/components/ui/stat-card"
@@ -11,6 +11,7 @@ import { SEVEN_DAYS_MS, THIRTY_DAYS_MS, RECENT_CLIENTS_LIMIT, AT_RISK_CLIENTS_LI
 import { roundOne, buildLastNDayStrings } from "@/lib/utils"
 import { CLIENT_ROLE } from "@/lib/domain/auth"
 import { fetchCadenceMap } from "@/lib/db/check-in-cadence"
+import { atRiskHaving } from "@/lib/db/at-risk"
 import { getUnresolvedAlertCount } from "@/components/admin/unread-count"
 import { AlertList } from "./alert-list"
 import { AtRiskClientsCard } from "./at-risk-clients-card"
@@ -66,7 +67,7 @@ export default async function AdminDashboardPage({
           .leftJoin(checkIns, eq(checkIns.userId, users.id))
           .where(eq(users.role, CLIENT_ROLE))
           .groupBy(users.id)
-          .having(or(isNull(max(checkIns.createdAt)), lt(max(checkIns.createdAt), sevenDaysAgo)))
+          .having(atRiskHaving(sevenDaysAgo))
           .as("at_risk_sub")
       ),
     // Preview: worst N at-risk clients for dashboard card
@@ -81,7 +82,7 @@ export default async function AdminDashboardPage({
       .leftJoin(checkIns, eq(checkIns.userId, users.id))
       .where(eq(users.role, CLIENT_ROLE))
       .groupBy(users.id, users.name, users.email)
-      .having(or(isNull(max(checkIns.createdAt)), lt(max(checkIns.createdAt), sevenDaysAgo)))
+      .having(atRiskHaving(sevenDaysAgo))
       .orderBy(max(checkIns.createdAt))
       .limit(AT_RISK_CLIENTS_LIMIT),
     // Total unresolved alert count (for accurate header display)
