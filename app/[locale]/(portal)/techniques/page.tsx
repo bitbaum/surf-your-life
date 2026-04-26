@@ -6,7 +6,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server"
 import { PageHeader } from "@/components/ui/page-header"
 import { TechniqueTracker } from "./technique-tracker"
 import type { LogByDate } from "@/lib/domain/techniques"
-import { toDateString } from "@/lib/utils"
+import { toDateString, localDateString } from "@/lib/utils"
 import { DAY_MS, TECHNIQUE_LOG_WINDOW_DAYS, CLIENT_ASSIGNMENTS_MAX } from "@/lib/constants"
 
 export default async function TechniquesPage({ params }: { params: Promise<{ locale: string }> }) {
@@ -18,8 +18,9 @@ export default async function TechniquesPage({ params }: { params: Promise<{ loc
   const t = await getTranslations("portal.techniques")
 
   const nowMs = Date.now() // eslint-disable-line react-hooks/purity -- server component
-  const today = toDateString(new Date(nowMs))
-  // Fetch logs for debt window
+  // `today` is user-facing (drives "completed today?" UI) so anchor in CLINIC_TZ;
+  // `since` is just a SQL cutoff string — being off by a few hours doesn't matter.
+  const today = localDateString(new Date(nowMs))
   const since = toDateString(new Date(nowMs - TECHNIQUE_LOG_WINDOW_DAYS * DAY_MS))
 
   const [assignments, logs] = await Promise.all([

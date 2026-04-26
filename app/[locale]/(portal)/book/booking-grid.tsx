@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl"
 import { Card, CardContent } from "@/components/ui/card"
 import { Clock, Cpu, Building2, Stethoscope } from "lucide-react"
 import type { Service } from "@/lib/db/schema"
-import { toDateString } from "@/lib/utils"
+import { localDateString } from "@/lib/utils"
 import { BookingModal, type BookingForm } from "./booking-modal"
 
 const CATEGORY_ICONS = {
@@ -29,7 +29,7 @@ export function BookingGrid({ services }: { services: Service[] }) {
   const [error, setError] = useState<string | null>(null)
 
   function openModal(service: Service) {
-    setForm({ preferredDate: toDateString(new Date()), preferredTime: "flexible", notes: "" })
+    setForm({ preferredDate: localDateString(new Date()), preferredTime: "flexible", notes: "" })
     setSubmitted(false)
     setError(null)
     setSelected(service)

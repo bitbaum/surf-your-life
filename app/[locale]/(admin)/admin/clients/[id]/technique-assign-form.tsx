@@ -7,7 +7,7 @@ import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Select } from "@/components/ui/select"
 import type { Technique } from "@/lib/db/schema"
-import { toDateString } from "@/lib/utils"
+import { localDateString } from "@/lib/utils"
 import { FIELD_MAX_TITLE, TECHNIQUE_DAILY_FREQUENCY_MAX } from "@/lib/constants"
 
 interface Props {
@@ -37,7 +37,7 @@ export function TechniqueAssignForm({ clientId, available, categoryEmoji, onSave
           clientId,
           frequencyPerDay: parseInt(form.frequencyPerDay),
           notes: form.notes || undefined,
-          startDate: toDateString(new Date()),
+          startDate: localDateString(new Date()),
         }),
       })
       if (!res.ok) throw new Error()

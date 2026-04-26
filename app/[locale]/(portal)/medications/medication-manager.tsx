@@ -8,7 +8,7 @@ import { toast } from "sonner"
 import { AddMedicationForm } from "./add-medication-form"
 import { MedicationHistoricalList } from "./medication-historical-list"
 import { EmptyState } from "@/components/ui/empty-state"
-import { toDateString } from "@/lib/utils"
+import { localDateString } from "@/lib/utils"
 import type { MedicationEntry } from "@/lib/db/schema"
 
 type Props = {
@@ -23,7 +23,7 @@ export function MedicationManager({ medications: initial }: Props) {
   const [stopping, setStopping] = useState<string | null>(null)
   const [deleting, setDeleting] = useState<string | null>(null)
 
-  const today = toDateString(new Date())
+  const today = localDateString(new Date())
   const current = meds.filter((m) => !m.endDate || m.endDate > today)
   const historical = meds.filter((m) => m.endDate && m.endDate <= today)
 

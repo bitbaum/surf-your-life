@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { CheckCircle, X } from "lucide-react"
 import type { Service } from "@/lib/db/schema"
-import { toDateString } from "@/lib/utils"
+import { localDateString } from "@/lib/utils"
 import { BOOKING_TIME_PREFERENCE_VALUES, type BookingTimePreference, CHIP_SELECTED, CHIP_UNSELECTED } from "@/lib/constants"
 
 export type BookingForm = {
@@ -57,7 +57,7 @@ export function BookingModal({ selected, form, setForm, loading, submitted, erro
                 label={t("preferredDate")}
                 type="date"
                 required
-                min={toDateString(new Date())}
+                min={localDateString(new Date())}
                 value={form.preferredDate}
                 onChange={(e) => setForm((f) => ({ ...f, preferredDate: e.target.value }))}
               />
