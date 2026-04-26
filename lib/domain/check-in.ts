@@ -1,4 +1,5 @@
 import { DAY_MS, SEVEN_DAYS_MS, MOOD_SCORE, MOODS, ALERT_PEM_CLUSTER_COUNT } from "@/lib/constants"
+import { dayKey } from "@/lib/utils"
 import type { ProgramPhase } from "./program"
 
 // ─── Check-in stats summary ────────────────────────────────────────────────
@@ -56,8 +57,6 @@ export function summariseCheckIns(rows: CheckInSummaryRow[]) {
 export function computeStreak(checkInDates: Date[], now: Date = new Date()): number {
   if (checkInDates.length === 0) return 0
 
-  const dayKey = (d: Date) => Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())
-
   const days = checkInDates.map(dayKey)
   const unique = [...new Set(days)].sort((a, b) => b - a)
 
@@ -95,16 +94,10 @@ export function computeReturnNudge(
 ): ReturnNudge | null {
   if (!lastCheckInDate) return null
 
-  // Anchor both calendar days to UTC midnight so DST transitions don't skew
-  // the day count (otherwise spring-forward yields N-1 across the boundary).
-  const startOfToday = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())
-  const startOfLast = Date.UTC(
-    lastCheckInDate.getFullYear(),
-    lastCheckInDate.getMonth(),
-    lastCheckInDate.getDate()
-  )
-
-  const days = Math.round((startOfToday - startOfLast) / DAY_MS)
+  // dayKey anchors both calendar days to UTC midnight so DST transitions
+  // don't skew the count (otherwise spring-forward yields N-1 across the
+  // boundary).
+  const days = Math.round((dayKey(now) - dayKey(lastCheckInDate)) / DAY_MS)
   if (days <= 0) return null
 
   if (days === 1) {
@@ -168,19 +161,16 @@ export function computeWeekDelta(
   rows: WeekDeltaRow[],
   now: Date = new Date()
 ): WeekDelta {
-  const startOfToday = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())
+  const startOfToday = dayKey(now)
   const sevenDaysAgo = startOfToday - 6 * DAY_MS    // include today + 6 days back = 7 days
   const fourteenDaysAgo = startOfToday - 13 * DAY_MS // prior window: 7 days, ending 7 days ago
 
-  const dayOf = (d: Date) =>
-    Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())
-
   const windowRows = rows.filter((r) => {
-    const d = dayOf(r.createdAt)
+    const d = dayKey(r.createdAt)
     return d >= sevenDaysAgo && d <= startOfToday
   })
   const priorRows = rows.filter((r) => {
-    const d = dayOf(r.createdAt)
+    const d = dayKey(r.createdAt)
     return d >= fourteenDaysAgo && d < sevenDaysAgo
   })
 

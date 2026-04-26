@@ -3,6 +3,7 @@ import {
   formatEnumValue,
   toDateString,
   buildLastNDayStrings,
+  dayKey,
   parsePage,
   computeOffset,
   computeTotalPages,
@@ -151,5 +152,37 @@ describe("buildLastNDayStrings", () => {
   it("returns N=1 as just today", () => {
     const now = new Date(Date.UTC(2026, 3, 25, 12, 0, 0))
     expect(buildLastNDayStrings(1, now)).toEqual(["2026-04-25"])
+  })
+})
+
+// ─── dayKey ──────────────────────────────────────────────────────────────────
+// Tests run with TZ=Europe/Zurich (vitest.config.ts) so local-day semantics
+// reflect actual user experience.
+
+describe("dayKey", () => {
+  it("returns the same key for two times on the same local calendar day", () => {
+    const morning = new Date(2026, 3, 25, 7, 0, 0)
+    const evening = new Date(2026, 3, 25, 22, 30, 0)
+    expect(dayKey(morning)).toBe(dayKey(evening))
+  })
+
+  it("returns keys exactly DAY_MS apart for consecutive local calendar days", () => {
+    const a = new Date(2026, 3, 25, 12, 0, 0)
+    const b = new Date(2026, 3, 26, 12, 0, 0)
+    expect(dayKey(b) - dayKey(a)).toBe(86_400_000)
+  })
+
+  it("DST-safe: spring-forward day and the day after are exactly DAY_MS apart", () => {
+    // 2026-03-29 is the DST jump in Europe — local midnight Mar 29 → Mar 30 is 23h
+    // in wall-clock time, but dayKey UTC-anchors so the key delta is full DAY_MS.
+    const dstDay = new Date(2026, 2, 29, 12, 0, 0)
+    const nextDay = new Date(2026, 2, 30, 12, 0, 0)
+    expect(dayKey(nextDay) - dayKey(dstDay)).toBe(86_400_000)
+  })
+
+  it("ignores time-of-day across the local calendar day", () => {
+    const justAfterMidnight = new Date(2026, 3, 25, 0, 1, 0)
+    const justBeforeMidnight = new Date(2026, 3, 25, 23, 59, 0)
+    expect(dayKey(justAfterMidnight)).toBe(dayKey(justBeforeMidnight))
   })
 })
