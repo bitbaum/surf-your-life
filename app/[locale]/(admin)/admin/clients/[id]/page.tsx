@@ -25,7 +25,7 @@ import { DayCadenceSparkline } from "@/components/ui/day-cadence-sparkline"
 import { SymptomsChart } from "@/components/ui/symptoms-chart"
 import { SleepChart } from "@/components/ui/sleep-chart"
 import { WellnessTrendChart } from "@/components/ui/wellness-trend-chart"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { ChartCard } from "@/components/ui/chart-card"
 import { ClientAlertsCard } from "./client-alerts-card"
 import { PageHeader } from "@/components/ui/page-header"
 import { getTranslations, setRequestLocale } from "next-intl/server"
@@ -218,60 +218,51 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
 
       {hasSymptomData && symptomData.length >= 2 && (
         <div className="mt-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>{t("detail.symptomsChart.title")}</CardTitle>
-              <p className="text-xs text-slate-400 mt-0.5">{t("detail.symptomsChart.subtitle")}</p>
-            </CardHeader>
-            <CardContent>
-              <SymptomsChart
-                data={symptomData}
-                labels={{
-                  fatigue: t("detail.symptomsChart.fatigue"),
-                  brainFog: t("detail.symptomsChart.brainFog"),
-                  pain: t("detail.symptomsChart.pain"),
-                  stress: t("detail.symptomsChart.stress"),
-                }}
-              />
-            </CardContent>
-          </Card>
+          <ChartCard
+            title={t("detail.symptomsChart.title")}
+            subtitle={t("detail.symptomsChart.subtitle")}
+          >
+            <SymptomsChart
+              data={symptomData}
+              labels={{
+                fatigue: t("detail.symptomsChart.fatigue"),
+                brainFog: t("detail.symptomsChart.brainFog"),
+                pain: t("detail.symptomsChart.pain"),
+                stress: t("detail.symptomsChart.stress"),
+              }}
+            />
+          </ChartCard>
         </div>
       )}
 
       {sleepCount >= 2 && (
         <div className="mt-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>{t("detail.sleepChart.title")}</CardTitle>
-              <p className="text-xs text-slate-400 mt-0.5">{t("detail.sleepChart.subtitle")}</p>
-            </CardHeader>
-            <CardContent>
-              <SleepChart
-                data={sleepData}
-                formatHours={(n) => t("detail.sleepChart.hoursTooltip", { n })}
-              />
-            </CardContent>
-          </Card>
+          <ChartCard
+            title={t("detail.sleepChart.title")}
+            subtitle={t("detail.sleepChart.subtitle")}
+          >
+            <SleepChart
+              data={sleepData}
+              formatHours={(n) => t("detail.sleepChart.hoursTooltip", { n })}
+            />
+          </ChartCard>
         </div>
       )}
 
       {wellnessData.length >= 2 && (
         <div className="mt-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>{t("detail.wellnessChart.title")}</CardTitle>
-              <p className="text-xs text-slate-400 mt-0.5">{t("detail.wellnessChart.subtitle")}</p>
-            </CardHeader>
-            <CardContent>
-              <WellnessTrendChart
-                data={wellnessData}
-                labels={{
-                  mood: t("detail.wellnessChart.mood"),
-                  energy: t("detail.wellnessChart.energy"),
-                }}
-              />
-            </CardContent>
-          </Card>
+          <ChartCard
+            title={t("detail.wellnessChart.title")}
+            subtitle={t("detail.wellnessChart.subtitle")}
+          >
+            <WellnessTrendChart
+              data={wellnessData}
+              labels={{
+                mood: t("detail.wellnessChart.mood"),
+                energy: t("detail.wellnessChart.energy"),
+              }}
+            />
+          </ChartCard>
         </div>
       )}
 

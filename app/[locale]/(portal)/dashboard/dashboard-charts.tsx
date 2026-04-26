@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { ChartCard } from "@/components/ui/chart-card"
 import { InsightBanner } from "@/components/ui/insight-banner"
 import { Link } from "@/i18n/navigation"
 import { formatDate } from "@/lib/utils"
@@ -32,63 +32,52 @@ export async function DashboardCharts({ trendCheckIns, hasSymptomData, insight, 
   return (
     <>
       {trendCheckIns.length >= 2 && (
-        <Card className="mb-6">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle>{t("wellnessTrend")}</CardTitle>
-                <p className="text-xs text-slate-400 mt-0.5">{t("wellnessTrendSubtitle")}</p>
-              </div>
-              <Link href="/check-ins" className="text-sm text-teal-600 hover:underline shrink-0">
-                {t("viewAll")}
-              </Link>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <WellnessTrendChart
-              data={trendCheckIns}
-              labels={{ mood: t("chartMood"), energy: t("chartEnergy") }}
-            />
-          </CardContent>
-        </Card>
+        <ChartCard
+          className="mb-6"
+          title={t("wellnessTrend")}
+          subtitle={t("wellnessTrendSubtitle")}
+          action={
+            <Link href="/check-ins" className="text-sm text-teal-600 hover:underline shrink-0">
+              {t("viewAll")}
+            </Link>
+          }
+        >
+          <WellnessTrendChart
+            data={trendCheckIns}
+            labels={{ mood: t("chartMood"), energy: t("chartEnergy") }}
+          />
+        </ChartCard>
       )}
 
       {trendCheckIns.filter((c) => c.sleepHours != null).length >= 2 && (
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>{t("sleepTrend")}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <SleepChart
-              data={trendCheckIns}
-              formatHours={(n) => tCheckIns("sleepHoursTooltip", { n })}
-            />
-            <div className="flex items-center justify-between mt-2 text-xs text-slate-400">
-              <span>{formatDate(trendCheckIns[0].createdAt)}</span>
-              <span>{formatDate(trendCheckIns[trendCheckIns.length - 1].createdAt)}</span>
-            </div>
-          </CardContent>
-        </Card>
+        <ChartCard className="mb-6" title={t("sleepTrend")}>
+          <SleepChart
+            data={trendCheckIns}
+            formatHours={(n) => tCheckIns("sleepHoursTooltip", { n })}
+          />
+          <div className="flex items-center justify-between mt-2 text-xs text-slate-400">
+            <span>{formatDate(trendCheckIns[0].createdAt)}</span>
+            <span>{formatDate(trendCheckIns[trendCheckIns.length - 1].createdAt)}</span>
+          </div>
+        </ChartCard>
       )}
 
       {hasSymptomData && trendCheckIns.length >= 2 && (
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>{t("symptomsTitle")}</CardTitle>
-            <p className="text-xs text-slate-400 mt-0.5">{t("symptomsSubtitle")}</p>
-          </CardHeader>
-          <CardContent>
-            <SymptomsChart
-              data={trendCheckIns}
-              labels={{
-                fatigue: t("chartFatigue"),
-                brainFog: t("chartBrainFog"),
-                pain: t("chartPain"),
-                stress: t("chartStress"),
-              }}
-            />
-          </CardContent>
-        </Card>
+        <ChartCard
+          className="mb-6"
+          title={t("symptomsTitle")}
+          subtitle={t("symptomsSubtitle")}
+        >
+          <SymptomsChart
+            data={trendCheckIns}
+            labels={{
+              fatigue: t("chartFatigue"),
+              brainFog: t("chartBrainFog"),
+              pain: t("chartPain"),
+              stress: t("chartStress"),
+            }}
+          />
+        </ChartCard>
       )}
 
       {insight && (
