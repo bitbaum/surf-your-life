@@ -127,12 +127,17 @@ export default async function AdminDashboardPage({
     createdAt: new Date(r.created_at),
   }))
 
-  // 7-day cadence for the recent-clients card so practitioners can see
-  // engagement at a glance ("is this newly-joined client checking in?").
-  const recentClientsCadence = await fetchCadenceMap(
-    recentClients.map((c) => c.id),
-    sevenDaysAgo
-  )
+  // 7-day cadence shared by the recent-clients card and the latest-insights
+  // card so practitioners can cross-check "is this newly-joined client
+  // engaging?" / "this AI insight says X — but is the client even checking
+  // in?". Combine unique IDs from both lists into one batched fetch.
+  const cadenceClientIds = [
+    ...new Set([
+      ...recentClients.map((c) => c.id),
+      ...latestInsights.map((i) => i.clientId),
+    ]),
+  ]
+  const cadenceMap = await fetchCadenceMap(cadenceClientIds, sevenDaysAgo)
   const tClients = await getTranslations("admin.clients")
   const sparkDays = buildLastNDayStrings(7)
   const sparkLabels = {
@@ -140,6 +145,7 @@ export default async function AdminDashboardPage({
     checkedIn: tClients("dotCheckedIn"),
     pem: tClients("dotPem"),
   }
+  const sparkHint = tClients("cadenceHint")
 
   return (
     <div className="max-w-5xl mx-auto">
@@ -179,14 +185,20 @@ export default async function AdminDashboardPage({
         </Card>
       )}
 
-      <LatestInsightsCard insights={latestInsights} />
+      <LatestInsightsCard
+        insights={latestInsights}
+        cadence={cadenceMap}
+        sparkDays={sparkDays}
+        sparkLabels={sparkLabels}
+        sparkHint={sparkHint}
+      />
       <AtRiskClientsCard clients={atRiskClients} nowMs={nowMs} />
       <RecentClientsCard
         clients={recentClients}
-        cadence={recentClientsCadence}
+        cadence={cadenceMap}
         sparkDays={sparkDays}
         sparkLabels={sparkLabels}
-        sparkHint={tClients("cadenceHint")}
+        sparkHint={sparkHint}
       />
     </div>
   )

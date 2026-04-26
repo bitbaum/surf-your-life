@@ -3,6 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Link } from "@/i18n/navigation"
 import { formatDate } from "@/lib/utils"
 import { Sparkles } from "lucide-react"
+import { DayCadenceSparkline, type DayState } from "@/components/ui/day-cadence-sparkline"
+import type { CadenceMap } from "@/lib/db/check-in-cadence"
 
 type ClientInsight = {
   clientId: string
@@ -13,9 +15,13 @@ type ClientInsight = {
 
 interface Props {
   insights: ClientInsight[]
+  cadence: CadenceMap
+  sparkDays: string[]
+  sparkLabels: Record<DayState, string>
+  sparkHint: string
 }
 
-export async function LatestInsightsCard({ insights }: Props) {
+export async function LatestInsightsCard({ insights, cadence, sparkDays, sparkLabels, sparkHint }: Props) {
   const t = await getTranslations("admin.dashboard")
 
   if (insights.length === 0) return null
@@ -35,21 +41,33 @@ export async function LatestInsightsCard({ insights }: Props) {
       </CardHeader>
       <CardContent>
         <div className="flex flex-col divide-y divide-slate-100">
-          {insights.map((row) => (
-            <Link
-              key={row.clientId}
-              href={`/admin/clients/${row.clientId}`}
-              className="flex items-start justify-between gap-4 py-3 hover:bg-slate-50 -mx-2 px-2 rounded-lg transition-colors"
-            >
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-slate-800 mb-0.5">{row.clientName ?? "—"}</p>
-                <p className="text-xs text-violet-800 leading-relaxed line-clamp-2">
-                  {row.aiInsight}
-                </p>
-              </div>
-              <p className="text-xs text-slate-400 flex-shrink-0 pt-0.5">{formatDate(row.createdAt)}</p>
-            </Link>
-          ))}
+          {insights.map((row) => {
+            const spark = cadence[row.clientId]
+            return (
+              <Link
+                key={row.clientId}
+                href={`/admin/clients/${row.clientId}`}
+                className="flex items-start justify-between gap-4 py-3 hover:bg-slate-50 -mx-2 px-2 rounded-lg transition-colors"
+              >
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap mb-0.5">
+                    <p className="text-sm font-medium text-slate-800">{row.clientName ?? "—"}</p>
+                    <DayCadenceSparkline
+                      days={sparkDays}
+                      checkedIn={new Set(spark?.checkedIn ?? [])}
+                      pemDays={new Set(spark?.pemDays ?? [])}
+                      hint={sparkHint}
+                      dayLabels={sparkLabels}
+                    />
+                  </div>
+                  <p className="text-xs text-violet-800 leading-relaxed line-clamp-2">
+                    {row.aiInsight}
+                  </p>
+                </div>
+                <p className="text-xs text-slate-400 flex-shrink-0 pt-0.5">{formatDate(row.createdAt)}</p>
+              </Link>
+            )
+          })}
         </div>
       </CardContent>
     </Card>
