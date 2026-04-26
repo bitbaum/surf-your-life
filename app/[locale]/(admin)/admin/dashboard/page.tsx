@@ -11,6 +11,7 @@ import { SEVEN_DAYS_MS, THIRTY_DAYS_MS, RECENT_CLIENTS_LIMIT, AT_RISK_CLIENTS_LI
 import { roundOne, buildLastNDayStrings } from "@/lib/utils"
 import { CLIENT_ROLE } from "@/lib/domain/auth"
 import { fetchCadenceMap } from "@/lib/db/check-in-cadence"
+import { getUnresolvedAlertCount } from "@/components/admin/unread-count"
 import { AlertList } from "./alert-list"
 import { AtRiskClientsCard } from "./at-risk-clients-card"
 import { RecentClientsCard } from "./recent-clients-card"
@@ -37,7 +38,7 @@ export default async function AdminDashboardPage({
     recentClients,
     atRiskCountResult,
     atRiskPreview,
-    unresolvedAlertsCountResult,
+    unresolvedAlertsCount,
     unresolvedAlerts,
     latestInsightsRaw,
   ] = await Promise.all([
@@ -84,7 +85,7 @@ export default async function AdminDashboardPage({
       .orderBy(max(checkIns.createdAt))
       .limit(AT_RISK_CLIENTS_LIMIT),
     // Total unresolved alert count (for accurate header display)
-    db.select({ count: count() }).from(clientAlerts).where(eq(clientAlerts.isResolved, false)),
+    getUnresolvedAlertCount(),
     // Preview: most recent N unresolved alerts
     db.query.clientAlerts.findMany({
       where: eq(clientAlerts.isResolved, false),
@@ -119,7 +120,6 @@ export default async function AdminDashboardPage({
 
   const atRiskCount = atRiskCountResult[0]?.count ?? 0
   const atRiskClients = atRiskPreview
-  const unresolvedAlertsCount = unresolvedAlertsCountResult[0]?.count ?? 0
   const latestInsights = latestInsightsRaw.rows.map((r) => ({
     clientId: r.client_id,
     clientName: r.client_name,
