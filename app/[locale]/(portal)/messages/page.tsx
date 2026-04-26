@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { threads, threadMessages } from "@/lib/db/schema"
-import { eq, desc, count } from "drizzle-orm"
+import { eq, desc, count, and, sql } from "drizzle-orm"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { redirect } from "next/navigation"
 import { Link } from "@/i18n/navigation"
@@ -13,13 +13,20 @@ import { MessageSquare } from "lucide-react"
 import { PAGINATION_DEFAULT } from "@/lib/constants"
 import { EmptyState } from "@/components/ui/empty-state"
 import { Card } from "@/components/ui/card"
+import { FilterTabs } from "@/components/ui/filter-tabs"
+
+type FilterMode = "all" | "unread"
+const FILTER_MODES: FilterMode[] = ["all", "unread"]
+function isValidFilter(v: string | undefined): v is FilterMode {
+  return FILTER_MODES.includes(v as FilterMode)
+}
 
 export default async function PortalMessagesPage({
   params,
   searchParams,
 }: {
   params: Promise<{ locale: string }>
-  searchParams: Promise<{ page?: string }>
+  searchParams: Promise<{ page?: string; filter?: string }>
 }) {
   const { locale } = await params
   setRequestLocale(locale)
@@ -29,12 +36,27 @@ export default async function PortalMessagesPage({
 
   const t = await getTranslations("messages")
 
-  const { page: pageParam } = await searchParams
+  const { page: pageParam, filter: filterParam } = await searchParams
+  const filter: FilterMode = isValidFilter(filterParam) ? filterParam : "all"
   const page = parsePage(pageParam)
   const offset = computeOffset(page, PAGINATION_DEFAULT)
-  const whereClause = eq(threads.clientId, session.user.id)
+  const userId = session.user.id
 
-  const [myThreads, totalResult] = await Promise.all([
+  // "Unread": at least one message in this thread NOT sent by the client.
+  // Mirrors the per-row isUnread dot's intent and matches the sidebar badge
+  // (`getClientUnreadThreadsCount`) so all three views agree.
+  const unreadExists = sql`EXISTS (
+    SELECT 1 FROM ${threadMessages}
+    WHERE ${threadMessages.threadId} = ${threads.id}
+      AND ${threadMessages.senderId} != ${userId}
+      AND ${threadMessages.readAt} IS NULL
+  )`
+
+  const ownThreads = eq(threads.clientId, userId)
+  const whereClause = filter === "unread" ? and(ownThreads, unreadExists) : ownThreads
+  const unreadCountWhere = and(ownThreads, unreadExists)
+
+  const [myThreads, totalResult, unreadCountResult] = await Promise.all([
     db.query.threads.findMany({
       where: whereClause,
       orderBy: [desc(threads.updatedAt)],
@@ -49,9 +71,11 @@ export default async function PortalMessagesPage({
       },
     }),
     db.select({ value: count() }).from(threads).where(whereClause),
+    db.select({ value: count() }).from(threads).where(unreadCountWhere),
   ])
 
   const total = totalResult[0]?.value ?? 0
+  const unreadCount = unreadCountResult[0]?.value ?? 0
   const totalPages = computeTotalPages(total, PAGINATION_DEFAULT)
 
   return (
@@ -65,13 +89,24 @@ export default async function PortalMessagesPage({
         }
       />
 
+      <FilterTabs
+        tabs={[
+          { value: "all" as FilterMode, label: t("filterAll") },
+          { value: "unread" as FilterMode, label: t("filterUnread", { count: unreadCount }) },
+        ]}
+        active={filter}
+        href={(v) => v === "all" ? "/messages" : "/messages?filter=unread"}
+      />
+
       {myThreads.length === 0 ? (
         <Card className="p-12">
           <EmptyState
             icon={<MessageSquare className="w-10 h-10" />}
-            message={t("noMessages")}
-            description={t("noMessagesDescription")}
-            action={<Link href="/messages/new"><Button variant="outline">{t("startConversation")}</Button></Link>}
+            message={filter === "unread" ? t("noUnreadMessages") : t("noMessages")}
+            description={filter === "unread" ? undefined : t("noMessagesDescription")}
+            action={filter === "all"
+              ? <Link href="/messages/new"><Button variant="outline">{t("startConversation")}</Button></Link>
+              : undefined}
           />
         </Card>
       ) : (
@@ -116,7 +151,12 @@ export default async function PortalMessagesPage({
       <Pagination
         page={page}
         totalPages={totalPages}
-        pageLink={(p) => `/messages?page=${p}`}
+        pageLink={(p) => {
+          const params = new URLSearchParams()
+          params.set("page", String(p))
+          if (filter !== "all") params.set("filter", filter)
+          return `/messages?${params.toString()}`
+        }}
       />
     </div>
   )
