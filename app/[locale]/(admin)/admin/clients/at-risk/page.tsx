@@ -1,6 +1,6 @@
 import { db } from "@/lib/db"
 import { users, checkIns } from "@/lib/db/schema"
-import { eq, max, sql } from "drizzle-orm"
+import { eq, max, sql, count } from "drizzle-orm"
 import { CLIENT_ROLE } from "@/lib/domain/auth"
 import { atRiskHaving } from "@/lib/db/at-risk"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -27,6 +27,9 @@ export default async function AtRiskClientsPage({ params }: { params: Promise<{ 
       email: users.email,
       createdAt: users.createdAt,
       lastCheckIn: max(checkIns.createdAt),
+      // Total check-ins distinguishes "long-time client gone silent" (high
+      // count) from "new client never engaged" (zero) at a glance.
+      totalCheckIns: count(checkIns.id),
     })
     .from(users)
     .leftJoin(checkIns, eq(checkIns.userId, users.id))
@@ -86,6 +89,7 @@ export default async function AtRiskClientsPage({ params }: { params: Promise<{ 
                   <th className="text-left py-2 font-medium text-slate-500">{t("columnEmail")}</th>
                   <th className="text-left py-2 font-medium text-slate-500">{t("atRisk.lastCheckIn")}</th>
                   <th className="text-left py-2 font-medium text-slate-500">{t("atRisk.inactiveFor")}</th>
+                  <th className="text-left py-2 font-medium text-slate-500">{t("atRisk.totalCheckIns")}</th>
                   <th />
                 </tr>
               </thead>
@@ -107,6 +111,11 @@ export default async function AtRiskClientsPage({ params }: { params: Promise<{ 
                         {client.lastCheckIn ? formatDate(client.lastCheckIn) : t("atRisk.never")}
                       </td>
                       <td className="py-3 text-slate-400">{daysSince(client.lastCheckIn)}</td>
+                      <td className="py-3 text-slate-500">
+                        {client.totalCheckIns > 0
+                          ? client.totalCheckIns
+                          : <span className="text-slate-300">0</span>}
+                      </td>
                       <td className="py-3 text-right">
                         <div className="flex items-center justify-end gap-3">
                           <Link

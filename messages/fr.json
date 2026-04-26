@@ -1078,6 +1078,7 @@
         "noAtRisk": "Tous les clients se sont connectés récemment",
         "viewAtRisk": "Clients à risque",
         "inactiveFor": "Inactif depuis",
+        "totalCheckIns": "Check-ins",
         "nudgeButton": "Relancer",
         "nudgeModalTitle": "Envoyer une relance",
         "nudgeSubject": "Comment vas-tu?",

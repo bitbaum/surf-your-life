@@ -1060,6 +1060,7 @@
         "noAtRisk": "All clients have checked in recently",
         "viewAtRisk": "At-risk clients",
         "inactiveFor": "Inactive for",
+        "totalCheckIns": "Check-ins",
         "nudgeButton": "Nudge",
         "nudgeModalTitle": "Send check-in nudge",
         "nudgeSubject": "Checking in",

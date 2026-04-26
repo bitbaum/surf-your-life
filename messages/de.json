@@ -1060,6 +1060,7 @@
         "noAtRisk": "Alle Klienten haben sich kürzlich eingeloggt",
         "viewAtRisk": "Gefährdete Klienten",
         "inactiveFor": "Inaktiv seit",
+        "totalCheckIns": "Check-ins",
         "nudgeButton": "Erinnern",
         "nudgeModalTitle": "Check-in-Erinnerung senden",
         "nudgeSubject": "Wie geht es dir?",
