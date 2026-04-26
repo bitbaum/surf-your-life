@@ -10,12 +10,12 @@ import { useTranslations } from "next-intl"
 import { LayoutDashboard, Users, LogOut, Waves, Menu, X, Inbox, MessageSquare, UserCog, CalendarCheck, BookOpen, Wrench, User, Sparkles, Bell, Activity } from "lucide-react"
 
 interface AdminSidebarProps {
-  unreadMessages?: number
+  unreadThreads?: number
   unresolvedAlerts?: number
   newLeads?: number
 }
 
-export function AdminSidebar({ unreadMessages = 0, unresolvedAlerts = 0, newLeads = 0 }: AdminSidebarProps) {
+export function AdminSidebar({ unreadThreads = 0, unresolvedAlerts = 0, newLeads = 0 }: AdminSidebarProps) {
   const t = useTranslations("admin.sidebar")
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
@@ -27,7 +27,7 @@ export function AdminSidebar({ unreadMessages = 0, unresolvedAlerts = 0, newLead
     { href: "/admin/alerts", label: t("alerts"), icon: Bell, badge: unresolvedAlerts },
     { href: "/admin/bookings", label: t("bookings"), icon: CalendarCheck, badge: 0 },
     { href: "/admin/services", label: t("services"), icon: Wrench, badge: 0 },
-    { href: "/admin/messages", label: t("messages"), icon: MessageSquare, badge: unreadMessages },
+    { href: "/admin/messages", label: t("messages"), icon: MessageSquare, badge: unreadThreads },
     { href: "/admin/programs", label: t("programs"), icon: BookOpen, badge: 0 },
     { href: "/admin/techniques", label: t("techniques"), icon: Sparkles, badge: 0 },
     { href: "/admin/leads", label: t("leads"), icon: Inbox, badge: newLeads },

@@ -1,6 +1,6 @@
 import { db } from "@/lib/db"
-import { threadMessages, users, clientAlerts, leads } from "@/lib/db/schema"
-import { count, isNull, eq, and } from "drizzle-orm"
+import { threadMessages, threads, users, clientAlerts, leads } from "@/lib/db/schema"
+import { count, eq, sql } from "drizzle-orm"
 import { CLIENT_ROLE } from "@/lib/domain/auth"
 
 export async function getUnresolvedAlertCount(): Promise<number> {
@@ -11,12 +11,22 @@ export async function getUnresolvedAlertCount(): Promise<number> {
   return result?.value ?? 0
 }
 
-export async function getUnreadCount(): Promise<number> {
+/**
+ * Count of threads with at least one unread message from a client — i.e. the
+ * "needs my reply" inbox. Matches the badge on the /admin/messages "Unread"
+ * filter tab so the sidebar number agrees with what the page shows.
+ */
+export async function getUnreadThreadsCount(): Promise<number> {
   const [result] = await db
     .select({ value: count() })
-    .from(threadMessages)
-    .innerJoin(users, eq(threadMessages.senderId, users.id))
-    .where(and(isNull(threadMessages.readAt), eq(users.role, CLIENT_ROLE)))
+    .from(threads)
+    .where(sql`EXISTS (
+      SELECT 1 FROM ${threadMessages}
+      JOIN ${users} ON ${users.id} = ${threadMessages.senderId}
+      WHERE ${threadMessages.threadId} = ${threads.id}
+        AND ${threadMessages.readAt} IS NULL
+        AND ${users.role} = ${CLIENT_ROLE}
+    )`)
   return result?.value ?? 0
 }
 
@@ -26,14 +36,4 @@ export async function getNewLeadsCount(): Promise<number> {
     .from(leads)
     .where(eq(leads.status, "new"))
   return result?.value ?? 0
-}
-
-export async function UnreadCount() {
-  const c = await getUnreadCount()
-  if (c === 0) return null
-  return (
-    <span className="ml-auto text-xs bg-teal-500 text-white rounded-full px-1.5 py-0.5 min-w-[1.25rem] text-center">
-      {c}
-    </span>
-  )
 }
