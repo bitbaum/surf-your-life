@@ -87,6 +87,10 @@ export const SITE_URL = process.env.AUTH_URL ?? "https://surf-your-life.ch"
 export const BRAND_NAME = "Surf Your Life"
 export const COMPANY_ADDRESS = "Surf Your Life · Zollikerstrasse 183, 8008 Zürich"
 
+// Clinic timezone — used for day-bucketing in cadence/streak/trend views so
+// "today" matches what the user sees on their wall clock, not UTC.
+export const CLINIC_TZ = "Europe/Zurich"
+
 // AI model identifiers — update here when upgrading models
 export const AI_MODEL_FAST = "claude-haiku-4-5-20251001"
 export const EMBEDDING_MODEL = "text-embedding-3-small"

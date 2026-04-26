@@ -24,7 +24,7 @@ import {
 } from "@/lib/domain/check-in"
 import { TrendCard } from "@/components/ui/trend-card"
 import { DayCadenceSparkline } from "@/components/ui/day-cadence-sparkline"
-import { buildLastNDayStrings, toDateString } from "@/lib/utils"
+import { buildLastNDayStrings, localDateString } from "@/lib/utils"
 import { EmailVerificationBanner } from "@/components/portal/EmailVerificationBanner"
 import { PageHeader } from "@/components/ui/page-header"
 import { ProgressBar } from "@/components/ui/progress-bar"
@@ -108,11 +108,11 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
   const weekDelta = computeWeekDelta(trendCheckIns)
 
   const sparkDays = buildLastNDayStrings(7)
-  const sparkCheckedIn = new Set(recentCheckIns.map((ci) => toDateString(new Date(ci.createdAt))))
+  const sparkCheckedIn = new Set(recentCheckIns.map((ci) => localDateString(new Date(ci.createdAt))))
   const sparkPemDays = new Set(
     recentCheckIns
       .filter((ci) => ci.pemFlag === true)
-      .map((ci) => toDateString(new Date(ci.createdAt)))
+      .map((ci) => localDateString(new Date(ci.createdAt)))
   )
   const sparkCount = sparkDays.filter((d) => sparkCheckedIn.has(d)).length
 

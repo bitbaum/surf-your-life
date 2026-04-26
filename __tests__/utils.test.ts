@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest"
 import {
   formatEnumValue,
   toDateString,
+  localDateString,
   buildLastNDayStrings,
   dayKey,
   parsePage,
@@ -184,5 +185,51 @@ describe("dayKey", () => {
     const justAfterMidnight = new Date(2026, 3, 25, 0, 1, 0)
     const justBeforeMidnight = new Date(2026, 3, 25, 23, 59, 0)
     expect(dayKey(justAfterMidnight)).toBe(dayKey(justBeforeMidnight))
+  })
+})
+
+// ─── localDateString ─────────────────────────────────────────────────────────
+
+describe("localDateString", () => {
+  it("returns the calendar day in CLINIC_TZ (Europe/Zurich) by default", () => {
+    // 2026-04-26 12:00 UTC = 14:00 CEST → local day is 2026-04-26
+    const noon = new Date(Date.UTC(2026, 3, 26, 12, 0, 0))
+    expect(localDateString(noon)).toBe("2026-04-26")
+  })
+
+  it("rolls forward to the next local day for late-evening UTC times", () => {
+    // 2026-04-25 22:30 UTC = 00:30 CEST on 2026-04-26 → local day is 2026-04-26
+    const lateEveningUtc = new Date(Date.UTC(2026, 3, 25, 22, 30, 0))
+    expect(localDateString(lateEveningUtc)).toBe("2026-04-26")
+    // toDateString (UTC) would give the previous day — this is exactly the
+    // bug the new helper exists to avoid.
+    expect(toDateString(lateEveningUtc)).toBe("2026-04-25")
+  })
+
+  it("respects an explicit timezone override", () => {
+    const sameMoment = new Date(Date.UTC(2026, 3, 26, 12, 0, 0))
+    expect(localDateString(sameMoment, "Pacific/Auckland")).toBe("2026-04-27")
+    expect(localDateString(sameMoment, "America/Los_Angeles")).toBe("2026-04-26")
+  })
+})
+
+// ─── buildLastNDayStrings & SQL day-string consistency ──────────────────────
+// Anchors the cadence pipeline: the sparkline labels (buildLastNDayStrings)
+// and the per-check-in keys (localDateString) must agree on which day a
+// late-night check-in falls on, otherwise the dot would show as hollow.
+
+describe("buildLastNDayStrings × localDateString consistency", () => {
+  it("a 00:30 local check-in's localDateString matches today's last day-string", () => {
+    // It's 2026-04-26 14:00 in Zurich — the user just opened the dashboard.
+    const now = new Date(Date.UTC(2026, 3, 26, 12, 0, 0))
+    // The check-in was 13.5 hours ago: 00:30 local on 2026-04-26 = 22:30 UTC on 2026-04-25
+    const earlyMorningCheckIn = new Date(Date.UTC(2026, 3, 25, 22, 30, 0))
+
+    const sparkDays = buildLastNDayStrings(7, now)
+    const checkInDay = localDateString(earlyMorningCheckIn)
+
+    expect(sparkDays[6]).toBe("2026-04-26") // today
+    expect(checkInDay).toBe("2026-04-26")    // same day, agrees
+    expect(sparkDays).toContain(checkInDay)
   })
 })

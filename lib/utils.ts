@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
+import { CLINIC_TZ } from "./constants"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -21,8 +22,24 @@ export function formatEnumValue(value: string): string {
 
 // Returns the date portion of a Date as an ISO string "YYYY-MM-DD".
 // Use for date inputs and day-level comparisons (avoids duplicating .toISOString().split("T")[0]).
+// NOTE: returns the UTC calendar day. For user-facing day bucketing (cadence,
+// streak, etc.) where "today" must match the user's wall clock, use
+// `localDateString` instead.
 export function toDateString(date: Date): string {
   return date.toISOString().split("T")[0]
+}
+
+// Returns the calendar day of `date` in the given timezone as "YYYY-MM-DD".
+// Defaults to CLINIC_TZ (Europe/Zurich) so check-ins at 00:30 local count
+// against today (not yesterday's UTC day). Uses Intl with sv-SE which formats
+// short dates as ISO YYYY-MM-DD.
+export function localDateString(date: Date, tz: string = CLINIC_TZ): string {
+  return new Intl.DateTimeFormat("sv-SE", {
+    timeZone: tz,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(date)
 }
 
 // Returns a stable numeric key for the LOCAL calendar day of `d`, anchored at
@@ -40,12 +57,14 @@ export function dayKey(d: Date): number {
   return Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())
 }
 
-// Returns the last N UTC day strings ("YYYY-MM-DD"), oldest first, ending today.
-// UTC-anchored so DST transitions don't shift bucket boundaries — same approach
-// as computeWeekDelta uses.
-export function buildLastNDayStrings(n: number, now: Date = new Date()): string[] {
+// Returns the last N day strings ("YYYY-MM-DD"), oldest first, ending the
+// calendar day of `now` in the given timezone (defaults to CLINIC_TZ).
+// Iterates back via UTC-step arithmetic so DST transitions don't shift bucket
+// boundaries — only the *anchor* (today) is local; the back-walk is exact.
+export function buildLastNDayStrings(n: number, now: Date = new Date(), tz: string = CLINIC_TZ): string[] {
   const DAY = 86_400_000
-  const todayUtc = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
+  const [yyyy, mm, dd] = localDateString(now, tz).split("-").map(Number)
+  const todayUtc = Date.UTC(yyyy, mm - 1, dd)
   const days: string[] = []
   for (let i = n - 1; i >= 0; i--) {
     days.push(new Date(todayUtc - i * DAY).toISOString().slice(0, 10))

@@ -2,7 +2,7 @@ import { notFound } from "next/navigation"
 import { db } from "@/lib/db"
 import { users, checkIns, programs, programEnrollments, medicationLog, functionalAssessments, techniqueAssignments, techniques, assignments, techniqueLogs, clientAlerts } from "@/lib/db/schema"
 import { eq, desc, isNull, and, count, inArray, gte } from "drizzle-orm"
-import { formatDate, toDateString, buildLastNDayStrings } from "@/lib/utils"
+import { formatDate, toDateString, localDateString, buildLastNDayStrings } from "@/lib/utils"
 import { Link } from "@/i18n/navigation"
 import { PAGINATION_DEFAULT, SEVEN_DAYS_MS, SERVICES_MAX_LIMIT, CLIENT_ASSIGNMENTS_MAX, ADMIN_DASHBOARD_ALERTS_PREVIEW, CLIENT_ASSESSMENTS_LIMIT } from "@/lib/constants"
 import { CLIENT_ROLE, STAFF_ROLES } from "@/lib/domain/auth"
@@ -133,11 +133,11 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
   const wellnessData = chartData.map((ci) => ({ createdAt: ci.createdAt, mood: ci.mood, energyLevel: ci.energyLevel }))
 
   const sparkDays = buildLastNDayStrings(7)
-  const sparkCheckedIn = new Set(clientCheckIns.map((ci) => toDateString(new Date(ci.createdAt))))
+  const sparkCheckedIn = new Set(clientCheckIns.map((ci) => localDateString(new Date(ci.createdAt))))
   const sparkPemDays = new Set(
     clientCheckIns
       .filter((ci) => ci.pemFlag === true)
-      .map((ci) => toDateString(new Date(ci.createdAt)))
+      .map((ci) => localDateString(new Date(ci.createdAt)))
   )
   const sparkCount = sparkDays.filter((d) => sparkCheckedIn.has(d)).length
 
