@@ -4,22 +4,27 @@ import { and, gte, lte, ne } from "drizzle-orm"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { Link } from "@/i18n/navigation"
 import { PageHeader } from "@/components/ui/page-header"
-import { formatDate, toDateString } from "@/lib/utils"
+import { formatDate, localDateString } from "@/lib/utils"
+import { DAY_MS } from "@/lib/constants"
 
-// Returns the Monday of the ISO week containing `date`
-function startOfWeek(date: Date): Date {
-  const d = new Date(date)
-  const day = d.getUTCDay()
-  const diff = day === 0 ? -6 : 1 - day // Mon = 1
-  d.setUTCDate(d.getUTCDate() + diff)
-  d.setUTCHours(0, 0, 0, 0)
-  return d
+// String-based day arithmetic so the calendar's "today" highlight + week
+// bounds align to the clinic's wall clock, not UTC. `bookings.preferredDate`
+// is itself a date column (no TZ), so all comparisons are string-vs-string.
+
+// Adds N calendar days to a "YYYY-MM-DD" string. UTC-stepped for DST safety.
+function addDaysStr(isoDate: string, n: number): string {
+  const [y, m, d] = isoDate.split("-").map(Number)
+  return new Date(Date.UTC(y, m - 1, d) + n * DAY_MS).toISOString().slice(0, 10)
 }
 
-function addDays(date: Date, n: number): Date {
-  const d = new Date(date)
-  d.setUTCDate(d.getUTCDate() + n)
-  return d
+// Returns the Monday of the ISO week containing `isoDate` as a "YYYY-MM-DD".
+// Day-of-week is intrinsic to a calendar date, so UTC-anchoring is fine here.
+function startOfWeekStr(isoDate: string): string {
+  const [y, m, d] = isoDate.split("-").map(Number)
+  const t = new Date(Date.UTC(y, m - 1, d))
+  const day = t.getUTCDay()
+  const diff = day === 0 ? -6 : 1 - day // Mon = 1
+  return new Date(t.getTime() + diff * DAY_MS).toISOString().slice(0, 10)
 }
 
 
@@ -41,14 +46,16 @@ export default async function BookingCalendarPage({
   const t = await getTranslations("admin.bookings")
 
   const { week: weekParam } = await searchParams
-  const anchor = weekParam ? new Date(weekParam) : new Date()
-  const weekStart = startOfWeek(anchor)
-  const weekEnd = addDays(weekStart, 6)
+  // Anchor at clinic-local today so "this week" matches the admin's wall clock,
+  // not UTC. `weekParam` is already a "YYYY-MM-DD" from the prev/next/today links.
+  const todayISO = localDateString(new Date())
+  const weekStart = startOfWeekStr(weekParam ?? todayISO)
+  const weekEnd = addDaysStr(weekStart, 6)
 
   const weekBookings = await db.query.bookings.findMany({
     where: and(
-      gte(bookings.preferredDate, toDateString(weekStart)),
-      lte(bookings.preferredDate, toDateString(weekEnd)),
+      gte(bookings.preferredDate, weekStart),
+      lte(bookings.preferredDate, weekEnd),
       ne(bookings.status, "cancelled"),
     ),
     with: { user: true, service: true },
@@ -58,7 +65,7 @@ export default async function BookingCalendarPage({
   // Group by date
   const byDate = new Map<string, typeof weekBookings>()
   for (let i = 0; i < 7; i++) {
-    byDate.set(toDateString(addDays(weekStart, i)), [])
+    byDate.set(addDaysStr(weekStart, i), [])
   }
   for (const b of weekBookings) {
     if (b.preferredDate) {
@@ -66,9 +73,8 @@ export default async function BookingCalendarPage({
     }
   }
 
-  const prevWeek = toDateString(addDays(weekStart, -7))
-  const nextWeek = toDateString(addDays(weekStart, 7))
-  const todayISO = toDateString(new Date())
+  const prevWeek = addDaysStr(weekStart, -7)
+  const nextWeek = addDaysStr(weekStart, 7)
 
   const DAY_NAMES = t.raw("dayNames") as string[]
 
