@@ -184,40 +184,40 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
         }
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <ClientProfileCard profile={profile} />
-        <ClientCheckInsCard clientId={id} checkIns={clientCheckIns} totalCheckIns={totalCheckIns} />
-      </div>
-
-      <div className="mt-6 space-y-4">
-        <div className="flex items-center gap-3 text-sm">
-          <span className="font-medium text-slate-700">{t("detail.cadence.title")}</span>
-          <DayCadenceSparkline
-            days={sparkDays}
-            checkedIn={sparkCheckedIn}
-            pemDays={sparkPemDays}
-            hint={t("cadenceHint")}
-            dayLabels={{
-              missed: t("dotMissed"),
-              checkedIn: t("dotCheckedIn"),
-              pem: t("dotPem"),
-            }}
-            size="md"
-          />
-          <span className="text-xs text-slate-500">
-            {t("detail.cadence.daysOfSeven", { count: sparkCount })}
-          </span>
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <ClientProfileCard profile={profile} />
+          <ClientCheckInsCard clientId={id} checkIns={clientCheckIns} totalCheckIns={totalCheckIns} />
         </div>
-        {adminInsight && (
-          <InsightBanner title={t("detail.insights.title")} body={adminInsight} />
-        )}
-        {weekDelta.window.count > 0 && (
-          <TrendCard delta={weekDelta} namespace="admin.clients.detail.trend" />
-        )}
-      </div>
 
-      {hasSymptomData && symptomData.length >= 2 && (
-        <div className="mt-6">
+        <div className="space-y-4">
+          <div className="flex items-center gap-3 text-sm">
+            <span className="font-medium text-slate-700">{t("detail.cadence.title")}</span>
+            <DayCadenceSparkline
+              days={sparkDays}
+              checkedIn={sparkCheckedIn}
+              pemDays={sparkPemDays}
+              hint={t("cadenceHint")}
+              dayLabels={{
+                missed: t("dotMissed"),
+                checkedIn: t("dotCheckedIn"),
+                pem: t("dotPem"),
+              }}
+              size="md"
+            />
+            <span className="text-xs text-slate-500">
+              {t("detail.cadence.daysOfSeven", { count: sparkCount })}
+            </span>
+          </div>
+          {adminInsight && (
+            <InsightBanner title={t("detail.insights.title")} body={adminInsight} />
+          )}
+          {weekDelta.window.count > 0 && (
+            <TrendCard delta={weekDelta} namespace="admin.clients.detail.trend" />
+          )}
+        </div>
+
+        {hasSymptomData && symptomData.length >= 2 && (
           <ChartCard
             title={t("detail.symptomsChart.title")}
             subtitle={t("detail.symptomsChart.subtitle")}
@@ -232,11 +232,9 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
               }}
             />
           </ChartCard>
-        </div>
-      )}
+        )}
 
-      {sleepCount >= 2 && (
-        <div className="mt-6">
+        {sleepCount >= 2 && (
           <ChartCard
             title={t("detail.sleepChart.title")}
             subtitle={t("detail.sleepChart.subtitle")}
@@ -246,11 +244,9 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
               formatHours={(n) => t("detail.sleepChart.hoursTooltip", { n })}
             />
           </ChartCard>
-        </div>
-      )}
+        )}
 
-      {wellnessData.length >= 2 && (
-        <div className="mt-6">
+        {wellnessData.length >= 2 && (
           <ChartCard
             title={t("detail.wellnessChart.title")}
             subtitle={t("detail.wellnessChart.subtitle")}
@@ -263,26 +259,20 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
               }}
             />
           </ChartCard>
-        </div>
-      )}
+        )}
 
-      {(unresolvedAlerts.length > 0 || hasAlertHistory) && (
-        <div className="mt-6">
+        {(unresolvedAlerts.length > 0 || hasAlertHistory) && (
           <ClientAlertsCard initialAlerts={unresolvedAlerts} clientId={id} hasHistory={hasAlertHistory} />
-        </div>
-      )}
+        )}
 
-      <div className="mt-6">
         <PractitionerAssignmentCard
           clientId={id}
           current={currentAssignment}
           practitioners={allPractitioners}
         />
-      </div>
 
-      <ClientMedicationsRow currentMedications={currentMedications} assessments={assessments} />
+        <ClientMedicationsRow currentMedications={currentMedications} assessments={assessments} />
 
-      <div className="mt-6">
         <TechniqueAssignments
           clientId={id}
           assignments={clientAssignments}
@@ -290,17 +280,13 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
           adherenceByAssignment={adherenceByAssignment}
           logsGridByAssignment={logsGridByAssignment}
         />
-      </div>
 
-      <div className="mt-6">
         <SessionNotes clientId={id} />
-      </div>
 
-      <div className="mt-6">
         <SessionPrep clientId={id} />
-      </div>
 
-      {activeEnrollment && <ClientEnrollmentCard enrollment={activeEnrollment} />}
+        {activeEnrollment && <ClientEnrollmentCard enrollment={activeEnrollment} />}
+      </div>
     </div>
   )
 }

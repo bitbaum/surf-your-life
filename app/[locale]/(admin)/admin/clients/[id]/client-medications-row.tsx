@@ -38,7 +38,7 @@ export async function ClientMedicationsRow({ currentMedications, assessments }: 
   const previousAssessment = assessments[1]
 
   return (
-    <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       <Card>
         <CardHeader>
           <CardTitle>{t("detail.medicationsCard")}</CardTitle>
