@@ -3,6 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Link } from "@/i18n/navigation"
 import { formatDate } from "@/lib/utils"
 import { EmptyState } from "@/components/ui/empty-state"
+import { DayCadenceSparkline, type DayState } from "@/components/ui/day-cadence-sparkline"
+import type { CadenceMap } from "@/lib/db/check-in-cadence"
 
 type RecentClient = {
   id: string
@@ -14,9 +16,13 @@ type RecentClient = {
 
 interface Props {
   clients: RecentClient[]
+  cadence: CadenceMap
+  sparkDays: string[]
+  sparkLabels: Record<DayState, string>
+  sparkHint: string
 }
 
-export async function RecentClientsCard({ clients }: Props) {
+export async function RecentClientsCard({ clients, cadence, sparkDays, sparkLabels, sparkHint }: Props) {
   const t = await getTranslations("admin.dashboard")
   const tConcerns = await getTranslations("concerns")
 
@@ -32,26 +38,38 @@ export async function RecentClientsCard({ clients }: Props) {
       </CardHeader>
       <CardContent>
         <div className="flex flex-col divide-y divide-slate-100">
-          {clients.map((client) => (
-            <Link
-              key={client.id}
-              href={`/admin/clients/${client.id}`}
-              className="flex items-center justify-between py-3 hover:bg-slate-50 -mx-2 px-2 rounded-lg transition-colors"
-            >
-              <div>
-                <p className="text-sm font-medium text-slate-800">{client.name ?? "—"}</p>
-                <p className="text-xs text-slate-400">{client.email}</p>
-              </div>
-              <div className="text-right">
-                <p className="text-xs text-slate-500">
-                  {client.profile?.mainConcern
-                    ? tConcerns(client.profile.mainConcern as Parameters<typeof tConcerns>[0])
-                    : t("noProfile")}
-                </p>
-                <p className="text-xs text-slate-400">{formatDate(client.createdAt)}</p>
-              </div>
-            </Link>
-          ))}
+          {clients.map((client) => {
+            const spark = cadence[client.id]
+            return (
+              <Link
+                key={client.id}
+                href={`/admin/clients/${client.id}`}
+                className="flex items-center justify-between py-3 hover:bg-slate-50 -mx-2 px-2 rounded-lg transition-colors"
+              >
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-slate-800">{client.name ?? "—"}</p>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <p className="text-xs text-slate-400">{client.email}</p>
+                    <DayCadenceSparkline
+                      days={sparkDays}
+                      checkedIn={new Set(spark?.checkedIn ?? [])}
+                      pemDays={new Set(spark?.pemDays ?? [])}
+                      hint={sparkHint}
+                      dayLabels={sparkLabels}
+                    />
+                  </div>
+                </div>
+                <div className="text-right flex-shrink-0">
+                  <p className="text-xs text-slate-500">
+                    {client.profile?.mainConcern
+                      ? tConcerns(client.profile.mainConcern as Parameters<typeof tConcerns>[0])
+                      : t("noProfile")}
+                  </p>
+                  <p className="text-xs text-slate-400">{formatDate(client.createdAt)}</p>
+                </div>
+              </Link>
+            )
+          })}
           {clients.length === 0 && (
             <div className="py-6">
               <EmptyState

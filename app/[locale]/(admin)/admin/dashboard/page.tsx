@@ -8,8 +8,9 @@ import { PageHeader } from "@/components/ui/page-header"
 import { Link } from "@/i18n/navigation"
 import { Users, ClipboardList, TrendingUp, CalendarClock, MessageSquare, AlertTriangle } from "lucide-react"
 import { SEVEN_DAYS_MS, THIRTY_DAYS_MS, RECENT_CLIENTS_LIMIT, AT_RISK_CLIENTS_LIMIT, ADMIN_DASHBOARD_ALERTS_PREVIEW, ADMIN_DASHBOARD_INSIGHTS_PREVIEW } from "@/lib/constants"
-import { roundOne } from "@/lib/utils"
+import { roundOne, buildLastNDayStrings } from "@/lib/utils"
 import { CLIENT_ROLE } from "@/lib/domain/auth"
+import { fetchCadenceMap } from "@/lib/db/check-in-cadence"
 import { AlertList } from "./alert-list"
 import { AtRiskClientsCard } from "./at-risk-clients-card"
 import { RecentClientsCard } from "./recent-clients-card"
@@ -126,6 +127,20 @@ export default async function AdminDashboardPage({
     createdAt: new Date(r.created_at),
   }))
 
+  // 7-day cadence for the recent-clients card so practitioners can see
+  // engagement at a glance ("is this newly-joined client checking in?").
+  const recentClientsCadence = await fetchCadenceMap(
+    recentClients.map((c) => c.id),
+    sevenDaysAgo
+  )
+  const tClients = await getTranslations("admin.clients")
+  const sparkDays = buildLastNDayStrings(7)
+  const sparkLabels = {
+    missed: tClients("dotMissed"),
+    checkedIn: tClients("dotCheckedIn"),
+    pem: tClients("dotPem"),
+  }
+
   return (
     <div className="max-w-5xl mx-auto">
       <PageHeader title={t("title")} description={t("description")} />
@@ -166,7 +181,13 @@ export default async function AdminDashboardPage({
 
       <LatestInsightsCard insights={latestInsights} />
       <AtRiskClientsCard clients={atRiskClients} nowMs={nowMs} />
-      <RecentClientsCard clients={recentClients} />
+      <RecentClientsCard
+        clients={recentClients}
+        cadence={recentClientsCadence}
+        sparkDays={sparkDays}
+        sparkLabels={sparkLabels}
+        sparkHint={tClients("cadenceHint")}
+      />
     </div>
   )
 }
