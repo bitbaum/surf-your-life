@@ -39,10 +39,10 @@ const NAV_GROUPS = [
 
 interface Props {
   onClose: () => void
-  unreadMessages?: number
+  unreadThreads?: number
 }
 
-export function PortalSidebarNav({ onClose, unreadMessages = 0 }: Props) {
+export function PortalSidebarNav({ onClose, unreadThreads = 0 }: Props) {
   const t = useTranslations("sidebar")
   const pathname = usePathname()
 
@@ -91,7 +91,7 @@ export function PortalSidebarNav({ onClose, unreadMessages = 0 }: Props) {
             {t(group.labelKey)}
           </p>
           <div className="flex flex-col gap-0.5">
-            {group.items.map(({ href, labelKey, icon }) => navLink(href, t(labelKey), icon, href === "/messages" ? unreadMessages : 0))}
+            {group.items.map(({ href, labelKey, icon }) => navLink(href, t(labelKey), icon, href === "/messages" ? unreadThreads : 0))}
           </div>
         </div>
       ))}

@@ -13,10 +13,10 @@ import { PortalSidebarBottom } from "./sidebar-bottom"
 
 interface PortalSidebarProps {
   role?: string
-  unreadMessages?: number
+  unreadThreads?: number
 }
 
-export function PortalSidebar({ role, unreadMessages = 0 }: PortalSidebarProps) {
+export function PortalSidebar({ role, unreadThreads = 0 }: PortalSidebarProps) {
   const t = useTranslations("sidebar")
   const [open, setOpen] = useState(false)
   const close = () => setOpen(false)
@@ -54,7 +54,7 @@ export function PortalSidebar({ role, unreadMessages = 0 }: PortalSidebarProps) 
           <span className="font-semibold text-slate-900">{BRAND_NAME}</span>
         </Link>
 
-        <PortalSidebarNav onClose={close} unreadMessages={unreadMessages} />
+        <PortalSidebarNav onClose={close} unreadThreads={unreadThreads} />
         <PortalSidebarBottom isAdminUser={isAdminUser} onClose={close} />
       </aside>
     </>
