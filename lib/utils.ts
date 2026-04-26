@@ -21,12 +21,22 @@ export function formatEnumValue(value: string): string {
 }
 
 // Returns the date portion of a Date as an ISO string "YYYY-MM-DD".
-// Use for date inputs and day-level comparisons (avoids duplicating .toISOString().split("T")[0]).
-// NOTE: returns the UTC calendar day. For user-facing day bucketing (cadence,
-// streak, etc.) where "today" must match the user's wall clock, use
-// `localDateString` instead.
+// Use for SQL cutoff-string filters and internal date arithmetic where the
+// "few-hours UTC offset from local" doesn't change the result set.
+// For user-facing day bucketing (cadence, streak, "today" UI) where the day
+// must match the user's wall clock, use `localDateString` instead.
 export function toDateString(date: Date): string {
   return date.toISOString().split("T")[0]
+}
+
+// Returns `isoDate` ("YYYY-MM-DD") shifted by N calendar days. UTC-stepped
+// (parses via Date.UTC, walks via DAY_MS) so DST transitions don't drop or
+// duplicate days the way `new Date(isoDate).setDate(getDate() + n)` does
+// — that local-day approach silently shifts the underlying ms across the
+// spring-forward / fall-back boundary.
+export function addDaysISO(isoDate: string, n: number): string {
+  const [y, m, d] = isoDate.split("-").map(Number)
+  return new Date(Date.UTC(y, m - 1, d) + n * 86_400_000).toISOString().slice(0, 10)
 }
 
 // Returns the calendar day of `date` in the given timezone as "YYYY-MM-DD".

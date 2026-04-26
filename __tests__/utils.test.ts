@@ -4,6 +4,7 @@ import {
   toDateString,
   localDateString,
   buildLastNDayStrings,
+  addDaysISO,
   dayKey,
   parsePage,
   computeOffset,
@@ -210,6 +211,41 @@ describe("localDateString", () => {
     const sameMoment = new Date(Date.UTC(2026, 3, 26, 12, 0, 0))
     expect(localDateString(sameMoment, "Pacific/Auckland")).toBe("2026-04-27")
     expect(localDateString(sameMoment, "America/Los_Angeles")).toBe("2026-04-26")
+  })
+})
+
+// ─── addDaysISO ──────────────────────────────────────────────────────────────
+
+describe("addDaysISO", () => {
+  it("adds N days to an ISO date string", () => {
+    expect(addDaysISO("2026-04-25", 1)).toBe("2026-04-26")
+    expect(addDaysISO("2026-04-25", 7)).toBe("2026-05-02")
+    expect(addDaysISO("2026-04-25", -1)).toBe("2026-04-24")
+  })
+
+  it("handles month and year boundaries", () => {
+    expect(addDaysISO("2026-04-30", 1)).toBe("2026-05-01")
+    expect(addDaysISO("2026-12-31", 1)).toBe("2027-01-01")
+    expect(addDaysISO("2026-03-01", -1)).toBe("2026-02-28")
+  })
+
+  it("DST-safe across spring-forward (was the offsetDate bug)", () => {
+    // The previous lib/domain/techniques.ts:offsetDate used local-day setDate
+    // arithmetic. In CET/CEST, addDaysISO("2026-03-29", 1) returned "2026-03-29"
+    // (the same day) because the spring-forward shift made the local Date land
+    // back on the same UTC date string. The UTC-stepped helper returns "2026-03-30".
+    expect(addDaysISO("2026-03-28", 1)).toBe("2026-03-29")
+    expect(addDaysISO("2026-03-29", 1)).toBe("2026-03-30")
+    expect(addDaysISO("2026-03-29", -1)).toBe("2026-03-28")
+  })
+
+  it("DST-safe across fall-back", () => {
+    expect(addDaysISO("2026-10-24", 1)).toBe("2026-10-25")
+    expect(addDaysISO("2026-10-25", 1)).toBe("2026-10-26")
+  })
+
+  it("zero-offset is identity", () => {
+    expect(addDaysISO("2026-04-25", 0)).toBe("2026-04-25")
   })
 })
 

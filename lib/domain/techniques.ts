@@ -3,7 +3,7 @@ import { techniqueCategoryEnum, techniqueDifficultyEnum } from "@/lib/db/schema"
 import type { Technique, TechniqueAssignment } from "@/lib/db/schema"
 
 export type AssignmentWithTechnique = TechniqueAssignment & { technique: Technique }
-import { toDateString } from "@/lib/utils"
+import { addDaysISO } from "@/lib/utils"
 import {
   TECHNIQUE_DEFAULT_FREQUENCY,
   TECHNIQUE_DEFAULT_MAX_DEBT_DAYS,
@@ -104,7 +104,7 @@ export function computeTechniqueDebt(
   let rawDebt = 0
 
   for (let i = 1; i <= assignment.maxDebtDays; i++) {
-    const d = offsetDate(today, -i)
+    const d = addDaysISO(today, -i)
     // Only count days after the assignment start
     if (d < assignment.startDate) break
     if (assignment.endDate && d > assignment.endDate) continue
@@ -115,13 +115,6 @@ export function computeTechniqueDebt(
   const catchUpReps = Math.max(0, Math.min(rawDebt, safetyCapReps - todayCompleted))
 
   return { rawDebt, safetyCapReps, catchUpReps, todayCompleted, dailyTarget }
-}
-
-/** Offset an ISO date string by N days */
-function offsetDate(isoDate: string, days: number): string {
-  const d = new Date(isoDate)
-  d.setDate(d.getDate() + days)
-  return toDateString(d)
 }
 
 // ─── Adherence computation ────────────────────────────────────────────────────

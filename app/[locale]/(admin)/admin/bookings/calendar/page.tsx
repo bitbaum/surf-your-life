@@ -4,27 +4,15 @@ import { and, gte, lte, ne } from "drizzle-orm"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { Link } from "@/i18n/navigation"
 import { PageHeader } from "@/components/ui/page-header"
-import { formatDate, localDateString } from "@/lib/utils"
-import { DAY_MS } from "@/lib/constants"
-
-// String-based day arithmetic so the calendar's "today" highlight + week
-// bounds align to the clinic's wall clock, not UTC. `bookings.preferredDate`
-// is itself a date column (no TZ), so all comparisons are string-vs-string.
-
-// Adds N calendar days to a "YYYY-MM-DD" string. UTC-stepped for DST safety.
-function addDaysStr(isoDate: string, n: number): string {
-  const [y, m, d] = isoDate.split("-").map(Number)
-  return new Date(Date.UTC(y, m - 1, d) + n * DAY_MS).toISOString().slice(0, 10)
-}
+import { formatDate, localDateString, addDaysISO } from "@/lib/utils"
 
 // Returns the Monday of the ISO week containing `isoDate` as a "YYYY-MM-DD".
 // Day-of-week is intrinsic to a calendar date, so UTC-anchoring is fine here.
 function startOfWeekStr(isoDate: string): string {
   const [y, m, d] = isoDate.split("-").map(Number)
-  const t = new Date(Date.UTC(y, m - 1, d))
-  const day = t.getUTCDay()
+  const day = new Date(Date.UTC(y, m - 1, d)).getUTCDay()
   const diff = day === 0 ? -6 : 1 - day // Mon = 1
-  return new Date(t.getTime() + diff * DAY_MS).toISOString().slice(0, 10)
+  return addDaysISO(isoDate, diff)
 }
 
 
@@ -50,7 +38,7 @@ export default async function BookingCalendarPage({
   // not UTC. `weekParam` is already a "YYYY-MM-DD" from the prev/next/today links.
   const todayISO = localDateString(new Date())
   const weekStart = startOfWeekStr(weekParam ?? todayISO)
-  const weekEnd = addDaysStr(weekStart, 6)
+  const weekEnd = addDaysISO(weekStart, 6)
 
   const weekBookings = await db.query.bookings.findMany({
     where: and(
@@ -65,7 +53,7 @@ export default async function BookingCalendarPage({
   // Group by date
   const byDate = new Map<string, typeof weekBookings>()
   for (let i = 0; i < 7; i++) {
-    byDate.set(addDaysStr(weekStart, i), [])
+    byDate.set(addDaysISO(weekStart, i), [])
   }
   for (const b of weekBookings) {
     if (b.preferredDate) {
@@ -73,8 +61,8 @@ export default async function BookingCalendarPage({
     }
   }
 
-  const prevWeek = addDaysStr(weekStart, -7)
-  const nextWeek = addDaysStr(weekStart, 7)
+  const prevWeek = addDaysISO(weekStart, -7)
+  const nextWeek = addDaysISO(weekStart, 7)
 
   const DAY_NAMES = t.raw("dayNames") as string[]
 
