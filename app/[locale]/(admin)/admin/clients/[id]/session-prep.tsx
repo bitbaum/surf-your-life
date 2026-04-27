@@ -92,7 +92,7 @@ export function SessionPrep({ clientId }: Props) {
                   <div className="flex flex-col gap-0.5">
                     <span className="text-xs text-slate-400">{t("statsAlerts")}</span>
                     <span className={`text-sm font-semibold ${stats.highAlertCount > 0 ? "text-red-600" : "text-amber-600"}`}>
-                      {stats.alertCount}{stats.highAlertCount > 0 ? ` (${stats.highAlertCount} high)` : ""}
+                      {stats.alertCount}{stats.highAlertCount > 0 ? ` ${t("statsHighAlerts", { count: stats.highAlertCount })}` : ""}
                     </span>
                   </div>
                 )}

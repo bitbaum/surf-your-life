@@ -1109,6 +1109,7 @@
         "ruleBasedNote": "Summary generated from check-in data (AI not configured).",
         "statsEnergy": "Energy",
         "statsAlerts": "Alerts",
+        "statsHighAlerts": "({count} high)",
         "statsPem": "PEM episodes",
         "statsCheckIns": "Check-ins reviewed"
       },

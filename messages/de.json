@@ -1109,6 +1109,7 @@
         "ruleBasedNote": "Zusammenfassung basiert auf Check-in-Daten (KI nicht konfiguriert).",
         "statsEnergy": "Energie",
         "statsAlerts": "Meldungen",
+        "statsHighAlerts": "({count} kritisch)",
         "statsPem": "PEM-Episoden",
         "statsCheckIns": "Check-ins analysiert"
       },

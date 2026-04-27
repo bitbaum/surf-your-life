@@ -1127,6 +1127,7 @@
         "ruleBasedNote": "Résumé généré à partir des données de check-in (IA non configurée).",
         "statsEnergy": "Énergie",
         "statsAlerts": "Alertes",
+        "statsHighAlerts": "({count} critiques)",
         "statsPem": "Épisodes SPE",
         "statsCheckIns": "Check-ins analysés"
       },
