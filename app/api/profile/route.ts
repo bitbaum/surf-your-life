@@ -1,17 +1,16 @@
 import { eq } from "drizzle-orm"
 import { db } from "@/lib/db"
-import { profiles, users } from "@/lib/db/schema"
+import { users, profiles } from "@/lib/db/schema"
 import { profileSchema } from "@/lib/domain/profile"
 import { okData, parseBody, requireAuth, ok } from "@/lib/api"
+import { getUserProfile } from "@/lib/db/queries"
 
 export async function GET() {
   const authResult = await requireAuth()
   if (!authResult.ok) return authResult.response
   const { session } = authResult
 
-  const profile = await db.query.profiles.findFirst({
-    where: eq(profiles.userId, session.user.id),
-  })
+  const profile = await getUserProfile(session.user.id)
 
   return okData(profile)
 }

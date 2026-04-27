@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
-import { checkIns, profiles, users, programEnrollments } from "@/lib/db/schema"
+import { checkIns, users, programEnrollments } from "@/lib/db/schema"
+import { getUserProfile } from "@/lib/db/queries"
 import { eq, desc, asc, and, gte, count } from "drizzle-orm"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { StatCard } from "@/components/ui/stat-card"
@@ -40,7 +41,7 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
   const thirtyDaysAgo = new Date(nowMs - THIRTY_DAYS_MS)
 
   const [profile, recentCheckIns, trendCheckIns, totalResult, dbUser, activeEnrollment] = await Promise.all([
-    db.query.profiles.findFirst({ where: eq(profiles.userId, session.user.id) }),
+    getUserProfile(session.user.id),
     db.query.checkIns.findMany({
       where: eq(checkIns.userId, session.user.id),
       orderBy: [desc(checkIns.createdAt)],

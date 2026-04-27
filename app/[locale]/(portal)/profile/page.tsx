@@ -1,11 +1,9 @@
 import { auth } from "@/lib/auth"
-import { db } from "@/lib/db"
-import { profiles } from "@/lib/db/schema"
-import { eq } from "drizzle-orm"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { PageHeader } from "@/components/ui/page-header"
 import { ProfileForm } from "./profile-form"
 import { SecurityForm } from "./security-form"
+import { getUserProfile } from "@/lib/db/queries"
 
 export default async function ProfilePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
@@ -15,9 +13,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ locale
 
   const t = await getTranslations("portal.profile")
 
-  const profile = await db.query.profiles.findFirst({
-    where: eq(profiles.userId, session.user.id),
-  })
+  const profile = await getUserProfile(session.user.id)
 
   return (
     <div className="max-w-2xl mx-auto flex flex-col gap-8 pb-8">

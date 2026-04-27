@@ -2,7 +2,6 @@ import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import {
   users,
-  profiles,
   checkIns,
   bookings,
   threads,
@@ -10,6 +9,7 @@ import {
 } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { requireAuth } from "@/lib/api"
+import { getUserProfile } from "@/lib/db/queries"
 
 export async function GET() {
   const authResult = await requireAuth()
@@ -24,7 +24,7 @@ export async function GET() {
         where: eq(users.id, userId),
         columns: { id: true, name: true, email: true, createdAt: true, role: true },
       }),
-      db.query.profiles.findFirst({ where: eq(profiles.userId, userId) }),
+      getUserProfile(userId),
       db.query.checkIns.findMany({ where: eq(checkIns.userId, userId) }),
       db.query.bookings.findMany({
         where: eq(bookings.userId, userId),
