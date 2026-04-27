@@ -4,7 +4,7 @@ import { getTranslations } from "next-intl/server"
 import { NewThreadButton } from "./[id]/new-thread-button"
 import { DayCadenceSparkline, type DayState } from "@/components/ui/day-cadence-sparkline"
 
-type ClientRow = {
+export type ClientRow = {
   id: string
   name: string | null
   email: string

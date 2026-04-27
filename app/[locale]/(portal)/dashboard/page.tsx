@@ -3,7 +3,6 @@ import { db } from "@/lib/db"
 import { checkIns, profiles, users, programEnrollments } from "@/lib/db/schema"
 import { eq, desc, asc, and, gte, count } from "drizzle-orm"
 import { getTranslations, setRequestLocale } from "next-intl/server"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { StatCard } from "@/components/ui/stat-card"
 import { ClipboardList, TrendingUp, Flame } from "lucide-react"
 import {
@@ -22,14 +21,12 @@ import {
   detectMilestone,
   computeInsight,
 } from "@/lib/domain/check-in"
-import { TrendCard } from "@/components/ui/trend-card"
-import { DayCadenceSparkline } from "@/components/ui/day-cadence-sparkline"
-import { buildLastNDayStrings, localDateString } from "@/lib/utils"
 import { EmailVerificationBanner } from "@/components/portal/EmailVerificationBanner"
 import { PageHeader } from "@/components/ui/page-header"
-import { ProgressBar } from "@/components/ui/progress-bar"
 import { DashboardBanners } from "./dashboard-banners"
 import { DashboardCharts } from "./dashboard-charts"
+import { DashboardSparklineRow } from "./dashboard-sparkline-row"
+import { DashboardProgramCard } from "./dashboard-program-card"
 
 export default async function DashboardPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
@@ -107,23 +104,11 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
     : computeReturnNudge(recentCheckIns[0]?.createdAt ?? null, streak)
   const weekDelta = computeWeekDelta(trendCheckIns)
 
-  const sparkDays = buildLastNDayStrings(7)
-  const sparkCheckedIn = new Set(recentCheckIns.map((ci) => localDateString(new Date(ci.createdAt))))
-  const sparkPemDays = new Set(
-    recentCheckIns
-      .filter((ci) => ci.pemFlag === true)
-      .map((ci) => localDateString(new Date(ci.createdAt)))
-  )
-  const sparkCount = sparkDays.filter((d) => sparkCheckedIn.has(d)).length
-
   const hasSymptomData = trendCheckIns.some(
     (c) => c.symptomFatigue != null || c.symptomBrainFog != null || c.symptomPain != null || c.stressLevel != null
   )
 
   const programProgress = activeEnrollment ? computeProgramProgress(activeEnrollment) : null
-  const programPct = programProgress?.totalWeeks
-    ? Math.round((programProgress.currentWeek / programProgress.totalWeeks) * 100)
-    : 0
 
   const milestoneHit = detectMilestone(totalCheckIns, streak)
   const milestone = milestoneHit
@@ -181,63 +166,9 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
         />
       </div>
 
-      {sparkCount > 0 && (
-        <div className="mb-6 flex items-center gap-3 text-sm">
-          <span className="font-medium text-slate-700">{t("thisWeek")}</span>
-          <DayCadenceSparkline
-            days={sparkDays}
-            checkedIn={sparkCheckedIn}
-            pemDays={sparkPemDays}
-            hint={t("cadenceHint")}
-            dayLabels={{
-              missed: t("dotMissed"),
-              checkedIn: t("dotCheckedIn"),
-              pem: t("dotPem"),
-            }}
-            size="md"
-          />
-          <span className="text-xs text-slate-500">{t("daysOfSeven", { count: sparkCount })}</span>
-        </div>
-      )}
+      <DashboardSparklineRow recentCheckIns={recentCheckIns} weekDelta={weekDelta} />
 
-      {weekDelta.window.count > 0 && (
-        <div className="mb-6">
-          <TrendCard delta={weekDelta} namespace="portal.dashboard.trend" />
-        </div>
-      )}
-
-      {programProgress && (
-        <Card className="mb-6 border-teal-200">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-teal-800">{programProgress.programTitle}</CardTitle>
-              <span className="text-xs font-medium text-teal-600 bg-teal-50 border border-teal-200 px-2 py-1 rounded-full">
-                {programProgress.totalWeeks
-                  ? t("programWeek", { current: programProgress.currentWeek, total: programProgress.totalWeeks })
-                  : t("programWeekOpen", { current: programProgress.currentWeek })}
-              </span>
-            </div>
-          </CardHeader>
-          <CardContent>
-            {programProgress.totalWeeks > 0 && (
-              <div className="mb-4">
-                <ProgressBar value={Math.min(programPct, 100)} track="teal" />
-                <p className="text-xs text-slate-400 mt-1">
-                  {t("programProgress", { pct: programPct })}
-                </p>
-              </div>
-            )}
-            {programProgress.currentPhase ? (
-              <div className="bg-teal-50 rounded-lg p-3">
-                <p className="text-sm font-medium text-teal-900">{programProgress.currentPhase.title}</p>
-                <p className="text-sm text-teal-700 mt-1 leading-relaxed">{programProgress.currentPhase.guidance}</p>
-              </div>
-            ) : (
-              <p className="text-sm text-slate-400">{t("programNoPhase")}</p>
-            )}
-          </CardContent>
-        </Card>
-      )}
+      <DashboardProgramCard programProgress={programProgress} />
 
       <DashboardCharts
         trendCheckIns={trendCheckIns}

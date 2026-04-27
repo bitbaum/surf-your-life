@@ -2,13 +2,11 @@ import { notFound } from "next/navigation"
 import { db } from "@/lib/db"
 import { users, checkIns, programs, programEnrollments, medicationLog, functionalAssessments, techniqueAssignments, techniques, assignments, techniqueLogs, clientAlerts } from "@/lib/db/schema"
 import { eq, desc, isNull, and, count, inArray, gte } from "drizzle-orm"
-import { formatDate, localDateString, addDaysISO, buildLastNDayStrings } from "@/lib/utils"
+import { formatDate, localDateString, addDaysISO } from "@/lib/utils"
 import { Link } from "@/i18n/navigation"
-import { PAGINATION_DEFAULT, SEVEN_DAYS_MS, SERVICES_MAX_LIMIT, CLIENT_ASSIGNMENTS_MAX, ADMIN_DASHBOARD_ALERTS_PREVIEW, CLIENT_ASSESSMENTS_LIMIT } from "@/lib/constants"
+import { PAGINATION_DEFAULT, SERVICES_MAX_LIMIT, CLIENT_ASSIGNMENTS_MAX, ADMIN_DASHBOARD_ALERTS_PREVIEW, CLIENT_ASSESSMENTS_LIMIT } from "@/lib/constants"
 import { CLIENT_ROLE, STAFF_ROLES } from "@/lib/domain/auth"
 import { computeAdherenceByAssignment, computeLogsGridByAssignment } from "@/lib/domain/techniques"
-import { computeWeekDelta, computeInsight, isComparativeInsight } from "@/lib/domain/check-in"
-import { InsightBanner } from "@/components/ui/insight-banner"
 import { ResetLinkButton } from "./reset-link-button"
 import { NewThreadButton } from "./new-thread-button"
 import { EnrollProgramButton } from "./enroll-program-button"
@@ -20,13 +18,9 @@ import { ClientEnrollmentCard } from "./client-enrollment-card"
 import { PractitionerAssignmentCard } from "./practitioner-assignment-card"
 import { ClientProfileCard } from "./client-profile-card"
 import { ClientCheckInsCard } from "./client-check-ins-card"
-import { TrendCard } from "@/components/ui/trend-card"
-import { DayCadenceSparkline } from "@/components/ui/day-cadence-sparkline"
-import { SymptomsChart } from "@/components/ui/symptoms-chart"
-import { SleepChart } from "@/components/ui/sleep-chart"
-import { WellnessTrendChart } from "@/components/ui/wellness-trend-chart"
-import { ChartCard } from "@/components/ui/chart-card"
 import { ClientAlertsCard } from "./client-alerts-card"
+import { ClientChartsSection } from "./client-charts-section"
+import { ClientWeeklySnapshot } from "./client-weekly-snapshot"
 import { PageHeader } from "@/components/ui/page-header"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 
@@ -116,49 +110,6 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
   const profile = client.profile
   const adherenceByAssignment = computeAdherenceByAssignment(clientAssignments, recentTechniqueLogs)
   const logsGridByAssignment = computeLogsGridByAssignment(recentTechniqueLogs)
-  const weekDelta = computeWeekDelta(clientCheckIns)
-
-  // Chart data: oldest-first
-  const chartData = [...clientCheckIns].reverse()
-  const symptomData = chartData.map((ci) => ({
-    createdAt: ci.createdAt,
-    symptomFatigue: ci.symptomFatigue,
-    symptomBrainFog: ci.symptomBrainFog,
-    symptomPain: ci.symptomPain,
-    stressLevel: ci.stressLevel,
-  }))
-  const hasSymptomData = symptomData.some(
-    (c) => c.symptomFatigue != null || c.symptomBrainFog != null || c.symptomPain != null || c.stressLevel != null
-  )
-  const sleepData = chartData.map((ci) => ({ createdAt: ci.createdAt, sleepHours: ci.sleepHours }))
-  const sleepCount = sleepData.filter((c) => c.sleepHours != null).length
-  const wellnessData = chartData.map((ci) => ({ createdAt: ci.createdAt, mood: ci.mood, energyLevel: ci.energyLevel }))
-
-  const sparkDays = buildLastNDayStrings(7)
-  const sparkCheckedIn = new Set(clientCheckIns.map((ci) => localDateString(new Date(ci.createdAt))))
-  const sparkPemDays = new Set(
-    clientCheckIns
-      .filter((ci) => ci.pemFlag === true)
-      .map((ci) => localDateString(new Date(ci.createdAt)))
-  )
-  const sparkCount = sparkDays.filter((d) => sparkCheckedIn.has(d)).length
-
-  const sevenDaysAgoMs = Date.now() - SEVEN_DAYS_MS // eslint-disable-line react-hooks/purity -- server component
-  const weekCheckInCount = clientCheckIns.filter(
-    (ci) => ci.createdAt.getTime() >= sevenDaysAgoMs
-  ).length
-  const insightHit = computeInsight(
-    clientCheckIns.slice(0, 3).map((ci) => ci.energyLevel),
-    weekCheckInCount,
-    weekDelta
-  )
-  const adminInsight = insightHit && isComparativeInsight(insightHit)
-    ? "delta" in insightHit
-      ? t(`detail.insights.${insightHit.key}`, { delta: insightHit.delta.toFixed(1) })
-      : "count" in insightHit
-        ? t(`detail.insights.${insightHit.key}`, { count: insightHit.count })
-        : t(`detail.insights.${insightHit.key}`)
-    : null
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -192,76 +143,9 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
           <ClientCheckInsCard clientId={id} checkIns={clientCheckIns} totalCheckIns={totalCheckIns} />
         </div>
 
-        <div className="space-y-4">
-          <div className="flex items-center gap-3 text-sm">
-            <span className="font-medium text-slate-700">{t("detail.cadence.title")}</span>
-            <DayCadenceSparkline
-              days={sparkDays}
-              checkedIn={sparkCheckedIn}
-              pemDays={sparkPemDays}
-              hint={t("cadenceHint")}
-              dayLabels={{
-                missed: t("dotMissed"),
-                checkedIn: t("dotCheckedIn"),
-                pem: t("dotPem"),
-              }}
-              size="md"
-            />
-            <span className="text-xs text-slate-500">
-              {t("detail.cadence.daysOfSeven", { count: sparkCount })}
-            </span>
-          </div>
-          {adminInsight && (
-            <InsightBanner title={t("detail.insights.title")} body={adminInsight} />
-          )}
-          {weekDelta.window.count > 0 && (
-            <TrendCard delta={weekDelta} namespace="admin.clients.detail.trend" />
-          )}
-        </div>
+        <ClientWeeklySnapshot clientCheckIns={clientCheckIns} />
 
-        {hasSymptomData && symptomData.length >= 2 && (
-          <ChartCard
-            title={t("detail.symptomsChart.title")}
-            subtitle={t("detail.symptomsChart.subtitle")}
-          >
-            <SymptomsChart
-              data={symptomData}
-              labels={{
-                fatigue: t("detail.symptomsChart.fatigue"),
-                brainFog: t("detail.symptomsChart.brainFog"),
-                pain: t("detail.symptomsChart.pain"),
-                stress: t("detail.symptomsChart.stress"),
-              }}
-            />
-          </ChartCard>
-        )}
-
-        {sleepCount >= 2 && (
-          <ChartCard
-            title={t("detail.sleepChart.title")}
-            subtitle={t("detail.sleepChart.subtitle")}
-          >
-            <SleepChart
-              data={sleepData}
-              formatHours={(n) => t("detail.sleepChart.hoursTooltip", { n })}
-            />
-          </ChartCard>
-        )}
-
-        {wellnessData.length >= 2 && (
-          <ChartCard
-            title={t("detail.wellnessChart.title")}
-            subtitle={t("detail.wellnessChart.subtitle")}
-          >
-            <WellnessTrendChart
-              data={wellnessData}
-              labels={{
-                mood: t("detail.wellnessChart.mood"),
-                energy: t("detail.wellnessChart.energy"),
-              }}
-            />
-          </ChartCard>
-        )}
+        <ClientChartsSection clientCheckIns={clientCheckIns} />
 
         {(unresolvedAlerts.length > 0 || hasAlertHistory) && (
           <ClientAlertsCard initialAlerts={unresolvedAlerts} clientId={id} hasHistory={hasAlertHistory} />
