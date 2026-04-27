@@ -8,13 +8,12 @@ import { db } from "@/lib/db"
 import { checkIns, documents } from "@/lib/db/schema"
 import { isNull } from "drizzle-orm"
 import { embedCheckIn, embedDocument } from "@/lib/domain/embeddings"
-import { EMBED_BACKFILL_BATCH , API_ERR_UNAUTHORIZED } from "@/lib/constants"
+import { verifyCronAuth } from "@/lib/auth/cron"
+import { EMBED_BACKFILL_BATCH } from "@/lib/constants"
 
 export async function GET(req: Request) {
-  const authHeader = req.headers.get("authorization")
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
-  }
+  const authError = verifyCronAuth(req)
+  if (authError) return authError
 
   // No OPENAI_API_KEY means nothing to do
   if (!process.env.OPENAI_API_KEY) {

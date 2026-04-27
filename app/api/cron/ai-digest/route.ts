@@ -10,18 +10,17 @@ import { db } from "@/lib/db"
 import { users, checkIns, clientAlerts } from "@/lib/db/schema"
 import { eq, and, gte, desc, inArray, count } from "drizzle-orm"
 import { STAFF_ROLES, CLIENT_ROLE } from "@/lib/domain/auth"
-import { SEVEN_DAYS_MS, SITE_URL, AI_DIGEST_MIN_CHECKINS, API_ERR_UNAUTHORIZED } from "@/lib/constants"
+import { SEVEN_DAYS_MS, SITE_URL, AI_DIGEST_MIN_CHECKINS } from "@/lib/constants"
 import { roundOne } from "@/lib/utils"
 import { summariseCheckIns } from "@/lib/domain/check-in"
 import { generateWeeklyDigest } from "@/lib/domain/digest"
+import { verifyCronAuth } from "@/lib/auth/cron"
 import { sendEmail } from "@/lib/email"
 import { practitionerWeeklyDigestEmail, type PractitionerDigestClientRow } from "@/lib/email/templates"
 
 export async function GET(req: Request) {
-  const authHeader = req.headers.get("authorization")
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
-  }
+  const authError = verifyCronAuth(req)
+  if (authError) return authError
 
   const sevenDaysAgo = new Date(Date.now() - SEVEN_DAYS_MS)
 

@@ -9,16 +9,15 @@ import { users, checkIns } from "@/lib/db/schema"
 import { eq, and, gte, inArray } from "drizzle-orm"
 import { sendEmail } from "@/lib/email"
 import { weeklyReportEmail } from "@/lib/email/templates"
-import { SITE_URL, SEVEN_DAYS_MS, API_ERR_UNAUTHORIZED } from "@/lib/constants"
+import { SITE_URL, SEVEN_DAYS_MS } from "@/lib/constants"
 import { roundOne } from "@/lib/utils"
 import { CLIENT_ROLE } from "@/lib/domain/auth"
+import { verifyCronAuth } from "@/lib/auth/cron"
 import { summariseCheckIns } from "@/lib/domain/check-in"
 
 export async function GET(req: Request) {
-  const authHeader = req.headers.get("authorization")
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
-  }
+  const authError = verifyCronAuth(req)
+  if (authError) return authError
 
   const sevenDaysAgo = new Date(Date.now() - SEVEN_DAYS_MS)
 

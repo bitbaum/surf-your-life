@@ -10,17 +10,15 @@ import { eq, and, gte, desc, inArray } from "drizzle-orm"
 import { sendEmail } from "@/lib/email"
 import { checkInReminderEmail } from "@/lib/email/templates"
 import { EMAIL_SUBJECT_CHECKIN_REMINDER } from "@/lib/email/subjects"
-import { SITE_URL, STREAK_LOOKBACK_DAYS, DAY_MS, API_ERR_UNAUTHORIZED } from "@/lib/constants"
+import { SITE_URL, STREAK_LOOKBACK_DAYS, DAY_MS } from "@/lib/constants"
 import { generateMissedCheckInAlerts } from "@/lib/domain/alerts"
 import { CLIENT_ROLE } from "@/lib/domain/auth"
+import { verifyCronAuth } from "@/lib/auth/cron"
 import { computeStreak } from "@/lib/domain/check-in"
 
 export async function GET(req: Request) {
-  // Vercel cron authentication — only allow requests from Vercel cron
-  const authHeader = req.headers.get("authorization")
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
-  }
+  const authError = verifyCronAuth(req)
+  if (authError) return authError
 
   const startOfToday = new Date()
   startOfToday.setHours(0, 0, 0, 0)
