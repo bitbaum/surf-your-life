@@ -6,8 +6,8 @@ import { CLIENT_ROLE } from "@/lib/domain/auth"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { Link } from "@/i18n/navigation"
-import { computeTotalPages, parsePage, computeOffset, buildLastNDayStrings } from "@/lib/utils"
-import { PAGINATION_DEFAULT, SEVEN_DAYS_MS, DAY_MS } from "@/lib/constants"
+import { computeTotalPages, parsePage, computeOffset, buildLastNDayStrings, daysSince } from "@/lib/utils"
+import { PAGINATION_DEFAULT, SEVEN_DAYS_MS } from "@/lib/constants"
 import { ClientSearch } from "./client-search"
 import { FilterTabs } from "@/components/ui/filter-tabs"
 import { Suspense } from "react"
@@ -191,9 +191,7 @@ export default async function ClientsPage({
             <tbody>
               {clients.map((client) => {
                 const isStale = client.lastCheckIn == null || client.lastCheckIn < staleCutoff
-                const days = client.lastCheckIn
-                  ? Math.floor((Date.now() - client.lastCheckIn.getTime()) / DAY_MS)
-                  : null
+                const days = daysSince(client.lastCheckIn)
                 const nudgeBody = isStale
                   ? days != null
                     ? t("atRisk.nudgeBodyWithDays", {

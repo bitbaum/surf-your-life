@@ -24,7 +24,7 @@ import {
 } from "@/lib/constants"
 import { sendEmail } from "@/lib/email"
 import { practitionerAlertEmail, missedCheckInDigestEmail } from "@/lib/email/templates"
-import { formatEnumValue } from "@/lib/utils"
+import { formatEnumValue, daysSince } from "@/lib/utils"
 
 type AlertInsert = typeof clientAlerts.$inferInsert
 
@@ -304,9 +304,7 @@ export async function generateMissedCheckInAlerts(): Promise<number> {
       // Checked in recently — nothing to flag
       if (lastCheckIn && lastCheckIn >= cutoff) continue
 
-      const daysMissed = lastCheckIn
-        ? Math.floor((Date.now() - lastCheckIn.getTime()) / DAY_MS)
-        : null
+      const daysMissed = daysSince(lastCheckIn)
 
       newAlerts.push({
         clientId: client.id,
@@ -333,9 +331,7 @@ export async function generateMissedCheckInAlerts(): Promise<number> {
     if (practitioners.length > 0) {
       const digestClients = newAlerts.map((alert) => {
         const client = clients.find((c) => c.id === alert.clientId)!
-        const daysMissed = lastCheckInMap.get(alert.clientId) != null
-          ? Math.floor((Date.now() - lastCheckInMap.get(alert.clientId)!.getTime()) / DAY_MS)
-          : null
+        const daysMissed = daysSince(lastCheckInMap.get(alert.clientId) ?? null)
         return { name: client.name, email: client.email, daysMissed }
       })
 

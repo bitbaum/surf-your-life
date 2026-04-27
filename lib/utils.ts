@@ -1,6 +1,6 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
-import { CLINIC_TZ } from "./constants"
+import { CLINIC_TZ, DAY_MS } from "./constants"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -110,4 +110,11 @@ export function computeOffset(page: number, pageSize: number): number {
 // Computes total page count for pagination given a total row count and page size.
 export function computeTotalPages(total: number, pageSize: number): number {
   return Math.ceil(total / pageSize)
+}
+
+export function daysSince(date: Date): number
+export function daysSince(date: Date | null): number | null
+export function daysSince(date: Date | null): number | null {
+  if (!date) return null
+  return Math.floor((Date.now() - date.getTime()) / DAY_MS)
 }

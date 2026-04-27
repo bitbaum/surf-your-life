@@ -6,9 +6,9 @@ import { atRiskHaving } from "@/lib/db/at-risk"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { Link } from "@/i18n/navigation"
-import { formatDate } from "@/lib/utils"
+import { formatDate, daysSince } from "@/lib/utils"
 import { getTranslations, setRequestLocale } from "next-intl/server"
-import { SEVEN_DAYS_MS, DAY_MS, ADMIN_AT_RISK_MAX } from "@/lib/constants"
+import { SEVEN_DAYS_MS, ADMIN_AT_RISK_MAX } from "@/lib/constants"
 import { NewThreadButton } from "../[id]/new-thread-button"
 import { EmptyState } from "@/components/ui/empty-state"
 
@@ -17,8 +17,7 @@ export default async function AtRiskClientsPage({ params }: { params: Promise<{ 
   setRequestLocale(locale)
   const t = await getTranslations("admin.clients")
 
-  const nowMs = Date.now()
-  const sevenDaysAgo = new Date(nowMs - SEVEN_DAYS_MS)
+  const sevenDaysAgo = new Date(Date.now() - SEVEN_DAYS_MS)
 
   const atRisk = await db
     .select({
@@ -39,13 +38,8 @@ export default async function AtRiskClientsPage({ params }: { params: Promise<{ 
     .orderBy(sql`max(${checkIns.createdAt}) ASC NULLS FIRST`)
     .limit(ADMIN_AT_RISK_MAX)
 
-  function daysSinceCount(date: Date | null): number | null {
-    if (!date) return null
-    return Math.floor((nowMs - date.getTime()) / DAY_MS)
-  }
-
-  function daysSince(date: Date | null): string {
-    const days = daysSinceCount(date)
+  function formatDaysSince(date: Date | null): string {
+    const days = daysSince(date)
     return days == null ? "—" : t("atRisk.daysSince", { n: days })
   }
 
@@ -95,7 +89,7 @@ export default async function AtRiskClientsPage({ params }: { params: Promise<{ 
               </thead>
               <tbody>
                 {atRisk.map((client) => {
-                  const days = daysSinceCount(client.lastCheckIn)
+                  const days = daysSince(client.lastCheckIn)
                   return (
                     <tr
                       key={client.id}
@@ -110,7 +104,7 @@ export default async function AtRiskClientsPage({ params }: { params: Promise<{ 
                       <td className="py-3 text-slate-500">
                         {client.lastCheckIn ? formatDate(client.lastCheckIn) : t("atRisk.never")}
                       </td>
-                      <td className="py-3 text-slate-400">{daysSince(client.lastCheckIn)}</td>
+                      <td className="py-3 text-slate-400">{formatDaysSince(client.lastCheckIn)}</td>
                       <td className="py-3 text-slate-500">
                         {client.totalCheckIns > 0
                           ? client.totalCheckIns
