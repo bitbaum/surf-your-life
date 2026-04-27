@@ -1,7 +1,7 @@
 import { db } from "@/lib/db"
-import { threadMessages, threads, users, clientAlerts, leads } from "@/lib/db/schema"
-import { count, eq, sql } from "drizzle-orm"
-import { CLIENT_ROLE } from "@/lib/domain/auth"
+import { threads, clientAlerts, leads } from "@/lib/db/schema"
+import { count, eq } from "drizzle-orm"
+import { unreadFromClientExists } from "@/lib/db/thread-unread"
 
 export async function getUnresolvedAlertCount(): Promise<number> {
   const [result] = await db
@@ -20,13 +20,7 @@ export async function getUnreadThreadsCount(): Promise<number> {
   const [result] = await db
     .select({ value: count() })
     .from(threads)
-    .where(sql`EXISTS (
-      SELECT 1 FROM ${threadMessages}
-      JOIN ${users} ON ${users.id} = ${threadMessages.senderId}
-      WHERE ${threadMessages.threadId} = ${threads.id}
-        AND ${threadMessages.readAt} IS NULL
-        AND ${users.role} = ${CLIENT_ROLE}
-    )`)
+    .where(unreadFromClientExists())
   return result?.value ?? 0
 }
 

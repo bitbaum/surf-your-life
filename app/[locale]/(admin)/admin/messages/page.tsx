@@ -1,12 +1,12 @@
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { threads, threadMessages, users } from "@/lib/db/schema"
-import { desc, count, eq, and, sql } from "drizzle-orm"
+import { desc, count, eq, and } from "drizzle-orm"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { redirect } from "next/navigation"
 import { Link } from "@/i18n/navigation"
 import { PAGINATION_DEFAULT } from "@/lib/constants"
-import { CLIENT_ROLE } from "@/lib/domain/auth"
+import { unreadFromClientExists } from "@/lib/db/thread-unread"
 import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
 import { formatDate, computeTotalPages, parsePage, computeOffset } from "@/lib/utils"
@@ -46,13 +46,7 @@ export default async function AdminMessagesPage({
   // (not staff). Per-thread global property; matches the practitioner intent
   // of "needs my reply". Built unconditionally so the badge count query can
   // reuse it regardless of the active filter.
-  const unreadExists = sql`EXISTS (
-    SELECT 1 FROM ${threadMessages}
-    JOIN ${users} ON ${users.id} = ${threadMessages.senderId}
-    WHERE ${threadMessages.threadId} = ${threads.id}
-      AND ${threadMessages.readAt} IS NULL
-      AND ${users.role} = ${CLIENT_ROLE}
-  )`
+  const unreadExists = unreadFromClientExists()
 
   const clientFilter = clientIdParam ? eq(threads.clientId, clientIdParam) : undefined
   const whereParts = [
