@@ -8,7 +8,7 @@ import { PageHeader } from "@/components/ui/page-header"
 import { Link } from "@/i18n/navigation"
 import { Users, ClipboardList, TrendingUp, CalendarClock, MessageSquare, AlertTriangle } from "lucide-react"
 import { SEVEN_DAYS_MS, THIRTY_DAYS_MS, RECENT_CLIENTS_LIMIT, AT_RISK_CLIENTS_LIMIT, ADMIN_DASHBOARD_ALERTS_PREVIEW, ADMIN_DASHBOARD_INSIGHTS_PREVIEW } from "@/lib/constants"
-import { roundOne, buildLastNDayStrings } from "@/lib/utils"
+import { roundOne } from "@/lib/utils"
 import { CLIENT_ROLE } from "@/lib/domain/auth"
 import { fetchCadenceMap } from "@/lib/db/check-in-cadence"
 import { atRiskHaving } from "@/lib/db/at-risk"
@@ -128,10 +128,7 @@ export default async function AdminDashboardPage({
     createdAt: new Date(r.created_at),
   }))
 
-  // 7-day cadence shared by the recent-clients card and the latest-insights
-  // card so practitioners can cross-check "is this newly-joined client
-  // engaging?" / "this AI insight says X — but is the client even checking
-  // in?". Combine unique IDs from both lists into one batched fetch.
+  // Single batched cadence fetch for both cards — avoids two round-trips.
   const cadenceClientIds = [
     ...new Set([
       ...recentClients.map((c) => c.id),
@@ -139,14 +136,6 @@ export default async function AdminDashboardPage({
     ]),
   ]
   const cadenceMap = await fetchCadenceMap(cadenceClientIds, sevenDaysAgo)
-  const tClients = await getTranslations("admin.clients")
-  const sparkDays = buildLastNDayStrings(7)
-  const sparkLabels = {
-    missed: tClients("dotMissed"),
-    checkedIn: tClients("dotCheckedIn"),
-    pem: tClients("dotPem"),
-  }
-  const sparkHint = tClients("cadenceHint")
 
   return (
     <div className="max-w-5xl mx-auto">
@@ -186,21 +175,9 @@ export default async function AdminDashboardPage({
         </Card>
       )}
 
-      <LatestInsightsCard
-        insights={latestInsights}
-        cadence={cadenceMap}
-        sparkDays={sparkDays}
-        sparkLabels={sparkLabels}
-        sparkHint={sparkHint}
-      />
+      <LatestInsightsCard insights={latestInsights} cadence={cadenceMap} />
       <AtRiskClientsCard clients={atRiskClients} nowMs={nowMs} />
-      <RecentClientsCard
-        clients={recentClients}
-        cadence={cadenceMap}
-        sparkDays={sparkDays}
-        sparkLabels={sparkLabels}
-        sparkHint={sparkHint}
-      />
+      <RecentClientsCard clients={recentClients} cadence={cadenceMap} />
     </div>
   )
 }

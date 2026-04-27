@@ -1,9 +1,9 @@
 import { getTranslations } from "next-intl/server"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Link } from "@/i18n/navigation"
-import { formatDate } from "@/lib/utils"
+import { formatDate, buildLastNDayStrings } from "@/lib/utils"
 import { Sparkles } from "lucide-react"
-import { DayCadenceSparkline, type DayState } from "@/components/ui/day-cadence-sparkline"
+import { DayCadenceSparkline } from "@/components/ui/day-cadence-sparkline"
 import type { CadenceMap } from "@/lib/db/check-in-cadence"
 
 type ClientInsight = {
@@ -16,13 +16,14 @@ type ClientInsight = {
 interface Props {
   insights: ClientInsight[]
   cadence: CadenceMap
-  sparkDays: string[]
-  sparkLabels: Record<DayState, string>
-  sparkHint: string
 }
 
-export async function LatestInsightsCard({ insights, cadence, sparkDays, sparkLabels, sparkHint }: Props) {
+export async function LatestInsightsCard({ insights, cadence }: Props) {
   const t = await getTranslations("admin.dashboard")
+  const tClients = await getTranslations("admin.clients")
+  const sparkDays = buildLastNDayStrings(7)
+  const sparkLabels = { missed: tClients("dotMissed"), checkedIn: tClients("dotCheckedIn"), pem: tClients("dotPem") }
+  const sparkHint = tClients("cadenceHint")
 
   if (insights.length === 0) return null
 
