@@ -4,8 +4,8 @@ import { eq } from "drizzle-orm"
 import { db } from "@/lib/db"
 import { users, roleEnum } from "@/lib/db/schema"
 import { ADMIN_ROLE } from "@/lib/domain/auth"
-import { API_ERR_FORBIDDEN, API_ERR_NOT_FOUND, API_ERR_SELF_ROLE_CHANGE } from "@/lib/constants"
-import { parseBody, requireStaffAuth } from "@/lib/api"
+import { API_ERR_SELF_ROLE_CHANGE } from "@/lib/constants"
+import { forbidden, notFound, parseBody, requireStaffAuth } from "@/lib/api"
 
 const bodySchema = z.object({
   role: z.enum(roleEnum.enumValues),
@@ -19,7 +19,7 @@ export async function PATCH(
   if (!authResult.ok) return authResult.response
   const { session } = authResult
   if (session.user.role !== ADMIN_ROLE) {
-    return NextResponse.json({ success: false, error: API_ERR_FORBIDDEN }, { status: 403 })
+    return forbidden()
   }
 
   const { id } = await params
@@ -41,7 +41,7 @@ export async function PATCH(
     .returning({ id: users.id, role: users.role })
 
   if (!updated) {
-    return NextResponse.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
+    return notFound()
   }
 
   return NextResponse.json({ success: true, data: updated })

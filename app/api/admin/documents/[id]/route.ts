@@ -5,8 +5,8 @@ import { db } from "@/lib/db"
 import { documents } from "@/lib/db/schema"
 import type { InferSelectModel } from "drizzle-orm"
 import { eq } from "drizzle-orm"
-import { API_ERR_FORBIDDEN, API_ERR_NOT_FOUND, FIELD_MAX_TITLE } from "@/lib/constants"
-import { parseBody, requireStaffAuth } from "@/lib/api"
+import { FIELD_MAX_TITLE } from "@/lib/constants"
+import { forbidden, notFound, parseBody, requireStaffAuth } from "@/lib/api"
 
 const patchSchema = z.object({
   title: z.string().min(1).max(FIELD_MAX_TITLE).optional(),
@@ -17,7 +17,7 @@ type Doc = InferSelectModel<typeof documents>
 
 function verifyDocumentAccess(doc: Doc, userId: string, role: string): NextResponse | null {
   if (doc.authorId !== userId && role !== ADMIN_ROLE) {
-    return NextResponse.json({ success: false, error: API_ERR_FORBIDDEN }, { status: 403 })
+    return forbidden()
   }
   return null
 }
@@ -35,7 +35,7 @@ export async function PATCH(
   if (!result.ok) return result.response
 
   const doc = await db.query.documents.findFirst({ where: eq(documents.id, id) })
-  if (!doc) return NextResponse.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
+  if (!doc) return notFound()
 
   const accessError = verifyDocumentAccess(doc, session.user.id, session.user.role)
   if (accessError) return accessError
@@ -60,7 +60,7 @@ export async function DELETE(
   const { id } = await params
 
   const doc = await db.query.documents.findFirst({ where: eq(documents.id, id) })
-  if (!doc) return NextResponse.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
+  if (!doc) return notFound()
 
   const accessError = verifyDocumentAccess(doc, session.user.id, session.user.role)
   if (accessError) return accessError

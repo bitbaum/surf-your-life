@@ -4,7 +4,7 @@ import { medicationLog } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
 import { medicationEntrySchema } from "@/lib/domain/clinical"
 import { PAGINATION_DEFAULT } from "@/lib/constants"
-import { parseBody, requireAuth } from "@/lib/api"
+import { created, parseBody, requireAuth } from "@/lib/api"
 
 export async function GET() {
   const authResult = await requireAuth()
@@ -28,10 +28,10 @@ export async function POST(req: Request) {
   const result = await parseBody(req, medicationEntrySchema)
   if (!result.ok) return result.response
 
-  const [created] = await db
+  const [entry] = await db
     .insert(medicationLog)
     .values({ ...result.data, userId: session.user.id })
     .returning({ id: medicationLog.id })
 
-  return NextResponse.json({ success: true, data: { id: created.id } }, { status: 201 })
+  return created({ id: entry.id })
 }

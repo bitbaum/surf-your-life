@@ -1,9 +1,8 @@
-import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { assignments } from "@/lib/db/schema"
 import { and, eq } from "drizzle-orm"
 import { z } from "zod"
-import { parseBody, requireStaffAuth } from "@/lib/api"
+import { created, parseBody, requireStaffAuth } from "@/lib/api"
 
 const assignSchema = z.object({
   clientId: z.string().uuid(),
@@ -27,10 +26,10 @@ export async function POST(req: Request) {
     .where(and(eq(assignments.clientId, clientId), eq(assignments.active, true)))
 
   // Create new assignment
-  const [created] = await db
+  const [assignment] = await db
     .insert(assignments)
     .values({ clientId, practitionerId })
     .returning({ id: assignments.id })
 
-  return NextResponse.json({ success: true, data: { id: created.id } }, { status: 201 })
+  return created({ id: assignment.id })
 }

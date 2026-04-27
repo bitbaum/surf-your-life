@@ -3,7 +3,7 @@ import { db } from "@/lib/db"
 import { leads } from "@/lib/db/schema"
 import { newsletterSchema } from "@/lib/domain/lead"
 import { API_ERR_RATE_LIMITED } from "@/lib/constants"
-import { parseBody } from "@/lib/api"
+import { created, parseBody } from "@/lib/api"
 import { checkRateLimit, ipKey } from "@/lib/rate-limit"
 
 export async function POST(req: Request) {
@@ -24,5 +24,5 @@ export async function POST(req: Request) {
     source: result.data.source,
   })
 
-  return NextResponse.json({ success: true }, { status: 201 })
+  return created()
 }

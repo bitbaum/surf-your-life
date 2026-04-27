@@ -3,8 +3,7 @@ import { db } from "@/lib/db"
 import { medicationLog } from "@/lib/db/schema"
 import { eq, and } from "drizzle-orm"
 import { z } from "zod"
-import { API_ERR_NOT_FOUND } from "@/lib/constants"
-import { parseBody, requireAuth } from "@/lib/api"
+import { notFound, parseBody, requireAuth } from "@/lib/api"
 
 const patchSchema = z.object({
   endDate: z.string().optional().nullable(), // YYYY-MM-DD or null to clear
@@ -29,7 +28,7 @@ export async function PATCH(
     .returning({ id: medicationLog.id })
 
   if (result.length === 0) {
-    return NextResponse.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
+    return notFound()
   }
 
   return NextResponse.json({ success: true })

@@ -4,8 +4,7 @@ import { db } from "@/lib/db"
 import { threads } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { markThreadAsReadFor } from "@/lib/db/thread-unread"
-import { API_ERR_FORBIDDEN, API_ERR_NOT_FOUND } from "@/lib/constants"
-import { requireAuth } from "@/lib/api"
+import { forbidden, notFound, requireAuth } from "@/lib/api"
 
 export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const authResult = await requireAuth()
@@ -26,11 +25,11 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
     },
   })
 
-  if (!thread) return NextResponse.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
+  if (!thread) return notFound()
 
   // Authorization: clients can only see their own threads
   if (!isAdmin && thread.clientId !== session.user.id) {
-    return NextResponse.json({ success: false, error: API_ERR_FORBIDDEN }, { status: 403 })
+    return forbidden()
   }
 
   await markThreadAsReadFor(id, session.user.id)

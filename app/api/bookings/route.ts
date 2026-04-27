@@ -5,7 +5,7 @@ import { and, eq, desc, inArray } from "drizzle-orm"
 import { createBookingSchema } from "@/lib/domain/booking"
 import { STAFF_ROLES } from "@/lib/domain/auth"
 import { PAGINATION_DEFAULT, API_ERR_SERVICE_UNAVAILABLE, API_ERR_BOOKING_DUPLICATE, API_ERR_SLOT_TAKEN, ACTIVE_BOOKING_STATUSES } from "@/lib/constants"
-import { parseBody, requireAuth } from "@/lib/api"
+import { created, parseBody, requireAuth } from "@/lib/api"
 import { sendEmail, sendEmailFire } from "@/lib/email"
 import { bookingNotificationEmail, bookingRequestEmail } from "@/lib/email/templates"
 
@@ -123,5 +123,5 @@ export async function POST(req: Request) {
     }),
   }, "booking-request-confirm")
 
-  return NextResponse.json({ success: true, data: { id: booking.id } }, { status: 201 })
+  return created({ id: booking.id })
 }

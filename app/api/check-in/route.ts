@@ -10,7 +10,7 @@ import { EMAIL_SUBJECT_FIRST_CHECKIN } from "@/lib/email/subjects"
 import { STAFF_ROLES } from "@/lib/domain/auth"
 import { eq, and, gte, count, inArray } from "drizzle-orm"
 import { API_ERR_CHECKIN_DUPLICATE } from "@/lib/constants"
-import { parseBody, requireAuth } from "@/lib/api"
+import { created, parseBody, requireAuth } from "@/lib/api"
 import { findUserContact } from "@/lib/db/queries"
 
 export async function POST(req: Request) {
@@ -35,7 +35,7 @@ export async function POST(req: Request) {
   const result = await parseBody(req, checkInSchema)
   if (!result.ok) return result.response
 
-  const [created] = await db
+  const [checkIn] = await db
     .insert(checkIns)
     .values({
       ...result.data,
@@ -46,8 +46,8 @@ export async function POST(req: Request) {
     .returning({ id: checkIns.id })
 
   // Fire-and-forget: generate rule-based clinical alerts and semantic embedding
-  void generateAlerts(session.user.id, created.id)
-  void embedCheckIn(created.id)
+  void generateAlerts(session.user.id, checkIn.id)
+  void embedCheckIn(checkIn.id)
 
   // Notify assigned practitioners (or all staff) on client's first check-in
   if (isFirstCheckIn) {
@@ -81,5 +81,5 @@ export async function POST(req: Request) {
     })()
   }
 
-  return NextResponse.json({ success: true }, { status: 201 })
+  return created()
 }

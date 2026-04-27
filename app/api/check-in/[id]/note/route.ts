@@ -5,8 +5,8 @@ import { practitionerNoteSchema } from "@/lib/domain/profile"
 import { eq } from "drizzle-orm"
 import { practitionerNoteEmail } from "@/lib/email/templates"
 import { EMAIL_SUBJECT_PRACTITIONER_NOTE } from "@/lib/email/subjects"
-import { SITE_URL, API_ERR_NOT_FOUND } from "@/lib/constants"
-import { parseBody, requireStaffAuth } from "@/lib/api"
+import { SITE_URL } from "@/lib/constants"
+import { notFound, parseBody, requireStaffAuth } from "@/lib/api"
 import { findUserContact } from "@/lib/db/queries"
 import { sendEmailFire } from "@/lib/email"
 
@@ -19,7 +19,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   const existing = await db.query.checkIns.findFirst({
     where: eq(checkIns.id, id),
   })
-  if (!existing) return NextResponse.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
+  if (!existing) return notFound()
 
   const result = await parseBody(req, practitionerNoteSchema)
   if (!result.ok) return result.response

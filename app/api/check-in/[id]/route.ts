@@ -3,14 +3,13 @@ import { db } from "@/lib/db"
 import { checkIns } from "@/lib/db/schema"
 import { checkInSchema } from "@/lib/domain/profile"
 import { eq, and } from "drizzle-orm"
-import { API_ERR_FORBIDDEN, API_ERR_NOT_FOUND } from "@/lib/constants"
-import { parseBody, requireAuth } from "@/lib/api"
+import { forbidden, notFound, parseBody, requireAuth } from "@/lib/api"
 import { embedCheckIn } from "@/lib/domain/embeddings"
 
 async function verifyOwnership(id: string, userId: string): Promise<NextResponse | null> {
   const existing = await db.query.checkIns.findFirst({ where: eq(checkIns.id, id) })
-  if (!existing) return NextResponse.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
-  if (existing.userId !== userId) return NextResponse.json({ success: false, error: API_ERR_FORBIDDEN }, { status: 403 })
+  if (!existing) return notFound()
+  if (existing.userId !== userId) return forbidden()
   return null
 }
 

@@ -4,9 +4,9 @@ import { eq } from "drizzle-orm"
 import { sendEmail } from "@/lib/email"
 import { inviteEmail } from "@/lib/email/templates"
 import { EMAIL_SUBJECT_INVITE } from "@/lib/email/subjects"
-import { NextRequest, NextResponse } from "next/server"
-import { SITE_URL, API_ERR_NOT_FOUND } from "@/lib/constants"
-import { requireStaffAuth } from "@/lib/api"
+import { NextRequest } from "next/server"
+import { SITE_URL } from "@/lib/constants"
+import { notFound, requireStaffAuth } from "@/lib/api"
 
 export async function POST(
   _req: NextRequest,
@@ -19,7 +19,7 @@ export async function POST(
   const { id } = await params
   const lead = await db.query.leads.findFirst({ where: eq(leads.id, id) })
   if (!lead) {
-    return NextResponse.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
+    return notFound()
   }
 
   const registerUrl = `${SITE_URL}/register?email=${encodeURIComponent(lead.email)}`
@@ -34,5 +34,5 @@ export async function POST(
 
   await db.update(leads).set({ status: "contacted" }).where(eq(leads.id, id))
 
-  return NextResponse.json({ success: true })
+  return Response.json({ success: true })
 }

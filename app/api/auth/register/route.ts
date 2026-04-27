@@ -8,7 +8,7 @@ import { registerSchema, resolveRole, STAFF_ROLES } from "@/lib/domain/auth"
 import { sendEmail } from "@/lib/email"
 import { welcomeEmail, newUserAlertEmail, verificationEmail } from "@/lib/email/templates"
 import { SITE_URL, DAY_MS, API_ERR_RATE_LIMITED, BCRYPT_SALT_ROUNDS, API_ERR_EMAIL_TAKEN } from "@/lib/constants"
-import { parseBody } from "@/lib/api"
+import { created, parseBody } from "@/lib/api"
 import { EMAIL_SUBJECT_VERIFY, EMAIL_SUBJECT_WELCOME } from "@/lib/email/subjects"
 import { checkRateLimit, ipKey } from "@/lib/rate-limit"
 
@@ -81,5 +81,5 @@ export async function POST(req: Request) {
     })().catch(e => console.error("[register] admin alert email failed", e)),
   ])
 
-  return NextResponse.json({ success: true }, { status: 201 })
+  return created()
 }

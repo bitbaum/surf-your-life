@@ -3,8 +3,7 @@ import { db } from "@/lib/db"
 import { programEnrollments } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { updateEnrollmentSchema } from "@/lib/domain/program"
-import { API_ERR_NOT_FOUND } from "@/lib/constants"
-import { parseBody, requireStaffAuth } from "@/lib/api"
+import { notFound, parseBody, requireStaffAuth } from "@/lib/api"
 
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const authResult = await requireStaffAuth()
@@ -19,7 +18,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     where: eq(programEnrollments.id, id),
   })
   if (!enrollment) {
-    return NextResponse.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
+    return notFound()
   }
 
   await db

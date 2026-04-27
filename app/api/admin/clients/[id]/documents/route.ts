@@ -5,7 +5,7 @@ import { documents, documentTypeEnum } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
 import { z } from "zod"
 import { DOCUMENTS_PER_CLIENT_LIMIT, FIELD_MAX_TITLE, DOCUMENT_ADMIN_MAX_CONTENT } from "@/lib/constants"
-import { parseBody, requireStaffAuth } from "@/lib/api"
+import { created, parseBody, requireStaffAuth } from "@/lib/api"
 import { embedDocument } from "@/lib/domain/embeddings"
 
 const createDocSchema = z.object({
@@ -62,5 +62,5 @@ export async function POST(
 
   void embedDocument(doc.id)
 
-  return NextResponse.json({ success: true, data: { id: doc.id } }, { status: 201 })
+  return created({ id: doc.id })
 }

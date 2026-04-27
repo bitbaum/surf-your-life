@@ -4,8 +4,7 @@ import { programs } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { createProgramSchema } from "@/lib/domain/program"
 import { ADMIN_ROLE } from "@/lib/domain/auth"
-import { API_ERR_FORBIDDEN, API_ERR_NOT_FOUND } from "@/lib/constants"
-import { parseBody, requireStaffAuth } from "@/lib/api"
+import { forbidden, notFound, parseBody, requireStaffAuth } from "@/lib/api"
 
 export async function PATCH(
   req: Request,
@@ -19,7 +18,7 @@ export async function PATCH(
 
   const existing = await db.query.programs.findFirst({ where: eq(programs.id, id) })
   if (!existing) {
-    return NextResponse.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
+    return notFound()
   }
 
   const result = await parseBody(req, createProgramSchema)
@@ -48,7 +47,7 @@ export async function DELETE(
   const authResult = await requireStaffAuth()
   if (!authResult.ok) return authResult.response
   const { session } = authResult
-  if (session.user.role !== ADMIN_ROLE) return NextResponse.json({ success: false, error: API_ERR_FORBIDDEN }, { status: 403 })
+  if (session.user.role !== ADMIN_ROLE) return forbidden()
 
   const { id } = await params
 

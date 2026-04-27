@@ -3,8 +3,7 @@ import { db } from "@/lib/db"
 import { leads, leadStatusEnum } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { z } from "zod"
-import { API_ERR_NOT_FOUND } from "@/lib/constants"
-import { parseBody, requireStaffAuth } from "@/lib/api"
+import { notFound, parseBody, requireStaffAuth } from "@/lib/api"
 
 const patchSchema = z.object({
   status: z.enum(leadStatusEnum.enumValues),
@@ -26,7 +25,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     .returning({ id: leads.id, status: leads.status })
 
   if (!updated) {
-    return NextResponse.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
+    return notFound()
   }
 
   return NextResponse.json({ success: true, data: updated })

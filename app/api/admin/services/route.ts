@@ -4,7 +4,7 @@ import { services } from "@/lib/db/schema"
 import { serviceSchema } from "@/lib/domain/services"
 import { asc } from "drizzle-orm"
 import { SERVICES_MAX_LIMIT } from "@/lib/constants"
-import { parseBody, requireStaffAuth } from "@/lib/api"
+import { created, parseBody, requireStaffAuth } from "@/lib/api"
 
 export async function GET() {
   const authResult = await requireStaffAuth()
@@ -21,7 +21,7 @@ export async function POST(req: Request) {
   const result = await parseBody(req, serviceSchema)
   if (!result.ok) return result.response
 
-  const [created] = await db
+  const [service] = await db
     .insert(services)
     .values({
       name: result.data.name,
@@ -33,5 +33,5 @@ export async function POST(req: Request) {
     })
     .returning()
 
-  return NextResponse.json({ success: true, data: created }, { status: 201 })
+  return created(service)
 }

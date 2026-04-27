@@ -4,7 +4,7 @@ import { programs, programEnrollments } from "@/lib/db/schema"
 import { desc, count, eq } from "drizzle-orm"
 import { createProgramSchema } from "@/lib/domain/program"
 import { ADMIN_PROGRAMS_MAX } from "@/lib/constants"
-import { parseBody, requireStaffAuth } from "@/lib/api"
+import { created, parseBody, requireStaffAuth } from "@/lib/api"
 
 export async function GET() {
   const authResult = await requireStaffAuth()
@@ -50,5 +50,5 @@ export async function POST(req: Request) {
     })
     .returning({ id: programs.id })
 
-  return NextResponse.json({ success: true, data: { id: program.id } }, { status: 201 })
+  return created({ id: program.id })
 }

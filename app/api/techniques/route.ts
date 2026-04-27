@@ -4,7 +4,7 @@ import { techniques } from "@/lib/db/schema"
 import { eq, asc } from "drizzle-orm"
 import { createTechniqueSchema } from "@/lib/domain/techniques"
 import { SERVICES_MAX_LIMIT } from "@/lib/constants"
-import { parseBody, requireAuth, requireStaffAuth } from "@/lib/api"
+import { created, parseBody, requireAuth, requireStaffAuth } from "@/lib/api"
 
 export async function GET() {
   const authResult = await requireAuth()
@@ -37,5 +37,5 @@ export async function POST(req: Request) {
     })
     .returning()
 
-  return NextResponse.json({ success: true, data: technique }, { status: 201 })
+  return created(technique)
 }

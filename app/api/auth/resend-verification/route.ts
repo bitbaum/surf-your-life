@@ -5,10 +5,10 @@ import { users, verificationTokens } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { sendEmailFire } from "@/lib/email"
 import { verificationEmail } from "@/lib/email/templates"
-import { SITE_URL, DAY_MS, API_ERR_NOT_FOUND, API_ERR_RATE_LIMITED, API_ERR_EMAIL_ALREADY_VERIFIED } from "@/lib/constants"
+import { SITE_URL, DAY_MS, API_ERR_RATE_LIMITED, API_ERR_EMAIL_ALREADY_VERIFIED } from "@/lib/constants"
 import { EMAIL_SUBJECT_VERIFY } from "@/lib/email/subjects"
 import { checkRateLimit } from "@/lib/rate-limit"
-import { requireAuth } from "@/lib/api"
+import { notFound, requireAuth } from "@/lib/api"
 
 export async function POST() {
   const authResult = await requireAuth()
@@ -28,7 +28,7 @@ export async function POST() {
   })
 
   if (!user) {
-    return NextResponse.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
+    return notFound()
   }
 
   if (user.emailVerified) {

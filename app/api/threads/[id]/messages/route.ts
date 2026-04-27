@@ -4,8 +4,8 @@ import { db } from "@/lib/db"
 import { threads, threadMessages } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { sendMessageSchema, notifyMessageParty } from "@/lib/domain/messaging"
-import { SITE_URL, API_ERR_FORBIDDEN, API_ERR_INVALID_INPUT, API_ERR_NOT_FOUND } from "@/lib/constants"
-import { requireAuth } from "@/lib/api"
+import { SITE_URL, API_ERR_INVALID_INPUT } from "@/lib/constants"
+import { forbidden, notFound, requireAuth } from "@/lib/api"
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const authResult = await requireAuth()
@@ -16,10 +16,10 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   const isAdmin = isStaff(session.user.role)
 
   const thread = await db.query.threads.findFirst({ where: eq(threads.id, id) })
-  if (!thread) return NextResponse.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
+  if (!thread) return notFound()
 
   if (!isAdmin && thread.clientId !== session.user.id) {
-    return NextResponse.json({ success: false, error: API_ERR_FORBIDDEN }, { status: 403 })
+    return forbidden()
   }
 
   const body = await request.json().catch(() => null)

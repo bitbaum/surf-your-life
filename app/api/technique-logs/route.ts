@@ -5,8 +5,8 @@ import { techniqueLogs, techniqueAssignments } from "@/lib/db/schema"
 import { eq, and, gte, desc } from "drizzle-orm"
 import { logTechniqueSchema } from "@/lib/domain/techniques"
 import { localDateString, addDaysISO } from "@/lib/utils"
-import { API_ERR_NOT_FOUND, TECHNIQUE_LOG_WINDOW_DAYS } from "@/lib/constants"
-import { parseBody, requireAuth } from "@/lib/api"
+import { TECHNIQUE_LOG_WINDOW_DAYS } from "@/lib/constants"
+import { created, notFound, parseBody, requireAuth } from "@/lib/api"
 
 const undoSchema = z.object({
   assignmentId: z.string().uuid(),
@@ -50,7 +50,7 @@ export async function POST(req: Request) {
     ),
   })
   if (!assignment) {
-    return NextResponse.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
+    return notFound()
   }
 
   const [log] = await db
@@ -62,7 +62,7 @@ export async function POST(req: Request) {
     })
     .returning()
 
-  return NextResponse.json({ success: true, data: log }, { status: 201 })
+  return created(log)
 }
 
 export async function DELETE(req: Request) {
@@ -83,7 +83,7 @@ export async function DELETE(req: Request) {
     ),
   })
   if (!assignment) {
-    return NextResponse.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
+    return notFound()
   }
 
   // Find the row with the highest completedReps for today — that's the one to delete
@@ -97,7 +97,7 @@ export async function DELETE(req: Request) {
   })
 
   if (!topRow) {
-    return NextResponse.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
+    return notFound()
   }
 
   await db.delete(techniqueLogs).where(eq(techniqueLogs.id, topRow.id))

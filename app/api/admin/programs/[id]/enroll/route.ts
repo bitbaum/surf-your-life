@@ -1,11 +1,9 @@
-import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { programs, programEnrollments, users } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { enrollClientSchema } from "@/lib/domain/program"
 import { CLIENT_ROLE } from "@/lib/domain/auth"
-import { API_ERR_NOT_FOUND } from "@/lib/constants"
-import { parseBody, requireStaffAuth } from "@/lib/api"
+import { created, notFound, parseBody, requireStaffAuth } from "@/lib/api"
 
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const authResult = await requireStaffAuth()
@@ -15,7 +13,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
 
   const program = await db.query.programs.findFirst({ where: eq(programs.id, programId) })
   if (!program) {
-    return NextResponse.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
+    return notFound()
   }
 
   const result = await parseBody(req, enrollClientSchema)
@@ -23,7 +21,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
 
   const client = await db.query.users.findFirst({ where: eq(users.id, result.data.clientId) })
   if (!client || client.role !== CLIENT_ROLE) {
-    return NextResponse.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
+    return notFound()
   }
 
   const [enrollment] = await db
@@ -37,5 +35,5 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     })
     .returning({ id: programEnrollments.id })
 
-  return NextResponse.json({ success: true, data: { id: enrollment.id } }, { status: 201 })
+  return created({ id: enrollment.id })
 }

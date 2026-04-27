@@ -4,7 +4,7 @@ import { functionalAssessments } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
 import { functionalAssessmentSchema } from "@/lib/domain/clinical"
 import { PAGINATION_DEFAULT } from "@/lib/constants"
-import { parseBody, requireAuth } from "@/lib/api"
+import { created, parseBody, requireAuth } from "@/lib/api"
 
 export async function GET() {
   const authResult = await requireAuth()
@@ -29,7 +29,7 @@ export async function POST(req: Request) {
   if (!result.ok) return result.response
 
   const { assessedAt, ...rest } = result.data
-  const [created] = await db
+  const [assessment] = await db
     .insert(functionalAssessments)
     .values({
       ...rest,
@@ -38,5 +38,5 @@ export async function POST(req: Request) {
     })
     .returning({ id: functionalAssessments.id })
 
-  return NextResponse.json({ success: true, data: { id: created.id } }, { status: 201 })
+  return created({ id: assessment.id })
 }
