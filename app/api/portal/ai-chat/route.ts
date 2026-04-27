@@ -4,7 +4,8 @@ import { db } from "@/lib/db"
 import { aiMessages } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
 import { generateAiReply } from "@/lib/domain/ai-chat"
-import { AI_CHAT_HISTORY_LIMIT, AI_CHAT_DISPLAY_LIMIT, AI_CHAT_MAX_LENGTH, API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED, API_ERR_SERVER_ERROR } from "@/lib/constants"
+import { AI_CHAT_HISTORY_LIMIT, AI_CHAT_DISPLAY_LIMIT, AI_CHAT_MAX_LENGTH, API_ERR_UNAUTHORIZED, API_ERR_SERVER_ERROR } from "@/lib/constants"
+import { parseBody } from "@/lib/api"
 import { z } from "zod"
 
 const messageSchema = z.object({
@@ -40,18 +41,15 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
   }
 
-  const body = await req.json()
-  const parsed = messageSchema.safeParse(body)
-  if (!parsed.success) {
-    return NextResponse.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })
-  }
+  const result = await parseBody(req, messageSchema)
+  if (!result.ok) return result.response
 
   try {
     // Save user message
     await db.insert(aiMessages).values({
       userId: session.user.id,
       role: "user",
-      content: parsed.data.content,
+      content: result.data.content,
     })
 
     // Fetch recent history for context
@@ -66,7 +64,7 @@ export async function POST(req: Request) {
     // Generate reply
     const reply = await generateAiReply(
       session.user.id,
-      parsed.data.content,
+      result.data.content,
       historyAsc
     )
 

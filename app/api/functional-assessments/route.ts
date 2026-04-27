@@ -4,7 +4,8 @@ import { db } from "@/lib/db"
 import { functionalAssessments } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
 import { functionalAssessmentSchema } from "@/lib/domain/clinical"
-import { PAGINATION_DEFAULT , API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED } from "@/lib/constants"
+import { PAGINATION_DEFAULT , API_ERR_UNAUTHORIZED } from "@/lib/constants"
+import { parseBody } from "@/lib/api"
 
 export async function GET() {
   const session = await auth()
@@ -27,13 +28,10 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
   }
 
-  const body = await req.json()
-  const parsed = functionalAssessmentSchema.safeParse(body)
-  if (!parsed.success) {
-    return NextResponse.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })
-  }
+  const result = await parseBody(req, functionalAssessmentSchema)
+  if (!result.ok) return result.response
 
-  const { assessedAt, ...rest } = parsed.data
+  const { assessedAt, ...rest } = result.data
   const [created] = await db
     .insert(functionalAssessments)
     .values({

@@ -6,7 +6,8 @@ import { db } from "@/lib/db"
 import { documents, documentTypeEnum } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
 import { z } from "zod"
-import { DOCUMENTS_PER_CLIENT_LIMIT, FIELD_MAX_TITLE, DOCUMENT_ADMIN_MAX_CONTENT, API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED } from "@/lib/constants"
+import { DOCUMENTS_PER_CLIENT_LIMIT, FIELD_MAX_TITLE, DOCUMENT_ADMIN_MAX_CONTENT, API_ERR_UNAUTHORIZED } from "@/lib/constants"
+import { parseBody } from "@/lib/api"
 import { embedDocument } from "@/lib/domain/embeddings"
 
 const createDocSchema = z.object({
@@ -47,15 +48,12 @@ export async function POST(
 
   const { id: clientId } = await params
 
-  const body = await req.json()
-  const parsed = createDocSchema.safeParse(body)
-  if (!parsed.success) {
-    return NextResponse.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })
-  }
+  const result = await parseBody(req, createDocSchema)
+  if (!result.ok) return result.response
 
-  const { type, content } = parsed.data
+  const { type, content } = result.data
   const title =
-    parsed.data.title?.trim() ||
+    result.data.title?.trim() ||
     `${formatEnumValue(type)} – ${new Date().toLocaleDateString("en-GB", {
       day: "numeric",
       month: "short",

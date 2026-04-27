@@ -5,7 +5,8 @@ import { users, passwordResetTokens } from "@/lib/db/schema"
 import { eq, and, gt, isNull } from "drizzle-orm"
 import bcrypt from "bcryptjs"
 import { checkRateLimit, ipKey } from "@/lib/rate-limit"
-import { API_ERR_INVALID_INPUT, API_ERR_RATE_LIMITED, BCRYPT_SALT_ROUNDS, PASSWORD_MIN_LENGTH, API_ERR_INVALID_TOKEN } from "@/lib/constants"
+import { API_ERR_RATE_LIMITED, BCRYPT_SALT_ROUNDS, PASSWORD_MIN_LENGTH, API_ERR_INVALID_TOKEN } from "@/lib/constants"
+import { parseBody } from "@/lib/api"
 
 const schema = z.object({
   token: z.string().min(1),
@@ -21,13 +22,10 @@ export async function POST(req: Request) {
     )
   }
 
-  const body = await req.json()
-  const parsed = schema.safeParse(body)
-  if (!parsed.success) {
-    return NextResponse.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })
-  }
+  const result = await parseBody(req, schema)
+  if (!result.ok) return result.response
 
-  const { token, password } = parsed.data
+  const { token, password } = result.data
   const now = new Date()
 
   const resetToken = await db.query.passwordResetTokens.findFirst({

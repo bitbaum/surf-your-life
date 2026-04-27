@@ -5,7 +5,8 @@ import { programEnrollments } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { updateEnrollmentSchema } from "@/lib/domain/program"
 import { isStaff } from "@/lib/domain/auth"
-import { API_ERR_FORBIDDEN, API_ERR_INVALID_INPUT, API_ERR_NOT_FOUND } from "@/lib/constants"
+import { API_ERR_FORBIDDEN, API_ERR_NOT_FOUND } from "@/lib/constants"
+import { parseBody } from "@/lib/api"
 
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth()
@@ -15,11 +16,8 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 
   const { id } = await params
 
-  const body = await req.json()
-  const parsed = updateEnrollmentSchema.safeParse(body)
-  if (!parsed.success) {
-    return NextResponse.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })
-  }
+  const result = await parseBody(req, updateEnrollmentSchema)
+  if (!result.ok) return result.response
 
   const enrollment = await db.query.programEnrollments.findFirst({
     where: eq(programEnrollments.id, id),
@@ -31,8 +29,8 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   await db
     .update(programEnrollments)
     .set({
-      status: parsed.data.status,
-      ...(parsed.data.notes !== undefined ? { notes: parsed.data.notes } : {}),
+      status: result.data.status,
+      ...(result.data.notes !== undefined ? { notes: result.data.notes } : {}),
     })
     .where(eq(programEnrollments.id, id))
 

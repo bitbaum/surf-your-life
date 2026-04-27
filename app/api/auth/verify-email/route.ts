@@ -3,7 +3,8 @@ import { z } from "zod"
 import { eq, and, gt } from "drizzle-orm"
 import { db } from "@/lib/db"
 import { users, verificationTokens } from "@/lib/db/schema"
-import { API_ERR_INVALID_INPUT, API_ERR_INVALID_TOKEN } from "@/lib/constants"
+import { API_ERR_INVALID_TOKEN } from "@/lib/constants"
+import { parseBody } from "@/lib/api"
 
 // POST /api/auth/verify-email — consume token and mark email as verified
 const verifySchema = z.object({
@@ -12,13 +13,10 @@ const verifySchema = z.object({
 })
 
 export async function POST(req: Request) {
-  const body = await req.json()
-  const parsed = verifySchema.safeParse(body)
-  if (!parsed.success) {
-    return NextResponse.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })
-  }
+  const result = await parseBody(req, verifySchema)
+  if (!result.ok) return result.response
 
-  const { token, email } = parsed.data
+  const { token, email } = result.data
   const now = new Date()
 
   const vt = await db.query.verificationTokens.findFirst({

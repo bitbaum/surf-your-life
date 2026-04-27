@@ -5,7 +5,8 @@ import { programs, programEnrollments } from "@/lib/db/schema"
 import { desc, count, eq } from "drizzle-orm"
 import { createProgramSchema } from "@/lib/domain/program"
 import { isStaff } from "@/lib/domain/auth"
-import { API_ERR_FORBIDDEN, API_ERR_INVALID_INPUT, ADMIN_PROGRAMS_MAX } from "@/lib/constants"
+import { API_ERR_FORBIDDEN, ADMIN_PROGRAMS_MAX } from "@/lib/constants"
+import { parseBody } from "@/lib/api"
 
 export async function GET() {
   const session = await auth()
@@ -38,21 +39,18 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: false, error: API_ERR_FORBIDDEN }, { status: 403 })
   }
 
-  const body = await req.json()
-  const parsed = createProgramSchema.safeParse(body)
-  if (!parsed.success) {
-    return NextResponse.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })
-  }
+  const result = await parseBody(req, createProgramSchema)
+  if (!result.ok) return result.response
 
   const [program] = await db
     .insert(programs)
     .values({
-      title: parsed.data.title,
-      description: parsed.data.description,
-      durationWeeks: parsed.data.durationWeeks ?? null,
-      targetConcern: parsed.data.targetConcern ?? null,
-      isTemplate: parsed.data.isTemplate ?? false,
-      phaseConfig: parsed.data.phaseConfig ?? null,
+      title: result.data.title,
+      description: result.data.description,
+      durationWeeks: result.data.durationWeeks ?? null,
+      targetConcern: result.data.targetConcern ?? null,
+      isTemplate: result.data.isTemplate ?? false,
+      phaseConfig: result.data.phaseConfig ?? null,
       createdBy: session.user.id,
     })
     .returning({ id: programs.id })

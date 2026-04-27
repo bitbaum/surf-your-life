@@ -5,7 +5,8 @@ import { isStaff, ADMIN_ROLE } from "@/lib/domain/auth"
 import { db } from "@/lib/db"
 import { documents } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
-import { API_ERR_FORBIDDEN, API_ERR_NOT_FOUND, API_ERR_UNAUTHORIZED, API_ERR_INVALID_INPUT, FIELD_MAX_TITLE } from "@/lib/constants"
+import { API_ERR_FORBIDDEN, API_ERR_NOT_FOUND, API_ERR_UNAUTHORIZED, FIELD_MAX_TITLE } from "@/lib/constants"
+import { parseBody } from "@/lib/api"
 
 const patchSchema = z.object({
   title: z.string().min(1).max(FIELD_MAX_TITLE).optional(),
@@ -22,11 +23,8 @@ export async function PATCH(
   }
 
   const { id } = await params
-  const body = await req.json()
-  const parsed = patchSchema.safeParse(body)
-  if (!parsed.success) {
-    return NextResponse.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })
-  }
+  const result = await parseBody(req, patchSchema)
+  if (!result.ok) return result.response
 
   const doc = await db.query.documents.findFirst({ where: eq(documents.id, id) })
   if (!doc) {
@@ -40,7 +38,7 @@ export async function PATCH(
 
   const updated = await db
     .update(documents)
-    .set({ ...parsed.data, updatedAt: new Date() })
+    .set({ ...result.data, updatedAt: new Date() })
     .where(eq(documents.id, id))
     .returning()
 

@@ -6,7 +6,8 @@ import { db } from "@/lib/db"
 import { users } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { checkRateLimit, ipKey } from "@/lib/rate-limit"
-import { API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED, API_ERR_RATE_LIMITED, BCRYPT_SALT_ROUNDS, PASSWORD_MIN_LENGTH, API_ERR_NO_PASSWORD_AUTH, API_ERR_WRONG_PASSWORD } from "@/lib/constants"
+import { API_ERR_UNAUTHORIZED, API_ERR_RATE_LIMITED, BCRYPT_SALT_ROUNDS, PASSWORD_MIN_LENGTH, API_ERR_NO_PASSWORD_AUTH, API_ERR_WRONG_PASSWORD } from "@/lib/constants"
+import { parseBody } from "@/lib/api"
 
 const changePasswordSchema = z.object({
   currentPassword: z.string().min(1),
@@ -27,11 +28,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
   }
 
-  const body = await req.json()
-  const parsed = changePasswordSchema.safeParse(body)
-  if (!parsed.success) {
-    return NextResponse.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })
-  }
+  const result = await parseBody(req, changePasswordSchema)
+  if (!result.ok) return result.response
 
   const user = await db.query.users.findFirst({
     where: eq(users.id, session.user.id),
@@ -44,7 +42,7 @@ export async function POST(req: Request) {
     )
   }
 
-  const valid = await bcrypt.compare(parsed.data.currentPassword, user.password)
+  const valid = await bcrypt.compare(result.data.currentPassword, user.password)
   if (!valid) {
     return NextResponse.json(
       { success: false, error: API_ERR_WRONG_PASSWORD },
@@ -52,7 +50,7 @@ export async function POST(req: Request) {
     )
   }
 
-  const hashed = await bcrypt.hash(parsed.data.newPassword, BCRYPT_SALT_ROUNDS)
+  const hashed = await bcrypt.hash(result.data.newPassword, BCRYPT_SALT_ROUNDS)
   await db.update(users).set({ password: hashed }).where(eq(users.id, session.user.id))
 
   return NextResponse.json({ success: true })

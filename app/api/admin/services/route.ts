@@ -5,7 +5,8 @@ import { services } from "@/lib/db/schema"
 import { serviceSchema } from "@/lib/domain/services"
 import { isStaff } from "@/lib/domain/auth"
 import { asc } from "drizzle-orm"
-import { API_ERR_FORBIDDEN, API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED, SERVICES_MAX_LIMIT } from "@/lib/constants"
+import { API_ERR_FORBIDDEN, API_ERR_UNAUTHORIZED, SERVICES_MAX_LIMIT } from "@/lib/constants"
+import { parseBody } from "@/lib/api"
 
 export async function GET() {
   const session = await auth()
@@ -25,19 +26,16 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: false, error: API_ERR_FORBIDDEN }, { status: 403 })
   }
 
-  const body = await req.json()
-  const parsed = serviceSchema.safeParse(body)
-  if (!parsed.success) {
-    return NextResponse.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })
-  }
+  const result = await parseBody(req, serviceSchema)
+  if (!result.ok) return result.response
 
   const [created] = await db
     .insert(services)
     .values({
-      name: parsed.data.name,
-      description: parsed.data.description ?? null,
-      category: parsed.data.category,
-      durationMinutes: parsed.data.durationMinutes ?? null,
+      name: result.data.name,
+      description: result.data.description ?? null,
+      category: result.data.category,
+      durationMinutes: result.data.durationMinutes ?? null,
       available: true,
       sortOrder: 0,
     })

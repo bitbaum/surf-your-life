@@ -4,7 +4,8 @@ import { db } from "@/lib/db"
 import { documents } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
 import { z } from "zod"
-import { DOCUMENTS_PER_CLIENT_LIMIT, DOCUMENT_UPLOAD_MAX_CONTENT, FIELD_MAX_TITLE, API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED } from "@/lib/constants"
+import { DOCUMENTS_PER_CLIENT_LIMIT, DOCUMENT_UPLOAD_MAX_CONTENT, FIELD_MAX_TITLE, API_ERR_UNAUTHORIZED } from "@/lib/constants"
+import { parseBody } from "@/lib/api"
 import { embedDocument } from "@/lib/domain/embeddings"
 
 const uploadSchema = z.object({
@@ -34,15 +35,12 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
   }
 
-  const body = await req.json()
-  const parsed = uploadSchema.safeParse(body)
-  if (!parsed.success) {
-    return NextResponse.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })
-  }
+  const result = await parseBody(req, uploadSchema)
+  if (!result.ok) return result.response
 
-  const { content } = parsed.data
+  const { content } = result.data
   const title =
-    parsed.data.title?.trim() ||
+    result.data.title?.trim() ||
     `Upload – ${new Date().toLocaleDateString("en-GB", {
       day: "numeric",
       month: "short",

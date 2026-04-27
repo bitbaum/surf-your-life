@@ -5,7 +5,8 @@ import { programs } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { createProgramSchema } from "@/lib/domain/program"
 import { isStaff, ADMIN_ROLE } from "@/lib/domain/auth"
-import { API_ERR_FORBIDDEN, API_ERR_INVALID_INPUT, API_ERR_NOT_FOUND } from "@/lib/constants"
+import { API_ERR_FORBIDDEN, API_ERR_NOT_FOUND } from "@/lib/constants"
+import { parseBody } from "@/lib/api"
 
 export async function PATCH(
   req: Request,
@@ -23,21 +24,18 @@ export async function PATCH(
     return NextResponse.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
   }
 
-  const body = await req.json()
-  const parsed = createProgramSchema.safeParse(body)
-  if (!parsed.success) {
-    return NextResponse.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })
-  }
+  const result = await parseBody(req, createProgramSchema)
+  if (!result.ok) return result.response
 
   await db
     .update(programs)
     .set({
-      title: parsed.data.title,
-      description: parsed.data.description ?? null,
-      durationWeeks: parsed.data.durationWeeks ?? null,
-      targetConcern: parsed.data.targetConcern ?? null,
-      isTemplate: parsed.data.isTemplate ?? false,
-      phaseConfig: parsed.data.phaseConfig ?? null,
+      title: result.data.title,
+      description: result.data.description ?? null,
+      durationWeeks: result.data.durationWeeks ?? null,
+      targetConcern: result.data.targetConcern ?? null,
+      isTemplate: result.data.isTemplate ?? false,
+      phaseConfig: result.data.phaseConfig ?? null,
       updatedAt: new Date(),
     })
     .where(eq(programs.id, id))

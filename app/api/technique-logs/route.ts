@@ -6,7 +6,8 @@ import { techniqueLogs, techniqueAssignments } from "@/lib/db/schema"
 import { eq, and, gte, desc } from "drizzle-orm"
 import { logTechniqueSchema } from "@/lib/domain/techniques"
 import { localDateString, addDaysISO } from "@/lib/utils"
-import { API_ERR_UNAUTHORIZED, API_ERR_NOT_FOUND, API_ERR_INVALID_INPUT, TECHNIQUE_LOG_WINDOW_DAYS } from "@/lib/constants"
+import { API_ERR_UNAUTHORIZED, API_ERR_NOT_FOUND, TECHNIQUE_LOG_WINDOW_DAYS } from "@/lib/constants"
+import { parseBody } from "@/lib/api"
 
 const undoSchema = z.object({
   assignmentId: z.string().uuid(),
@@ -37,11 +38,8 @@ export async function POST(req: Request) {
   const session = await auth()
   if (!session) return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
 
-  const body = await req.json()
-  const result = logTechniqueSchema.safeParse(body)
-  if (!result.success) {
-    return NextResponse.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })
-  }
+  const result = await parseBody(req, logTechniqueSchema)
+  if (!result.ok) return result.response
 
   // Verify the assignment belongs to this user
   const assignment = await db.query.techniqueAssignments.findFirst({
@@ -70,13 +68,10 @@ export async function DELETE(req: Request) {
   const session = await auth()
   if (!session) return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
 
-  const body = await req.json()
-  const parsed = undoSchema.safeParse(body)
-  if (!parsed.success) {
-    return NextResponse.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })
-  }
+  const result = await parseBody(req, undoSchema)
+  if (!result.ok) return result.response
 
-  const { assignmentId, date } = parsed.data
+  const { assignmentId, date } = result.data
 
   // Verify assignment belongs to this user
   const assignment = await db.query.techniqueAssignments.findFirst({

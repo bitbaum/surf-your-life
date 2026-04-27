@@ -5,7 +5,8 @@ import { db } from "@/lib/db"
 import { techniqueAssignments } from "@/lib/db/schema"
 import { eq, and } from "drizzle-orm"
 import { createAssignmentSchema } from "@/lib/domain/techniques"
-import { API_ERR_FORBIDDEN, API_ERR_UNAUTHORIZED, API_ERR_INVALID_INPUT, CLIENT_ASSIGNMENTS_MAX } from "@/lib/constants"
+import { API_ERR_FORBIDDEN, API_ERR_UNAUTHORIZED, CLIENT_ASSIGNMENTS_MAX } from "@/lib/constants"
+import { parseBody } from "@/lib/api"
 
 export async function GET(req: Request) {
   const session = await auth()
@@ -40,11 +41,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: false, error: API_ERR_FORBIDDEN }, { status: 403 })
   }
 
-  const body = await req.json()
-  const result = createAssignmentSchema.safeParse(body)
-  if (!result.success) {
-    return NextResponse.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })
-  }
+  const result = await parseBody(req, createAssignmentSchema)
+  if (!result.ok) return result.response
 
   const [assignment] = await db
     .insert(techniqueAssignments)

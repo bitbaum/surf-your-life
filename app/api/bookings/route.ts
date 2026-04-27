@@ -5,7 +5,8 @@ import { bookings, services, users } from "@/lib/db/schema"
 import { and, eq, desc, inArray } from "drizzle-orm"
 import { createBookingSchema } from "@/lib/domain/booking"
 import { STAFF_ROLES } from "@/lib/domain/auth"
-import { PAGINATION_DEFAULT, API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED, API_ERR_SERVICE_UNAVAILABLE, API_ERR_BOOKING_DUPLICATE, API_ERR_SLOT_TAKEN, ACTIVE_BOOKING_STATUSES } from "@/lib/constants"
+import { PAGINATION_DEFAULT, API_ERR_UNAUTHORIZED, API_ERR_SERVICE_UNAVAILABLE, API_ERR_BOOKING_DUPLICATE, API_ERR_SLOT_TAKEN, ACTIVE_BOOKING_STATUSES } from "@/lib/constants"
+import { parseBody } from "@/lib/api"
 import { sendEmail } from "@/lib/email"
 import { bookingNotificationEmail, bookingRequestEmail } from "@/lib/email/templates"
 
@@ -31,14 +32,11 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
   }
 
-  const body = await req.json()
-  const parsed = createBookingSchema.safeParse(body)
-  if (!parsed.success) {
-    return NextResponse.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })
-  }
+  const result = await parseBody(req, createBookingSchema)
+  if (!result.ok) return result.response
 
   const service = await db.query.services.findFirst({
-    where: eq(services.id, parsed.data.serviceId),
+    where: eq(services.id, result.data.serviceId),
   })
   if (!service || !service.available) {
     return NextResponse.json({ success: false, error: API_ERR_SERVICE_UNAVAILABLE }, { status: 404 })
@@ -48,7 +46,7 @@ export async function POST(req: Request) {
   const existingOwn = await db.query.bookings.findFirst({
     where: and(
       eq(bookings.userId, session.user.id),
-      eq(bookings.serviceId, parsed.data.serviceId),
+      eq(bookings.serviceId, result.data.serviceId),
       inArray(bookings.status, ACTIVE_BOOKING_STATUSES)
     ),
   })
@@ -60,12 +58,12 @@ export async function POST(req: Request) {
   }
 
   // Prevent slot conflicts: block if another client already holds the same date+time
-  if (parsed.data.preferredDate && parsed.data.preferredTime) {
+  if (result.data.preferredDate && result.data.preferredTime) {
     const slotTaken = await db.query.bookings.findFirst({
       where: and(
-        eq(bookings.serviceId, parsed.data.serviceId),
-        eq(bookings.preferredDate, parsed.data.preferredDate),
-        eq(bookings.preferredTime, parsed.data.preferredTime),
+        eq(bookings.serviceId, result.data.serviceId),
+        eq(bookings.preferredDate, result.data.preferredDate),
+        eq(bookings.preferredTime, result.data.preferredTime),
         inArray(bookings.status, ACTIVE_BOOKING_STATUSES)
       ),
     })
@@ -81,10 +79,10 @@ export async function POST(req: Request) {
     .insert(bookings)
     .values({
       userId: session.user.id,
-      serviceId: parsed.data.serviceId,
-      preferredDate: parsed.data.preferredDate,
-      preferredTime: parsed.data.preferredTime,
-      notes: parsed.data.notes,
+      serviceId: result.data.serviceId,
+      preferredDate: result.data.preferredDate,
+      preferredTime: result.data.preferredTime,
+      notes: result.data.notes,
     })
     .returning({ id: bookings.id })
 
@@ -99,9 +97,9 @@ export async function POST(req: Request) {
       clientEmail: session.user.email!,
       clientName: session.user.name ?? null,
       service,
-      preferredDate: parsed.data.preferredDate,
-      preferredTime: parsed.data.preferredTime ?? null,
-      notes: parsed.data.notes ?? null,
+      preferredDate: result.data.preferredDate,
+      preferredTime: result.data.preferredTime ?? null,
+      notes: result.data.notes ?? null,
       bookingId: booking.id,
     })
 
@@ -123,8 +121,8 @@ export async function POST(req: Request) {
     html: bookingRequestEmail({
       clientName: session.user.name ?? null,
       serviceName: service.name,
-      preferredDate: parsed.data.preferredDate ?? null,
-      preferredTime: parsed.data.preferredTime ?? null,
+      preferredDate: result.data.preferredDate ?? null,
+      preferredTime: result.data.preferredTime ?? null,
     }),
   }).catch((e) => console.error("[booking-request-confirm]", e))
 

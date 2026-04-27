@@ -4,7 +4,8 @@ import { db } from "@/lib/db"
 import { passwordResetTokens } from "@/lib/db/schema"
 import { randomBytes } from "crypto"
 import { z } from "zod"
-import { SITE_URL, HOUR_MS , API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED } from "@/lib/constants"
+import { SITE_URL, HOUR_MS , API_ERR_UNAUTHORIZED } from "@/lib/constants"
+import { parseBody } from "@/lib/api"
 import { CLIENT_ROLE } from "@/lib/domain/auth"
 
 const schema = z.object({ userId: z.string().uuid() })
@@ -15,15 +16,14 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
   }
 
-  const body = await req.json()
-  const parsed = schema.safeParse(body)
-  if (!parsed.success) return NextResponse.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })
+  const result = await parseBody(req, schema)
+  if (!result.ok) return result.response
 
   const token = randomBytes(32).toString("hex")
   const expiresAt = new Date(Date.now() + HOUR_MS)
 
   await db.insert(passwordResetTokens).values({
-    userId: parsed.data.userId,
+    userId: result.data.userId,
     token,
     expiresAt,
   })

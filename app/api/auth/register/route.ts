@@ -7,7 +7,8 @@ import { users, profiles, verificationTokens } from "@/lib/db/schema"
 import { registerSchema, resolveRole, STAFF_ROLES } from "@/lib/domain/auth"
 import { sendEmail } from "@/lib/email"
 import { welcomeEmail, newUserAlertEmail, verificationEmail } from "@/lib/email/templates"
-import { SITE_URL, DAY_MS, API_ERR_INVALID_INPUT, API_ERR_RATE_LIMITED, BCRYPT_SALT_ROUNDS, API_ERR_EMAIL_TAKEN } from "@/lib/constants"
+import { SITE_URL, DAY_MS, API_ERR_RATE_LIMITED, BCRYPT_SALT_ROUNDS, API_ERR_EMAIL_TAKEN } from "@/lib/constants"
+import { parseBody } from "@/lib/api"
 import { EMAIL_SUBJECT_VERIFY, EMAIL_SUBJECT_WELCOME } from "@/lib/email/subjects"
 import { checkRateLimit, ipKey } from "@/lib/rate-limit"
 
@@ -20,17 +21,10 @@ export async function POST(req: Request) {
     )
   }
 
-  const body = await req.json()
-  const parsed = registerSchema.safeParse(body)
+  const result = await parseBody(req, registerSchema)
+  if (!result.ok) return result.response
 
-  if (!parsed.success) {
-    return NextResponse.json(
-      { success: false, error: API_ERR_INVALID_INPUT },
-      { status: 400 }
-    )
-  }
-
-  const { email, password } = parsed.data
+  const { email, password } = result.data
 
   const existing = await db.query.users.findFirst({ where: eq(users.email, email) })
   if (existing) {

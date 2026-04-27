@@ -4,7 +4,8 @@ import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { profiles, users } from "@/lib/db/schema"
 import { profileSchema } from "@/lib/domain/profile"
-import { API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED } from "@/lib/constants"
+import { API_ERR_UNAUTHORIZED } from "@/lib/constants"
+import { parseBody } from "@/lib/api"
 
 export async function GET() {
   const session = await auth()
@@ -21,13 +22,10 @@ export async function PUT(req: Request) {
   const session = await auth()
   if (!session) return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
 
-  const body = await req.json()
-  const parsed = profileSchema.safeParse(body)
-  if (!parsed.success) {
-    return NextResponse.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })
-  }
+  const result = await parseBody(req, profileSchema)
+  if (!result.ok) return result.response
 
-  const { name, ...profileData } = parsed.data
+  const { name, ...profileData } = result.data
 
   // Update display name on user record if provided
   if (name !== undefined && name.trim()) {

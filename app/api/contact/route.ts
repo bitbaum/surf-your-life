@@ -2,7 +2,8 @@ import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { leads } from "@/lib/db/schema"
 import { contactSchema } from "@/lib/domain/lead"
-import { API_ERR_INVALID_INPUT, API_ERR_RATE_LIMITED } from "@/lib/constants"
+import { API_ERR_RATE_LIMITED } from "@/lib/constants"
+import { parseBody } from "@/lib/api"
 import { checkRateLimit, ipKey } from "@/lib/rate-limit"
 
 export async function POST(req: Request) {
@@ -14,16 +15,13 @@ export async function POST(req: Request) {
     )
   }
 
-  const body = await req.json()
-  const parsed = contactSchema.safeParse(body)
-  if (!parsed.success) {
-    return NextResponse.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })
-  }
+  const result = await parseBody(req, contactSchema)
+  if (!result.ok) return result.response
 
   await db.insert(leads).values({
-    name: parsed.data.name,
-    email: parsed.data.email,
-    message: parsed.data.message,
+    name: result.data.name,
+    email: result.data.email,
+    message: result.data.message,
   })
 
   return NextResponse.json({ success: true }, { status: 201 })

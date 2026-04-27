@@ -4,7 +4,8 @@ import { db } from "@/lib/db"
 import { medicationLog } from "@/lib/db/schema"
 import { eq, and } from "drizzle-orm"
 import { z } from "zod"
-import { API_ERR_INVALID_INPUT, API_ERR_NOT_FOUND, API_ERR_UNAUTHORIZED } from "@/lib/constants"
+import { API_ERR_NOT_FOUND, API_ERR_UNAUTHORIZED } from "@/lib/constants"
+import { parseBody } from "@/lib/api"
 
 const patchSchema = z.object({
   endDate: z.string().optional().nullable(), // YYYY-MM-DD or null to clear
@@ -20,15 +21,12 @@ export async function PATCH(
     return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
   }
 
-  const body = await req.json()
-  const parsed = patchSchema.safeParse(body)
-  if (!parsed.success) {
-    return NextResponse.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })
-  }
+  const parseResult = await parseBody(req, patchSchema)
+  if (!parseResult.ok) return parseResult.response
 
   const result = await db
     .update(medicationLog)
-    .set({ endDate: parsed.data.endDate ?? null })
+    .set({ endDate: parseResult.data.endDate ?? null })
     .where(and(eq(medicationLog.id, id), eq(medicationLog.userId, session.user.id)))
     .returning({ id: medicationLog.id })
 

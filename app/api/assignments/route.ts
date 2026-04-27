@@ -5,7 +5,8 @@ import { assignments } from "@/lib/db/schema"
 import { and, eq } from "drizzle-orm"
 import { z } from "zod"
 import { isStaff } from "@/lib/domain/auth"
-import { API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED } from "@/lib/constants"
+import { API_ERR_UNAUTHORIZED } from "@/lib/constants"
+import { parseBody } from "@/lib/api"
 
 const assignSchema = z.object({
   clientId: z.string().uuid(),
@@ -18,13 +19,10 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
   }
 
-  const body = await req.json()
-  const parsed = assignSchema.safeParse(body)
-  if (!parsed.success) {
-    return NextResponse.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })
-  }
+  const result = await parseBody(req, assignSchema)
+  if (!result.ok) return result.response
 
-  const { clientId, practitionerId } = parsed.data
+  const { clientId, practitionerId } = result.data
 
   // Deactivate any existing active assignment for this client
   await db

@@ -8,7 +8,8 @@ import { eq } from "drizzle-orm"
 import { sendEmail } from "@/lib/email"
 import { practitionerNoteEmail } from "@/lib/email/templates"
 import { EMAIL_SUBJECT_PRACTITIONER_NOTE } from "@/lib/email/subjects"
-import { SITE_URL , API_ERR_FORBIDDEN, API_ERR_INVALID_INPUT, API_ERR_NOT_FOUND, API_ERR_UNAUTHORIZED } from "@/lib/constants"
+import { SITE_URL , API_ERR_FORBIDDEN, API_ERR_NOT_FOUND, API_ERR_UNAUTHORIZED } from "@/lib/constants"
+import { parseBody } from "@/lib/api"
 
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth()
@@ -24,15 +25,12 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   })
   if (!existing) return NextResponse.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
 
-  const body = await req.json()
-  const parsed = practitionerNoteSchema.safeParse(body)
-  if (!parsed.success) {
-    return NextResponse.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })
-  }
+  const result = await parseBody(req, practitionerNoteSchema)
+  if (!result.ok) return result.response
 
   const [updated] = await db
     .update(checkIns)
-    .set({ practitionerNote: parsed.data.note, practitionerNoteAt: new Date() })
+    .set({ practitionerNote: result.data.note, practitionerNoteAt: new Date() })
     .where(eq(checkIns.id, id))
     .returning()
 
@@ -48,7 +46,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
       html: practitionerNoteEmail({
         clientName: client.name ?? client.email,
         checkInDate: existing.createdAt,
-        note: parsed.data.note,
+        note: result.data.note,
         portalUrl: `${SITE_URL}/check-ins`,
       }),
     }).catch(() => {

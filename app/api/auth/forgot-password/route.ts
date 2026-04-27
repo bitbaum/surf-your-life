@@ -7,7 +7,8 @@ import { randomBytes } from "crypto"
 import { checkRateLimit, ipKey } from "@/lib/rate-limit"
 import { sendEmail } from "@/lib/email"
 import { passwordResetEmail } from "@/lib/email/templates"
-import { HOUR_MS, API_ERR_INVALID_INPUT, API_ERR_RATE_LIMITED } from "@/lib/constants"
+import { HOUR_MS, API_ERR_RATE_LIMITED } from "@/lib/constants"
+import { parseBody } from "@/lib/api"
 import { EMAIL_SUBJECT_RESET_PASSWORD } from "@/lib/email/subjects"
 
 const schema = z.object({ email: z.string().email() })
@@ -21,13 +22,10 @@ export async function POST(req: Request) {
     )
   }
 
-  const body = await req.json()
-  const parsed = schema.safeParse(body)
-  if (!parsed.success) {
-    return NextResponse.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })
-  }
+  const result = await parseBody(req, schema)
+  if (!result.ok) return result.response
 
-  const { email } = parsed.data
+  const { email } = result.data
 
   // Look up user — always return 200 to prevent email enumeration
   const user = await db.query.users.findFirst({ where: eq(users.email, email) })

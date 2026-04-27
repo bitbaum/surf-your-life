@@ -10,7 +10,8 @@ import { firstCheckInAlertEmail } from "@/lib/email/templates"
 import { EMAIL_SUBJECT_FIRST_CHECKIN } from "@/lib/email/subjects"
 import { STAFF_ROLES } from "@/lib/domain/auth"
 import { eq, and, gte, count, inArray } from "drizzle-orm"
-import { API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED, API_ERR_CHECKIN_DUPLICATE } from "@/lib/constants"
+import { API_ERR_UNAUTHORIZED, API_ERR_CHECKIN_DUPLICATE } from "@/lib/constants"
+import { parseBody } from "@/lib/api"
 
 export async function POST(req: Request) {
   const session = await auth()
@@ -30,19 +31,16 @@ export async function POST(req: Request) {
   }
   const isFirstCheckIn = (priorCountResult[0]?.count ?? 0) === 0
 
-  const body = await req.json()
-  const parsed = checkInSchema.safeParse(body)
-  if (!parsed.success) {
-    return NextResponse.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })
-  }
+  const result = await parseBody(req, checkInSchema)
+  if (!result.ok) return result.response
 
   const [created] = await db
     .insert(checkIns)
     .values({
-      ...parsed.data,
+      ...result.data,
       userId: session.user.id,
       // journalEntry also mirrors to notes for backward compat with admin views
-      notes: parsed.data.journalEntry ?? parsed.data.notes,
+      notes: result.data.journalEntry ?? result.data.notes,
     })
     .returning({ id: checkIns.id })
 

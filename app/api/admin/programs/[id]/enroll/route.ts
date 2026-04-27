@@ -5,7 +5,8 @@ import { programs, programEnrollments, users } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { enrollClientSchema } from "@/lib/domain/program"
 import { isStaff, CLIENT_ROLE } from "@/lib/domain/auth"
-import { API_ERR_FORBIDDEN, API_ERR_INVALID_INPUT, API_ERR_NOT_FOUND } from "@/lib/constants"
+import { API_ERR_FORBIDDEN, API_ERR_NOT_FOUND } from "@/lib/constants"
+import { parseBody } from "@/lib/api"
 
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth()
@@ -20,13 +21,10 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     return NextResponse.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
   }
 
-  const body = await req.json()
-  const parsed = enrollClientSchema.safeParse(body)
-  if (!parsed.success) {
-    return NextResponse.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })
-  }
+  const result = await parseBody(req, enrollClientSchema)
+  if (!result.ok) return result.response
 
-  const client = await db.query.users.findFirst({ where: eq(users.id, parsed.data.clientId) })
+  const client = await db.query.users.findFirst({ where: eq(users.id, result.data.clientId) })
   if (!client || client.role !== CLIENT_ROLE) {
     return NextResponse.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
   }
@@ -34,10 +32,10 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   const [enrollment] = await db
     .insert(programEnrollments)
     .values({
-      clientId: parsed.data.clientId,
+      clientId: result.data.clientId,
       programId,
-      startDate: parsed.data.startDate ? new Date(parsed.data.startDate) : null,
-      notes: parsed.data.notes ?? null,
+      startDate: result.data.startDate ? new Date(result.data.startDate) : null,
+      notes: result.data.notes ?? null,
       status: "active",
     })
     .returning({ id: programEnrollments.id })
