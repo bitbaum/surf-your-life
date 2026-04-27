@@ -3,6 +3,7 @@ import { formatDate } from "@/lib/utils"
 import { getTranslations } from "next-intl/server"
 import { NewThreadButton } from "./[id]/new-thread-button"
 import { DayCadenceSparkline, type DayState } from "@/components/ui/day-cadence-sparkline"
+import { MessageSquare } from "lucide-react"
 
 export type ClientRow = {
   id: string
@@ -26,6 +27,7 @@ type NudgeProps = {
 interface Props {
   client: ClientRow
   alert: AlertInfo | undefined
+  unreadMessages: number
   isStale: boolean
   staleHint: string
   viewLabel: string
@@ -37,7 +39,7 @@ interface Props {
   nudge?: NudgeProps | null
 }
 
-export async function ClientTableRow({ client, alert, isStale, staleHint, viewLabel, sparkDays, sparkCheckedIn, sparkPemDays, sparkHint, sparkDayLabels, nudge }: Props) {
+export async function ClientTableRow({ client, alert, unreadMessages, isStale, staleHint, viewLabel, sparkDays, sparkCheckedIn, sparkPemDays, sparkHint, sparkDayLabels, nudge }: Props) {
   const tConcerns = await getTranslations("concerns")
   return (
     <tr className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
@@ -50,6 +52,15 @@ export async function ClientTableRow({ client, alert, isStale, staleHint, viewLa
             <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full leading-none ${alert!.hasHigh ? "text-white bg-red-600" : "text-red-600 bg-red-50"}`}>
               {alert!.count}
             </span>
+          )}
+          {unreadMessages > 0 && (
+            <Link
+              href={`/admin/messages?client=${client.id}&filter=unread`}
+              className="inline-flex items-center gap-0.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-full text-teal-700 bg-teal-50 hover:bg-teal-100 transition-colors leading-none"
+            >
+              <MessageSquare className="w-2.5 h-2.5" />
+              {unreadMessages}
+            </Link>
           )}
         </span>
       </td>

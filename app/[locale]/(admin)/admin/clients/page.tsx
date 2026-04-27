@@ -1,7 +1,8 @@
 import { db } from "@/lib/db"
-import { users, checkIns, profiles, clientAlerts } from "@/lib/db/schema"
+import { users, checkIns, profiles, clientAlerts, threads } from "@/lib/db/schema"
 import { eq, desc, count, or, ilike, and, max, inArray, sql } from "drizzle-orm"
 import { fetchCadenceMap } from "@/lib/db/check-in-cadence"
+import { unreadFromClientExists } from "@/lib/db/thread-unread"
 import { CLIENT_ROLE } from "@/lib/domain/auth"
 import { PageHeader } from "@/components/ui/page-header"
 import { Link } from "@/i18n/navigation"
@@ -100,9 +101,10 @@ export default async function ClientsPage({
 
   const clientIds = clients.map((c) => c.id)
   const alertCountMap = new Map<string, { count: number; hasHigh: boolean }>()
+  const unreadMessageMap = new Map<string, number>()
   let cadenceMap = {}
   if (clientIds.length > 0) {
-    const [alertCountRows, fetchedCadence] = await Promise.all([
+    const [alertCountRows, fetchedCadence, unreadRows] = await Promise.all([
       db
         .select({
           clientId: clientAlerts.clientId,
@@ -113,9 +115,15 @@ export default async function ClientsPage({
         .where(and(eq(clientAlerts.isResolved, false), inArray(clientAlerts.clientId, clientIds)))
         .groupBy(clientAlerts.clientId),
       fetchCadenceMap(clientIds, staleCutoff),
+      db
+        .select({ clientId: threads.clientId, unreadCount: count() })
+        .from(threads)
+        .where(and(inArray(threads.clientId, clientIds), unreadFromClientExists()))
+        .groupBy(threads.clientId),
     ])
     cadenceMap = fetchedCadence
     for (const r of alertCountRows) alertCountMap.set(r.clientId, { count: r.alertCount, hasHigh: r.hasHigh })
+    for (const r of unreadRows) unreadMessageMap.set(r.clientId, r.unreadCount)
   }
 
   return (
@@ -139,6 +147,7 @@ export default async function ClientsPage({
       <ClientsCard
         clients={clients}
         alertCountMap={alertCountMap}
+        unreadMessageMap={unreadMessageMap}
         cadenceMap={cadenceMap}
         staleCutoff={staleCutoff}
         q={q}

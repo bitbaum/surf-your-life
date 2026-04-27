@@ -13,6 +13,7 @@ type AlertInfo = { count: number; hasHigh: boolean }
 type Props = {
   clients: ClientRow[]
   alertCountMap: Map<string, AlertInfo>
+  unreadMessageMap: Map<string, number>
   cadenceMap: CadenceMap
   staleCutoff: Date
   q: string | undefined
@@ -21,7 +22,7 @@ type Props = {
   totalPages: number
 }
 
-export async function ClientsCard({ clients, alertCountMap, cadenceMap, staleCutoff, q, sort, page, totalPages }: Props) {
+export async function ClientsCard({ clients, alertCountMap, unreadMessageMap, cadenceMap, staleCutoff, q, sort, page, totalPages }: Props) {
   const t = await getTranslations("admin.clients")
 
   const sparkDays = buildLastNDayStrings(7)
@@ -87,6 +88,7 @@ export async function ClientsCard({ clients, alertCountMap, cadenceMap, staleCut
                     key={client.id}
                     client={client}
                     alert={alertCountMap.get(client.id)}
+                    unreadMessages={unreadMessageMap.get(client.id) ?? 0}
                     isStale={isStale}
                     staleHint={t("staleHint")}
                     viewLabel={t("viewLink")}
