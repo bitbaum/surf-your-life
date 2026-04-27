@@ -118,3 +118,8 @@ export function daysSince(date: Date | null): number | null {
   if (!date) return null
   return Math.floor((Date.now() - date.getTime()) / DAY_MS)
 }
+
+// Returns the person's name if set, otherwise falls back to the email username.
+export function displayName(name: string | null | undefined, email: string): string {
+  return name ?? email.split("@")[0]
+}

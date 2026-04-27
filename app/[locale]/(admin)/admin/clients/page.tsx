@@ -6,7 +6,7 @@ import { CLIENT_ROLE } from "@/lib/domain/auth"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { Link } from "@/i18n/navigation"
-import { computeTotalPages, parsePage, computeOffset, buildLastNDayStrings, daysSince } from "@/lib/utils"
+import { computeTotalPages, parsePage, computeOffset, buildLastNDayStrings, daysSince, displayName } from "@/lib/utils"
 import { PAGINATION_DEFAULT, SEVEN_DAYS_MS } from "@/lib/constants"
 import { ClientSearch } from "./client-search"
 import { FilterTabs } from "@/components/ui/filter-tabs"
@@ -195,11 +195,11 @@ export default async function ClientsPage({
                 const nudgeBody = isStale
                   ? days != null
                     ? t("atRisk.nudgeBodyWithDays", {
-                        name: client.name ?? client.email.split("@")[0],
+                        name: displayName(client.name, client.email),
                         days,
                       })
                     : t("atRisk.nudgeBodyNever", {
-                        name: client.name ?? client.email.split("@")[0],
+                        name: displayName(client.name, client.email),
                       })
                   : null
                 return (

@@ -6,7 +6,7 @@ import { atRiskHaving } from "@/lib/db/at-risk"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { Link } from "@/i18n/navigation"
-import { formatDate, daysSince } from "@/lib/utils"
+import { formatDate, daysSince, displayName } from "@/lib/utils"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { SEVEN_DAYS_MS, ADMIN_AT_RISK_MAX } from "@/lib/constants"
 import { NewThreadButton } from "../[id]/new-thread-button"
@@ -44,7 +44,7 @@ export default async function AtRiskClientsPage({ params }: { params: Promise<{ 
   }
 
   function nudgeBody(name: string | null, email: string, days: number | null): string {
-    const who = name ?? email.split("@")[0]
+    const who = displayName(name, email)
     return days != null
       ? t("atRisk.nudgeBodyWithDays", { name: who, days })
       : t("atRisk.nudgeBodyNever", { name: who })
