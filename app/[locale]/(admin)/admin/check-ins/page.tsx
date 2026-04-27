@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { Link } from "@/i18n/navigation"
 import { Pagination } from "@/components/ui/pagination"
-import { formatDate, computeTotalPages, parsePage, computeOffset } from "@/lib/utils"
+import { formatDate, computeTotalPages, parsePagination } from "@/lib/utils"
 import { PAGINATION_DEFAULT, MOOD_EMOJI, MOODS } from "@/lib/constants"
 import { FilterTabs } from "@/components/ui/filter-tabs"
 
@@ -31,8 +31,7 @@ export default async function AdminCheckInsPage({
 
   const { page: pageParam, pem: pemParam } = await searchParams
   const pemOnly = pemParam === "true"
-  const page = parsePage(pageParam)
-  const offset = computeOffset(page, PAGINATION_DEFAULT)
+  const { page, offset } = parsePagination(pageParam)
 
   const whereClause = pemOnly ? eq(checkIns.pemFlag, true) : undefined
 

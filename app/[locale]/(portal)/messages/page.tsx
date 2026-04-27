@@ -9,7 +9,7 @@ import { unreadFromOthersExists } from "@/lib/db/thread-unread"
 import { Pagination } from "@/components/ui/pagination"
 import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
-import { formatDate, computeTotalPages, parsePage, computeOffset } from "@/lib/utils"
+import { formatDate, computeTotalPages, parsePagination } from "@/lib/utils"
 import { MessageSquare } from "lucide-react"
 import { PAGINATION_DEFAULT } from "@/lib/constants"
 import { EmptyState } from "@/components/ui/empty-state"
@@ -39,8 +39,7 @@ export default async function PortalMessagesPage({
 
   const { page: pageParam, filter: filterParam } = await searchParams
   const filter: FilterMode = isValidFilter(filterParam) ? filterParam : "all"
-  const page = parsePage(pageParam)
-  const offset = computeOffset(page, PAGINATION_DEFAULT)
+  const { page, offset } = parsePagination(pageParam)
   const userId = session.user.id
 
   const unreadExists = unreadFromOthersExists(userId)

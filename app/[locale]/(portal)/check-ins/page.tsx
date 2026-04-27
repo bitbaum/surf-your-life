@@ -6,7 +6,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server"
 import { Card, CardContent } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
-import { formatDate, computeTotalPages, parsePage, computeOffset } from "@/lib/utils"
+import { formatDate, computeTotalPages, parsePagination } from "@/lib/utils"
 import { PAGINATION_DEFAULT, MOOD_EMOJI, MOODS, SLEEP_QUALITY_OPTIONS, ACTIVITY_LEVELS } from "@/lib/constants"
 import { EmptyState } from "@/components/ui/empty-state"
 
@@ -32,8 +32,7 @@ export default async function CheckInsPage({
   const tCheckIn = await getTranslations("portal.checkIn")
 
   const { page: pageParam } = await searchParams
-  const page = parsePage(pageParam)
-  const offset = computeOffset(page, PAGINATION_DEFAULT)
+  const { page, offset } = parsePagination(pageParam)
 
   const [items, totalResult] = await Promise.all([
     db.query.checkIns.findMany({

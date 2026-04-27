@@ -6,7 +6,7 @@ import { db } from "@/lib/db"
 import { services, bookings } from "@/lib/db/schema"
 import { eq, desc, asc, count } from "drizzle-orm"
 import { PAGINATION_DEFAULT, SERVICES_MAX_LIMIT } from "@/lib/constants"
-import { computeTotalPages, parsePage, computeOffset } from "@/lib/utils"
+import { computeTotalPages, parsePagination } from "@/lib/utils"
 import { PageHeader } from "@/components/ui/page-header"
 import { Pagination } from "@/components/ui/pagination"
 import { BookingGrid } from "./booking-grid"
@@ -27,8 +27,7 @@ export default async function BookPage({
   const userId = session.user.id
 
   const { page: pageParam } = await searchParams
-  const page = parsePage(pageParam)
-  const offset = computeOffset(page, PAGINATION_DEFAULT)
+  const { page, offset } = parsePagination(pageParam)
 
   const [availableServices, userBookings, totalResult] = await Promise.all([
     db.select().from(services).where(eq(services.available, true)).orderBy(asc(services.sortOrder)).limit(SERVICES_MAX_LIMIT),

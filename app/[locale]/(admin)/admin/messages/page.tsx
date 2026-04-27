@@ -10,7 +10,7 @@ import { unreadFromClientExists } from "@/lib/db/thread-unread"
 import { findUserContact } from "@/lib/db/queries"
 import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
-import { formatDate, computeTotalPages, parsePage, computeOffset } from "@/lib/utils"
+import { formatDate, computeTotalPages, parsePagination } from "@/lib/utils"
 import { MessageSquare } from "lucide-react"
 import { Pagination } from "@/components/ui/pagination"
 import { EmptyState } from "@/components/ui/empty-state"
@@ -40,8 +40,7 @@ export default async function AdminMessagesPage({
 
   const { page: pageParam, client: clientIdParam, filter: filterParam } = await searchParams
   const filter: FilterMode = isValidFilter(filterParam) ? filterParam : "all"
-  const page = parsePage(pageParam)
-  const offset = computeOffset(page, PAGINATION_DEFAULT)
+  const { page, offset } = parsePagination(pageParam)
 
   // "Unread": at least one unread message in this thread sent by a client
   // (not staff). Per-thread global property; matches the practitioner intent

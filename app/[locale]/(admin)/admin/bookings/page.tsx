@@ -3,7 +3,7 @@ import { bookings, bookingStatusEnum } from "@/lib/db/schema"
 import { eq, desc, count } from "drizzle-orm"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
-import { formatDate, computeTotalPages, parsePage, computeOffset, daysSince } from "@/lib/utils"
+import { formatDate, computeTotalPages, parsePagination, daysSince } from "@/lib/utils"
 import { PAGINATION_DEFAULT, BOOKING_STATUS_BADGE_VARIANT, BOOKING_AGE_URGENT_DAYS } from "@/lib/constants"
 import { BookingActions } from "./booking-actions"
 import { getTranslations, setRequestLocale } from "next-intl/server"
@@ -34,8 +34,7 @@ export default async function AdminBookingsPage({
 
   const { status: statusParam, page: pageParam } = await searchParams
   const activeFilter = (STATUS_FILTERS.find((f) => f.value === statusParam)?.value ?? "all") as BookingStatus | "all"
-  const page = parsePage(pageParam)
-  const offset = computeOffset(page, PAGINATION_DEFAULT)
+  const { page, offset } = parsePagination(pageParam)
   const whereClause = activeFilter !== "all" ? eq(bookings.status, activeFilter) : undefined
 
   const [allBookings, totalResult] = await Promise.all([

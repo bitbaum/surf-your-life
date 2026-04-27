@@ -1,6 +1,6 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
-import { CLINIC_TZ, DAY_MS } from "./constants"
+import { CLINIC_TZ, DAY_MS, PAGINATION_DEFAULT } from "./constants"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -110,6 +110,12 @@ export function computeOffset(page: number, pageSize: number): number {
 // Computes total page count for pagination given a total row count and page size.
 export function computeTotalPages(total: number, pageSize: number): number {
   return Math.ceil(total / pageSize)
+}
+
+// Parses page param and computes SQL offset in one call using the default page size.
+export function parsePagination(param: string | undefined): { page: number; offset: number } {
+  const page = parsePage(param)
+  return { page, offset: computeOffset(page, PAGINATION_DEFAULT) }
 }
 
 export function daysSince(date: Date): number

@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ProgressBar } from "@/components/ui/progress-bar"
 import { Pagination } from "@/components/ui/pagination"
 import { getTranslations, setRequestLocale } from "next-intl/server"
-import { formatDate, computeTotalPages, parsePage, computeOffset } from "@/lib/utils"
+import { formatDate, computeTotalPages, parsePagination } from "@/lib/utils"
 import { PageHeader } from "@/components/ui/page-header"
 import { AssessmentsClient } from "./assessments-client"
 import { EmptyStateCard } from "@/components/ui/empty-state-card"
@@ -29,8 +29,7 @@ export default async function AssessmentsPage({
   if (!session?.user?.id) redirect("/login")
 
   const { page: pageParam } = await searchParams
-  const page = parsePage(pageParam)
-  const offset = computeOffset(page, PAGINATION_DEFAULT)
+  const { page, offset } = parsePagination(pageParam)
   const whereClause = eq(functionalAssessments.userId, session.user.id)
 
   const [history, totalResult] = await Promise.all([

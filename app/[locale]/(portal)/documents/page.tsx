@@ -7,7 +7,7 @@ import { PAGINATION_DEFAULT, DOC_TYPE_BADGE_CLASSES, DOC_TYPE_I18N_KEYS } from "
 import { Card, CardContent } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { Pagination } from "@/components/ui/pagination"
-import { formatDate, computeTotalPages, parsePage, computeOffset } from "@/lib/utils"
+import { formatDate, computeTotalPages, parsePagination } from "@/lib/utils"
 import { FileText } from "lucide-react"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { AddDocumentButton } from "./add-document-button"
@@ -28,8 +28,7 @@ export default async function DocumentsPage({
   if (!session?.user?.id) redirect("/login")
 
   const { page: pageParam } = await searchParams
-  const page = parsePage(pageParam)
-  const offset = computeOffset(page, PAGINATION_DEFAULT)
+  const { page, offset } = parsePagination(pageParam)
   const whereClause = eq(documents.userId, session.user.id)
 
   const [docs, totalResult] = await Promise.all([

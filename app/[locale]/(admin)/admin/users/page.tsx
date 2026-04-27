@@ -4,7 +4,7 @@ import { desc, count } from "drizzle-orm"
 import { auth } from "@/lib/auth"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
-import { formatDate, computeTotalPages, parsePage, computeOffset } from "@/lib/utils"
+import { formatDate, computeTotalPages, parsePagination } from "@/lib/utils"
 import { PAGINATION_DEFAULT, ROLE_BADGE_VARIANT } from "@/lib/constants"
 import { ADMIN_ROLE } from "@/lib/domain/auth"
 import { RoleButton } from "./role-button"
@@ -27,8 +27,7 @@ export default async function UsersPage({
   const canEdit = session?.user?.role === ADMIN_ROLE
 
   const { page: pageParam } = await searchParams
-  const page = parsePage(pageParam)
-  const offset = computeOffset(page, PAGINATION_DEFAULT)
+  const { page, offset } = parsePagination(pageParam)
 
   const [allUsers, totalResult] = await Promise.all([
     db
