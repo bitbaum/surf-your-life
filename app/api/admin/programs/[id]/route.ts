@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { programs } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
@@ -12,7 +11,6 @@ export async function PATCH(
 ) {
   const authResult = await requireStaffAuth()
   if (!authResult.ok) return authResult.response
-  const { session } = authResult
 
   const { id } = await params
 

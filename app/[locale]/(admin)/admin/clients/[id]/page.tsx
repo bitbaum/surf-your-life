@@ -32,7 +32,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
   // 7 calendar days back in clinic-local — matches the user's "last week" perception
   // and keeps adherence scores from being off-by-one at midnight boundaries.
   const sevenDaysAgo = addDaysISO(localDateString(new Date()), -7)
-  const ninetyDaysAgo = new Date(Date.now() - NINETY_DAYS_MS)
+  const ninetyDaysAgo = new Date(Date.now() - NINETY_DAYS_MS) // eslint-disable-line react-hooks/purity -- server component
 
   const [client, clientCheckIns, checkInCountResult, allPrograms, activeEnrollment, currentMedications, assessments, clientAssignments, allTechniques, currentAssignment, allPractitioners, recentTechniqueLogs, unresolvedAlerts, resolvedAlertCountResult, chartCheckIns] = await Promise.all([
     db.query.users.findFirst({

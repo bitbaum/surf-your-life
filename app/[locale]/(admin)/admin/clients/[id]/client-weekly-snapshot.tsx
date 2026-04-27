@@ -20,7 +20,7 @@ export async function ClientWeeklySnapshot({ clientCheckIns }: { clientCheckIns:
   )
   const sparkCount = sparkDays.filter((d) => sparkCheckedIn.has(d)).length
 
-  const sevenDaysAgoMs = Date.now() - SEVEN_DAYS_MS
+  const sevenDaysAgoMs = Date.now() - SEVEN_DAYS_MS // eslint-disable-line react-hooks/purity -- server component
   const weekCheckInCount = clientCheckIns.filter((ci) => ci.createdAt.getTime() >= sevenDaysAgoMs).length
   const insightHit = computeInsight(
     clientCheckIns.slice(0, 3).map((ci) => ci.energyLevel),

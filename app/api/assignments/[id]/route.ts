@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { assignments } from "@/lib/db/schema"
 import { and, eq } from "drizzle-orm"

@@ -12,7 +12,6 @@ const assignSchema = z.object({
 export async function POST(req: Request) {
   const authResult = await requireStaffAuth()
   if (!authResult.ok) return authResult.response
-  const { session } = authResult
 
   const result = await parseBody(req, assignSchema)
   if (!result.ok) return result.response
