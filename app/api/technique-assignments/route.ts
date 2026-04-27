@@ -5,8 +5,8 @@ import { db } from "@/lib/db"
 import { techniqueAssignments } from "@/lib/db/schema"
 import { eq, and } from "drizzle-orm"
 import { createAssignmentSchema } from "@/lib/domain/techniques"
-import { API_ERR_FORBIDDEN, API_ERR_UNAUTHORIZED, CLIENT_ASSIGNMENTS_MAX } from "@/lib/constants"
-import { parseBody } from "@/lib/api"
+import { API_ERR_UNAUTHORIZED, CLIENT_ASSIGNMENTS_MAX } from "@/lib/constants"
+import { parseBody, requireStaffAuth } from "@/lib/api"
 
 export async function GET(req: Request) {
   const session = await auth()
@@ -35,11 +35,9 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  const session = await auth()
-  if (!session) return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
-  if (!isStaff(session.user.role)) {
-    return NextResponse.json({ success: false, error: API_ERR_FORBIDDEN }, { status: 403 })
-  }
+  const authResult = await requireStaffAuth()
+  if (!authResult.ok) return authResult.response
+  const { session } = authResult
 
   const result = await parseBody(req, createAssignmentSchema)
   if (!result.ok) return result.response

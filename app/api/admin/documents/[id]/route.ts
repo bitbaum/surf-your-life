@@ -1,40 +1,44 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { auth } from "@/lib/auth"
-import { isStaff, ADMIN_ROLE } from "@/lib/domain/auth"
+import { ADMIN_ROLE } from "@/lib/domain/auth"
 import { db } from "@/lib/db"
 import { documents } from "@/lib/db/schema"
+import type { InferSelectModel } from "drizzle-orm"
 import { eq } from "drizzle-orm"
-import { API_ERR_FORBIDDEN, API_ERR_NOT_FOUND, API_ERR_UNAUTHORIZED, FIELD_MAX_TITLE } from "@/lib/constants"
-import { parseBody } from "@/lib/api"
+import { API_ERR_FORBIDDEN, API_ERR_NOT_FOUND, FIELD_MAX_TITLE } from "@/lib/constants"
+import { parseBody, requireStaffAuth } from "@/lib/api"
 
 const patchSchema = z.object({
   title: z.string().min(1).max(FIELD_MAX_TITLE).optional(),
   content: z.string().min(1).optional(),
 })
 
+type Doc = InferSelectModel<typeof documents>
+
+function verifyDocumentAccess(doc: Doc, userId: string, role: string): NextResponse | null {
+  if (doc.authorId !== userId && role !== ADMIN_ROLE) {
+    return NextResponse.json({ success: false, error: API_ERR_FORBIDDEN }, { status: 403 })
+  }
+  return null
+}
+
 export async function PATCH(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth()
-  if (!session?.user || !isStaff(session.user.role)) {
-    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
-  }
+  const authResult = await requireStaffAuth()
+  if (!authResult.ok) return authResult.response
+  const { session } = authResult
 
   const { id } = await params
   const result = await parseBody(req, patchSchema)
   if (!result.ok) return result.response
 
   const doc = await db.query.documents.findFirst({ where: eq(documents.id, id) })
-  if (!doc) {
-    return NextResponse.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
-  }
+  if (!doc) return NextResponse.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
 
-  // Only the author or an admin can edit
-  if (doc.authorId !== session.user.id && session.user.role !== ADMIN_ROLE) {
-    return NextResponse.json({ success: false, error: API_ERR_FORBIDDEN }, { status: 403 })
-  }
+  const accessError = verifyDocumentAccess(doc, session.user.id, session.user.role)
+  if (accessError) return accessError
 
   const updated = await db
     .update(documents)
@@ -49,22 +53,17 @@ export async function DELETE(
   _req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth()
-  if (!session?.user || !isStaff(session.user.role)) {
-    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
-  }
+  const authResult = await requireStaffAuth()
+  if (!authResult.ok) return authResult.response
+  const { session } = authResult
 
   const { id } = await params
 
   const doc = await db.query.documents.findFirst({ where: eq(documents.id, id) })
-  if (!doc) {
-    return NextResponse.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
-  }
+  if (!doc) return NextResponse.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
 
-  // Only the author or an admin can delete
-  if (doc.authorId !== session.user.id && session.user.role !== ADMIN_ROLE) {
-    return NextResponse.json({ success: false, error: API_ERR_FORBIDDEN }, { status: 403 })
-  }
+  const accessError = verifyDocumentAccess(doc, session.user.id, session.user.role)
+  if (accessError) return accessError
 
   await db.delete(documents).where(eq(documents.id, id))
 

@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
-import { isStaff } from "@/lib/domain/auth"
 import { db } from "@/lib/db"
 import { techniques } from "@/lib/db/schema"
 import { eq, asc } from "drizzle-orm"
 import { createTechniqueSchema } from "@/lib/domain/techniques"
-import { API_ERR_FORBIDDEN, API_ERR_UNAUTHORIZED, SERVICES_MAX_LIMIT } from "@/lib/constants"
-import { parseBody } from "@/lib/api"
+import { API_ERR_UNAUTHORIZED, SERVICES_MAX_LIMIT } from "@/lib/constants"
+import { parseBody, requireStaffAuth } from "@/lib/api"
 
 export async function GET() {
   const session = await auth()
@@ -22,11 +21,9 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-  const session = await auth()
-  if (!session) return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
-  if (!isStaff(session.user.role)) {
-    return NextResponse.json({ success: false, error: API_ERR_FORBIDDEN }, { status: 403 })
-  }
+  const authResult = await requireStaffAuth()
+  if (!authResult.ok) return authResult.response
+  const { session } = authResult
 
   const result = await parseBody(req, createTechniqueSchema)
   if (!result.ok) return result.response

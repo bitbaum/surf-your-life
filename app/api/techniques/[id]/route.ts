@@ -1,19 +1,14 @@
 import { NextResponse } from "next/server"
-import { auth } from "@/lib/auth"
-import { isStaff } from "@/lib/domain/auth"
 import { db } from "@/lib/db"
 import { techniques } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { updateTechniqueSchema } from "@/lib/domain/techniques"
-import { API_ERR_FORBIDDEN, API_ERR_NOT_FOUND, API_ERR_UNAUTHORIZED } from "@/lib/constants"
-import { parseBody } from "@/lib/api"
+import { API_ERR_NOT_FOUND } from "@/lib/constants"
+import { parseBody, requireStaffAuth } from "@/lib/api"
 
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const session = await auth()
-  if (!session) return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
-  if (!isStaff(session.user.role)) {
-    return NextResponse.json({ success: false, error: API_ERR_FORBIDDEN }, { status: 403 })
-  }
+  const authResult = await requireStaffAuth()
+  if (!authResult.ok) return authResult.response
 
   const { id } = await params
   const result = await parseBody(req, updateTechniqueSchema)
@@ -38,11 +33,8 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 }
 
 export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const session = await auth()
-  if (!session) return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
-  if (!isStaff(session.user.role)) {
-    return NextResponse.json({ success: false, error: API_ERR_FORBIDDEN }, { status: 403 })
-  }
+  const authResult = await requireStaffAuth()
+  if (!authResult.ok) return authResult.response
 
   const { id } = await params
   // Soft-delete: mark inactive rather than delete (preserves logs)

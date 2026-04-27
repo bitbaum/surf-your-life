@@ -1,6 +1,4 @@
 import { NextResponse } from "next/server"
-import { auth } from "@/lib/auth"
-import { isStaff } from "@/lib/domain/auth"
 import { db } from "@/lib/db"
 import { checkIns, users } from "@/lib/db/schema"
 import { practitionerNoteSchema } from "@/lib/domain/profile"
@@ -8,15 +6,12 @@ import { eq } from "drizzle-orm"
 import { sendEmail } from "@/lib/email"
 import { practitionerNoteEmail } from "@/lib/email/templates"
 import { EMAIL_SUBJECT_PRACTITIONER_NOTE } from "@/lib/email/subjects"
-import { SITE_URL , API_ERR_FORBIDDEN, API_ERR_NOT_FOUND, API_ERR_UNAUTHORIZED } from "@/lib/constants"
-import { parseBody } from "@/lib/api"
+import { SITE_URL, API_ERR_NOT_FOUND } from "@/lib/constants"
+import { parseBody, requireStaffAuth } from "@/lib/api"
 
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const session = await auth()
-  if (!session) return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
-  if (!isStaff(session.user.role)) {
-    return NextResponse.json({ success: false, error: API_ERR_FORBIDDEN }, { status: 403 })
-  }
+  const authResult = await requireStaffAuth()
+  if (!authResult.ok) return authResult.response
 
   const { id } = await params
 
