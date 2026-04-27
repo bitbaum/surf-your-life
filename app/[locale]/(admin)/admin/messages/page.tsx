@@ -3,7 +3,6 @@ import { db } from "@/lib/db"
 import { threads, threadMessages } from "@/lib/db/schema"
 import { desc, count, eq, and } from "drizzle-orm"
 import { getTranslations, setRequestLocale } from "next-intl/server"
-import { redirect } from "next/navigation"
 import { Link } from "@/i18n/navigation"
 import { PAGINATION_DEFAULT } from "@/lib/constants"
 import { unreadFromClientExists } from "@/lib/db/thread-unread"
@@ -34,7 +33,7 @@ export default async function AdminMessagesPage({
   setRequestLocale(locale)
 
   const session = await auth()
-  if (!session?.user?.id) redirect(`/${locale}/login`)
+  if (!session?.user?.id) return null
 
   const t = await getTranslations("admin.messages")
 

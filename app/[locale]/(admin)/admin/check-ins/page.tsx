@@ -1,6 +1,3 @@
-import { auth } from "@/lib/auth"
-import { isStaff } from "@/lib/domain/auth"
-import { redirect } from "next/navigation"
 import { db } from "@/lib/db"
 import { checkIns, users } from "@/lib/db/schema"
 import { eq, desc, count } from "drizzle-orm"
@@ -25,9 +22,6 @@ export default async function AdminCheckInsPage({
   const t = await getTranslations("admin.checkIns")
   const tCheckIn = await getTranslations("portal.checkIn")
   const moodMap = Object.fromEntries(MOODS.map((m) => [m.value, m]))
-
-  const session = await auth()
-  if (!session?.user || !isStaff(session.user.role)) redirect("/login")
 
   const { page: pageParam, pem: pemParam } = await searchParams
   const pemOnly = pemParam === "true"

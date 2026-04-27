@@ -1,6 +1,3 @@
-import { auth } from "@/lib/auth"
-import { isStaff } from "@/lib/domain/auth"
-import { redirect } from "next/navigation"
 import { db } from "@/lib/db"
 import { clientAlerts, users } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
@@ -16,11 +13,6 @@ export default async function AlertsPage({ params }: { params: Promise<{ locale:
   setRequestLocale(locale)
   const t = await getTranslations("admin.alerts")
   const tClients = await getTranslations("admin.clients")
-
-  const session = await auth()
-  if (!session?.user || !isStaff(session.user.role)) {
-    redirect("/login")
-  }
 
   const rows = await db
     .select({

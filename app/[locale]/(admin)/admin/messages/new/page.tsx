@@ -1,4 +1,3 @@
-import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { users } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
@@ -17,9 +16,6 @@ export default async function AdminNewMessagePage({
 }) {
   const { locale } = await params
   setRequestLocale(locale)
-  const session = await auth()
-  if (!session) return null
-
   const { clientId } = await searchParams
   const t = await getTranslations("admin.messages")
 

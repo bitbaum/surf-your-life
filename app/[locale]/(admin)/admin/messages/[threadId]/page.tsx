@@ -3,9 +3,8 @@ import { db } from "@/lib/db"
 import { threads } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { markThreadAsReadFor } from "@/lib/db/thread-unread"
-import { notFound, redirect } from "next/navigation"
-import { getTranslations } from "next-intl/server"
-import { setRequestLocale } from "next-intl/server"
+import { notFound } from "next/navigation"
+import { getTranslations, setRequestLocale } from "next-intl/server"
 import { Link } from "@/i18n/navigation"
 import { ArrowLeft } from "lucide-react"
 import { ReplyForm } from "@/components/ui/reply-form"
@@ -20,7 +19,7 @@ export default async function AdminThreadPage({
   setRequestLocale(locale)
 
   const session = await auth()
-  if (!session?.user?.id) redirect(`/${locale}/login`)
+  if (!session?.user?.id) return null
 
   const t = await getTranslations("messages")
 
