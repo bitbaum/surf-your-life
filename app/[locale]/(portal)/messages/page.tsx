@@ -1,10 +1,11 @@
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { threads, threadMessages } from "@/lib/db/schema"
-import { eq, desc, count, and, sql } from "drizzle-orm"
+import { eq, desc, count, and } from "drizzle-orm"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { redirect } from "next/navigation"
 import { Link } from "@/i18n/navigation"
+import { unreadFromOthersExists } from "@/lib/db/thread-unread"
 import { Pagination } from "@/components/ui/pagination"
 import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
@@ -42,15 +43,7 @@ export default async function PortalMessagesPage({
   const offset = computeOffset(page, PAGINATION_DEFAULT)
   const userId = session.user.id
 
-  // "Unread": at least one message in this thread NOT sent by the client.
-  // Mirrors the per-row isUnread dot's intent and matches the sidebar badge
-  // (`getClientUnreadThreadsCount`) so all three views agree.
-  const unreadExists = sql`EXISTS (
-    SELECT 1 FROM ${threadMessages}
-    WHERE ${threadMessages.threadId} = ${threads.id}
-      AND ${threadMessages.senderId} != ${userId}
-      AND ${threadMessages.readAt} IS NULL
-  )`
+  const unreadExists = unreadFromOthersExists(userId)
 
   const ownThreads = eq(threads.clientId, userId)
   const whereClause = filter === "unread" ? and(ownThreads, unreadExists) : ownThreads

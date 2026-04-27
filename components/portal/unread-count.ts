@@ -1,6 +1,7 @@
 import { db } from "@/lib/db"
-import { threadMessages, threads } from "@/lib/db/schema"
-import { count, eq, and, sql } from "drizzle-orm"
+import { threads } from "@/lib/db/schema"
+import { count, eq, and } from "drizzle-orm"
+import { unreadFromOthersExists } from "@/lib/db/thread-unread"
 
 /**
  * Count of the client's threads with at least one unread message NOT sent
@@ -14,12 +15,7 @@ export async function getClientUnreadThreadsCount(userId: string): Promise<numbe
     .from(threads)
     .where(and(
       eq(threads.clientId, userId),
-      sql`EXISTS (
-        SELECT 1 FROM ${threadMessages}
-        WHERE ${threadMessages.threadId} = ${threads.id}
-          AND ${threadMessages.senderId} != ${userId}
-          AND ${threadMessages.readAt} IS NULL
-      )`
+      unreadFromOthersExists(userId)
     ))
   return result?.value ?? 0
 }
