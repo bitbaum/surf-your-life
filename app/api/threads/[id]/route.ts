@@ -2,8 +2,9 @@ import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { isStaff } from "@/lib/domain/auth"
 import { db } from "@/lib/db"
-import { threads, threadMessages } from "@/lib/db/schema"
-import { eq, and, isNull, ne } from "drizzle-orm"
+import { threads } from "@/lib/db/schema"
+import { eq } from "drizzle-orm"
+import { markThreadAsReadFor } from "@/lib/db/thread-unread"
 import { API_ERR_FORBIDDEN, API_ERR_NOT_FOUND, API_ERR_UNAUTHORIZED } from "@/lib/constants"
 
 export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -31,17 +32,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
     return NextResponse.json({ success: false, error: API_ERR_FORBIDDEN }, { status: 403 })
   }
 
-  // Mark unread messages as read (messages not sent by current user that haven't been read)
-  await db
-    .update(threadMessages)
-    .set({ readAt: new Date() })
-    .where(
-      and(
-        eq(threadMessages.threadId, id),
-        isNull(threadMessages.readAt),
-        ne(threadMessages.senderId, session.user.id)
-      )
-    )
+  await markThreadAsReadFor(id, session.user.id)
 
   return NextResponse.json({ success: true, data: thread })
 }

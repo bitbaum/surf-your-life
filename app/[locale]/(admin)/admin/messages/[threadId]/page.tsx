@@ -1,7 +1,8 @@
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
-import { threads, threadMessages } from "@/lib/db/schema"
-import { eq, and, isNull, ne } from "drizzle-orm"
+import { threads } from "@/lib/db/schema"
+import { eq } from "drizzle-orm"
+import { markThreadAsReadFor } from "@/lib/db/thread-unread"
 import { notFound, redirect } from "next/navigation"
 import { getTranslations } from "next-intl/server"
 import { setRequestLocale } from "next-intl/server"
@@ -36,16 +37,7 @@ export default async function AdminThreadPage({
 
   if (!thread) notFound()
 
-  await db
-    .update(threadMessages)
-    .set({ readAt: new Date() })
-    .where(
-      and(
-        eq(threadMessages.threadId, threadId),
-        isNull(threadMessages.readAt),
-        ne(threadMessages.senderId, session.user.id)
-      )
-    )
+  await markThreadAsReadFor(threadId, session.user.id)
 
   const clientName = thread.client?.name ?? thread.client?.email ?? t("teamName")
 

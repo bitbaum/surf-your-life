@@ -1,6 +1,7 @@
-import { sql, type SQL } from "drizzle-orm"
+import { sql, and, eq, isNull, ne, type SQL } from "drizzle-orm"
 import { threadMessages, threads, users } from "./schema"
 import { CLIENT_ROLE } from "@/lib/domain/auth"
+import { db } from "./index"
 
 /**
  * SQL EXISTS fragment: the thread has at least one unread message authored by
@@ -17,6 +18,23 @@ export function unreadFromClientExists(): SQL<unknown> {
       AND ${threadMessages.readAt} IS NULL
       AND ${users.role} = ${CLIENT_ROLE}
   )`
+}
+
+/**
+ * Mark all unread messages in a thread as read for `userId` — skips messages
+ * they sent themselves. Called whenever a user opens a thread.
+ */
+export async function markThreadAsReadFor(threadId: string, userId: string): Promise<void> {
+  await db
+    .update(threadMessages)
+    .set({ readAt: new Date() })
+    .where(
+      and(
+        eq(threadMessages.threadId, threadId),
+        isNull(threadMessages.readAt),
+        ne(threadMessages.senderId, userId)
+      )
+    )
 }
 
 /**
