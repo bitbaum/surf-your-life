@@ -10,7 +10,7 @@ import { eq, and, gte, inArray } from "drizzle-orm"
 import { sendEmail } from "@/lib/email"
 import { weeklyReportEmail } from "@/lib/email/templates"
 import { SITE_URL, SEVEN_DAYS_MS } from "@/lib/constants"
-import { roundOne } from "@/lib/utils"
+import { roundOne, groupBy } from "@/lib/utils"
 import { CLIENT_ROLE } from "@/lib/domain/auth"
 import { verifyCronAuth } from "@/lib/auth/cron"
 import { summariseCheckIns } from "@/lib/domain/check-in"
@@ -37,12 +37,7 @@ export async function GET(req: Request) {
     columns: { userId: true, energyLevel: true, mood: true, pemFlag: true, wins: true, sleepHours: true, stressLevel: true },
   })
 
-  // Group by userId in memory
-  const checkInsByClient = new Map<string, typeof allWeekCheckIns>()
-  for (const ci of allWeekCheckIns) {
-    if (!checkInsByClient.has(ci.userId)) checkInsByClient.set(ci.userId, [])
-    checkInsByClient.get(ci.userId)!.push(ci)
-  }
+  const checkInsByClient = groupBy(allWeekCheckIns, (ci) => ci.userId)
 
   let sent = 0
 

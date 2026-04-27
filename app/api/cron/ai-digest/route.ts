@@ -11,7 +11,7 @@ import { users, checkIns, clientAlerts } from "@/lib/db/schema"
 import { eq, and, gte, desc, inArray, count } from "drizzle-orm"
 import { STAFF_ROLES, CLIENT_ROLE } from "@/lib/domain/auth"
 import { SEVEN_DAYS_MS, SITE_URL, AI_DIGEST_MIN_CHECKINS } from "@/lib/constants"
-import { roundOne } from "@/lib/utils"
+import { roundOne, groupBy } from "@/lib/utils"
 import { summariseCheckIns } from "@/lib/domain/check-in"
 import { generateWeeklyDigest } from "@/lib/domain/digest"
 import { verifyCronAuth } from "@/lib/auth/cron"
@@ -74,12 +74,7 @@ export async function GET(req: Request) {
     .groupBy(clientAlerts.clientId)
   const alertCountMap = new Map(alertCountRows.map((r) => [r.clientId, r.count]))
 
-  // Group check-ins by client — order preserved newest-first per client
-  const checkInsByClient = new Map<string, typeof allWeekCheckIns>()
-  for (const ci of allWeekCheckIns) {
-    if (!checkInsByClient.has(ci.userId)) checkInsByClient.set(ci.userId, [])
-    checkInsByClient.get(ci.userId)!.push(ci)
-  }
+  const checkInsByClient = groupBy(allWeekCheckIns, (ci) => ci.userId)
 
   let processed = 0
   let skipped = 0

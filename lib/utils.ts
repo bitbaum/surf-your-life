@@ -123,3 +123,14 @@ export function daysSince(date: Date | null): number | null {
 export function displayName(name: string | null | undefined, email: string): string {
   return name ?? email.split("@")[0]
 }
+
+export function groupBy<T>(arr: T[], keyFn: (item: T) => string): Map<string, T[]> {
+  const map = new Map<string, T[]>()
+  for (const item of arr) {
+    const key = keyFn(item)
+    const bucket = map.get(key)
+    if (bucket) bucket.push(item)
+    else map.set(key, [item])
+  }
+  return map
+}
