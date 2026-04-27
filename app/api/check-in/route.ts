@@ -12,6 +12,7 @@ import { STAFF_ROLES } from "@/lib/domain/auth"
 import { eq, and, gte, count, inArray } from "drizzle-orm"
 import { API_ERR_UNAUTHORIZED, API_ERR_CHECKIN_DUPLICATE } from "@/lib/constants"
 import { parseBody } from "@/lib/api"
+import { findUserContact } from "@/lib/db/queries"
 
 export async function POST(req: Request) {
   const session = await auth()
@@ -52,10 +53,7 @@ export async function POST(req: Request) {
   if (isFirstCheckIn) {
     void (async () => {
       try {
-        const client = await db.query.users.findFirst({
-          where: eq(users.id, session.user.id),
-          columns: { name: true, email: true },
-        })
+        const client = await findUserContact(session.user.id)
         // Prefer assigned practitioners; fall back to all staff
         const assignedRows = await db
           .select({ practitionerId: assignments.practitionerId })

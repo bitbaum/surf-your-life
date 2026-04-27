@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
-import { checkIns, users } from "@/lib/db/schema"
+import { checkIns } from "@/lib/db/schema"
 import { practitionerNoteSchema } from "@/lib/domain/profile"
 import { eq } from "drizzle-orm"
 import { sendEmail } from "@/lib/email"
@@ -8,6 +8,7 @@ import { practitionerNoteEmail } from "@/lib/email/templates"
 import { EMAIL_SUBJECT_PRACTITIONER_NOTE } from "@/lib/email/subjects"
 import { SITE_URL, API_ERR_NOT_FOUND } from "@/lib/constants"
 import { parseBody, requireStaffAuth } from "@/lib/api"
+import { findUserContact } from "@/lib/db/queries"
 
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const authResult = await requireStaffAuth()
@@ -30,10 +31,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     .returning()
 
   // Notify the client by email (fire-and-forget)
-  const client = await db.query.users.findFirst({
-    where: eq(users.id, existing.userId),
-    columns: { email: true, name: true },
-  })
+  const client = await findUserContact(existing.userId)
   if (client?.email) {
     void sendEmail({
       to: client.email,

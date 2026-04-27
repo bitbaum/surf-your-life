@@ -1,12 +1,13 @@
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
-import { threads, threadMessages, users } from "@/lib/db/schema"
+import { threads, threadMessages } from "@/lib/db/schema"
 import { desc, count, eq, and } from "drizzle-orm"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { redirect } from "next/navigation"
 import { Link } from "@/i18n/navigation"
 import { PAGINATION_DEFAULT } from "@/lib/constants"
 import { unreadFromClientExists } from "@/lib/db/thread-unread"
+import { findUserContact } from "@/lib/db/queries"
 import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
 import { formatDate, computeTotalPages, parsePage, computeOffset } from "@/lib/utils"
@@ -77,7 +78,7 @@ export default async function AdminMessagesPage({
     db.select({ value: count() }).from(threads).where(whereClause),
     db.select({ value: count() }).from(threads).where(unreadCountWhere),
     clientIdParam
-      ? db.query.users.findFirst({ where: eq(users.id, clientIdParam), columns: { name: true, email: true } })
+      ? findUserContact(clientIdParam)
       : Promise.resolve(null),
   ])
 

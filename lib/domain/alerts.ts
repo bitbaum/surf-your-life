@@ -5,6 +5,7 @@
  */
 import { db } from "@/lib/db"
 import { checkIns, clientAlerts, users, type AlertType } from "@/lib/db/schema"
+import { findUserContact } from "@/lib/db/queries"
 import { eq, desc, gte, and, inArray, max } from "drizzle-orm"
 import { STAFF_ROLES, CLIENT_ROLE } from "@/lib/domain/auth"
 import {
@@ -215,10 +216,7 @@ export async function generateAlerts(clientId: string, newCheckInId: string): Pr
     const highOrMedium = alerts.filter((a) => a.severity === "high" || a.severity === "medium")
     if (highOrMedium.length > 0) {
       const [client, practitioners] = await Promise.all([
-        db.query.users.findFirst({
-          where: eq(users.id, clientId),
-          columns: { name: true, email: true },
-        }),
+        findUserContact(clientId),
         db.select({ email: users.email }).from(users)
           .where(inArray(users.role, STAFF_ROLES)),
       ])
