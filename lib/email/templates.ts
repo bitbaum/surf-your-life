@@ -43,6 +43,14 @@ function emailCard(label: string, value: string, extra = ""): string {
   return `<div class="card"><div class="label">${label}</div><div class="value">${value}</div>${extra}</div>`
 }
 
+function emailGreeting(name: string | null | undefined): string {
+  return name ? `Hi ${name},` : "Hello,"
+}
+
+function emailTimeLabel(time: string | null | undefined): string {
+  return time ? ` (${time})` : ""
+}
+
 // ─── Verification email ───────────────────────────────────────────────────────
 
 type VerificationEmailData = { email: string; verifyUrl: string }
@@ -86,8 +94,8 @@ export type BookingRequestData = {
 
 export function bookingRequestEmail(data: BookingRequestData): string {
   const { clientName, serviceName, preferredDate, preferredTime } = data
-  const greeting = clientName ? `Hi ${clientName},` : "Hello,"
-  const timeLabel = preferredTime ? ` (${preferredTime})` : ""
+  const greeting = emailGreeting(clientName)
+  const timeLabel = emailTimeLabel(preferredTime)
   const dateBlock = preferredDate
     ? emailCard("Preferred date &amp; time", `${preferredDate}${timeLabel}`)
     : ""
@@ -170,8 +178,8 @@ export function bookingStatusEmail(data: BookingStatusData): string {
   const bodyText = isConfirmed
     ? "Great news — your booking has been confirmed. We look forward to seeing you."
     : "Your booking has been cancelled. If you have any questions, please contact us."
-  const timeLabel = preferredTime ? ` (${preferredTime})` : ""
-  const greeting = clientName ? `Hi ${clientName},` : "Hello,"
+  const timeLabel = emailTimeLabel(preferredTime)
+  const greeting = emailGreeting(clientName)
 
   return emailShell(`
   ${emailHeader(headingText, `${BRAND_NAME} Portal`, headerBg)}
@@ -254,7 +262,7 @@ type BookingNotificationData = {
 export function bookingNotificationEmail(data: BookingNotificationData): string {
   const { clientEmail, clientName, service, preferredDate, preferredTime, notes, bookingId } = data
   const displayName = clientName ?? clientEmail
-  const timeLabel = preferredTime ? ` (${preferredTime})` : ""
+  const timeLabel = emailTimeLabel(preferredTime)
 
   return emailShell(`
   ${emailHeader("New Booking Request", `${BRAND_NAME} Portal`)}

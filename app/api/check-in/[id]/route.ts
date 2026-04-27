@@ -7,19 +7,20 @@ import { eq, and } from "drizzle-orm"
 import { API_ERR_FORBIDDEN, API_ERR_INVALID_INPUT, API_ERR_NOT_FOUND, API_ERR_UNAUTHORIZED } from "@/lib/constants"
 import { embedCheckIn } from "@/lib/domain/embeddings"
 
+async function verifyOwnership(id: string, userId: string): Promise<NextResponse | null> {
+  const existing = await db.query.checkIns.findFirst({ where: eq(checkIns.id, id) })
+  if (!existing) return NextResponse.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
+  if (existing.userId !== userId) return NextResponse.json({ success: false, error: API_ERR_FORBIDDEN }, { status: 403 })
+  return null
+}
+
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth()
   if (!session) return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
 
   const { id } = await params
-
-  const existing = await db.query.checkIns.findFirst({
-    where: eq(checkIns.id, id),
-  })
-  if (!existing) return NextResponse.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
-  if (existing.userId !== session.user.id) {
-    return NextResponse.json({ success: false, error: API_ERR_FORBIDDEN }, { status: 403 })
-  }
+  const ownershipError = await verifyOwnership(id, session.user.id)
+  if (ownershipError) return ownershipError
 
   const body = await req.json()
   const parsed = checkInSchema.safeParse(body)
@@ -44,14 +45,8 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
   if (!session) return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
 
   const { id } = await params
-
-  const existing = await db.query.checkIns.findFirst({
-    where: eq(checkIns.id, id),
-  })
-  if (!existing) return NextResponse.json({ success: false, error: API_ERR_NOT_FOUND }, { status: 404 })
-  if (existing.userId !== session.user.id) {
-    return NextResponse.json({ success: false, error: API_ERR_FORBIDDEN }, { status: 403 })
-  }
+  const ownershipError = await verifyOwnership(id, session.user.id)
+  if (ownershipError) return ownershipError
 
   await db
     .delete(checkIns)
