@@ -1,17 +1,15 @@
 import { NextResponse } from "next/server"
-import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { medicationLog } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
 import { medicationEntrySchema } from "@/lib/domain/clinical"
-import { PAGINATION_DEFAULT , API_ERR_UNAUTHORIZED } from "@/lib/constants"
-import { parseBody } from "@/lib/api"
+import { PAGINATION_DEFAULT } from "@/lib/constants"
+import { parseBody, requireAuth } from "@/lib/api"
 
 export async function GET() {
-  const session = await auth()
-  if (!session?.user?.id) {
-    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
-  }
+  const authResult = await requireAuth()
+  if (!authResult.ok) return authResult.response
+  const { session } = authResult
 
   const data = await db.query.medicationLog.findMany({
     where: eq(medicationLog.userId, session.user.id),
@@ -23,10 +21,9 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-  const session = await auth()
-  if (!session?.user?.id) {
-    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
-  }
+  const authResult = await requireAuth()
+  if (!authResult.ok) return authResult.response
+  const { session } = authResult
 
   const result = await parseBody(req, medicationEntrySchema)
   if (!result.ok) return result.response

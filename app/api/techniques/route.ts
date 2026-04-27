@@ -1,15 +1,14 @@
 import { NextResponse } from "next/server"
-import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { techniques } from "@/lib/db/schema"
 import { eq, asc } from "drizzle-orm"
 import { createTechniqueSchema } from "@/lib/domain/techniques"
-import { API_ERR_UNAUTHORIZED, SERVICES_MAX_LIMIT } from "@/lib/constants"
-import { parseBody, requireStaffAuth } from "@/lib/api"
+import { SERVICES_MAX_LIMIT } from "@/lib/constants"
+import { parseBody, requireAuth, requireStaffAuth } from "@/lib/api"
 
 export async function GET() {
-  const session = await auth()
-  if (!session) return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
+  const authResult = await requireAuth()
+  if (!authResult.ok) return authResult.response
 
   const rows = await db.query.techniques.findMany({
     where: eq(techniques.isActive, true),

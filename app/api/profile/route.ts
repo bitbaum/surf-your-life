@@ -1,15 +1,14 @@
 import { NextResponse } from "next/server"
 import { eq } from "drizzle-orm"
-import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { profiles, users } from "@/lib/db/schema"
 import { profileSchema } from "@/lib/domain/profile"
-import { API_ERR_UNAUTHORIZED } from "@/lib/constants"
-import { parseBody } from "@/lib/api"
+import { parseBody, requireAuth } from "@/lib/api"
 
 export async function GET() {
-  const session = await auth()
-  if (!session) return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
+  const authResult = await requireAuth()
+  if (!authResult.ok) return authResult.response
+  const { session } = authResult
 
   const profile = await db.query.profiles.findFirst({
     where: eq(profiles.userId, session.user.id),
@@ -19,8 +18,9 @@ export async function GET() {
 }
 
 export async function PUT(req: Request) {
-  const session = await auth()
-  if (!session) return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
+  const authResult = await requireAuth()
+  if (!authResult.ok) return authResult.response
+  const { session } = authResult
 
   const result = await parseBody(req, profileSchema)
   if (!result.ok) return result.response

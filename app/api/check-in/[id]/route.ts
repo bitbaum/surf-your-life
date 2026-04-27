@@ -1,11 +1,10 @@
 import { NextResponse } from "next/server"
-import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { checkIns } from "@/lib/db/schema"
 import { checkInSchema } from "@/lib/domain/profile"
 import { eq, and } from "drizzle-orm"
-import { API_ERR_FORBIDDEN, API_ERR_NOT_FOUND, API_ERR_UNAUTHORIZED } from "@/lib/constants"
-import { parseBody } from "@/lib/api"
+import { API_ERR_FORBIDDEN, API_ERR_NOT_FOUND } from "@/lib/constants"
+import { parseBody, requireAuth } from "@/lib/api"
 import { embedCheckIn } from "@/lib/domain/embeddings"
 
 async function verifyOwnership(id: string, userId: string): Promise<NextResponse | null> {
@@ -16,8 +15,9 @@ async function verifyOwnership(id: string, userId: string): Promise<NextResponse
 }
 
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const session = await auth()
-  if (!session) return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
+  const authResult = await requireAuth()
+  if (!authResult.ok) return authResult.response
+  const { session } = authResult
 
   const { id } = await params
   const ownershipError = await verifyOwnership(id, session.user.id)
@@ -39,8 +39,9 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 }
 
 export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const session = await auth()
-  if (!session) return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
+  const authResult = await requireAuth()
+  if (!authResult.ok) return authResult.response
+  const { session } = authResult
 
   const { id } = await params
   const ownershipError = await verifyOwnership(id, session.user.id)

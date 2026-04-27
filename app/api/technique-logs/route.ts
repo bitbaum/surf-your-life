@@ -1,13 +1,12 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { techniqueLogs, techniqueAssignments } from "@/lib/db/schema"
 import { eq, and, gte, desc } from "drizzle-orm"
 import { logTechniqueSchema } from "@/lib/domain/techniques"
 import { localDateString, addDaysISO } from "@/lib/utils"
-import { API_ERR_UNAUTHORIZED, API_ERR_NOT_FOUND, TECHNIQUE_LOG_WINDOW_DAYS } from "@/lib/constants"
-import { parseBody } from "@/lib/api"
+import { API_ERR_NOT_FOUND, TECHNIQUE_LOG_WINDOW_DAYS } from "@/lib/constants"
+import { parseBody, requireAuth } from "@/lib/api"
 
 const undoSchema = z.object({
   assignmentId: z.string().uuid(),
@@ -15,8 +14,9 @@ const undoSchema = z.object({
 })
 
 export async function GET(req: Request) {
-  const session = await auth()
-  if (!session) return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
+  const authResult = await requireAuth()
+  if (!authResult.ok) return authResult.response
+  const { session } = authResult
 
   const { searchParams } = new URL(req.url)
   // Default to TECHNIQUE_LOG_WINDOW_DAYS back from clinic-local today so the
@@ -35,8 +35,9 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  const session = await auth()
-  if (!session) return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
+  const authResult = await requireAuth()
+  if (!authResult.ok) return authResult.response
+  const { session } = authResult
 
   const result = await parseBody(req, logTechniqueSchema)
   if (!result.ok) return result.response
@@ -65,8 +66,9 @@ export async function POST(req: Request) {
 }
 
 export async function DELETE(req: Request) {
-  const session = await auth()
-  if (!session) return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
+  const authResult = await requireAuth()
+  if (!authResult.ok) return authResult.response
+  const { session } = authResult
 
   const result = await parseBody(req, undoSchema)
   if (!result.ok) return result.response

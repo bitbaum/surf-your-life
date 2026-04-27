@@ -1,20 +1,19 @@
 import { NextResponse } from "next/server"
 import { randomBytes } from "crypto"
-import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { users, verificationTokens } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { sendEmailFire } from "@/lib/email"
 import { verificationEmail } from "@/lib/email/templates"
-import { SITE_URL, DAY_MS, API_ERR_UNAUTHORIZED, API_ERR_NOT_FOUND, API_ERR_RATE_LIMITED, API_ERR_EMAIL_ALREADY_VERIFIED } from "@/lib/constants"
+import { SITE_URL, DAY_MS, API_ERR_NOT_FOUND, API_ERR_RATE_LIMITED, API_ERR_EMAIL_ALREADY_VERIFIED } from "@/lib/constants"
 import { EMAIL_SUBJECT_VERIFY } from "@/lib/email/subjects"
 import { checkRateLimit } from "@/lib/rate-limit"
+import { requireAuth } from "@/lib/api"
 
 export async function POST() {
-  const session = await auth()
-  if (!session?.user?.id) {
-    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
-  }
+  const authResult = await requireAuth()
+  if (!authResult.ok) return authResult.response
+  const { session } = authResult
 
   const { ok, retryAfterSecs } = checkRateLimit(`resend-verification:${session.user.id}`, 3)
   if (!ok) {

@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server"
-import { auth } from "@/lib/auth"
 import { z } from "zod"
-import { API_ERR_UNAUTHORIZED, FIELD_MAX_MEDIUM } from "@/lib/constants"
-import { parseBody } from "@/lib/api"
+import { FIELD_MAX_MEDIUM } from "@/lib/constants"
+import { parseBody, requireAuth } from "@/lib/api"
 import { aiParse, keywordParse } from "@/lib/domain/check-in-parse"
 
 const parseSchema = z.object({
@@ -10,10 +9,8 @@ const parseSchema = z.object({
 })
 
 export async function POST(req: Request) {
-  const session = await auth()
-  if (!session?.user?.id) {
-    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
-  }
+  const authResult = await requireAuth()
+  if (!authResult.ok) return authResult.response
 
   const result = await parseBody(req, parseSchema)
   if (!result.ok) return result.response

@@ -1,12 +1,9 @@
 import { NextResponse } from "next/server"
-import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { assignments } from "@/lib/db/schema"
 import { and, eq } from "drizzle-orm"
 import { z } from "zod"
-import { isStaff } from "@/lib/domain/auth"
-import { API_ERR_UNAUTHORIZED } from "@/lib/constants"
-import { parseBody } from "@/lib/api"
+import { parseBody, requireStaffAuth } from "@/lib/api"
 
 const assignSchema = z.object({
   clientId: z.string().uuid(),
@@ -14,10 +11,9 @@ const assignSchema = z.object({
 })
 
 export async function POST(req: Request) {
-  const session = await auth()
-  if (!session?.user?.id || !isStaff(session.user.role)) {
-    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
-  }
+  const authResult = await requireStaffAuth()
+  if (!authResult.ok) return authResult.response
+  const { session } = authResult
 
   const result = await parseBody(req, assignSchema)
   if (!result.ok) return result.response

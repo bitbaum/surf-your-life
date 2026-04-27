@@ -1,13 +1,12 @@
 import { NextResponse } from "next/server"
 import bcrypt from "bcryptjs"
 import { z } from "zod"
-import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { users } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { checkRateLimit, ipKey } from "@/lib/rate-limit"
-import { API_ERR_UNAUTHORIZED, API_ERR_RATE_LIMITED, BCRYPT_SALT_ROUNDS, PASSWORD_MIN_LENGTH, API_ERR_NO_PASSWORD_AUTH, API_ERR_WRONG_PASSWORD } from "@/lib/constants"
-import { parseBody } from "@/lib/api"
+import { API_ERR_RATE_LIMITED, BCRYPT_SALT_ROUNDS, PASSWORD_MIN_LENGTH, API_ERR_NO_PASSWORD_AUTH, API_ERR_WRONG_PASSWORD } from "@/lib/constants"
+import { parseBody, requireAuth } from "@/lib/api"
 
 const changePasswordSchema = z.object({
   currentPassword: z.string().min(1),
@@ -23,10 +22,9 @@ export async function POST(req: Request) {
     )
   }
 
-  const session = await auth()
-  if (!session?.user?.id) {
-    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
-  }
+  const authResult = await requireAuth()
+  if (!authResult.ok) return authResult.response
+  const { session } = authResult
 
   const result = await parseBody(req, changePasswordSchema)
   if (!result.ok) return result.response

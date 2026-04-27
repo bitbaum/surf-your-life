@@ -1,15 +1,16 @@
 import { NextResponse } from "next/server"
-import { auth } from "@/lib/auth"
 import { isStaff } from "@/lib/domain/auth"
 import { db } from "@/lib/db"
 import { threads, threadMessages } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
 import { createThreadSchema, notifyMessageParty } from "@/lib/domain/messaging"
-import { PAGINATION_DEFAULT, SITE_URL, API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED } from "@/lib/constants"
+import { PAGINATION_DEFAULT, SITE_URL, API_ERR_INVALID_INPUT } from "@/lib/constants"
+import { requireAuth } from "@/lib/api"
 
 export async function GET() {
-  const session = await auth()
-  if (!session) return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
+  const authResult = await requireAuth()
+  if (!authResult.ok) return authResult.response
+  const { session } = authResult
 
   const isAdmin = isStaff(session.user.role)
 
@@ -31,8 +32,9 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const session = await auth()
-  if (!session) return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
+  const authResult = await requireAuth()
+  if (!authResult.ok) return authResult.response
+  const { session } = authResult
 
   const body = await request.json().catch(() => null)
   if (!body) return NextResponse.json({ success: false, error: API_ERR_INVALID_INPUT }, { status: 400 })

@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server"
 import bcrypt from "bcryptjs"
 import { z } from "zod"
-import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import {
   users,
@@ -16,17 +15,17 @@ import {
   accounts,
 } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
-import { API_ERR_UNAUTHORIZED, API_ERR_NOT_FOUND, API_ERR_PASSWORD_REQUIRED, API_ERR_NO_PASSWORD_AUTH, API_ERR_WRONG_PASSWORD } from "@/lib/constants"
+import { API_ERR_NOT_FOUND, API_ERR_PASSWORD_REQUIRED, API_ERR_NO_PASSWORD_AUTH, API_ERR_WRONG_PASSWORD } from "@/lib/constants"
+import { requireAuth } from "@/lib/api"
 
 const deleteSchema = z.object({
   password: z.string().min(1),
 })
 
 export async function DELETE(req: Request) {
-  const session = await auth()
-  if (!session?.user?.id) {
-    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
-  }
+  const authResult = await requireAuth()
+  if (!authResult.ok) return authResult.response
+  const { session } = authResult
 
   const body = await req.json()
   const parsed = deleteSchema.safeParse(body)

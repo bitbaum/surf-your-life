@@ -1,20 +1,16 @@
 import { NextResponse } from "next/server"
-import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { passwordResetTokens } from "@/lib/db/schema"
 import { randomBytes } from "crypto"
 import { z } from "zod"
-import { SITE_URL, HOUR_MS , API_ERR_UNAUTHORIZED } from "@/lib/constants"
-import { parseBody } from "@/lib/api"
-import { CLIENT_ROLE } from "@/lib/domain/auth"
+import { SITE_URL, HOUR_MS } from "@/lib/constants"
+import { parseBody, requireStaffAuth } from "@/lib/api"
 
 const schema = z.object({ userId: z.string().uuid() })
 
 export async function POST(req: Request) {
-  const session = await auth()
-  if (!session || session.user.role === CLIENT_ROLE) {
-    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
-  }
+  const authResult = await requireStaffAuth()
+  if (!authResult.ok) return authResult.response
 
   const result = await parseBody(req, schema)
   if (!result.ok) return result.response

@@ -8,10 +8,16 @@ import { API_ERR_FORBIDDEN, API_ERR_INVALID_INPUT, API_ERR_UNAUTHORIZED } from "
 type ParseOk<T> = { ok: true; data: T }
 type ParseFail = { ok: false; response: NextResponse }
 
-type StaffAuthOk = { ok: true; session: Session }
-type StaffAuthFail = { ok: false; response: NextResponse }
+type AuthOk = { ok: true; session: Session }
+type AuthFail = { ok: false; response: NextResponse }
 
-export async function requireStaffAuth(): Promise<StaffAuthOk | StaffAuthFail> {
+export async function requireAuth(): Promise<AuthOk | AuthFail> {
+  const session = await auth()
+  if (!session?.user?.id) return { ok: false, response: NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 }) }
+  return { ok: true, session }
+}
+
+export async function requireStaffAuth(): Promise<AuthOk | AuthFail> {
   const session = await auth()
   if (!session) return { ok: false, response: NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 }) }
   if (!isStaff(session.user.role)) return { ok: false, response: NextResponse.json({ success: false, error: API_ERR_FORBIDDEN }, { status: 403 }) }

@@ -4,24 +4,21 @@
  * Uses Anthropic API directly (no SDK). Gracefully degrades when key is absent.
  */
 import { NextResponse } from "next/server"
-import { auth } from "@/lib/auth"
-import { isStaff } from "@/lib/domain/auth"
 import { formatEnumValue, roundOne } from "@/lib/utils"
 import { db } from "@/lib/db"
 import { users, checkIns, clientAlerts } from "@/lib/db/schema"
 import { eq, desc, and } from "drizzle-orm"
 import { callClaude } from "@/lib/domain/anthropic"
 import { localDateString } from "@/lib/utils"
-import { SESSION_PREP_CHECKIN_LIMIT, SESSION_PREP_ALERTS_LIMIT, SESSION_PREP_ENERGY_AVG_WINDOW, API_ERR_UNAUTHORIZED, API_ERR_NOT_FOUND } from "@/lib/constants"
+import { SESSION_PREP_CHECKIN_LIMIT, SESSION_PREP_ALERTS_LIMIT, SESSION_PREP_ENERGY_AVG_WINDOW, API_ERR_NOT_FOUND } from "@/lib/constants"
+import { requireStaffAuth } from "@/lib/api"
 
 export async function GET(
   _req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth()
-  if (!session?.user || !isStaff(session.user.role)) {
-    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
-  }
+  const authResult = await requireStaffAuth()
+  if (!authResult.ok) return authResult.response
 
   const { id: clientId } = await params
 

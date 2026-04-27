@@ -1,20 +1,18 @@
 import { NextResponse } from "next/server"
-import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { bookings, services, users } from "@/lib/db/schema"
 import { and, eq, desc, inArray } from "drizzle-orm"
 import { createBookingSchema } from "@/lib/domain/booking"
 import { STAFF_ROLES } from "@/lib/domain/auth"
-import { PAGINATION_DEFAULT, API_ERR_UNAUTHORIZED, API_ERR_SERVICE_UNAVAILABLE, API_ERR_BOOKING_DUPLICATE, API_ERR_SLOT_TAKEN, ACTIVE_BOOKING_STATUSES } from "@/lib/constants"
-import { parseBody } from "@/lib/api"
+import { PAGINATION_DEFAULT, API_ERR_SERVICE_UNAVAILABLE, API_ERR_BOOKING_DUPLICATE, API_ERR_SLOT_TAKEN, ACTIVE_BOOKING_STATUSES } from "@/lib/constants"
+import { parseBody, requireAuth } from "@/lib/api"
 import { sendEmail, sendEmailFire } from "@/lib/email"
 import { bookingNotificationEmail, bookingRequestEmail } from "@/lib/email/templates"
 
 export async function GET() {
-  const session = await auth()
-  if (!session?.user?.id) {
-    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
-  }
+  const authResult = await requireAuth()
+  if (!authResult.ok) return authResult.response
+  const { session } = authResult
 
   const data = await db.query.bookings.findMany({
     where: eq(bookings.userId, session.user.id),
@@ -27,10 +25,9 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-  const session = await auth()
-  if (!session?.user?.id) {
-    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
-  }
+  const authResult = await requireAuth()
+  if (!authResult.ok) return authResult.response
+  const { session } = authResult
 
   const result = await parseBody(req, createBookingSchema)
   if (!result.ok) return result.response

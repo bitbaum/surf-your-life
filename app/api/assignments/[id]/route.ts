@@ -1,16 +1,12 @@
 import { NextResponse } from "next/server"
-import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { assignments } from "@/lib/db/schema"
 import { and, eq } from "drizzle-orm"
-import { isStaff } from "@/lib/domain/auth"
-import { API_ERR_UNAUTHORIZED } from "@/lib/constants"
+import { requireStaffAuth } from "@/lib/api"
 
 export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const session = await auth()
-  if (!session?.user?.id || !isStaff(session.user.role)) {
-    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
-  }
+  const authResult = await requireStaffAuth()
+  if (!authResult.ok) return authResult.response
 
   const { id } = await params
 

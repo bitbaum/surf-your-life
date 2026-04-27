@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server"
-import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { checkIns, users, assignments } from "@/lib/db/schema"
 import { checkInSchema } from "@/lib/domain/profile"
@@ -10,13 +9,14 @@ import { firstCheckInAlertEmail } from "@/lib/email/templates"
 import { EMAIL_SUBJECT_FIRST_CHECKIN } from "@/lib/email/subjects"
 import { STAFF_ROLES } from "@/lib/domain/auth"
 import { eq, and, gte, count, inArray } from "drizzle-orm"
-import { API_ERR_UNAUTHORIZED, API_ERR_CHECKIN_DUPLICATE } from "@/lib/constants"
-import { parseBody } from "@/lib/api"
+import { API_ERR_CHECKIN_DUPLICATE } from "@/lib/constants"
+import { parseBody, requireAuth } from "@/lib/api"
 import { findUserContact } from "@/lib/db/queries"
 
 export async function POST(req: Request) {
-  const session = await auth()
-  if (!session) return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
+  const authResult = await requireAuth()
+  if (!authResult.ok) return authResult.response
+  const { session } = authResult
 
   // Prevent duplicate check-ins on the same calendar day
   const startOfDay = new Date()

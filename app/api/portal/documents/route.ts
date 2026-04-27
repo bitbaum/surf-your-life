@@ -1,11 +1,10 @@
 import { NextResponse } from "next/server"
-import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { documents } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
 import { z } from "zod"
-import { DOCUMENTS_PER_CLIENT_LIMIT, DOCUMENT_UPLOAD_MAX_CONTENT, FIELD_MAX_TITLE, API_ERR_UNAUTHORIZED } from "@/lib/constants"
-import { parseBody } from "@/lib/api"
+import { DOCUMENTS_PER_CLIENT_LIMIT, DOCUMENT_UPLOAD_MAX_CONTENT, FIELD_MAX_TITLE } from "@/lib/constants"
+import { parseBody, requireAuth } from "@/lib/api"
 import { embedDocument } from "@/lib/domain/embeddings"
 
 const uploadSchema = z.object({
@@ -14,10 +13,9 @@ const uploadSchema = z.object({
 })
 
 export async function GET() {
-  const session = await auth()
-  if (!session?.user?.id) {
-    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
-  }
+  const authResult = await requireAuth()
+  if (!authResult.ok) return authResult.response
+  const { session } = authResult
 
   const docs = await db.query.documents.findMany({
     where: eq(documents.userId, session.user.id),
@@ -30,10 +28,9 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-  const session = await auth()
-  if (!session?.user?.id) {
-    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
-  }
+  const authResult = await requireAuth()
+  if (!authResult.ok) return authResult.response
+  const { session } = authResult
 
   const result = await parseBody(req, uploadSchema)
   if (!result.ok) return result.response

@@ -1,11 +1,10 @@
 import { NextResponse } from "next/server"
-import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { aiMessages } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
 import { generateAiReply } from "@/lib/domain/ai-chat"
-import { AI_CHAT_HISTORY_LIMIT, AI_CHAT_DISPLAY_LIMIT, AI_CHAT_MAX_LENGTH, API_ERR_UNAUTHORIZED, API_ERR_SERVER_ERROR } from "@/lib/constants"
-import { parseBody } from "@/lib/api"
+import { AI_CHAT_HISTORY_LIMIT, AI_CHAT_DISPLAY_LIMIT, AI_CHAT_MAX_LENGTH, API_ERR_SERVER_ERROR } from "@/lib/constants"
+import { parseBody, requireAuth } from "@/lib/api"
 import { z } from "zod"
 
 const messageSchema = z.object({
@@ -13,10 +12,9 @@ const messageSchema = z.object({
 })
 
 export async function GET(req: Request) {
-  const session = await auth()
-  if (!session?.user?.id) {
-    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
-  }
+  const authResult = await requireAuth()
+  if (!authResult.ok) return authResult.response
+  const { session } = authResult
 
   const { searchParams } = new URL(req.url)
   const limit = Math.min(parseInt(searchParams.get("limit") ?? String(AI_CHAT_DISPLAY_LIMIT)), AI_CHAT_DISPLAY_LIMIT)
@@ -36,10 +34,9 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  const session = await auth()
-  if (!session?.user?.id) {
-    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
-  }
+  const authResult = await requireAuth()
+  if (!authResult.ok) return authResult.response
+  const { session } = authResult
 
   const result = await parseBody(req, messageSchema)
   if (!result.ok) return result.response

@@ -1,13 +1,11 @@
 import { NextResponse } from "next/server"
-import { auth } from "@/lib/auth"
-import { isStaff } from "@/lib/domain/auth"
 import { formatEnumValue } from "@/lib/utils"
 import { db } from "@/lib/db"
 import { documents, documentTypeEnum } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
 import { z } from "zod"
-import { DOCUMENTS_PER_CLIENT_LIMIT, FIELD_MAX_TITLE, DOCUMENT_ADMIN_MAX_CONTENT, API_ERR_UNAUTHORIZED } from "@/lib/constants"
-import { parseBody } from "@/lib/api"
+import { DOCUMENTS_PER_CLIENT_LIMIT, FIELD_MAX_TITLE, DOCUMENT_ADMIN_MAX_CONTENT } from "@/lib/constants"
+import { parseBody, requireStaffAuth } from "@/lib/api"
 import { embedDocument } from "@/lib/domain/embeddings"
 
 const createDocSchema = z.object({
@@ -20,10 +18,8 @@ export async function GET(
   _req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth()
-  if (!session?.user || !isStaff(session.user.role)) {
-    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
-  }
+  const authResult = await requireStaffAuth()
+  if (!authResult.ok) return authResult.response
 
   const { id: clientId } = await params
 
@@ -41,10 +37,9 @@ export async function POST(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth()
-  if (!session?.user || !isStaff(session.user.role)) {
-    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
-  }
+  const authResult = await requireStaffAuth()
+  if (!authResult.ok) return authResult.response
+  const { session } = authResult
 
   const { id: clientId } = await params
 

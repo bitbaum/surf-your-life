@@ -1,16 +1,16 @@
 import { NextResponse } from "next/server"
-import { auth } from "@/lib/auth"
 import { isStaff } from "@/lib/domain/auth"
 import { db } from "@/lib/db"
 import { techniqueAssignments } from "@/lib/db/schema"
 import { eq, and } from "drizzle-orm"
 import { createAssignmentSchema } from "@/lib/domain/techniques"
-import { API_ERR_UNAUTHORIZED, CLIENT_ASSIGNMENTS_MAX } from "@/lib/constants"
-import { parseBody, requireStaffAuth } from "@/lib/api"
+import { CLIENT_ASSIGNMENTS_MAX } from "@/lib/constants"
+import { parseBody, requireAuth, requireStaffAuth } from "@/lib/api"
 
 export async function GET(req: Request) {
-  const session = await auth()
-  if (!session) return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
+  const authResult = await requireAuth()
+  if (!authResult.ok) return authResult.response
+  const { session } = authResult
 
   const { searchParams } = new URL(req.url)
   const clientId = searchParams.get("clientId")

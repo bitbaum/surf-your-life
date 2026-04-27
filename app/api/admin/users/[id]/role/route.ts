@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
 import { eq } from "drizzle-orm"
-import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { users, roleEnum } from "@/lib/db/schema"
 import { ADMIN_ROLE } from "@/lib/domain/auth"
-import { API_ERR_FORBIDDEN, API_ERR_UNAUTHORIZED, API_ERR_NOT_FOUND, API_ERR_SELF_ROLE_CHANGE } from "@/lib/constants"
-import { parseBody } from "@/lib/api"
+import { API_ERR_FORBIDDEN, API_ERR_NOT_FOUND, API_ERR_SELF_ROLE_CHANGE } from "@/lib/constants"
+import { parseBody, requireStaffAuth } from "@/lib/api"
 
 const bodySchema = z.object({
   role: z.enum(roleEnum.enumValues),
@@ -16,10 +15,9 @@ export async function PATCH(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth()
-  if (!session?.user?.id) {
-    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
-  }
+  const authResult = await requireStaffAuth()
+  if (!authResult.ok) return authResult.response
+  const { session } = authResult
   if (session.user.role !== ADMIN_ROLE) {
     return NextResponse.json({ success: false, error: API_ERR_FORBIDDEN }, { status: 403 })
   }
