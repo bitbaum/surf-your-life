@@ -7,6 +7,7 @@ import {
   ClipboardList, LayoutDashboard, History, Activity, TrendingUp,
   Pill, Sparkles, BookOpen, Bot, MessageSquare, CalendarPlus, FileText,
 } from "lucide-react"
+import { NavBadge } from "@/components/ui/nav-badge"
 
 const NAV_GROUPS = [
   {
@@ -63,11 +64,7 @@ export function PortalSidebarNav({ onClose, unreadThreads = 0 }: Props) {
     >
       <Icon className="w-4 h-4" />
       {label}
-      {badge > 0 && (
-        <span className="ml-auto text-xs bg-teal-600 text-white rounded-full px-1.5 py-0.5 min-w-[1.25rem] text-center leading-none">
-          {badge}
-        </span>
-      )}
+      <NavBadge count={badge} />
     </Link>
   )
 

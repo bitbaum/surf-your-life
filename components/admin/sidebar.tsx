@@ -8,6 +8,7 @@ import { BRAND_NAME } from "@/lib/constants"
 import { LocaleSwitcher } from "@/components/ui/locale-switcher"
 import { useTranslations } from "next-intl"
 import { LayoutDashboard, Users, LogOut, Waves, Menu, X, Inbox, MessageSquare, UserCog, CalendarCheck, BookOpen, Wrench, User, Sparkles, Bell, Activity } from "lucide-react"
+import { NavBadge } from "@/components/ui/nav-badge"
 
 interface AdminSidebarProps {
   unreadThreads?: number
@@ -62,11 +63,7 @@ export function AdminSidebar({ unreadThreads = 0, unresolvedAlerts = 0, newLeads
         >
           <Icon className="w-4 h-4" />
           {label}
-          {badge > 0 && (
-            <span className="ml-auto text-xs bg-teal-500 text-white rounded-full px-1.5 py-0.5 min-w-[1.25rem] text-center">
-              {badge}
-            </span>
-          )}
+          <NavBadge count={badge} />
         </Link>
       ))}
     </nav>

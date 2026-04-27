@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ProgressBar } from "@/components/ui/progress-bar"
-import { EmptyState } from "@/components/ui/empty-state"
+import { EmptyStateCard } from "@/components/ui/empty-state-card"
 import { Link } from "@/i18n/navigation"
 import { getTranslations } from "next-intl/server"
 import { formatDate } from "@/lib/utils"
@@ -16,18 +16,15 @@ export async function AssessmentTimeline({ assessments, delta }: Props) {
 
   if (assessments.length === 0) {
     return (
-      <Card className="mt-4">
-        <CardContent className="py-12">
-          <EmptyState
-            message={t("noAssessments")}
-            action={
-              <Link href="/assessments" className="text-sm font-medium text-teal-600 hover:text-teal-700 transition-colors">
-                {t("doAssessment")} →
-              </Link>
-            }
-          />
-        </CardContent>
-      </Card>
+      <EmptyStateCard
+        cardClassName="mt-4"
+        message={t("noAssessments")}
+        action={
+          <Link href="/assessments" className="text-sm font-medium text-teal-600 hover:text-teal-700 transition-colors">
+            {t("doAssessment")} →
+          </Link>
+        }
+      />
     )
   }
 

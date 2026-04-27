@@ -11,7 +11,7 @@ import { formatDate, computeTotalPages, parsePage, computeOffset } from "@/lib/u
 import { FileText } from "lucide-react"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { AddDocumentButton } from "./add-document-button"
-import { EmptyState } from "@/components/ui/empty-state"
+import { EmptyStateCard } from "@/components/ui/empty-state-card"
 
 export default async function DocumentsPage({
   params,
@@ -55,15 +55,11 @@ export default async function DocumentsPage({
       </div>
 
       {docs.length === 0 ? (
-        <Card>
-          <CardContent className="py-12">
-            <EmptyState
-              icon={<FileText className="w-8 h-8" />}
-              message={t("empty")}
-              description={t("emptySubtext")}
-            />
-          </CardContent>
-        </Card>
+        <EmptyStateCard
+          icon={<FileText className="w-8 h-8" />}
+          message={t("empty")}
+          description={t("emptySubtext")}
+        />
       ) : (
         <div className="flex flex-col gap-3">
           {docs.map((doc) => (

@@ -11,7 +11,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server"
 import { formatDate, computeTotalPages, parsePage, computeOffset } from "@/lib/utils"
 import { PageHeader } from "@/components/ui/page-header"
 import { AssessmentsClient } from "./assessments-client"
-import { EmptyState } from "@/components/ui/empty-state"
+import { EmptyStateCard } from "@/components/ui/empty-state-card"
 
 
 export default async function AssessmentsPage({
@@ -85,13 +85,7 @@ export default async function AssessmentsPage({
         </div>
       )}
 
-      {total === 0 && (
-        <Card className="mt-4">
-          <CardContent className="py-12">
-            <EmptyState message={t("empty")} />
-          </CardContent>
-        </Card>
-      )}
+      {total === 0 && <EmptyStateCard cardClassName="mt-4" message={t("empty")} />}
 
       <Pagination page={page} totalPages={totalPages} pageLink={(p) => `/assessments?page=${p}`} />
     </div>
