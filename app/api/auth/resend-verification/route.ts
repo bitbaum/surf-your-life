@@ -8,15 +8,15 @@ import { verificationEmail } from "@/lib/email/templates"
 import { SITE_URL, DAY_MS, API_ERR_RATE_LIMITED, API_ERR_EMAIL_ALREADY_VERIFIED } from "@/lib/constants"
 import { EMAIL_SUBJECT_VERIFY } from "@/lib/email/subjects"
 import { checkRateLimit } from "@/lib/rate-limit"
-import { notFound, requireAuth } from "@/lib/api"
+import { notFound, requireAuth, ok } from "@/lib/api"
 
 export async function POST() {
   const authResult = await requireAuth()
   if (!authResult.ok) return authResult.response
   const { session } = authResult
 
-  const { ok, retryAfterSecs } = checkRateLimit(`resend-verification:${session.user.id}`, 3)
-  if (!ok) {
+  const { ok: rateOk, retryAfterSecs } = checkRateLimit(`resend-verification:${session.user.id}`, 3)
+  if (!rateOk) {
     return NextResponse.json(
       { success: false, error: API_ERR_RATE_LIMITED },
       { status: 429, headers: { "Retry-After": String(retryAfterSecs) } }
@@ -54,5 +54,5 @@ export async function POST() {
 
   sendEmailFire({ to: email, subject: EMAIL_SUBJECT_VERIFY, html: verificationEmail({ email, verifyUrl }) }, "resend-verification")
 
-  return NextResponse.json({ success: true })
+  return ok()
 }

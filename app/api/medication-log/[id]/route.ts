@@ -3,7 +3,7 @@ import { db } from "@/lib/db"
 import { medicationLog } from "@/lib/db/schema"
 import { eq, and } from "drizzle-orm"
 import { z } from "zod"
-import { notFound, parseBody, requireAuth } from "@/lib/api"
+import { notFound, parseBody, requireAuth, ok } from "@/lib/api"
 
 const patchSchema = z.object({
   endDate: z.string().optional().nullable(), // YYYY-MM-DD or null to clear
@@ -31,7 +31,7 @@ export async function PATCH(
     return notFound()
   }
 
-  return NextResponse.json({ success: true })
+  return ok()
 }
 
 export async function DELETE(
@@ -47,5 +47,5 @@ export async function DELETE(
     .delete(medicationLog)
     .where(and(eq(medicationLog.id, id), eq(medicationLog.userId, session.user.id)))
 
-  return NextResponse.json({ success: true })
+  return ok()
 }

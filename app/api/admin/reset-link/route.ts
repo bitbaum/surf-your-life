@@ -1,10 +1,9 @@
-import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { passwordResetTokens } from "@/lib/db/schema"
 import { randomBytes } from "crypto"
 import { z } from "zod"
 import { SITE_URL, HOUR_MS } from "@/lib/constants"
-import { parseBody, requireStaffAuth } from "@/lib/api"
+import { okData, parseBody, requireStaffAuth } from "@/lib/api"
 
 const schema = z.object({ userId: z.string().uuid() })
 
@@ -26,5 +25,5 @@ export async function POST(req: Request) {
 
   const link = `${SITE_URL}/reset-password?token=${token}`
 
-  return NextResponse.json({ success: true, data: { link } })
+  return okData({ link })
 }

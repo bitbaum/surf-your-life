@@ -7,7 +7,7 @@ import { eq } from "drizzle-orm"
 import { sendEmailFire } from "@/lib/email"
 import { bookingStatusEmail } from "@/lib/email/templates"
 import { API_ERR_BOOKING_ALREADY_CANCELLED } from "@/lib/constants"
-import { forbidden, notFound, parseBody, requireAuth } from "@/lib/api"
+import { forbidden, notFound, okData, parseBody, requireAuth } from "@/lib/api"
 
 const adminUpdateSchema = z.object({ status: z.enum(["confirmed", "cancelled"]) })
 const clientUpdateSchema = z.object({ status: z.literal("cancelled") })
@@ -76,5 +76,5 @@ export async function PATCH(
     sendEmailFire({ to: client.email, subject, html }, "booking-status-notify")
   }
 
-  return NextResponse.json({ success: true, data: updated })
+  return okData(updated)
 }

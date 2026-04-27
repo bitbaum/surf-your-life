@@ -1,11 +1,10 @@
-import { NextResponse } from "next/server"
 import { formatEnumValue } from "@/lib/utils"
 import { db } from "@/lib/db"
 import { documents, documentTypeEnum } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
 import { z } from "zod"
 import { DOCUMENTS_PER_CLIENT_LIMIT, FIELD_MAX_TITLE, DOCUMENT_ADMIN_MAX_CONTENT } from "@/lib/constants"
-import { created, parseBody, requireStaffAuth } from "@/lib/api"
+import { created, okData, parseBody, requireStaffAuth } from "@/lib/api"
 import { embedDocument } from "@/lib/domain/embeddings"
 
 const createDocSchema = z.object({
@@ -30,7 +29,7 @@ export async function GET(
     with: { author: { columns: { name: true } } },
   })
 
-  return NextResponse.json({ success: true, data: docs })
+  return okData(docs)
 }
 
 export async function POST(

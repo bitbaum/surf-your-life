@@ -1,7 +1,6 @@
-import { NextResponse } from "next/server"
 import { z } from "zod"
 import { FIELD_MAX_MEDIUM } from "@/lib/constants"
-import { parseBody, requireAuth } from "@/lib/api"
+import { okData, parseBody, requireAuth } from "@/lib/api"
 import { aiParse, keywordParse } from "@/lib/domain/check-in-parse"
 
 const parseSchema = z.object({
@@ -17,5 +16,5 @@ export async function POST(req: Request) {
 
   const fields = (await aiParse(result.data.text)) ?? keywordParse(result.data.text)
 
-  return NextResponse.json({ success: true, data: fields })
+  return okData(fields)
 }

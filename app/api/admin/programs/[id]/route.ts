@@ -4,7 +4,7 @@ import { programs } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { createProgramSchema } from "@/lib/domain/program"
 import { ADMIN_ROLE } from "@/lib/domain/auth"
-import { forbidden, notFound, parseBody, requireStaffAuth } from "@/lib/api"
+import { forbidden, notFound, parseBody, requireStaffAuth, ok } from "@/lib/api"
 
 export async function PATCH(
   req: Request,
@@ -37,7 +37,7 @@ export async function PATCH(
     })
     .where(eq(programs.id, id))
 
-  return NextResponse.json({ success: true })
+  return ok()
 }
 
 export async function DELETE(
@@ -53,5 +53,5 @@ export async function DELETE(
 
   await db.delete(programs).where(eq(programs.id, id))
 
-  return NextResponse.json({ success: true })
+  return ok()
 }

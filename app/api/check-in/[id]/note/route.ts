@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { checkIns } from "@/lib/db/schema"
 import { practitionerNoteSchema } from "@/lib/domain/profile"
@@ -6,7 +5,7 @@ import { eq } from "drizzle-orm"
 import { practitionerNoteEmail } from "@/lib/email/templates"
 import { EMAIL_SUBJECT_PRACTITIONER_NOTE } from "@/lib/email/subjects"
 import { SITE_URL } from "@/lib/constants"
-import { notFound, parseBody, requireStaffAuth } from "@/lib/api"
+import { notFound, okData, parseBody, requireStaffAuth } from "@/lib/api"
 import { findUserContact } from "@/lib/db/queries"
 import { sendEmailFire } from "@/lib/email"
 
@@ -45,5 +44,5 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     }, "practitioner-note")
   }
 
-  return NextResponse.json({ success: true, data: updated })
+  return okData(updated)
 }

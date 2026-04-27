@@ -6,7 +6,7 @@ import { eq, and, gt, isNull } from "drizzle-orm"
 import bcrypt from "bcryptjs"
 import { checkRateLimit, ipKey } from "@/lib/rate-limit"
 import { API_ERR_RATE_LIMITED, BCRYPT_SALT_ROUNDS, PASSWORD_MIN_LENGTH, API_ERR_INVALID_TOKEN } from "@/lib/constants"
-import { parseBody } from "@/lib/api"
+import { parseBody, ok } from "@/lib/api"
 
 const schema = z.object({
   token: z.string().min(1),
@@ -14,8 +14,8 @@ const schema = z.object({
 })
 
 export async function POST(req: Request) {
-  const { ok, retryAfterSecs } = checkRateLimit(ipKey(req, "reset-password"), 5)
-  if (!ok) {
+  const { ok: rateOk, retryAfterSecs } = checkRateLimit(ipKey(req, "reset-password"), 5)
+  if (!rateOk) {
     return NextResponse.json(
       { success: false, error: API_ERR_RATE_LIMITED },
       { status: 429, headers: { "Retry-After": String(retryAfterSecs) } }
@@ -49,5 +49,5 @@ export async function POST(req: Request) {
       .where(eq(passwordResetTokens.id, resetToken.id)),
   ])
 
-  return NextResponse.json({ success: true })
+  return ok()
 }

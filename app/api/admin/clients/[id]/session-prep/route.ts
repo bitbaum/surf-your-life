@@ -3,7 +3,6 @@
  * before a session with a specific client.
  * Uses Anthropic API directly (no SDK). Gracefully degrades when key is absent.
  */
-import { NextResponse } from "next/server"
 import { formatEnumValue, roundOne } from "@/lib/utils"
 import { db } from "@/lib/db"
 import { users, checkIns, clientAlerts } from "@/lib/db/schema"
@@ -11,7 +10,7 @@ import { eq, desc, and } from "drizzle-orm"
 import { callClaude } from "@/lib/domain/anthropic"
 import { localDateString } from "@/lib/utils"
 import { SESSION_PREP_CHECKIN_LIMIT, SESSION_PREP_ALERTS_LIMIT, SESSION_PREP_ENERGY_AVG_WINDOW } from "@/lib/constants"
-import { notFound, requireStaffAuth } from "@/lib/api"
+import { notFound, okData, requireStaffAuth } from "@/lib/api"
 
 export async function GET(
   _req: Request,
@@ -92,7 +91,7 @@ Write in a professional, clinical tone. Be specific and actionable.`,
     checkInCount: recentCheckIns.length,
   }
 
-  return NextResponse.json({ success: true, data: { summary, aiGenerated: aiSummary !== null, stats } })
+  return okData({ summary, aiGenerated: aiSummary !== null, stats })
 }
 
 function buildClinicalContext(

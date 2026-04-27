@@ -6,7 +6,7 @@ import { users } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { checkRateLimit, ipKey } from "@/lib/rate-limit"
 import { API_ERR_RATE_LIMITED, BCRYPT_SALT_ROUNDS, PASSWORD_MIN_LENGTH, API_ERR_NO_PASSWORD_AUTH, API_ERR_WRONG_PASSWORD } from "@/lib/constants"
-import { parseBody, requireAuth } from "@/lib/api"
+import { parseBody, requireAuth, ok } from "@/lib/api"
 
 const changePasswordSchema = z.object({
   currentPassword: z.string().min(1),
@@ -14,8 +14,8 @@ const changePasswordSchema = z.object({
 })
 
 export async function POST(req: Request) {
-  const { ok, retryAfterSecs } = checkRateLimit(ipKey(req, "change-password"), 5)
-  if (!ok) {
+  const { ok: rateOk, retryAfterSecs } = checkRateLimit(ipKey(req, "change-password"), 5)
+  if (!rateOk) {
     return NextResponse.json(
       { success: false, error: API_ERR_RATE_LIMITED },
       { status: 429, headers: { "Retry-After": String(retryAfterSecs) } }
@@ -51,5 +51,5 @@ export async function POST(req: Request) {
   const hashed = await bcrypt.hash(result.data.newPassword, BCRYPT_SALT_ROUNDS)
   await db.update(users).set({ password: hashed }).where(eq(users.id, session.user.id))
 
-  return NextResponse.json({ success: true })
+  return ok()
 }

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { assignments } from "@/lib/db/schema"
 import { and, eq } from "drizzle-orm"
-import { requireStaffAuth } from "@/lib/api"
+import { requireStaffAuth, ok } from "@/lib/api"
 
 export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const authResult = await requireStaffAuth()
@@ -15,5 +15,5 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
     .set({ active: false })
     .where(and(eq(assignments.id, id), eq(assignments.active, true)))
 
-  return NextResponse.json({ success: true })
+  return ok()
 }

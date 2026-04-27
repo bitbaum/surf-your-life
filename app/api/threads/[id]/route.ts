@@ -1,10 +1,9 @@
-import { NextResponse } from "next/server"
 import { isStaff } from "@/lib/domain/auth"
 import { db } from "@/lib/db"
 import { threads } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { markThreadAsReadFor } from "@/lib/db/thread-unread"
-import { forbidden, notFound, requireAuth } from "@/lib/api"
+import { forbidden, notFound, okData, requireAuth } from "@/lib/api"
 
 export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const authResult = await requireAuth()
@@ -34,5 +33,5 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
 
   await markThreadAsReadFor(id, session.user.id)
 
-  return NextResponse.json({ success: true, data: thread })
+  return okData(thread)
 }

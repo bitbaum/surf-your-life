@@ -5,7 +5,7 @@ import { threads, threadMessages } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
 import { createThreadSchema, notifyMessageParty } from "@/lib/domain/messaging"
 import { PAGINATION_DEFAULT, SITE_URL, API_ERR_INVALID_INPUT } from "@/lib/constants"
-import { requireAuth } from "@/lib/api"
+import { okData, requireAuth } from "@/lib/api"
 
 export async function GET() {
   const authResult = await requireAuth()
@@ -28,7 +28,7 @@ export async function GET() {
     },
   })
 
-  return NextResponse.json({ success: true, data: rows })
+  return okData(rows)
 }
 
 export async function POST(request: Request) {
@@ -78,5 +78,5 @@ export async function POST(request: Request) {
     baseUrl: SITE_URL,
   })
 
-  return NextResponse.json({ success: true, data: { threadId: thread.id } })
+  return okData({ threadId: thread.id })
 }

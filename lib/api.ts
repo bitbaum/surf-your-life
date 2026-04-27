@@ -38,6 +38,14 @@ export function created(data?: object) {
     : NextResponse.json({ success: true }, { status: 201 })
 }
 
+export function ok() {
+  return NextResponse.json({ success: true })
+}
+
+export function okData<T>(data: T) {
+  return NextResponse.json({ success: true, data })
+}
+
 export async function parseBody<S extends ZodTypeAny>(
   req: Request,
   schema: S

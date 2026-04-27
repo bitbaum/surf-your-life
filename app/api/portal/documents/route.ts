@@ -1,10 +1,9 @@
-import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { documents } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
 import { z } from "zod"
 import { DOCUMENTS_PER_CLIENT_LIMIT, DOCUMENT_UPLOAD_MAX_CONTENT, FIELD_MAX_TITLE } from "@/lib/constants"
-import { created, parseBody, requireAuth } from "@/lib/api"
+import { created, okData, parseBody, requireAuth } from "@/lib/api"
 import { embedDocument } from "@/lib/domain/embeddings"
 
 const uploadSchema = z.object({
@@ -24,7 +23,7 @@ export async function GET() {
     with: { author: { columns: { name: true } } },
   })
 
-  return NextResponse.json({ success: true, data: docs })
+  return okData(docs)
 }
 
 export async function POST(req: Request) {

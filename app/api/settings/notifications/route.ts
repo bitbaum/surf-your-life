@@ -3,7 +3,7 @@ import { z } from "zod"
 import { db } from "@/lib/db"
 import { profiles } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
-import { parseBody, requireAuth } from "@/lib/api"
+import { parseBody, requireAuth, ok } from "@/lib/api"
 
 const schema = z.object({ receiveReminders: z.boolean() })
 
@@ -20,5 +20,5 @@ export async function PATCH(req: Request) {
     .set({ receiveReminders: result.data.receiveReminders, updatedAt: new Date() })
     .where(eq(profiles.userId, session.user.id))
 
-  return NextResponse.json({ success: true })
+  return ok()
 }

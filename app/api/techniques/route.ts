@@ -1,10 +1,9 @@
-import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { techniques } from "@/lib/db/schema"
 import { eq, asc } from "drizzle-orm"
 import { createTechniqueSchema } from "@/lib/domain/techniques"
 import { SERVICES_MAX_LIMIT } from "@/lib/constants"
-import { created, parseBody, requireAuth, requireStaffAuth } from "@/lib/api"
+import { created, okData, parseBody, requireAuth, requireStaffAuth } from "@/lib/api"
 
 export async function GET() {
   const authResult = await requireAuth()
@@ -16,7 +15,7 @@ export async function GET() {
     limit: SERVICES_MAX_LIMIT,
   })
 
-  return NextResponse.json({ success: true, data: rows })
+  return okData(rows)
 }
 
 export async function POST(req: Request) {

@@ -3,7 +3,7 @@ import { db } from "@/lib/db"
 import { programEnrollments } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { updateEnrollmentSchema } from "@/lib/domain/program"
-import { notFound, parseBody, requireStaffAuth } from "@/lib/api"
+import { notFound, parseBody, requireStaffAuth, ok } from "@/lib/api"
 
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const authResult = await requireStaffAuth()
@@ -29,7 +29,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     })
     .where(eq(programEnrollments.id, id))
 
-  return NextResponse.json({ success: true })
+  return ok()
 }
 
 export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -40,5 +40,5 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
 
   await db.delete(programEnrollments).where(eq(programEnrollments.id, id))
 
-  return NextResponse.json({ success: true })
+  return ok()
 }

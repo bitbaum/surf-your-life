@@ -1,10 +1,9 @@
-import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { programs, programEnrollments } from "@/lib/db/schema"
 import { desc, count, eq } from "drizzle-orm"
 import { createProgramSchema } from "@/lib/domain/program"
 import { ADMIN_PROGRAMS_MAX } from "@/lib/constants"
-import { created, parseBody, requireStaffAuth } from "@/lib/api"
+import { created, okData, parseBody, requireStaffAuth } from "@/lib/api"
 
 export async function GET() {
   const authResult = await requireStaffAuth()
@@ -26,7 +25,7 @@ export async function GET() {
     .orderBy(desc(programs.createdAt))
     .limit(ADMIN_PROGRAMS_MAX)
 
-  return NextResponse.json({ success: true, data: rows })
+  return okData(rows)
 }
 
 export async function POST(req: Request) {

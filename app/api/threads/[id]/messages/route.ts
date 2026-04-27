@@ -5,7 +5,7 @@ import { threads, threadMessages } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { sendMessageSchema, notifyMessageParty } from "@/lib/domain/messaging"
 import { SITE_URL, API_ERR_INVALID_INPUT } from "@/lib/constants"
-import { forbidden, notFound, requireAuth } from "@/lib/api"
+import { forbidden, notFound, okData, requireAuth } from "@/lib/api"
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const authResult = await requireAuth()
@@ -48,5 +48,5 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     baseUrl: SITE_URL,
   })
 
-  return NextResponse.json({ success: true, data: { id: message.id } })
+  return okData({ id: message.id })
 }

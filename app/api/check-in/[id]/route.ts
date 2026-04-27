@@ -3,7 +3,7 @@ import { db } from "@/lib/db"
 import { checkIns } from "@/lib/db/schema"
 import { checkInSchema } from "@/lib/domain/profile"
 import { eq, and } from "drizzle-orm"
-import { forbidden, notFound, parseBody, requireAuth } from "@/lib/api"
+import { forbidden, notFound, okData, parseBody, requireAuth, ok } from "@/lib/api"
 import { embedCheckIn } from "@/lib/domain/embeddings"
 
 async function verifyOwnership(id: string, userId: string): Promise<NextResponse | null> {
@@ -34,7 +34,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
   // Re-embed after edit so semantic search reflects the updated content
   void embedCheckIn(id)
 
-  return NextResponse.json({ success: true, data: updated })
+  return okData(updated)
 }
 
 export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -50,5 +50,5 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
     .delete(checkIns)
     .where(and(eq(checkIns.id, id), eq(checkIns.userId, session.user.id)))
 
-  return NextResponse.json({ success: true })
+  return ok()
 }

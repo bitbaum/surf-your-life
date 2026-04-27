@@ -5,7 +5,7 @@ import { db } from "@/lib/db"
 import { users, roleEnum } from "@/lib/db/schema"
 import { ADMIN_ROLE } from "@/lib/domain/auth"
 import { API_ERR_SELF_ROLE_CHANGE } from "@/lib/constants"
-import { forbidden, notFound, parseBody, requireStaffAuth } from "@/lib/api"
+import { forbidden, notFound, okData, parseBody, requireStaffAuth } from "@/lib/api"
 
 const bodySchema = z.object({
   role: z.enum(roleEnum.enumValues),
@@ -44,5 +44,5 @@ export async function PATCH(
     return notFound()
   }
 
-  return NextResponse.json({ success: true, data: updated })
+  return okData(updated)
 }

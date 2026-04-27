@@ -4,7 +4,7 @@ import { eq, and, gt } from "drizzle-orm"
 import { db } from "@/lib/db"
 import { users, verificationTokens } from "@/lib/db/schema"
 import { API_ERR_INVALID_TOKEN } from "@/lib/constants"
-import { parseBody } from "@/lib/api"
+import { parseBody, ok } from "@/lib/api"
 
 // POST /api/auth/verify-email — consume token and mark email as verified
 const verifySchema = z.object({
@@ -39,5 +39,5 @@ export async function POST(req: Request) {
       .where(and(eq(verificationTokens.identifier, email), eq(verificationTokens.token, token))),
   ])
 
-  return NextResponse.json({ success: true })
+  return ok()
 }

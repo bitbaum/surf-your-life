@@ -8,14 +8,14 @@ import { checkRateLimit, ipKey } from "@/lib/rate-limit"
 import { sendEmailFire } from "@/lib/email"
 import { passwordResetEmail } from "@/lib/email/templates"
 import { HOUR_MS, API_ERR_RATE_LIMITED } from "@/lib/constants"
-import { parseBody } from "@/lib/api"
+import { parseBody, ok } from "@/lib/api"
 import { EMAIL_SUBJECT_RESET_PASSWORD } from "@/lib/email/subjects"
 
 const schema = z.object({ email: z.string().email() })
 
 export async function POST(req: Request) {
-  const { ok, retryAfterSecs } = checkRateLimit(ipKey(req, "forgot-password"), 3)
-  if (!ok) {
+  const { ok: rateOk, retryAfterSecs } = checkRateLimit(ipKey(req, "forgot-password"), 3)
+  if (!rateOk) {
     return NextResponse.json(
       { success: false, error: API_ERR_RATE_LIMITED },
       { status: 429, headers: { "Retry-After": String(retryAfterSecs) } }
@@ -50,5 +50,5 @@ export async function POST(req: Request) {
     sendEmailFire({ to: email, subject: EMAIL_SUBJECT_RESET_PASSWORD, html: passwordResetEmail({ resetUrl }) }, "forgot-password")
   }
 
-  return NextResponse.json({ success: true })
+  return ok()
 }

@@ -16,7 +16,7 @@ import {
 } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { API_ERR_PASSWORD_REQUIRED, API_ERR_NO_PASSWORD_AUTH, API_ERR_WRONG_PASSWORD } from "@/lib/constants"
-import { notFound, requireAuth } from "@/lib/api"
+import { notFound, requireAuth, ok } from "@/lib/api"
 
 const deleteSchema = z.object({
   password: z.string().min(1),
@@ -64,5 +64,5 @@ export async function DELETE(req: Request) {
   await db.delete(accounts).where(eq(accounts.userId, userId))
   await db.delete(users).where(eq(users.id, userId))
 
-  return NextResponse.json({ success: true })
+  return ok()
 }

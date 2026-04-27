@@ -1,11 +1,10 @@
-import { NextResponse } from "next/server"
 import { isStaff } from "@/lib/domain/auth"
 import { db } from "@/lib/db"
 import { techniqueAssignments } from "@/lib/db/schema"
 import { eq, and } from "drizzle-orm"
 import { createAssignmentSchema } from "@/lib/domain/techniques"
 import { CLIENT_ASSIGNMENTS_MAX } from "@/lib/constants"
-import { created, parseBody, requireAuth, requireStaffAuth } from "@/lib/api"
+import { created, okData, parseBody, requireAuth, requireStaffAuth } from "@/lib/api"
 
 export async function GET(req: Request) {
   const authResult = await requireAuth()
@@ -31,7 +30,7 @@ export async function GET(req: Request) {
     limit: CLIENT_ASSIGNMENTS_MAX,
   })
 
-  return NextResponse.json({ success: true, data: rows })
+  return okData(rows)
 }
 
 export async function POST(req: Request) {

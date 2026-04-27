@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { useTranslations } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import { toast } from "sonner"
 import { Plus, Trash2, BookOpen, ChevronDown, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -11,8 +11,6 @@ import type { Technique } from "@/lib/db/schema"
 import type { AssignmentWithTechnique, LogsGridByAssignment } from "@/lib/domain/techniques"
 import { TECHNIQUE_CATEGORIES, ADHERENCE_GOOD_DAYS, ADHERENCE_OK_DAYS } from "@/lib/constants"
 import { TechniqueAssignForm } from "./technique-assign-form"
-
-const DAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
 function AdherenceBadge({ days }: { days: number }) {
   const color = days >= ADHERENCE_GOOD_DAYS ? "text-teal-600 bg-teal-50" : days >= ADHERENCE_OK_DAYS ? "text-amber-600 bg-amber-50" : "text-red-500 bg-red-50"
@@ -28,6 +26,7 @@ function AdherenceGrid({ assignmentId, frequencyPerDay, logsGrid }: {
   frequencyPerDay: number
   logsGrid: LogsGridByAssignment
 }) {
+  const locale = useLocale()
   // Build the last 7 days ending today using local date (not UTC) so the
   // grid keys match the YYYY-MM-DD dates that clients log against locally.
   const days: { iso: string; label: string }[] = []
@@ -35,7 +34,7 @@ function AdherenceGrid({ assignmentId, frequencyPerDay, logsGrid }: {
     const d = new Date()
     d.setDate(d.getDate() - i)
     const iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`
-    const label = DAY_LABELS[d.getDay()]
+    const label = new Intl.DateTimeFormat(locale, { weekday: "short" }).format(d)
     days.push({ iso, label })
   }
 

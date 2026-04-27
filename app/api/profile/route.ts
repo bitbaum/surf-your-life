@@ -1,9 +1,8 @@
-import { NextResponse } from "next/server"
 import { eq } from "drizzle-orm"
 import { db } from "@/lib/db"
 import { profiles, users } from "@/lib/db/schema"
 import { profileSchema } from "@/lib/domain/profile"
-import { parseBody, requireAuth } from "@/lib/api"
+import { okData, parseBody, requireAuth, ok } from "@/lib/api"
 
 export async function GET() {
   const authResult = await requireAuth()
@@ -14,7 +13,7 @@ export async function GET() {
     where: eq(profiles.userId, session.user.id),
   })
 
-  return NextResponse.json({ success: true, data: profile })
+  return okData(profile)
 }
 
 export async function PUT(req: Request) {
@@ -37,5 +36,5 @@ export async function PUT(req: Request) {
     .set({ ...profileData, updatedAt: new Date() })
     .where(eq(profiles.userId, session.user.id))
 
-  return NextResponse.json({ success: true })
+  return ok()
 }

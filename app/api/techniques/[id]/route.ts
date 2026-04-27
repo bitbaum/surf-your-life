@@ -1,9 +1,8 @@
-import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { techniques } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { updateTechniqueSchema } from "@/lib/domain/techniques"
-import { notFound, parseBody, requireStaffAuth } from "@/lib/api"
+import { notFound, okData, parseBody, requireStaffAuth, ok } from "@/lib/api"
 
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const authResult = await requireStaffAuth()
@@ -28,7 +27,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 
   if (!updated) return notFound()
 
-  return NextResponse.json({ success: true, data: updated })
+  return okData(updated)
 }
 
 export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -45,5 +44,5 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
 
   if (!updated) return notFound()
 
-  return NextResponse.json({ success: true })
+  return ok()
 }

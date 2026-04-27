@@ -1,9 +1,8 @@
-import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { leads, leadStatusEnum } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { z } from "zod"
-import { notFound, parseBody, requireStaffAuth } from "@/lib/api"
+import { notFound, okData, parseBody, requireStaffAuth } from "@/lib/api"
 
 const patchSchema = z.object({
   status: z.enum(leadStatusEnum.enumValues),
@@ -28,5 +27,5 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     return notFound()
   }
 
-  return NextResponse.json({ success: true, data: updated })
+  return okData(updated)
 }

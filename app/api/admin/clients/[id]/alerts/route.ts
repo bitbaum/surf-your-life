@@ -1,9 +1,8 @@
-import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { clientAlerts } from "@/lib/db/schema"
 import { eq, and, desc } from "drizzle-orm"
 import { CLIENT_ALERTS_HISTORY_LIMIT } from "@/lib/constants"
-import { requireStaffAuth } from "@/lib/api"
+import { okData, requireStaffAuth } from "@/lib/api"
 
 // GET /api/admin/clients/[id]/alerts — returns resolved alerts for a client (lazy-loaded for history toggle)
 export async function GET(
@@ -20,5 +19,5 @@ export async function GET(
     limit: CLIENT_ALERTS_HISTORY_LIMIT,
   })
 
-  return NextResponse.json({ success: true, data: resolved })
+  return okData(resolved)
 }

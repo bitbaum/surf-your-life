@@ -4,7 +4,7 @@ import { aiMessages } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
 import { generateAiReply } from "@/lib/domain/ai-chat"
 import { AI_CHAT_HISTORY_LIMIT, AI_CHAT_DISPLAY_LIMIT, AI_CHAT_MAX_LENGTH, API_ERR_SERVER_ERROR } from "@/lib/constants"
-import { parseBody, requireAuth } from "@/lib/api"
+import { okData, parseBody, requireAuth } from "@/lib/api"
 import { z } from "zod"
 
 const messageSchema = z.object({
@@ -26,7 +26,7 @@ export async function GET(req: Request) {
       limit,
       columns: { id: true, role: true, content: true, createdAt: true },
     })
-    return NextResponse.json({ success: true, data: messages.reverse() })
+    return okData(messages.reverse())
   } catch (err) {
     console.error("[ai-chat GET]", err)
     return NextResponse.json({ success: false, error: API_ERR_SERVER_ERROR }, { status: 500 })
@@ -75,7 +75,7 @@ export async function POST(req: Request) {
       })
       .returning({ id: aiMessages.id, content: aiMessages.content, createdAt: aiMessages.createdAt })
 
-    return NextResponse.json({ success: true, data: { id: saved.id, content: saved.content, createdAt: saved.createdAt } })
+    return okData({ id: saved.id, content: saved.content, createdAt: saved.createdAt })
   } catch (err) {
     console.error("[ai-chat POST]", err)
     return NextResponse.json({ success: false, error: API_ERR_SERVER_ERROR }, { status: 500 })

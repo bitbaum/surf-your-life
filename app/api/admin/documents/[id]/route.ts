@@ -6,7 +6,7 @@ import { documents } from "@/lib/db/schema"
 import type { InferSelectModel } from "drizzle-orm"
 import { eq } from "drizzle-orm"
 import { FIELD_MAX_TITLE } from "@/lib/constants"
-import { forbidden, notFound, parseBody, requireStaffAuth } from "@/lib/api"
+import { forbidden, notFound, okData, parseBody, requireStaffAuth, ok } from "@/lib/api"
 
 const patchSchema = z.object({
   title: z.string().min(1).max(FIELD_MAX_TITLE).optional(),
@@ -46,7 +46,7 @@ export async function PATCH(
     .where(eq(documents.id, id))
     .returning()
 
-  return NextResponse.json({ success: true, data: updated[0] })
+  return okData(updated[0])
 }
 
 export async function DELETE(
@@ -67,5 +67,5 @@ export async function DELETE(
 
   await db.delete(documents).where(eq(documents.id, id))
 
-  return NextResponse.json({ success: true })
+  return ok()
 }

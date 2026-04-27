@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server"
 import { z } from "zod"
 import { db } from "@/lib/db"
 import { techniqueLogs, techniqueAssignments } from "@/lib/db/schema"
@@ -6,7 +5,7 @@ import { eq, and, gte, desc } from "drizzle-orm"
 import { logTechniqueSchema } from "@/lib/domain/techniques"
 import { localDateString, addDaysISO } from "@/lib/utils"
 import { TECHNIQUE_LOG_WINDOW_DAYS } from "@/lib/constants"
-import { created, notFound, parseBody, requireAuth } from "@/lib/api"
+import { created, notFound, okData, parseBody, requireAuth } from "@/lib/api"
 
 const undoSchema = z.object({
   assignmentId: z.string().uuid(),
@@ -31,7 +30,7 @@ export async function GET(req: Request) {
     orderBy: (l, { desc }) => [desc(l.date)],
   })
 
-  return NextResponse.json({ success: true, data: rows })
+  return okData(rows)
 }
 
 export async function POST(req: Request) {
@@ -112,5 +111,5 @@ export async function DELETE(req: Request) {
     orderBy: [desc(techniqueLogs.completedReps)],
   })
 
-  return NextResponse.json({ success: true, data: { newCount: newTopRow?.completedReps ?? 0 } })
+  return okData({ newCount: newTopRow?.completedReps ?? 0 })
 }
