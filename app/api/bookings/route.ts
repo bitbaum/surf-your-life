@@ -7,7 +7,7 @@ import { createBookingSchema } from "@/lib/domain/booking"
 import { STAFF_ROLES } from "@/lib/domain/auth"
 import { PAGINATION_DEFAULT, API_ERR_UNAUTHORIZED, API_ERR_SERVICE_UNAVAILABLE, API_ERR_BOOKING_DUPLICATE, API_ERR_SLOT_TAKEN, ACTIVE_BOOKING_STATUSES } from "@/lib/constants"
 import { parseBody } from "@/lib/api"
-import { sendEmail } from "@/lib/email"
+import { sendEmail, sendEmailFire } from "@/lib/email"
 import { bookingNotificationEmail, bookingRequestEmail } from "@/lib/email/templates"
 
 export async function GET() {
@@ -115,7 +115,7 @@ export async function POST(req: Request) {
   }
 
   // Confirm to the client — fire-and-forget
-  void sendEmail({
+  sendEmailFire({
     to: session.user.email!,
     subject: `Booking request received: ${service.name}`,
     html: bookingRequestEmail({
@@ -124,7 +124,7 @@ export async function POST(req: Request) {
       preferredDate: result.data.preferredDate ?? null,
       preferredTime: result.data.preferredTime ?? null,
     }),
-  }).catch((e) => console.error("[booking-request-confirm]", e))
+  }, "booking-request-confirm")
 
   return NextResponse.json({ success: true, data: { id: booking.id } }, { status: 201 })
 }

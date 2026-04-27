@@ -5,7 +5,7 @@ import { isStaff, CLIENT_ROLE } from "@/lib/domain/auth"
 import { db } from "@/lib/db"
 import { bookings, users } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
-import { sendEmail } from "@/lib/email"
+import { sendEmailFire } from "@/lib/email"
 import { bookingStatusEmail } from "@/lib/email/templates"
 import { API_ERR_FORBIDDEN, API_ERR_UNAUTHORIZED, API_ERR_NOT_FOUND, API_ERR_BOOKING_ALREADY_CANCELLED } from "@/lib/constants"
 import { parseBody } from "@/lib/api"
@@ -75,9 +75,7 @@ export async function PATCH(
         ? `Booking confirmed: ${booking.service.name}`
         : `Booking cancelled: ${booking.service.name}`
 
-    void sendEmail({ to: client.email, subject, html }).catch((err) =>
-      console.error("[booking-status-notify]", err)
-    )
+    sendEmailFire({ to: client.email, subject, html }, "booking-status-notify")
   }
 
   return NextResponse.json({ success: true, data: updated })

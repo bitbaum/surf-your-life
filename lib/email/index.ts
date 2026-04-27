@@ -28,3 +28,8 @@ export async function sendEmail({ to, subject, html }: SendOptions) {
     html,
   })
 }
+
+/** Fire-and-forget email: errors are logged but never propagate to the caller. */
+export function sendEmailFire(opts: SendOptions, tag = "email"): void {
+  void sendEmail(opts).catch((err) => console.error(`[${tag}]`, err))
+}

@@ -3,12 +3,12 @@ import { db } from "@/lib/db"
 import { checkIns } from "@/lib/db/schema"
 import { practitionerNoteSchema } from "@/lib/domain/profile"
 import { eq } from "drizzle-orm"
-import { sendEmail } from "@/lib/email"
 import { practitionerNoteEmail } from "@/lib/email/templates"
 import { EMAIL_SUBJECT_PRACTITIONER_NOTE } from "@/lib/email/subjects"
 import { SITE_URL, API_ERR_NOT_FOUND } from "@/lib/constants"
 import { parseBody, requireStaffAuth } from "@/lib/api"
 import { findUserContact } from "@/lib/db/queries"
+import { sendEmailFire } from "@/lib/email"
 
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const authResult = await requireStaffAuth()
@@ -33,7 +33,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   // Notify the client by email (fire-and-forget)
   const client = await findUserContact(existing.userId)
   if (client?.email) {
-    void sendEmail({
+    sendEmailFire({
       to: client.email,
       subject: EMAIL_SUBJECT_PRACTITIONER_NOTE,
       html: practitionerNoteEmail({
@@ -42,9 +42,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
         note: result.data.note,
         portalUrl: `${SITE_URL}/check-ins`,
       }),
-    }).catch(() => {
-      // Email failure is non-fatal — the note was saved successfully
-    })
+    }, "practitioner-note")
   }
 
   return NextResponse.json({ success: true, data: updated })

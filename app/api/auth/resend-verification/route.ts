@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { users, verificationTokens } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
-import { sendEmail } from "@/lib/email"
+import { sendEmailFire } from "@/lib/email"
 import { verificationEmail } from "@/lib/email/templates"
 import { SITE_URL, DAY_MS, API_ERR_UNAUTHORIZED, API_ERR_NOT_FOUND, API_ERR_RATE_LIMITED, API_ERR_EMAIL_ALREADY_VERIFIED } from "@/lib/constants"
 import { EMAIL_SUBJECT_VERIFY } from "@/lib/email/subjects"
@@ -53,11 +53,7 @@ export async function POST() {
 
   const verifyUrl = `${SITE_URL}/verify-email?token=${token}&email=${encodeURIComponent(email)}`
 
-  void sendEmail({
-    to: email,
-    subject: EMAIL_SUBJECT_VERIFY,
-    html: verificationEmail({ email, verifyUrl }),
-  }).catch((e) => console.error("[resend-verification]", e))
+  sendEmailFire({ to: email, subject: EMAIL_SUBJECT_VERIFY, html: verificationEmail({ email, verifyUrl }) }, "resend-verification")
 
   return NextResponse.json({ success: true })
 }

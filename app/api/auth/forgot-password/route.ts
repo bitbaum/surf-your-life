@@ -5,7 +5,7 @@ import { users, passwordResetTokens } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { randomBytes } from "crypto"
 import { checkRateLimit, ipKey } from "@/lib/rate-limit"
-import { sendEmail } from "@/lib/email"
+import { sendEmailFire } from "@/lib/email"
 import { passwordResetEmail } from "@/lib/email/templates"
 import { HOUR_MS, API_ERR_RATE_LIMITED } from "@/lib/constants"
 import { parseBody } from "@/lib/api"
@@ -47,11 +47,7 @@ export async function POST(req: Request) {
     const host = req.headers.get("x-forwarded-host") ?? req.headers.get("host") ?? "localhost:3000"
     const proto = req.headers.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https")
     const resetUrl = `${proto}://${host}/reset-password?token=${token}`
-    void sendEmail({
-      to: email,
-      subject: EMAIL_SUBJECT_RESET_PASSWORD,
-      html: passwordResetEmail({ resetUrl }),
-    }).catch((e) => console.error("[forgot-password] email failed", e))
+    sendEmailFire({ to: email, subject: EMAIL_SUBJECT_RESET_PASSWORD, html: passwordResetEmail({ resetUrl }) }, "forgot-password")
   }
 
   return NextResponse.json({ success: true })
