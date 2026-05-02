@@ -1,6 +1,6 @@
 import { db } from "@/lib/db"
 import { users, checkIns, profiles, clientAlerts, threads, assignments } from "@/lib/db/schema"
-import { eq, desc, count, or, ilike, and, max, inArray, sql } from "drizzle-orm"
+import { eq, desc, count, or, ilike, and, max, inArray, sql, gte } from "drizzle-orm"
 import { fetchCadenceMap } from "@/lib/db/check-in-cadence"
 import { unreadFromClientExists } from "@/lib/db/thread-unread"
 import { CLIENT_ROLE } from "@/lib/domain/auth"
@@ -8,6 +8,7 @@ import { PageHeader } from "@/components/ui/page-header"
 import { Link } from "@/i18n/navigation"
 import { computeTotalPages, parsePagination } from "@/lib/utils"
 import { PAGINATION_DEFAULT, SEVEN_DAYS_MS, MAIN_CONCERNS } from "@/lib/constants"
+import { computeWeekDelta } from "@/lib/domain/check-in"
 import { ClientSearch } from "./client-search"
 import { ClientsCard } from "./clients-card"
 import { Suspense } from "react"
@@ -117,9 +118,11 @@ export default async function ClientsPage({
   const clientIds = clients.map((c) => c.id)
   const alertCountMap = new Map<string, { count: number; hasHigh: boolean }>()
   const unreadMessageMap = new Map<string, number>()
+  const energyTrendMap = new Map<string, "up" | "down" | "stable">()
   let cadenceMap = {}
   if (clientIds.length > 0) {
-    const [alertCountRows, fetchedCadence, unreadRows] = await Promise.all([
+    const fourteenDaysAgo = new Date(staleCutoff.getTime() - SEVEN_DAYS_MS)
+    const [alertCountRows, fetchedCadence, unreadRows, energyRows] = await Promise.all([
       db
         .select({
           clientId: clientAlerts.clientId,
@@ -135,10 +138,33 @@ export default async function ClientsPage({
         .from(threads)
         .where(and(inArray(threads.clientId, clientIds), unreadFromClientExists()))
         .groupBy(threads.clientId),
+      db
+        .select({
+          userId: checkIns.userId,
+          createdAt: checkIns.createdAt,
+          energyLevel: checkIns.energyLevel,
+          stressLevel: checkIns.stressLevel,
+          pemFlag: checkIns.pemFlag,
+        })
+        .from(checkIns)
+        .where(and(inArray(checkIns.userId, clientIds), gte(checkIns.createdAt, fourteenDaysAgo))),
     ])
     cadenceMap = fetchedCadence
     for (const r of alertCountRows) alertCountMap.set(r.clientId, { count: r.alertCount, hasHigh: r.hasHigh })
     for (const r of unreadRows) unreadMessageMap.set(r.clientId, r.unreadCount)
+    const rowsByClient = new Map<string, typeof energyRows>()
+    for (const r of energyRows) {
+      const arr = rowsByClient.get(r.userId) ?? []
+      arr.push(r)
+      rowsByClient.set(r.userId, arr)
+    }
+    for (const [clientId, rows] of rowsByClient) {
+      const delta = computeWeekDelta(rows)
+      if (!delta.hasPriorWindow || delta.energyDelta == null) continue
+      if (delta.energyDelta >= 1.0) energyTrendMap.set(clientId, "up")
+      else if (delta.energyDelta <= -1.0) energyTrendMap.set(clientId, "down")
+      else energyTrendMap.set(clientId, "stable")
+    }
   }
 
   return (
@@ -164,6 +190,7 @@ export default async function ClientsPage({
         alertCountMap={alertCountMap}
         unreadMessageMap={unreadMessageMap}
         cadenceMap={cadenceMap}
+        energyTrendMap={energyTrendMap}
         staleCutoff={staleCutoff}
         q={q}
         sort={sort}

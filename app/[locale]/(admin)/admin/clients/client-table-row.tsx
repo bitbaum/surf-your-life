@@ -28,6 +28,7 @@ interface Props {
   client: ClientRow
   alert: AlertInfo | undefined
   unreadMessages: number
+  energyTrend: "up" | "down" | "stable" | null
   isStale: boolean
   staleHint: string
   viewLabel: string
@@ -39,7 +40,7 @@ interface Props {
   nudge?: NudgeProps | null
 }
 
-export async function ClientTableRow({ client, alert, unreadMessages, isStale, staleHint, viewLabel, sparkDays, sparkCheckedIn, sparkPemDays, sparkHint, sparkDayLabels, nudge }: Props) {
+export async function ClientTableRow({ client, alert, unreadMessages, energyTrend, isStale, staleHint, viewLabel, sparkDays, sparkCheckedIn, sparkPemDays, sparkHint, sparkDayLabels, nudge }: Props) {
   const tConcerns = await getTranslations("concerns")
   return (
     <tr className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
@@ -84,7 +85,12 @@ export async function ClientTableRow({ client, alert, unreadMessages, isStale, s
         </span>
       </td>
       <td className="py-3 text-slate-500">
-        {client.checkInCount > 0 ? client.checkInCount : <span className="text-slate-300">0</span>}
+        <span className="inline-flex items-center gap-1">
+          {client.checkInCount > 0 ? client.checkInCount : <span className="text-slate-300">0</span>}
+          {energyTrend === "up" && <span className="text-teal-600 text-xs font-semibold leading-none" title="Energy improving (7-day avg)">↑</span>}
+          {energyTrend === "down" && <span className="text-red-500 text-xs font-semibold leading-none" title="Energy declining (7-day avg)">↓</span>}
+          {energyTrend === "stable" && <span className="text-slate-400 text-xs leading-none" title="Energy stable (7-day avg)">→</span>}
+        </span>
       </td>
       <td className="py-3 text-slate-400">{formatDate(client.createdAt)}</td>
       <td className="py-3 text-right">
