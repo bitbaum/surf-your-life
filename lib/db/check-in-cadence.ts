@@ -1,7 +1,8 @@
 import { db } from "."
 import { checkIns } from "./schema"
 import { and, gte, inArray, sql } from "drizzle-orm"
-import { CLINIC_TZ } from "@/lib/constants"
+import { CLINIC_TZ, SEVEN_DAYS_MS } from "@/lib/constants"
+import { computeWeekDelta } from "@/lib/domain/check-in"
 
 export type CadenceMap = Record<
   string,
@@ -48,6 +49,49 @@ export async function fetchCadenceMap(
     entry.checkedIn.push(r.day)
     if (r.hadPem) entry.pemDays.push(r.day)
     out[r.userId] = entry
+  }
+  return out
+}
+
+export type EnergyTrend = "up" | "down" | "stable"
+
+/**
+ * For each client in `clientIds`, fetches 14 days of check-ins and returns
+ * the week-over-week energy direction: "up" (≥+1.0), "down" (≤−1.0), or
+ * "stable". Clients with no prior-week data are omitted from the map.
+ */
+export async function fetchEnergyTrendMap(
+  clientIds: string[],
+  staleCutoff: Date
+): Promise<Map<string, EnergyTrend>> {
+  if (clientIds.length === 0) return new Map()
+
+  const fourteenDaysAgo = new Date(staleCutoff.getTime() - SEVEN_DAYS_MS)
+  const rows = await db
+    .select({
+      userId: checkIns.userId,
+      createdAt: checkIns.createdAt,
+      energyLevel: checkIns.energyLevel,
+      stressLevel: checkIns.stressLevel,
+      pemFlag: checkIns.pemFlag,
+    })
+    .from(checkIns)
+    .where(and(inArray(checkIns.userId, clientIds), gte(checkIns.createdAt, fourteenDaysAgo)))
+
+  const byClient = new Map<string, typeof rows>()
+  for (const r of rows) {
+    const arr = byClient.get(r.userId) ?? []
+    arr.push(r)
+    byClient.set(r.userId, arr)
+  }
+
+  const out = new Map<string, EnergyTrend>()
+  for (const [clientId, clientRows] of byClient) {
+    const delta = computeWeekDelta(clientRows)
+    if (!delta.hasPriorWindow || delta.energyDelta == null) continue
+    if (delta.energyDelta >= 1.0) out.set(clientId, "up")
+    else if (delta.energyDelta <= -1.0) out.set(clientId, "down")
+    else out.set(clientId, "stable")
   }
   return out
 }
