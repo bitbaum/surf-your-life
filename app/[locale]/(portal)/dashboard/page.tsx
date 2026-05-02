@@ -29,6 +29,7 @@ import { DashboardCharts } from "./dashboard-charts"
 import { DashboardSparklineRow } from "./dashboard-sparkline-row"
 import { DashboardProgramCard } from "./dashboard-program-card"
 import { DashboardTechniquesCard } from "./dashboard-techniques-card"
+import { DashboardPractitionerNoteCard } from "./dashboard-practitioner-note-card"
 
 export default async function DashboardPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
@@ -169,6 +170,8 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
       </div>
 
       <DashboardSparklineRow recentCheckIns={recentCheckIns} weekDelta={weekDelta} />
+
+      <DashboardPractitionerNoteCard userId={session.user.id} />
 
       <DashboardProgramCard programProgress={programProgress} />
 

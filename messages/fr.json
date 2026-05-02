@@ -413,6 +413,8 @@
       "dotMissed": "pas de check-in",
       "dotCheckedIn": "check-in fait",
       "dotPem": "jour de crash",
+      "practitionerNoteTitle": "De votre praticien",
+      "practitionerNoteLink": "Voir tous les check-ins →",
       "trend": {
         "title": "Tes 7 derniers jours",
         "checkInsCount": "{count, plural, one {# check-in} other {# check-ins}}",
