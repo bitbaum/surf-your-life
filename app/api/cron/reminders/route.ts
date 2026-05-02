@@ -11,7 +11,7 @@ import { sendEmail } from "@/lib/email"
 import { checkInReminderEmail } from "@/lib/email/templates"
 import { EMAIL_SUBJECT_CHECKIN_REMINDER } from "@/lib/email/subjects"
 import { SITE_URL, STREAK_LOOKBACK_DAYS, DAY_MS } from "@/lib/constants"
-import { generateMissedCheckInAlerts } from "@/lib/domain/alerts"
+import { generateMissedCheckInAlerts, generateTechniqueAdherenceAlerts } from "@/lib/domain/alerts"
 import { CLIENT_ROLE } from "@/lib/domain/auth"
 import { verifyCronAuth } from "@/lib/auth/cron"
 import { computeStreak } from "@/lib/domain/check-in"
@@ -96,8 +96,11 @@ export async function GET(req: Request) {
     }
   }
 
-  // Generate missed check-in alerts for practitioners (runs daily alongside reminders)
-  const missedAlerts = await generateMissedCheckInAlerts()
+  // Generate daily alerts (missed check-ins + technique adherence decline)
+  const [missedAlerts, techniqueAlerts] = await Promise.all([
+    generateMissedCheckInAlerts(),
+    generateTechniqueAdherenceAlerts(),
+  ])
 
-  return NextResponse.json({ success: true, sent, skipped, missedAlerts })
+  return NextResponse.json({ success: true, sent, skipped, missedAlerts, techniqueAlerts })
 }

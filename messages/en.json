@@ -1453,7 +1453,8 @@
         "missed_checkins": "Missed check-ins",
         "mood_decline": "Mood decline",
         "stress_spike": "Stress spike",
-        "orthostatic_intolerance": "Orthostatic symptoms"
+        "orthostatic_intolerance": "Orthostatic symptoms",
+        "technique_adherence_decline": "Technique decline"
       },
       "filterAll": "All",
       "searchPlaceholder": "Search by client name…",

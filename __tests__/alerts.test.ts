@@ -6,7 +6,7 @@ vi.mock("@/lib/db", () => ({ db: {} }))
 vi.mock("@/lib/email", () => ({ sendEmail: vi.fn() }))
 vi.mock("@/lib/email/templates", () => ({ practitionerAlertEmail: vi.fn(), missedCheckInDigestEmail: vi.fn() }))
 
-import { evaluateAlertRules, type CheckInDataForAlerts } from "@/lib/domain/alerts"
+import { evaluateAlertRules, checkTechniqueAdherenceDecline, type CheckInDataForAlerts } from "@/lib/domain/alerts"
 import {
   ALERT_ENERGY_DECLINE_THRESHOLD,
   ALERT_FATIGUE_SPIKE_THRESHOLD,
@@ -412,5 +412,98 @@ describe("evaluateAlertRules — multiple rules", () => {
     expect(types).toContain("stress_spike")
     expect(types).toContain("pem_cluster")
     expect(types).toContain("mood_decline")
+  })
+})
+
+// ─── checkTechniqueAdherenceDecline ──────────────────────────────────────────
+// today = "2024-06-15"; 14-day trend:
+//   prior7  = slice(0,7)  = June 2–8  (days 13–7 ago)
+//   recent7 = slice(7,14) = June 9–15 (days 6–0 ago)
+
+const TECH_TODAY = "2024-06-15"
+const BASE_ASSIGN = { id: "a1", clientId: "c1", frequencyPerDay: 1, startDate: "2024-01-01", endDate: null }
+
+function makeLogs(dates: string[]): Array<{ assignmentId: string; date: string; completedReps: number; userId: string }> {
+  return dates.map((date) => ({ assignmentId: "a1", date, completedReps: 1, userId: "c1" }))
+}
+
+const PRIOR7_DATES = ["2024-06-02", "2024-06-03", "2024-06-04", "2024-06-05", "2024-06-06", "2024-06-07", "2024-06-08"]
+const RECENT7_DATES = ["2024-06-09", "2024-06-10", "2024-06-11", "2024-06-12", "2024-06-13", "2024-06-14", "2024-06-15"]
+
+describe("checkTechniqueAdherenceDecline — baseline", () => {
+  it("returns empty when no assignments", () => {
+    expect(checkTechniqueAdherenceDecline([], [], TECH_TODAY)).toEqual([])
+  })
+
+  it("returns empty when prior7avg is 0 (no baseline)", () => {
+    // Only recent7 logs — prior7 is empty → prior7avg = 0 → skip
+    const results = checkTechniqueAdherenceDecline([BASE_ASSIGN], makeLogs(RECENT7_DATES), TECH_TODAY)
+    expect(results).toHaveLength(0)
+  })
+})
+
+describe("checkTechniqueAdherenceDecline — decline detection", () => {
+  it("fires when prior7=100% and recent7=0% (drop=100, high severity)", () => {
+    const logs = makeLogs(PRIOR7_DATES) // all prior done, nothing recent
+    const results = checkTechniqueAdherenceDecline([BASE_ASSIGN], logs, TECH_TODAY)
+    expect(results).toHaveLength(1)
+    expect(results[0].clientId).toBe("c1")
+    expect(results[0].prior7avg).toBe(100)
+    expect(results[0].recent7avg).toBe(0)
+    expect(results[0].drop).toBe(100)
+    expect(results[0].severity).toBe("high")
+  })
+
+  it("fires with medium severity when drop is 20–39 (prior=100%, recent=71%)", () => {
+    // recent7: 5/7 done = Math.round(5/7*100) = 71%; drop = 29
+    const logs = makeLogs([...PRIOR7_DATES, ...RECENT7_DATES.slice(0, 5)])
+    const results = checkTechniqueAdherenceDecline([BASE_ASSIGN], logs, TECH_TODAY)
+    expect(results).toHaveLength(1)
+    expect(results[0].severity).toBe("medium")
+    expect(results[0].drop).toBeGreaterThanOrEqual(20)
+    expect(results[0].drop).toBeLessThan(40)
+  })
+
+  it("fires with high severity when drop ≥ 40 (prior=100%, recent=43%)", () => {
+    // recent7: 3/7 done = Math.round(3/7*100) = 43%; drop = 57
+    const logs = makeLogs([...PRIOR7_DATES, ...RECENT7_DATES.slice(0, 3)])
+    const results = checkTechniqueAdherenceDecline([BASE_ASSIGN], logs, TECH_TODAY)
+    expect(results).toHaveLength(1)
+    expect(results[0].severity).toBe("high")
+    expect(results[0].drop).toBeGreaterThanOrEqual(40)
+  })
+
+  it("does not fire when drop is below threshold (prior=100%, recent=86%)", () => {
+    // recent7: 6/7 done = Math.round(6/7*100) = 86%; drop = 14 < 20
+    const logs = makeLogs([...PRIOR7_DATES, ...RECENT7_DATES.slice(0, 6)])
+    const results = checkTechniqueAdherenceDecline([BASE_ASSIGN], logs, TECH_TODAY)
+    expect(results).toHaveLength(0)
+  })
+
+  it("does not fire when adherence is stable (both windows 100%)", () => {
+    const logs = makeLogs([...PRIOR7_DATES, ...RECENT7_DATES])
+    const results = checkTechniqueAdherenceDecline([BASE_ASSIGN], logs, TECH_TODAY)
+    expect(results).toHaveLength(0)
+  })
+
+  it("handles multiple clients independently", () => {
+    const a2 = { id: "a2", clientId: "c2", frequencyPerDay: 1, startDate: "2024-01-01", endDate: null }
+    const logs = [
+      // c1: prior=100%, recent=0% → should fire
+      ...makeLogs(PRIOR7_DATES),
+      // c2: prior=100%, recent=100% → should not fire
+      ...PRIOR7_DATES.map((d) => ({ assignmentId: "a2", date: d, completedReps: 1, userId: "c2" })),
+      ...RECENT7_DATES.map((d) => ({ assignmentId: "a2", date: d, completedReps: 1, userId: "c2" })),
+    ]
+    const results = checkTechniqueAdherenceDecline([BASE_ASSIGN, a2], logs, TECH_TODAY)
+    expect(results).toHaveLength(1)
+    expect(results[0].clientId).toBe("c1")
+  })
+
+  it("respects custom threshold parameter", () => {
+    // drop = 14 (prior=100%, recent=86%) — fires if threshold=10, not if threshold=20
+    const logs = makeLogs([...PRIOR7_DATES, ...RECENT7_DATES.slice(0, 6)])
+    expect(checkTechniqueAdherenceDecline([BASE_ASSIGN], logs, TECH_TODAY, 10)).toHaveLength(1)
+    expect(checkTechniqueAdherenceDecline([BASE_ASSIGN], logs, TECH_TODAY, 20)).toHaveLength(0)
   })
 })

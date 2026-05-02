@@ -54,6 +54,7 @@ export const alertTypeEnum = pgEnum("alert_type", [
   "mood_decline",
   "stress_spike",
   "orthostatic_intolerance",
+  "technique_adherence_decline",
 ])
 
 export const alertSeverityEnum = pgEnum("alert_severity", ["low", "medium", "high"])

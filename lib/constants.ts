@@ -328,6 +328,7 @@ export const ALERT_STRESS_SPIKE_THRESHOLD = 8    // stress ≥ 8
 export const ALERT_MISSED_CHECKINS_DAYS = 5      // no check-in in 5+ days
 export const ALERT_PEM_CLUSTER_COUNT = 2         // 2+ PEM flags in last 7 days
 export const ALERT_ORTHOSTATIC_CLUSTER_COUNT = 2 // 2+ orthostatic episodes in last 7 days
+export const ALERT_TECHNIQUE_ADHERENCE_DECLINE_THRESHOLD = 20 // % point drop between 7-day windows to trigger alert
 
 // AI context limits
 export const AI_CONTEXT_CHECKINS = 14  // recent check-ins included as AI context

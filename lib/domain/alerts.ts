@@ -4,7 +4,7 @@
  * Never throws; failures are logged but don't block the check-in response.
  */
 import { db } from "@/lib/db"
-import { checkIns, clientAlerts, users, type AlertType } from "@/lib/db/schema"
+import { checkIns, clientAlerts, users, techniqueAssignments, techniqueLogs, type AlertType } from "@/lib/db/schema"
 import { findUserContact } from "@/lib/db/queries"
 import { eq, desc, gte, and, inArray, max } from "drizzle-orm"
 import { STAFF_ROLES, CLIENT_ROLE } from "@/lib/domain/auth"
@@ -18,6 +18,7 @@ import {
   ALERT_PEM_CLUSTER_COUNT,
   ALERT_ORTHOSTATIC_CLUSTER_COUNT,
   ALERT_MISSED_CHECKINS_DAYS,
+  ALERT_TECHNIQUE_ADHERENCE_DECLINE_THRESHOLD,
   SEVEN_DAYS_MS,
   MOOD_SCORE,
   SITE_URL,
@@ -25,7 +26,8 @@ import {
 } from "@/lib/constants"
 import { sendEmail } from "@/lib/email"
 import { practitionerAlertEmail, missedCheckInDigestEmail } from "@/lib/email/templates"
-import { formatEnumValue, daysSince } from "@/lib/utils"
+import { formatEnumValue, daysSince, localDateString, addDaysISO } from "@/lib/utils"
+import { computeDailyAdherenceTrend } from "@/lib/domain/techniques"
 
 type AlertInsert = typeof clientAlerts.$inferInsert
 
@@ -352,6 +354,126 @@ export async function generateMissedCheckInAlerts(): Promise<number> {
     return newAlerts.length
   } catch (err) {
     console.error("[alerts] Failed to generate missed check-in alerts", err)
+    return 0
+  }
+}
+
+// ─── Technique adherence decline ─────────────────────────────────────────────
+
+export type TechniqueAdherenceDeclineResult = {
+  clientId: string
+  recent7avg: number
+  prior7avg: number
+  drop: number
+  severity: "high" | "medium"
+}
+
+/**
+ * Pure function — identifies clients whose technique adherence has dropped
+ * significantly between the prior 7-day and recent 7-day windows.
+ * No DB access; deterministic; testable in isolation.
+ */
+export function checkTechniqueAdherenceDecline(
+  assignments: Array<{ id: string; clientId: string; frequencyPerDay: number; startDate: string; endDate?: string | null }>,
+  logs: Array<{ assignmentId: string; date: string; completedReps: number; userId: string }>,
+  today: string,
+  threshold = ALERT_TECHNIQUE_ADHERENCE_DECLINE_THRESHOLD
+): TechniqueAdherenceDeclineResult[] {
+  if (assignments.length === 0) return []
+
+  const logsByClient = new Map<string, Array<{ assignmentId: string; date: string; completedReps: number }>>()
+  for (const log of logs) {
+    if (!logsByClient.has(log.userId)) logsByClient.set(log.userId, [])
+    logsByClient.get(log.userId)!.push({ assignmentId: log.assignmentId, date: log.date, completedReps: log.completedReps })
+  }
+
+  const clientIds = [...new Set(assignments.map((a) => a.clientId))]
+  const results: TechniqueAdherenceDeclineResult[] = []
+
+  for (const clientId of clientIds) {
+    const clientAssignments = assignments.filter((a) => a.clientId === clientId)
+    const clientLogs = logsByClient.get(clientId) ?? []
+
+    const trend14 = computeDailyAdherenceTrend(clientAssignments, clientLogs, today, 14)
+    if (trend14.length < 14) continue
+
+    const prior7 = trend14.slice(0, 7)
+    const recent7 = trend14.slice(7)
+    const prior7avg = Math.round(prior7.reduce((s, d) => s + d.pct, 0) / 7)
+    const recent7avg = Math.round(recent7.reduce((s, d) => s + d.pct, 0) / 7)
+
+    if (prior7avg === 0) continue
+
+    const drop = prior7avg - recent7avg
+    if (drop >= threshold) {
+      results.push({
+        clientId,
+        recent7avg,
+        prior7avg,
+        drop,
+        severity: drop >= 40 ? "high" : "medium",
+      })
+    }
+  }
+
+  return results
+}
+
+/**
+ * Daily cron rule: create a technique_adherence_decline alert for every client
+ * whose 7-day adherence average has dropped ≥ALERT_TECHNIQUE_ADHERENCE_DECLINE_THRESHOLD
+ * percentage points vs the prior 7-day average.
+ * Returns the number of new alerts created.
+ */
+export async function generateTechniqueAdherenceAlerts(): Promise<number> {
+  try {
+    const today = localDateString(new Date())
+    const fourteenDaysAgo = addDaysISO(today, -14)
+
+    const allAssignments = await db.query.techniqueAssignments.findMany({
+      where: eq(techniqueAssignments.isActive, true),
+      columns: { id: true, clientId: true, frequencyPerDay: true, startDate: true, endDate: true },
+    })
+
+    if (allAssignments.length === 0) return 0
+
+    const clientIds = [...new Set(allAssignments.map((a) => a.clientId))]
+
+    const [recentLogs, existingAlerts] = await Promise.all([
+      db.query.techniqueLogs.findMany({
+        where: and(inArray(techniqueLogs.userId, clientIds), gte(techniqueLogs.date, fourteenDaysAgo)),
+        columns: { assignmentId: true, date: true, completedReps: true, userId: true },
+      }),
+      db
+        .select({ clientId: clientAlerts.clientId })
+        .from(clientAlerts)
+        .where(and(
+          eq(clientAlerts.type, "technique_adherence_decline"),
+          eq(clientAlerts.isResolved, false),
+          inArray(clientAlerts.clientId, clientIds)
+        )),
+    ])
+
+    const clientsWithOpenAlert = new Set(existingAlerts.map((a) => a.clientId))
+
+    const decliners = checkTechniqueAdherenceDecline(allAssignments, recentLogs, today)
+      .filter((r) => !clientsWithOpenAlert.has(r.clientId))
+
+    if (decliners.length === 0) return 0
+
+    const newAlerts: AlertInsert[] = decliners.map((r) => ({
+      clientId: r.clientId,
+      type: "technique_adherence_decline" as AlertType,
+      severity: r.severity,
+      title: "Technique adherence declining",
+      message: `Adherence dropped from ${r.prior7avg}% (prior week) to ${r.recent7avg}% (last 7 days) — a ${r.drop}% decline. Consider reviewing barriers with the client.`,
+      createdAt: new Date(),
+    }))
+
+    await db.insert(clientAlerts).values(newAlerts)
+    return newAlerts.length
+  } catch (err) {
+    console.error("[alerts] Failed to generate technique adherence alerts", err)
     return 0
   }
 }

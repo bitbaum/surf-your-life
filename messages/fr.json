@@ -1453,7 +1453,8 @@
         "missed_checkins": "Check-ins manqués",
         "mood_decline": "Baisse de moral",
         "stress_spike": "Pic de stress",
-        "orthostatic_intolerance": "Symptômes orthostatiques"
+        "orthostatic_intolerance": "Symptômes orthostatiques",
+        "technique_adherence_decline": "Baisse d'observance"
       },
       "filterAll": "Tous",
       "searchPlaceholder": "Rechercher un client…",

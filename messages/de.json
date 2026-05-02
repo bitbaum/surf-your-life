@@ -1453,7 +1453,8 @@
         "missed_checkins": "Fehlende Check-ins",
         "mood_decline": "Stimmungsabfall",
         "stress_spike": "Stressspitze",
-        "orthostatic_intolerance": "Orthostatische Symptome"
+        "orthostatic_intolerance": "Orthostatische Symptome",
+        "technique_adherence_decline": "Technikreckgang"
       },
       "filterAll": "Alle",
       "searchPlaceholder": "Nach Klient suchen…",
