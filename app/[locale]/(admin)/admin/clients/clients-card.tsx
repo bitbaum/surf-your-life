@@ -20,11 +20,12 @@ type Props = {
   q: string | undefined
   sort: SortOption
   concern: MainConcern | undefined
+  practitioner: string | undefined
   page: number
   totalPages: number
 }
 
-export async function ClientsCard({ clients, alertCountMap, unreadMessageMap, cadenceMap, staleCutoff, q, sort, concern, page, totalPages }: Props) {
+export async function ClientsCard({ clients, alertCountMap, unreadMessageMap, cadenceMap, staleCutoff, q, sort, concern, practitioner, page, totalPages }: Props) {
   const t = await getTranslations("admin.clients")
 
   const sparkDays = buildLastNDayStrings(7)
@@ -40,6 +41,7 @@ export async function ClientsCard({ clients, alertCountMap, unreadMessageMap, ca
     if (q?.trim()) ps.set("q", q.trim())
     if (sort !== "joined") ps.set("sort", sort)
     if (concern) ps.set("concern", concern)
+    if (practitioner) ps.set("practitioner", practitioner)
     return `/admin/clients?${ps.toString()}`
   }
 
@@ -47,7 +49,7 @@ export async function ClientsCard({ clients, alertCountMap, unreadMessageMap, ca
     <Card>
       <CardHeader><CardTitle>{t("allClients")}</CardTitle></CardHeader>
       <CardContent>
-        <ClientsFilterBar q={q} sort={sort} concern={concern} />
+        <ClientsFilterBar q={q} sort={sort} concern={concern} practitioner={practitioner} />
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>

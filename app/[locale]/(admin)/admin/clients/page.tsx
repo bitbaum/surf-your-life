@@ -1,5 +1,5 @@
 import { db } from "@/lib/db"
-import { users, checkIns, profiles, clientAlerts, threads } from "@/lib/db/schema"
+import { users, checkIns, profiles, clientAlerts, threads, assignments } from "@/lib/db/schema"
 import { eq, desc, count, or, ilike, and, max, inArray, sql } from "drizzle-orm"
 import { fetchCadenceMap } from "@/lib/db/check-in-cadence"
 import { unreadFromClientExists } from "@/lib/db/thread-unread"
@@ -28,15 +28,16 @@ export default async function ClientsPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>
-  searchParams: Promise<{ page?: string; q?: string; sort?: string; concern?: string }>
+  searchParams: Promise<{ page?: string; q?: string; sort?: string; concern?: string; practitioner?: string }>
 }) {
   const { locale } = await params
   setRequestLocale(locale)
   const t = await getTranslations("admin.clients")
 
-  const { page: pageParam, q, sort: sortParam, concern: concernParam } = await searchParams
+  const { page: pageParam, q, sort: sortParam, concern: concernParam, practitioner: practitionerParam } = await searchParams
   const sort: SortOption = isValidSort(sortParam) ? sortParam : "joined"
   const concern: MainConcern | undefined = isValidConcern(concernParam) ? concernParam : undefined
+  const practitioner = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(practitionerParam ?? "") ? practitionerParam : undefined
   const { page, offset } = parsePagination(pageParam)
 
   const searchFilter = q?.trim()
@@ -71,7 +72,11 @@ export default async function ClientsPage({
     ? sql`EXISTS (SELECT 1 FROM ${profiles} WHERE ${profiles.userId} = ${users.id} AND ${profiles.mainConcern} = ${concern})`
     : undefined
 
-  const whereParts = [roleFilter, searchFilter, needsAttentionFilter, concernFilter].filter(
+  const practitionerFilter = practitioner
+    ? sql`EXISTS (SELECT 1 FROM ${assignments} WHERE ${assignments.clientId} = ${users.id} AND ${assignments.practitionerId}::text = ${practitioner} AND ${assignments.active} = true)`
+    : undefined
+
+  const whereParts = [roleFilter, searchFilter, needsAttentionFilter, concernFilter, practitionerFilter].filter(
     (p): p is NonNullable<typeof p> => p != null
   )
   const whereClause = whereParts.length > 1 ? and(...whereParts) : whereParts[0]
@@ -163,6 +168,7 @@ export default async function ClientsPage({
         q={q}
         sort={sort}
         concern={concern}
+        practitioner={practitioner}
         page={page}
         totalPages={totalPages}
       />
