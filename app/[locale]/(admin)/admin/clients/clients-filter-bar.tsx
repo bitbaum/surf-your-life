@@ -6,8 +6,7 @@ import { users, assignments } from "@/lib/db/schema"
 import type { MainConcern } from "@/lib/db/schema"
 import { eq, and, asc, inArray } from "drizzle-orm"
 import { STAFF_ROLES } from "@/lib/domain/auth"
-
-type SortOption = "joined" | "checkin_desc" | "most_checkins" | "needs_attention" | "energy_declining"
+import type { SortOption } from "./clients-card"
 
 interface Props {
   q: string | undefined

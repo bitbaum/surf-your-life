@@ -8,7 +8,7 @@ import { ClientTableRow, type ClientRow } from "./client-table-row"
 import type { MainConcern } from "@/lib/db/schema"
 import { ClientsFilterBar } from "./clients-filter-bar"
 
-type SortOption = "joined" | "checkin_desc" | "most_checkins" | "needs_attention" | "energy_declining"
+export type SortOption = "joined" | "checkin_desc" | "most_checkins" | "needs_attention" | "energy_declining"
 type AlertInfo = { count: number; hasHigh: boolean }
 
 type Props = {

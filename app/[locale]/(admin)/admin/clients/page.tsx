@@ -9,12 +9,11 @@ import { Link } from "@/i18n/navigation"
 import { computeTotalPages, parsePagination } from "@/lib/utils"
 import { PAGINATION_DEFAULT, SEVEN_DAYS_MS, MAIN_CONCERNS } from "@/lib/constants"
 import { ClientSearch } from "./client-search"
-import { ClientsCard } from "./clients-card"
+import { ClientsCard, type SortOption } from "./clients-card"
 import { Suspense } from "react"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import type { MainConcern } from "@/lib/db/schema"
 
-type SortOption = "joined" | "checkin_desc" | "most_checkins" | "needs_attention" | "energy_declining"
 const SORT_OPTIONS: SortOption[] = ["joined", "checkin_desc", "most_checkins", "needs_attention", "energy_declining"]
 function isValidSort(v: string | undefined): v is SortOption {
   return SORT_OPTIONS.includes(v as SortOption)
