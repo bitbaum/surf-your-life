@@ -752,7 +752,14 @@
       "avgSleep": "Sommeil moy.",
       "avgStress": "Stress moy.",
       "noRecentCheckIns": "Aucun check-in ces 90 derniers jours. Commencez à suivre votre énergie et votre humeur pour voir vos tendances ici.",
-      "doCheckIn": "Faire un check-in"
+      "doCheckIn": "Faire un check-in",
+      "chartTitle": "Capacité dans le temps",
+      "chartSubtitle": "Votre arc de rétablissement fonctionnel",
+      "chartOverall": "Global",
+      "chartCognitive": "Cognitif",
+      "chartPhysical": "Physique",
+      "chartEmotional": "Émotionnel",
+      "chartSocial": "Social"
     },
     "medications": {
       "title": "Médicaments",

@@ -752,7 +752,14 @@
       "avgSleep": "Ø Schlaf",
       "avgStress": "Ø Stress",
       "noRecentCheckIns": "Keine Check-ins in den letzten 90 Tagen. Beginne jetzt mit dem Tracken, um Trends zu sehen.",
-      "doCheckIn": "Check-in durchführen"
+      "doCheckIn": "Check-in durchführen",
+      "chartTitle": "Kapazität im Verlauf",
+      "chartSubtitle": "Dein funktioneller Genesungsbogen",
+      "chartOverall": "Gesamt",
+      "chartCognitive": "Kognitiv",
+      "chartPhysical": "Körperlich",
+      "chartEmotional": "Emotional",
+      "chartSocial": "Sozial"
     },
     "medications": {
       "title": "Medikamente",

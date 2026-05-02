@@ -11,6 +11,8 @@ import { Link } from "@/i18n/navigation"
 import { NINETY_DAYS_MS, MOODS, MOOD_SCORE, ASSESSMENTS_MAX } from "@/lib/constants"
 import { summariseCheckIns } from "@/lib/domain/check-in"
 import { AssessmentTimeline } from "./assessment-timeline"
+import { FunctionalAssessmentsChart } from "@/components/ui/functional-assessments-chart"
+import { ChartCard } from "@/components/ui/chart-card"
 
 export default async function ProgressPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
@@ -67,6 +69,21 @@ export default async function ProgressPage({ params }: { params: Promise<{ local
   return (
     <div className="max-w-2xl mx-auto">
       <PageHeader title={t("title")} description={t("description")} />
+
+      {assessments.length >= 2 && (
+        <ChartCard className="mt-4" title={t("chartTitle")} subtitle={t("chartSubtitle")}>
+          <FunctionalAssessmentsChart
+            data={assessments}
+            labels={{
+              overall: t("chartOverall"),
+              cognitive: t("chartCognitive"),
+              physical: t("chartPhysical"),
+              emotional: t("chartEmotional"),
+              social: t("chartSocial"),
+            }}
+          />
+        </ChartCard>
+      )}
 
       <AssessmentTimeline assessments={assessments} delta={delta} />
 

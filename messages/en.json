@@ -752,7 +752,14 @@
       "avgSleep": "Avg sleep",
       "avgStress": "Avg stress",
       "noRecentCheckIns": "No check-ins in the last 90 days. Start tracking your energy, mood, and sleep to see your trends here.",
-      "doCheckIn": "Do a check-in"
+      "doCheckIn": "Do a check-in",
+      "chartTitle": "Capacity over time",
+      "chartSubtitle": "Your functional recovery arc",
+      "chartOverall": "Overall",
+      "chartCognitive": "Cognitive",
+      "chartPhysical": "Physical",
+      "chartEmotional": "Emotional",
+      "chartSocial": "Social"
     },
     "medications": {
       "title": "Medications",
