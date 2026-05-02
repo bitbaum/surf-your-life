@@ -1198,6 +1198,7 @@
       "sortCheckInDesc": "Most active",
       "sortMostCheckIns": "Most check-ins",
       "sortNeedsAttention": "Needs attention",
+      "sortEnergyDeclining": "Energy declining",
       "noNeedsAttention": "All clients are up to date — nothing flagged right now.",
       "allConcerns": "All",
       "allPractitioners": "All",

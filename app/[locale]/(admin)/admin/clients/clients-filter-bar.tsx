@@ -7,7 +7,7 @@ import type { MainConcern } from "@/lib/db/schema"
 import { eq, and, asc, inArray } from "drizzle-orm"
 import { STAFF_ROLES } from "@/lib/domain/auth"
 
-type SortOption = "joined" | "checkin_desc" | "most_checkins" | "needs_attention"
+type SortOption = "joined" | "checkin_desc" | "most_checkins" | "needs_attention" | "energy_declining"
 
 interface Props {
   q: string | undefined
@@ -60,6 +60,7 @@ export async function ClientsFilterBar({ q, sort, concern, practitioner }: Props
           { value: "checkin_desc" as SortOption, label: t("sortCheckInDesc") },
           { value: "most_checkins" as SortOption, label: t("sortMostCheckIns") },
           { value: "needs_attention" as SortOption, label: t("sortNeedsAttention") },
+          { value: "energy_declining" as SortOption, label: t("sortEnergyDeclining") },
         ]}
         active={sort}
         href={sortLink}

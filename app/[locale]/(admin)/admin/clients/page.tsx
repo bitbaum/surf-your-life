@@ -14,8 +14,8 @@ import { Suspense } from "react"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import type { MainConcern } from "@/lib/db/schema"
 
-type SortOption = "joined" | "checkin_desc" | "most_checkins" | "needs_attention"
-const SORT_OPTIONS: SortOption[] = ["joined", "checkin_desc", "most_checkins", "needs_attention"]
+type SortOption = "joined" | "checkin_desc" | "most_checkins" | "needs_attention" | "energy_declining"
+const SORT_OPTIONS: SortOption[] = ["joined", "checkin_desc", "most_checkins", "needs_attention", "energy_declining"]
 function isValidSort(v: string | undefined): v is SortOption {
   return SORT_OPTIONS.includes(v as SortOption)
 }
@@ -49,6 +49,7 @@ export default async function ClientsPage({
 
   const roleFilter = eq(users.role, CLIENT_ROLE)
   const staleCutoff = new Date(Date.now() - SEVEN_DAYS_MS)
+  const fourteenDaysAgo = new Date(staleCutoff.getTime() - SEVEN_DAYS_MS)
 
   // "Needs attention" = stale 7+ days (or never checked in) OR has any unresolved alert.
   // EXISTS subqueries keep the main groupBy clean and the count query identical.
@@ -104,7 +105,15 @@ export default async function ClientsPage({
             ? sql`count(${checkIns.id}) DESC`
             : sort === "needs_attention"
               ? sql`max(${checkIns.createdAt}) ASC NULLS FIRST`
-              : desc(users.createdAt)
+              : sort === "energy_declining"
+                ? sql`(
+                    (SELECT ROUND(AVG(energy_level)::numeric, 1) FROM check_ins ci1
+                     WHERE ci1.user_id = ${users.id} AND ci1.created_at >= ${staleCutoff})
+                    -
+                    (SELECT ROUND(AVG(energy_level)::numeric, 1) FROM check_ins ci2
+                     WHERE ci2.user_id = ${users.id} AND ci2.created_at >= ${fourteenDaysAgo} AND ci2.created_at < ${staleCutoff})
+                  ) ASC NULLS LAST`
+                : desc(users.createdAt)
       )
       .limit(PAGINATION_DEFAULT)
       .offset(offset),
