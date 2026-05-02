@@ -1071,6 +1071,15 @@
           "subtitle": "Heures de sommeil sur les check-ins récents",
           "hoursTooltip": "{n}h de sommeil"
         },
+        "assessmentChart": {
+          "title": "Évolution de la capacité fonctionnelle",
+          "subtitle": "Capacité globale et par sous-domaine dans le temps",
+          "overall": "Global",
+          "cognitive": "Cognitif",
+          "physical": "Physique",
+          "emotional": "Émotionnel",
+          "social": "Social"
+        },
         "wellnessChart": {
           "title": "Humeur & énergie",
           "subtitle": "Humeur et énergie sur les check-ins récents",

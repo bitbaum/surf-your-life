@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server"
 import { SymptomsChart } from "@/components/ui/symptoms-chart"
 import { SleepChart } from "@/components/ui/sleep-chart"
 import { WellnessTrendChart } from "@/components/ui/wellness-trend-chart"
+import { FunctionalAssessmentsChart } from "@/components/ui/functional-assessments-chart"
 import { ChartCard } from "@/components/ui/chart-card"
 
 type ChartCheckIn = {
@@ -15,7 +16,21 @@ type ChartCheckIn = {
   sleepHours: number | null
 }
 
-export async function ClientChartsSection({ chartCheckIns }: { chartCheckIns: ChartCheckIn[] }) {
+type AssessmentPoint = {
+  assessedAt: Date
+  overallCapacity: number
+  cognitiveCapacity: number | null
+  physicalCapacity: number | null
+  emotionalCapacity: number | null
+  socialCapacity: number | null
+}
+
+interface Props {
+  chartCheckIns: ChartCheckIn[]
+  assessments: AssessmentPoint[]
+}
+
+export async function ClientChartsSection({ chartCheckIns, assessments }: Props) {
   const t = await getTranslations("admin.clients")
 
   const symptomData = chartCheckIns.map((ci) => ({
@@ -32,8 +47,25 @@ export async function ClientChartsSection({ chartCheckIns }: { chartCheckIns: Ch
   const sleepCount = sleepData.filter((c) => c.sleepHours != null).length
   const wellnessData = chartCheckIns.map((ci) => ({ createdAt: ci.createdAt, mood: ci.mood, energyLevel: ci.energyLevel }))
 
+  // Assessments come DESC from DB; chart needs ASC (oldest → newest)
+  const assessmentChartData = [...assessments].reverse()
+
   return (
     <>
+      {assessmentChartData.length >= 2 && (
+        <ChartCard title={t("detail.assessmentChart.title")} subtitle={t("detail.assessmentChart.subtitle")}>
+          <FunctionalAssessmentsChart
+            data={assessmentChartData}
+            labels={{
+              overall: t("detail.assessmentChart.overall"),
+              cognitive: t("detail.assessmentChart.cognitive"),
+              physical: t("detail.assessmentChart.physical"),
+              emotional: t("detail.assessmentChart.emotional"),
+              social: t("detail.assessmentChart.social"),
+            }}
+          />
+        </ChartCard>
+      )}
       {hasSymptomData && symptomData.length >= 2 && (
         <ChartCard title={t("detail.symptomsChart.title")} subtitle={t("detail.symptomsChart.subtitle")}>
           <SymptomsChart

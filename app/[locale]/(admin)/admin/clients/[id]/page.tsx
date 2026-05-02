@@ -161,7 +161,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
 
         <ClientWeeklySnapshot clientCheckIns={clientCheckIns} />
 
-        <ClientChartsSection chartCheckIns={chartCheckIns} />
+        <ClientChartsSection chartCheckIns={chartCheckIns} assessments={assessments} />
 
         {(unresolvedAlerts.length > 0 || hasAlertHistory) && (
           <ClientAlertsCard initialAlerts={unresolvedAlerts} clientId={id} hasHistory={hasAlertHistory} />

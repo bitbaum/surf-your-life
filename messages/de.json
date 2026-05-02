@@ -1053,6 +1053,15 @@
           "subtitle": "Schlafstunden über die letzten Check-ins",
           "hoursTooltip": "{n}h Schlaf"
         },
+        "assessmentChart": {
+          "title": "Funktionskapazität im Verlauf",
+          "subtitle": "Gesamt- und Teilbereichskapazität über die Zeit",
+          "overall": "Gesamt",
+          "cognitive": "Kognitiv",
+          "physical": "Körperlich",
+          "emotional": "Emotional",
+          "social": "Sozial"
+        },
         "wellnessChart": {
           "title": "Stimmung & Energie",
           "subtitle": "Stimmung und Energie über die letzten Check-ins",

@@ -1053,6 +1053,15 @@
           "subtitle": "Hours slept across recent check-ins",
           "hoursTooltip": "{n}h sleep"
         },
+        "assessmentChart": {
+          "title": "Functional capacity trend",
+          "subtitle": "Overall and sub-domain capacity over time",
+          "overall": "Overall",
+          "cognitive": "Cognitive",
+          "physical": "Physical",
+          "emotional": "Emotional",
+          "social": "Social"
+        },
         "wellnessChart": {
           "title": "Mood & energy",
           "subtitle": "Mood and energy across recent check-ins",
