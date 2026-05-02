@@ -2,10 +2,8 @@ import { db } from "@/lib/db"
 import { users, checkIns, bookings, threadMessages, clientAlerts } from "@/lib/db/schema"
 import { eq, desc, gte, count, and, isNull, max, sql } from "drizzle-orm"
 import { getTranslations, setRequestLocale } from "next-intl/server"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { StatCard } from "@/components/ui/stat-card"
 import { PageHeader } from "@/components/ui/page-header"
-import { Link } from "@/i18n/navigation"
 import { Users, ClipboardList, TrendingUp, CalendarClock, MessageSquare, AlertTriangle } from "lucide-react"
 import { SEVEN_DAYS_MS, THIRTY_DAYS_MS, RECENT_CLIENTS_LIMIT, AT_RISK_CLIENTS_LIMIT, ADMIN_DASHBOARD_ALERTS_PREVIEW, ADMIN_DASHBOARD_INSIGHTS_PREVIEW, CLINIC_TZ } from "@/lib/constants"
 import { roundOne } from "@/lib/utils"
@@ -13,7 +11,7 @@ import { CLIENT_ROLE } from "@/lib/domain/auth"
 import { fetchCadenceMap } from "@/lib/db/check-in-cadence"
 import { atRiskHaving } from "@/lib/db/at-risk"
 import { getUnresolvedAlertCount } from "@/components/admin/unread-count"
-import { AlertList } from "./alert-list"
+import { AlertsPreviewCard } from "./alerts-preview-card"
 import { AtRiskClientsCard } from "./at-risk-clients-card"
 import { RecentClientsCard } from "./recent-clients-card"
 import { LatestInsightsCard } from "./latest-insights-card"
@@ -184,24 +182,7 @@ export default async function AdminDashboardPage({
         />
       </div>
 
-      {unresolvedAlertsCount > 0 && (
-        <Card className="mb-6 border-red-200">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center gap-2 text-red-700">
-                <AlertTriangle className="w-4 h-4" />
-                {t("clinicalAlerts")} ({unresolvedAlertsCount})
-              </CardTitle>
-              <Link href="/admin/alerts" className="text-sm text-red-600 hover:underline">
-                {t("viewAll")} →
-              </Link>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <AlertList alerts={unresolvedAlerts} />
-          </CardContent>
-        </Card>
-      )}
+      <AlertsPreviewCard count={unresolvedAlertsCount} alerts={unresolvedAlerts} />
 
       <ClinicPulseCard data={clinicPulseData} />
       <LatestInsightsCard insights={latestInsights} cadence={cadenceMap} />

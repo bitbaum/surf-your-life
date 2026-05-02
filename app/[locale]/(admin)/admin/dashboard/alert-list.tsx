@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl"
 import { X } from "lucide-react"
 import { ALERT_SEVERITY_DOT, ALERT_SEVERITY_BADGE } from "@/lib/constants"
 
-type Alert = {
+export type Alert = {
   id: string
   clientId: string
   title: string
