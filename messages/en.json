@@ -902,7 +902,14 @@
       "dismissAlert": "Dismiss",
       "never": "Never checked in",
       "daysAgo": "{n} days without check-in",
-      "weeklyInsights": "Weekly AI insights"
+      "weeklyInsights": "Weekly AI insights",
+      "clinicPulse": {
+        "title": "Clinic Pulse — 30 days",
+        "avgEnergy7d": "Avg energy (7d)",
+        "vsLast7d": "{delta} vs prev 7d",
+        "dailyClients": "Avg active clients / day",
+        "noData": "Not enough check-in data yet"
+      }
     },
     "messages": {
       "title": "Messages",

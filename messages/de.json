@@ -902,7 +902,14 @@
       "dismissAlert": "Schliessen",
       "never": "Noch nie eingecheckt",
       "daysAgo": "{n} Tage ohne Check-in",
-      "weeklyInsights": "Wöchentliche KI-Einblicke"
+      "weeklyInsights": "Wöchentliche KI-Einblicke",
+      "clinicPulse": {
+        "title": "Klinik-Puls — 30 Tage",
+        "avgEnergy7d": "Ø Energie (7T)",
+        "vsLast7d": "{delta} ggü. Vorwoche",
+        "dailyClients": "Ø aktive Klienten / Tag",
+        "noData": "Noch nicht genug Check-in-Daten"
+      }
     },
     "messages": {
       "title": "Nachrichten",

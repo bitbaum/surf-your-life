@@ -7,7 +7,7 @@ import { StatCard } from "@/components/ui/stat-card"
 import { PageHeader } from "@/components/ui/page-header"
 import { Link } from "@/i18n/navigation"
 import { Users, ClipboardList, TrendingUp, CalendarClock, MessageSquare, AlertTriangle } from "lucide-react"
-import { SEVEN_DAYS_MS, THIRTY_DAYS_MS, RECENT_CLIENTS_LIMIT, AT_RISK_CLIENTS_LIMIT, ADMIN_DASHBOARD_ALERTS_PREVIEW, ADMIN_DASHBOARD_INSIGHTS_PREVIEW } from "@/lib/constants"
+import { SEVEN_DAYS_MS, THIRTY_DAYS_MS, RECENT_CLIENTS_LIMIT, AT_RISK_CLIENTS_LIMIT, ADMIN_DASHBOARD_ALERTS_PREVIEW, ADMIN_DASHBOARD_INSIGHTS_PREVIEW, CLINIC_TZ } from "@/lib/constants"
 import { roundOne } from "@/lib/utils"
 import { CLIENT_ROLE } from "@/lib/domain/auth"
 import { fetchCadenceMap } from "@/lib/db/check-in-cadence"
@@ -17,6 +17,7 @@ import { AlertList } from "./alert-list"
 import { AtRiskClientsCard } from "./at-risk-clients-card"
 import { RecentClientsCard } from "./recent-clients-card"
 import { LatestInsightsCard } from "./latest-insights-card"
+import { ClinicPulseCard } from "./clinic-pulse-card"
 
 export default async function AdminDashboardPage({
   params,
@@ -41,6 +42,7 @@ export default async function AdminDashboardPage({
     atRiskPreview,
     unresolvedAlertsCount,
     unresolvedAlerts,
+    clinicPulseRaw,
     latestInsightsRaw,
   ] = await Promise.all([
     db.select({ count: count() }).from(users).where(eq(users.role, CLIENT_ROLE)),
@@ -94,6 +96,19 @@ export default async function AdminDashboardPage({
       limit: ADMIN_DASHBOARD_ALERTS_PREVIEW,
       with: { client: { columns: { id: true, name: true, email: true } } },
     }),
+    // 30-day clinic pulse: daily avg energy + active client count per clinic-local day
+    db.execute<{ day: string; avg_energy: string; active_clients: string }>(sql`
+      SELECT
+        to_char((${checkIns.createdAt} AT TIME ZONE 'UTC') AT TIME ZONE ${CLINIC_TZ}, 'YYYY-MM-DD') AS day,
+        ROUND(AVG(${checkIns.energyLevel})::numeric, 1)::float8 AS avg_energy,
+        COUNT(DISTINCT ${checkIns.userId})::int AS active_clients
+      FROM ${checkIns}
+      JOIN ${users} ON ${users.id} = ${checkIns.userId}
+      WHERE ${users.role} = ${CLIENT_ROLE}
+        AND ${checkIns.createdAt} >= ${thirtyDaysAgo}
+      GROUP BY 1
+      ORDER BY 1 ASC
+    `),
     // Latest AI insight per client — outer ORDER BY recency so we show the N most recently updated clients
     db.execute<{ client_id: string; client_name: string | null; ai_insight: string; created_at: string }>(sql`
       SELECT * FROM (
@@ -121,6 +136,11 @@ export default async function AdminDashboardPage({
 
   const atRiskCount = atRiskCountResult[0]?.count ?? 0
   const atRiskClients = atRiskPreview
+  const clinicPulseData = clinicPulseRaw.rows.map((r) => ({
+    day: r.day,
+    avgEnergy: parseFloat(r.avg_energy),
+    activeClients: parseInt(r.active_clients, 10),
+  }))
   const latestInsights = latestInsightsRaw.rows.map((r) => ({
     clientId: r.client_id,
     clientName: r.client_name,
@@ -175,6 +195,7 @@ export default async function AdminDashboardPage({
         </Card>
       )}
 
+      <ClinicPulseCard data={clinicPulseData} />
       <LatestInsightsCard insights={latestInsights} cadence={cadenceMap} />
       <AtRiskClientsCard clients={atRiskClients} nowMs={nowMs} />
       <RecentClientsCard clients={recentClients} cadence={cadenceMap} />

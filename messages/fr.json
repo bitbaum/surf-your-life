@@ -902,7 +902,14 @@
       "dismissAlert": "Ignorer",
       "never": "Jamais enregistré",
       "daysAgo": "{n} jours sans check-in",
-      "weeklyInsights": "Résumés IA hebdomadaires"
+      "weeklyInsights": "Résumés IA hebdomadaires",
+      "clinicPulse": {
+        "title": "Pouls clinique — 30 jours",
+        "avgEnergy7d": "Énergie moy. (7j)",
+        "vsLast7d": "{delta} vs 7j préc.",
+        "dailyClients": "Clients actifs moy. / jour",
+        "noData": "Pas encore assez de données"
+      }
     },
     "messages": {
       "title": "Messages",
