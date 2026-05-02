@@ -1400,6 +1400,8 @@
       "descriptionWithHigh": "{total} unresolved alerts — {high} high priority",
       "descriptionEmpty": "No active alerts",
       "resolve": "Resolve",
+      "resolveAll": "Resolve all ({n})",
+      "resolvingAll": "Resolving…",
       "allClear": "All clear",
       "allClearSubtext": "No unresolved alerts at this time",
       "severity": {

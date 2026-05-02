@@ -10,6 +10,7 @@ import type { AlertType, AlertSeverity } from "@/lib/db/schema"
 import { EmptyState } from "@/components/ui/empty-state"
 import { Card } from "@/components/ui/card"
 import { DayCadenceSparkline, type DayState } from "@/components/ui/day-cadence-sparkline"
+import { CheckCircle } from "lucide-react"
 
 const ALL_FILTER = "all" as const
 type TypeFilter = AlertType | typeof ALL_FILTER
@@ -36,9 +37,26 @@ export function AlertList({ initialAlerts, sparkDays, sparkData, sparkLabels, sp
   const t = useTranslations("admin.alerts")
   const [alerts, setAlerts] = useState(initialAlerts)
   const [typeFilter, setTypeFilter] = useState<TypeFilter>(ALL_FILTER)
+  const [resolvingAll, setResolvingAll] = useState(false)
 
   function handleResolved(id: string) {
     setAlerts((prev) => prev.filter((a) => a.id !== id))
+  }
+
+  async function handleResolveAll() {
+    const ids = visible.map((a) => a.id)
+    if (ids.length === 0) return
+    setResolvingAll(true)
+    try {
+      const res = await fetch("/api/admin/alerts", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids }),
+      })
+      if (res.ok) setAlerts((prev) => prev.filter((a) => !ids.includes(a.id)))
+    } finally {
+      setResolvingAll(false)
+    }
   }
 
   const activeTypes = [...new Set(alerts.map((a) => a.type))] as AlertType[]
@@ -61,28 +79,42 @@ export function AlertList({ initialAlerts, sparkDays, sparkData, sparkLabels, sp
 
   return (
     <div className="flex flex-col gap-6">
-      {activeTypes.length > 1 && (
-        <div className="flex flex-wrap gap-2">
+      <div className="flex items-center justify-between gap-4 flex-wrap">
+        {activeTypes.length > 1 ? (
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => setTypeFilter(ALL_FILTER)}
+              className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${typeFilter === ALL_FILTER ? "bg-slate-800 text-white border-slate-800" : "bg-white text-slate-600 border-slate-200 hover:border-slate-400"}`}
+            >
+              {t("filterAll")} ({alerts.length})
+            </button>
+            {activeTypes.map((type) => {
+              const count = alerts.filter((a) => a.type === type).length
+              return (
+                <button
+                  key={type}
+                  onClick={() => setTypeFilter(type)}
+                  className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${typeFilter === type ? "bg-slate-800 text-white border-slate-800" : "bg-white text-slate-600 border-slate-200 hover:border-slate-400"}`}
+                >
+                  {t(`type.${type}`)} ({count})
+                </button>
+              )
+            })}
+          </div>
+        ) : (
+          <div />
+        )}
+        {visible.length > 1 && (
           <button
-            onClick={() => setTypeFilter(ALL_FILTER)}
-            className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${typeFilter === ALL_FILTER ? "bg-slate-800 text-white border-slate-800" : "bg-white text-slate-600 border-slate-200 hover:border-slate-400"}`}
+            onClick={handleResolveAll}
+            disabled={resolvingAll}
+            className="flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-teal-600 border border-slate-200 hover:border-teal-300 rounded-lg px-3 py-1.5 transition-colors disabled:opacity-50 flex-shrink-0"
           >
-            {t("filterAll")} ({alerts.length})
+            <CheckCircle className="w-3.5 h-3.5" />
+            {resolvingAll ? t("resolvingAll") : t("resolveAll", { n: visible.length })}
           </button>
-          {activeTypes.map((type) => {
-            const count = alerts.filter((a) => a.type === type).length
-            return (
-              <button
-                key={type}
-                onClick={() => setTypeFilter(type)}
-                className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${typeFilter === type ? "bg-slate-800 text-white border-slate-800" : "bg-white text-slate-600 border-slate-200 hover:border-slate-400"}`}
-              >
-                {t(`type.${type}`)} ({count})
-              </button>
-            )
-          })}
-        </div>
-      )}
+        )}
+      </div>
       {ALERT_SEVERITY_ORDER.map((sev) => {
         const group = grouped[sev]
         if (group.length === 0) return null

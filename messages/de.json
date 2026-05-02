@@ -1400,6 +1400,8 @@
       "descriptionWithHigh": "{total} offene Alarme — {high} hohe Priorität",
       "descriptionEmpty": "Keine aktiven Alarme",
       "resolve": "Lösen",
+      "resolveAll": "Alle lösen ({n})",
+      "resolvingAll": "Wird gelöst…",
       "allClear": "Alles klar",
       "allClearSubtext": "Keine offenen Alarme",
       "severity": {
