@@ -1421,6 +1421,7 @@
       "notesPlaceholder": "ex. À faire avant de dormir",
       "perDay": "× par jour",
       "selectPlaceholder": "Choisir une technique…",
+      "clientCount": "{count, plural, one {# client} other {# clients}}",
       "category": {
         "breathwork": "Respiration",
         "movement": "Mouvement",
