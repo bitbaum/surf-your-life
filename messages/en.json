@@ -1074,6 +1074,8 @@
         "viewAtRisk": "At-risk clients",
         "inactiveFor": "Inactive for",
         "totalCheckIns": "Check-ins",
+        "lastEnergy": "Last energy",
+        "lastMood": "Last mood",
         "nudgeButton": "Nudge",
         "nudgeModalTitle": "Send check-in nudge",
         "nudgeSubject": "Checking in",

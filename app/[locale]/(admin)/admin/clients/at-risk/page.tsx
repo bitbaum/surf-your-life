@@ -1,6 +1,6 @@
 import { db } from "@/lib/db"
 import { users, checkIns } from "@/lib/db/schema"
-import { eq, max, sql, count } from "drizzle-orm"
+import { eq, max, sql, count, desc, inArray } from "drizzle-orm"
 import { CLIENT_ROLE } from "@/lib/domain/auth"
 import { atRiskHaving } from "@/lib/db/at-risk"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -8,7 +8,7 @@ import { PageHeader } from "@/components/ui/page-header"
 import { Link } from "@/i18n/navigation"
 import { formatDate, daysSince, displayName } from "@/lib/utils"
 import { getTranslations, setRequestLocale } from "next-intl/server"
-import { SEVEN_DAYS_MS, ADMIN_AT_RISK_MAX } from "@/lib/constants"
+import { SEVEN_DAYS_MS, ADMIN_AT_RISK_MAX, MOOD_EMOJI } from "@/lib/constants"
 import { NewThreadButton } from "../[id]/new-thread-button"
 import { EmptyState } from "@/components/ui/empty-state"
 
@@ -37,6 +37,22 @@ export default async function AtRiskClientsPage({ params }: { params: Promise<{ 
     .having(atRiskHaving(sevenDaysAgo))
     .orderBy(sql`max(${checkIns.createdAt}) ASC NULLS FIRST`)
     .limit(ADMIN_AT_RISK_MAX)
+
+  // Fetch last check-in energy + mood for each at-risk client in one query.
+  const clientIds = atRisk.map((c) => c.id)
+  const lastCheckInDetails = clientIds.length > 0
+    ? await db
+        .selectDistinctOn([checkIns.userId], {
+          userId: checkIns.userId,
+          energyLevel: checkIns.energyLevel,
+          mood: checkIns.mood,
+        })
+        .from(checkIns)
+        .where(inArray(checkIns.userId, clientIds))
+        .orderBy(checkIns.userId, desc(checkIns.createdAt))
+    : []
+
+  const lastDetails = Object.fromEntries(lastCheckInDetails.map((r) => [r.userId, r]))
 
   function formatDaysSince(date: Date | null): string {
     const days = daysSince(date)
@@ -84,12 +100,20 @@ export default async function AtRiskClientsPage({ params }: { params: Promise<{ 
                   <th className="text-left py-2 font-medium text-slate-500">{t("atRisk.lastCheckIn")}</th>
                   <th className="text-left py-2 font-medium text-slate-500">{t("atRisk.inactiveFor")}</th>
                   <th className="text-left py-2 font-medium text-slate-500">{t("atRisk.totalCheckIns")}</th>
+                  <th className="text-left py-2 font-medium text-slate-500">{t("atRisk.lastEnergy")}</th>
+                  <th className="text-left py-2 font-medium text-slate-500">{t("atRisk.lastMood")}</th>
                   <th />
                 </tr>
               </thead>
               <tbody>
                 {atRisk.map((client) => {
                   const days = daysSince(client.lastCheckIn)
+                  const detail = lastDetails[client.id]
+                  const energy = detail?.energyLevel ?? null
+                  const energyColor = energy == null ? "text-slate-300"
+                    : energy <= 3 ? "text-red-600 font-semibold"
+                    : energy <= 6 ? "text-amber-600"
+                    : "text-teal-600"
                   return (
                     <tr
                       key={client.id}
@@ -109,6 +133,12 @@ export default async function AtRiskClientsPage({ params }: { params: Promise<{ 
                         {client.totalCheckIns > 0
                           ? client.totalCheckIns
                           : <span className="text-slate-300">0</span>}
+                      </td>
+                      <td className={`py-3 text-sm ${energyColor}`}>
+                        {energy != null ? `${energy}/10` : <span className="text-slate-300">—</span>}
+                      </td>
+                      <td className="py-3 text-base">
+                        {detail?.mood ? MOOD_EMOJI[detail.mood] ?? "—" : <span className="text-slate-300 text-sm">—</span>}
                       </td>
                       <td className="py-3 text-right">
                         <div className="flex items-center justify-end gap-3">

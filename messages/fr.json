@@ -1092,6 +1092,8 @@
         "viewAtRisk": "Clients à risque",
         "inactiveFor": "Inactif depuis",
         "totalCheckIns": "Check-ins",
+        "lastEnergy": "Dernière énergie",
+        "lastMood": "Dernière humeur",
         "nudgeButton": "Relancer",
         "nudgeModalTitle": "Envoyer une relance",
         "nudgeSubject": "Comment vas-tu?",

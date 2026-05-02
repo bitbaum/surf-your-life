@@ -1074,6 +1074,8 @@
         "viewAtRisk": "Gefährdete Klienten",
         "inactiveFor": "Inaktiv seit",
         "totalCheckIns": "Check-ins",
+        "lastEnergy": "Letzte Energie",
+        "lastMood": "Letzte Stimmung",
         "nudgeButton": "Erinnern",
         "nudgeModalTitle": "Check-in-Erinnerung senden",
         "nudgeSubject": "Wie geht es dir?",
