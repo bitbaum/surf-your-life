@@ -2,76 +2,16 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { useLocale, useTranslations } from "next-intl"
+import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 import { Plus, Trash2, BookOpen, ChevronDown, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import type { Technique } from "@/lib/db/schema"
 import type { AssignmentWithTechnique, LogsGridByAssignment } from "@/lib/domain/techniques"
-import { TECHNIQUE_CATEGORIES, ADHERENCE_GOOD_DAYS, ADHERENCE_OK_DAYS } from "@/lib/constants"
+import { TECHNIQUE_CATEGORIES } from "@/lib/constants"
 import { TechniqueAssignForm } from "./technique-assign-form"
-
-function AdherenceBadge({ days }: { days: number }) {
-  const color = days >= ADHERENCE_GOOD_DAYS ? "text-teal-600 bg-teal-50" : days >= ADHERENCE_OK_DAYS ? "text-amber-600 bg-amber-50" : "text-red-500 bg-red-50"
-  return (
-    <span className={`text-xs font-medium px-1.5 py-0.5 rounded-full ${color}`}>
-      {days}/7d
-    </span>
-  )
-}
-
-function AdherenceGrid({ assignmentId, frequencyPerDay, logsGrid }: {
-  assignmentId: string
-  frequencyPerDay: number
-  logsGrid: LogsGridByAssignment
-}) {
-  const locale = useLocale()
-  // Build the last 7 days ending today using local date (not UTC) so the
-  // grid keys match the YYYY-MM-DD dates that clients log against locally.
-  const days: { iso: string; label: string }[] = []
-  for (let i = 6; i >= 0; i--) {
-    const d = new Date()
-    d.setDate(d.getDate() - i)
-    const iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`
-    const label = new Intl.DateTimeFormat(locale, { weekday: "short" }).format(d)
-    days.push({ iso, label })
-  }
-
-  const grid = logsGrid[assignmentId] ?? {}
-
-  return (
-    <div className="mt-2 pt-2 border-t border-slate-100 flex gap-1.5">
-      {days.map(({ iso, label }) => {
-        const reps = grid[iso] ?? 0
-        const met = reps >= frequencyPerDay
-        const partial = reps > 0 && !met
-        const dotColor = met
-          ? "bg-teal-500"
-          : partial
-          ? "bg-amber-400"
-          : "bg-slate-200"
-        const textColor = met
-          ? "text-teal-600 font-semibold"
-          : partial
-          ? "text-amber-600"
-          : "text-slate-400"
-
-        return (
-          <div key={iso} className="flex flex-col items-center gap-0.5 flex-1">
-            <span className="text-[10px] text-slate-400">{label}</span>
-            <div className={`w-5 h-5 rounded-full ${dotColor} flex items-center justify-center`}>
-              {reps > 0 && (
-                <span className="text-[9px] text-white font-bold leading-none">{reps}</span>
-              )}
-            </div>
-            <span className={`text-[9px] leading-none ${textColor}`}>/{frequencyPerDay}</span>
-          </div>
-        )
-      })}
-    </div>
-  )
-}
+import { AdherenceBadge, AdherenceGrid } from "./technique-adherence"
 
 interface TechniqueAssignmentsProps {
   clientId: string
@@ -81,7 +21,13 @@ interface TechniqueAssignmentsProps {
   logsGridByAssignment: LogsGridByAssignment
 }
 
-export function TechniqueAssignments({ clientId, assignments, allTechniques, adherenceByAssignment, logsGridByAssignment }: TechniqueAssignmentsProps) {
+export function TechniqueAssignments({
+  clientId,
+  assignments,
+  allTechniques,
+  adherenceByAssignment,
+  logsGridByAssignment,
+}: TechniqueAssignmentsProps) {
   const t = useTranslations("admin.techniques")
   const router = useRouter()
   const [adding, setAdding] = useState(false)
@@ -151,10 +97,7 @@ export function TechniqueAssignments({ clientId, assignments, allTechniques, adh
               return (
                 <div key={a.id} className="py-2.5">
                   <div className="flex items-center justify-between gap-3">
-                    <button
-                      className="flex-1 min-w-0 text-left"
-                      onClick={() => toggleExpand(a.id)}
-                    >
+                    <button className="flex-1 min-w-0 text-left" onClick={() => toggleExpand(a.id)}>
                       <div className="flex items-center gap-2 flex-wrap">
                         {isOpen
                           ? <ChevronDown className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
@@ -164,9 +107,7 @@ export function TechniqueAssignments({ clientId, assignments, allTechniques, adh
                         <span className="text-xs text-slate-400">
                           {categoryEmoji[a.technique.category]} {t(`category.${a.technique.category}` as Parameters<typeof t>[0])}
                         </span>
-                        <span className="text-xs text-teal-600 font-medium">
-                          {a.frequencyPerDay}× {t("perDay")}
-                        </span>
+                        <span className="text-xs text-teal-600 font-medium">{a.frequencyPerDay}× {t("perDay")}</span>
                         <AdherenceBadge days={adherenceByAssignment[a.id] ?? 0} />
                       </div>
                       {a.notes && <p className="text-xs text-slate-400 mt-0.5 italic pl-5">{a.notes}</p>}
