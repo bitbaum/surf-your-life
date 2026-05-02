@@ -1486,7 +1486,8 @@
       "energy": "Energie",
       "sleep": "Schlaf",
       "pemFlag": "PEM",
-      "viewClient": "Ansehen"
+      "viewClient": "Ansehen",
+      "allConcerns": "Alle Schwerpunkte"
     }
   },
   "concerns": {

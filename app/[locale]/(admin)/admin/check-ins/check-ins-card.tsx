@@ -5,8 +5,9 @@ import { Pagination } from "@/components/ui/pagination"
 import { SearchInput } from "@/components/ui/search-input"
 import { FilterTabs } from "@/components/ui/filter-tabs"
 import { formatDate } from "@/lib/utils"
-import { MOOD_EMOJI, MOODS } from "@/lib/constants"
+import { MOOD_EMOJI, MOODS, MAIN_CONCERNS } from "@/lib/constants"
 import { Suspense } from "react"
+import type { MainConcern } from "@/lib/db/schema"
 
 export type FilterMode = "all" | "pem" | "today"
 
@@ -27,23 +28,26 @@ type Props = {
   rows: CheckInRow[]
   filter: FilterMode
   todayCount: number
+  concern: MainConcern | undefined
   q: string | undefined
   page: number
   totalPages: number
   filterHref: (v: FilterMode) => string
+  concernHref: (c: MainConcern | "") => string
   pageHref: (p: number) => string
 }
 
-export async function CheckInsCard({ rows, filter, todayCount, q, page, totalPages, filterHref, pageHref }: Props) {
+export async function CheckInsCard({ rows, filter, todayCount, concern, q, page, totalPages, filterHref, concernHref, pageHref }: Props) {
   const t = await getTranslations("admin.checkIns")
   const tCheckIn = await getTranslations("portal.checkIn")
+  const tConcerns = await getTranslations("concerns")
   const moodMap = Object.fromEntries(MOODS.map((m) => [m.value, m]))
 
   return (
     <Card>
       <CardHeader><CardTitle>{t("title")}</CardTitle></CardHeader>
       <CardContent>
-        <div className="flex items-center gap-3 mb-4">
+        <div className="flex items-center gap-3 mb-3">
           <div className="flex-1">
             <Suspense>
               <SearchInput placeholder={t("searchPlaceholder")} defaultValue={q ?? ""} />
@@ -59,6 +63,14 @@ export async function CheckInsCard({ rows, filter, todayCount, q, page, totalPag
             href={filterHref}
           />
         </div>
+        <FilterTabs
+          tabs={[
+            { value: "" as string, label: t("allConcerns") },
+            ...MAIN_CONCERNS.map((c) => ({ value: c, label: tConcerns(c) })),
+          ]}
+          active={concern ?? ""}
+          href={concernHref as (v: string) => string}
+        />
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>

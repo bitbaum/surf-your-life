@@ -1486,7 +1486,8 @@
       "energy": "Énergie",
       "sleep": "Sommeil",
       "pemFlag": "SPE",
-      "viewClient": "Voir"
+      "viewClient": "Voir",
+      "allConcerns": "Tous les profils"
     }
   },
   "concerns": {
