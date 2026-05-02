@@ -12,6 +12,7 @@ import { computeTotalPages, parsePagination } from "@/lib/utils"
 import { CheckInRow } from "../check-in-row"
 import { EmptyState } from "@/components/ui/empty-state"
 import { getTranslations, setRequestLocale } from "next-intl/server"
+import { Download } from "lucide-react"
 
 export default async function ClientCheckInsPage({
   params,
@@ -62,7 +63,19 @@ export default async function ClientCheckInsPage({
 
       <Card>
         <CardHeader>
-          <CardTitle>{t("detail.checkInsCard")} ({total})</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle>{t("detail.checkInsCard")} ({total})</CardTitle>
+            {total > 0 && (
+              <a
+                href={`/api/admin/clients/${id}/export`}
+                className="flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-teal-600 border border-slate-200 hover:border-teal-300 rounded-lg px-3 py-1.5 transition-colors"
+                download
+              >
+                <Download className="w-3.5 h-3.5" />
+                {t("checkIns.exportCsv")}
+              </a>
+            )}
+          </div>
         </CardHeader>
         <CardContent>
           {clientCheckIns.length > 0 ? (

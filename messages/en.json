@@ -1154,7 +1154,8 @@
       "checkIns": {
         "title": "Check-ins",
         "description": "All check-ins for {name} · {count} total",
-        "backLink": "← {name}"
+        "backLink": "← {name}",
+        "exportCsv": "Export CSV"
       },
       "sortJoined": "Newest first",
       "sortCheckInDesc": "Most active",
