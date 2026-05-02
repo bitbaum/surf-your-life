@@ -2,7 +2,7 @@ import { notFound } from "next/navigation"
 import { db } from "@/lib/db"
 import { programs, programEnrollments, users } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
-import { ADMIN_ENROLLMENTS_MAX } from "@/lib/constants"
+import { ADMIN_ENROLLMENTS_MAX, SEVEN_DAYS_MS } from "@/lib/constants"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Link } from "@/i18n/navigation"
 import { formatDate } from "@/lib/utils"
@@ -11,6 +11,7 @@ import { EnrollmentStatus } from "./enrollment-status"
 import { EditProgramForm } from "./edit-program-form"
 import { EmptyState } from "@/components/ui/empty-state"
 import { Users } from "lucide-react"
+import type { ProgramPhase } from "@/lib/domain/program"
 
 export default async function ProgramDetailPage({
   params,
@@ -20,6 +21,8 @@ export default async function ProgramDetailPage({
   const { locale, id } = await params
   setRequestLocale(locale)
   const t = await getTranslations("admin.programs")
+
+  const nowMs = Date.now() // eslint-disable-line react-hooks/purity -- server component
 
   const program = await db.query.programs.findFirst({
     where: eq(programs.id, id),
@@ -88,6 +91,19 @@ export default async function ProgramDetailPage({
                         <span>{t("startedOn", { date: formatDate(e.startDate) })}</span>
                       )}
                       <span>{t("enrolledOn", { date: formatDate(e.createdAt) })}</span>
+                      {(() => {
+                        if (!e.startDate || !program.durationWeeks || e.status !== "active") return null
+                        const week = Math.floor((nowMs - e.startDate.getTime()) / SEVEN_DAYS_MS) + 1
+                        if (week < 1 || week > program.durationWeeks) return null
+                        const phases = program.phaseConfig as ProgramPhase[] | null
+                        const phase = phases?.find((p) => p.week === week) ?? null
+                        return (
+                          <span className="font-medium text-teal-600">
+                            {t("weekProgress", { current: week, total: program.durationWeeks })}
+                            {phase?.title && ` · ${phase.title}`}
+                          </span>
+                        )
+                      })()}
                     </div>
                     {e.notes && (
                       <p className="text-xs text-slate-500 mt-1.5 italic">{e.notes}</p>

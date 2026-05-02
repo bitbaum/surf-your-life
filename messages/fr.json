@@ -1335,6 +1335,7 @@
       "unnamed": "Sans nom",
       "startedOn": "Démarré le {date}",
       "enrolledOn": "Inscrit le {date}",
+      "weekProgress": "Semaine {current} sur {total}",
       "status": {
         "active": "Actif",
         "paused": "En pause",
