@@ -96,11 +96,18 @@ export default async function AdminDashboardPage({
       limit: ADMIN_DASHBOARD_ALERTS_PREVIEW,
       with: { client: { columns: { id: true, name: true, email: true } } },
     }),
-    // 30-day clinic pulse: daily avg energy + active client count per clinic-local day
-    db.execute<{ day: string; avg_energy: string; active_clients: string }>(sql`
+    // 30-day clinic pulse: daily avg energy, avg mood (1-5 numeric), and active client count
+    db.execute<{ day: string; avg_energy: string; avg_mood: string; active_clients: string }>(sql`
       SELECT
         to_char((${checkIns.createdAt} AT TIME ZONE 'UTC') AT TIME ZONE ${CLINIC_TZ}, 'YYYY-MM-DD') AS day,
         ROUND(AVG(${checkIns.energyLevel})::numeric, 1)::float8 AS avg_energy,
+        ROUND(AVG(CASE ${checkIns.mood}
+          WHEN 'very_low'  THEN 1
+          WHEN 'low'       THEN 2
+          WHEN 'neutral'   THEN 3
+          WHEN 'good'      THEN 4
+          WHEN 'excellent' THEN 5
+        END)::numeric, 1)::float8 AS avg_mood,
         COUNT(DISTINCT ${checkIns.userId})::int AS active_clients
       FROM ${checkIns}
       JOIN ${users} ON ${users.id} = ${checkIns.userId}
@@ -139,6 +146,7 @@ export default async function AdminDashboardPage({
   const clinicPulseData = clinicPulseRaw.rows.map((r) => ({
     day: r.day,
     avgEnergy: parseFloat(r.avg_energy),
+    avgMood: parseFloat(r.avg_mood),
     activeClients: parseInt(r.active_clients, 10),
   }))
   const latestInsights = latestInsightsRaw.rows.map((r) => ({

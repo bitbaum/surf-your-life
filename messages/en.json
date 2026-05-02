@@ -906,9 +906,12 @@
       "clinicPulse": {
         "title": "Clinic Pulse — 30 days",
         "avgEnergy7d": "Avg energy (7d)",
+        "avgMood7d": "Avg mood (7d)",
         "vsLast7d": "{delta} vs prev 7d",
         "dailyClients": "Avg active clients / day",
-        "noData": "Not enough check-in data yet"
+        "noData": "Not enough check-in data yet",
+        "legendEnergy": "Energy",
+        "legendMood": "Mood"
       }
     },
     "messages": {

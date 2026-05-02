@@ -906,9 +906,12 @@
       "clinicPulse": {
         "title": "Pouls clinique — 30 jours",
         "avgEnergy7d": "Énergie moy. (7j)",
+        "avgMood7d": "Humeur moy. (7j)",
         "vsLast7d": "{delta} vs 7j préc.",
         "dailyClients": "Clients actifs moy. / jour",
-        "noData": "Pas encore assez de données"
+        "noData": "Pas encore assez de données",
+        "legendEnergy": "Énergie",
+        "legendMood": "Humeur"
       }
     },
     "messages": {

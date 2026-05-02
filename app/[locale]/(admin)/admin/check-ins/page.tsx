@@ -1,6 +1,6 @@
 import { db } from "@/lib/db"
 import { checkIns, users } from "@/lib/db/schema"
-import { eq, desc, count } from "drizzle-orm"
+import { eq, and, desc, count } from "drizzle-orm"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
@@ -8,6 +8,7 @@ import { Link } from "@/i18n/navigation"
 import { Pagination } from "@/components/ui/pagination"
 import { formatDate, computeTotalPages, parsePagination } from "@/lib/utils"
 import { PAGINATION_DEFAULT, MOOD_EMOJI, MOODS } from "@/lib/constants"
+import { CLIENT_ROLE } from "@/lib/domain/auth"
 import { FilterTabs } from "@/components/ui/filter-tabs"
 
 export default async function AdminCheckInsPage({
@@ -27,7 +28,8 @@ export default async function AdminCheckInsPage({
   const pemOnly = pemParam === "true"
   const { page, offset } = parsePagination(pageParam)
 
-  const whereClause = pemOnly ? eq(checkIns.pemFlag, true) : undefined
+  const baseWhere = eq(users.role, CLIENT_ROLE)
+  const whereClause = pemOnly ? and(baseWhere, eq(checkIns.pemFlag, true)) : baseWhere
 
   const [rows, totalResult] = await Promise.all([
     db
@@ -49,7 +51,11 @@ export default async function AdminCheckInsPage({
       .orderBy(desc(checkIns.createdAt))
       .limit(PAGINATION_DEFAULT)
       .offset(offset),
-    db.select({ count: count() }).from(checkIns).where(whereClause),
+    db
+      .select({ count: count() })
+      .from(checkIns)
+      .innerJoin(users, eq(users.id, checkIns.userId))
+      .where(whereClause),
   ])
 
   const total = totalResult[0]?.count ?? 0
