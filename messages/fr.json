@@ -774,7 +774,20 @@
       "chartCognitive": "Cognitif",
       "chartPhysical": "Physique",
       "chartEmotional": "Émotionnel",
-      "chartSocial": "Social"
+      "chartSocial": "Social",
+      "wellnessTrendTitle": "Humeur & énergie",
+      "wellnessTrendSubtitle": "Vos 90 derniers jours",
+      "wellnessMood": "Humeur",
+      "wellnessEnergy": "Énergie",
+      "symptomsChartTitle": "Évolution des symptômes",
+      "symptomsChartSubtitle": "Fatigue, brouillard cérébral, douleur et stress",
+      "symptomFatigue": "Fatigue",
+      "symptomBrainFog": "Brouillard cérébral",
+      "symptomPain": "Douleur",
+      "symptomStress": "Stress",
+      "sleepChartTitle": "Sommeil",
+      "sleepChartSubtitle": "Vos heures de sommeil nocturne",
+      "sleepHoursTooltip": "{n}h"
     },
     "medications": {
       "title": "Médicaments",

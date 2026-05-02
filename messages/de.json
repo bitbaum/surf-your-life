@@ -774,7 +774,20 @@
       "chartCognitive": "Kognitiv",
       "chartPhysical": "Körperlich",
       "chartEmotional": "Emotional",
-      "chartSocial": "Sozial"
+      "chartSocial": "Sozial",
+      "wellnessTrendTitle": "Stimmung & Energie",
+      "wellnessTrendSubtitle": "Ihre letzten 90 Tage",
+      "wellnessMood": "Stimmung",
+      "wellnessEnergy": "Energie",
+      "symptomsChartTitle": "Symptome im Verlauf",
+      "symptomsChartSubtitle": "Erschöpfung, Brainfog, Schmerzen und Stress",
+      "symptomFatigue": "Erschöpfung",
+      "symptomBrainFog": "Brainfog",
+      "symptomPain": "Schmerzen",
+      "symptomStress": "Stress",
+      "sleepChartTitle": "Schlaf",
+      "sleepChartSubtitle": "Ihre nächtlichen Schlafstunden",
+      "sleepHoursTooltip": "{n}h"
     },
     "medications": {
       "title": "Medikamente",

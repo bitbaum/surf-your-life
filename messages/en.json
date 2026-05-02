@@ -774,7 +774,20 @@
       "chartCognitive": "Cognitive",
       "chartPhysical": "Physical",
       "chartEmotional": "Emotional",
-      "chartSocial": "Social"
+      "chartSocial": "Social",
+      "wellnessTrendTitle": "Mood & energy",
+      "wellnessTrendSubtitle": "Your last 90 days",
+      "wellnessMood": "Mood",
+      "wellnessEnergy": "Energy",
+      "symptomsChartTitle": "Symptoms over time",
+      "symptomsChartSubtitle": "Fatigue, brain fog, pain, and stress",
+      "symptomFatigue": "Fatigue",
+      "symptomBrainFog": "Brain fog",
+      "symptomPain": "Pain",
+      "symptomStress": "Stress",
+      "sleepChartTitle": "Sleep",
+      "sleepChartSubtitle": "Your nightly sleep hours",
+      "sleepHoursTooltip": "{n}h"
     },
     "medications": {
       "title": "Medications",
