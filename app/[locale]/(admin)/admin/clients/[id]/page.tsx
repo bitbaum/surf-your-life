@@ -6,7 +6,7 @@ import { formatDate, localDateString, addDaysISO } from "@/lib/utils"
 import { Link } from "@/i18n/navigation"
 import { PAGINATION_DEFAULT, SERVICES_MAX_LIMIT, CLIENT_ASSIGNMENTS_MAX, ADMIN_DASHBOARD_ALERTS_PREVIEW, CLIENT_ASSESSMENTS_LIMIT, NINETY_DAYS_MS } from "@/lib/constants"
 import { CLIENT_ROLE, STAFF_ROLES } from "@/lib/domain/auth"
-import { computeAdherenceByAssignment, computeLogsGridByAssignment } from "@/lib/domain/techniques"
+import { computeAdherenceByAssignment, computeLogsGridByAssignment, computeDailyAdherenceTrend } from "@/lib/domain/techniques"
 import { ResetLinkButton } from "./reset-link-button"
 import { NewThreadButton } from "./new-thread-button"
 import { EnrollProgramButton } from "./enroll-program-button"
@@ -29,9 +29,8 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
   setRequestLocale(locale)
   const t = await getTranslations("admin.clients")
 
-  // 7 calendar days back in clinic-local — matches the user's "last week" perception
-  // and keeps adherence scores from being off-by-one at midnight boundaries.
   const sevenDaysAgo = addDaysISO(localDateString(new Date()), -7)
+  const thirtyDaysAgo = addDaysISO(localDateString(new Date()), -30)
   const ninetyDaysAgo = new Date(Date.now() - NINETY_DAYS_MS) // eslint-disable-line react-hooks/purity -- server component
 
   const [client, clientCheckIns, checkInCountResult, allPrograms, activeEnrollment, currentMedications, assessments, clientAssignments, allTechniques, currentAssignment, allPractitioners, recentTechniqueLogs, unresolvedAlerts, resolvedAlertCountResult, chartCheckIns] = await Promise.all([
@@ -91,7 +90,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
     db.query.techniqueLogs.findMany({
       where: and(
         eq(techniqueLogs.userId, id),
-        gte(techniqueLogs.date, sevenDaysAgo)
+        gte(techniqueLogs.date, thirtyDaysAgo)
       ),
       columns: { assignmentId: true, date: true, completedReps: true },
     }),
@@ -124,8 +123,10 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
   const totalCheckIns = checkInCountResult[0]?.count ?? 0
   const hasAlertHistory = (resolvedAlertCountResult[0]?.value ?? 0) > 0
   const profile = client.profile
-  const adherenceByAssignment = computeAdherenceByAssignment(clientAssignments, recentTechniqueLogs)
-  const logsGridByAssignment = computeLogsGridByAssignment(recentTechniqueLogs)
+  const logsFor7d = recentTechniqueLogs.filter((l) => l.date >= sevenDaysAgo)
+  const adherenceByAssignment = computeAdherenceByAssignment(clientAssignments, logsFor7d)
+  const logsGridByAssignment = computeLogsGridByAssignment(logsFor7d)
+  const dailyAdherenceTrend = computeDailyAdherenceTrend(clientAssignments, recentTechniqueLogs, localDateString(new Date()))
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -181,6 +182,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
           allTechniques={allTechniques}
           adherenceByAssignment={adherenceByAssignment}
           logsGridByAssignment={logsGridByAssignment}
+          trend={dailyAdherenceTrend}
         />
 
         <SessionNotes clientId={id} />

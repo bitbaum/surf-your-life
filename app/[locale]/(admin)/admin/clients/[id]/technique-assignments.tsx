@@ -8,10 +8,11 @@ import { Plus, Trash2, BookOpen, ChevronDown, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import type { Technique } from "@/lib/db/schema"
-import type { AssignmentWithTechnique, LogsGridByAssignment } from "@/lib/domain/techniques"
+import type { AssignmentWithTechnique, LogsGridByAssignment, DailyAdherencePoint } from "@/lib/domain/techniques"
 import { TECHNIQUE_CATEGORIES } from "@/lib/constants"
 import { TechniqueAssignForm } from "./technique-assign-form"
 import { AdherenceBadge, AdherenceGrid } from "./technique-adherence"
+import { TechniqueAdherenceSparkline } from "./technique-adherence-sparkline"
 
 interface TechniqueAssignmentsProps {
   clientId: string
@@ -19,6 +20,7 @@ interface TechniqueAssignmentsProps {
   allTechniques: Technique[]
   adherenceByAssignment: Record<string, number>
   logsGridByAssignment: LogsGridByAssignment
+  trend: DailyAdherencePoint[]
 }
 
 export function TechniqueAssignments({
@@ -27,6 +29,7 @@ export function TechniqueAssignments({
   allTechniques,
   adherenceByAssignment,
   logsGridByAssignment,
+  trend,
 }: TechniqueAssignmentsProps) {
   const t = useTranslations("admin.techniques")
   const router = useRouter()
@@ -69,12 +72,15 @@ export function TechniqueAssignments({
             {t("assignedTitle")}
             <span className="text-sm font-normal text-slate-400">({assignments.length})</span>
           </CardTitle>
-          {available.length > 0 && (
-            <Button size="sm" variant="ghost" onClick={() => setAdding(!adding)}>
-              <Plus className="w-3.5 h-3.5 mr-1" />
-              {t("assign")}
-            </Button>
-          )}
+          <div className="flex items-center gap-3">
+            <TechniqueAdherenceSparkline trend={trend} />
+            {available.length > 0 && (
+              <Button size="sm" variant="ghost" onClick={() => setAdding(!adding)}>
+                <Plus className="w-3.5 h-3.5 mr-1" />
+                {t("assign")}
+              </Button>
+            )}
+          </div>
         </div>
       </CardHeader>
       <CardContent>

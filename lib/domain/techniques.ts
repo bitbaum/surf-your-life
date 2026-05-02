@@ -180,3 +180,39 @@ export function computeLogsGridByAssignment(
   }
   return result
 }
+
+// ─── Daily adherence trend (30-day sparkline) ────────────────────────────────
+
+export type DailyAdherencePoint = { date: string; pct: number }
+
+/**
+ * For each of the last `days` days, computes the % of active assignments
+ * where the client met their daily rep goal. Used for the 30-day sparkline.
+ */
+export function computeDailyAdherenceTrend(
+  assignments: Array<{ id: string; frequencyPerDay: number; startDate: string; endDate?: string | null }>,
+  logs: Array<{ assignmentId: string; date: string; completedReps: number }>,
+  today: string,
+  days = 30
+): DailyAdherencePoint[] {
+  const repsMap: Record<string, number> = {}
+  for (const log of logs) {
+    const key = `${log.assignmentId}:${log.date}`
+    repsMap[key] = Math.max(repsMap[key] ?? 0, log.completedReps)
+  }
+
+  const result: DailyAdherencePoint[] = []
+  for (let i = days - 1; i >= 0; i--) {
+    const date = addDaysISO(today, -i)
+    const active = assignments.filter(
+      (a) => a.startDate <= date && (!a.endDate || a.endDate >= date)
+    )
+    if (active.length === 0) {
+      result.push({ date, pct: 0 })
+      continue
+    }
+    const met = active.filter((a) => (repsMap[`${a.id}:${date}`] ?? 0) >= a.frequencyPerDay).length
+    result.push({ date, pct: Math.round((met / active.length) * 100) })
+  }
+  return result
+}
