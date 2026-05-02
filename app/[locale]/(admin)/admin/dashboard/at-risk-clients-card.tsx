@@ -2,7 +2,10 @@ import { getTranslations } from "next-intl/server"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Link } from "@/i18n/navigation"
 import { AlertTriangle } from "lucide-react"
-import { DAY_MS } from "@/lib/constants"
+import { DAY_MS, MOOD_EMOJI } from "@/lib/constants"
+import { db } from "@/lib/db"
+import { checkIns } from "@/lib/db/schema"
+import { inArray, desc } from "drizzle-orm"
 
 type AtRiskClient = {
   id: string
@@ -20,6 +23,20 @@ export async function AtRiskClientsCard({ clients, nowMs }: Props) {
   const t = await getTranslations("admin.dashboard")
 
   if (clients.length === 0) return null
+
+  const clientIds = clients.map((c) => c.id)
+  const lastDetails = clientIds.length > 0
+    ? await db
+        .selectDistinctOn([checkIns.userId], {
+          userId: checkIns.userId,
+          energyLevel: checkIns.energyLevel,
+          mood: checkIns.mood,
+        })
+        .from(checkIns)
+        .where(inArray(checkIns.userId, clientIds))
+        .orderBy(checkIns.userId, desc(checkIns.createdAt))
+    : []
+  const detailMap = Object.fromEntries(lastDetails.map((r) => [r.userId, r]))
 
   return (
     <Card className="mb-6 border-amber-200">
@@ -40,6 +57,12 @@ export async function AtRiskClientsCard({ clients, nowMs }: Props) {
             const daysAgo = client.lastCheckIn
               ? Math.floor((nowMs - client.lastCheckIn.getTime()) / DAY_MS)
               : null
+            const detail = detailMap[client.id]
+            const energy = detail?.energyLevel ?? null
+            const energyColor = energy == null ? "text-slate-300"
+              : energy <= 3 ? "text-red-600 font-semibold"
+              : energy <= 6 ? "text-amber-600"
+              : "text-teal-600"
             return (
               <Link
                 key={client.id}
@@ -50,9 +73,17 @@ export async function AtRiskClientsCard({ clients, nowMs }: Props) {
                   <p className="text-sm font-medium text-slate-800">{client.name ?? "—"}</p>
                   <p className="text-xs text-slate-400">{client.email}</p>
                 </div>
-                <p className="text-xs text-amber-600 font-medium">
-                  {daysAgo === null ? t("never") : t("daysAgo", { n: daysAgo })}
-                </p>
+                <div className="flex items-center gap-3">
+                  {detail && (
+                    <span className="flex items-center gap-1.5 text-xs">
+                      <span className={energyColor}>{energy}/10</span>
+                      <span>{MOOD_EMOJI[detail.mood] ?? "😐"}</span>
+                    </span>
+                  )}
+                  <p className="text-xs text-amber-600 font-medium">
+                    {daysAgo === null ? t("never") : t("daysAgo", { n: daysAgo })}
+                  </p>
+                </div>
               </Link>
             )
           })}
