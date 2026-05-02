@@ -1161,6 +1161,7 @@
       "sortMostCheckIns": "Meiste Check-ins",
       "sortNeedsAttention": "Aufmerksamkeit nötig",
       "noNeedsAttention": "Alle Klienten sind auf dem neuesten Stand — derzeit nichts markiert.",
+      "allConcerns": "Alle",
       "clearSearch": "Suche löschen"
     },
     "leads": {

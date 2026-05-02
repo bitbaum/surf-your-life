@@ -1179,6 +1179,7 @@
       "sortMostCheckIns": "Plus de check-ins",
       "sortNeedsAttention": "Besoin d'attention",
       "noNeedsAttention": "Tous les clients sont à jour — rien à signaler pour l'instant.",
+      "allConcerns": "Tous",
       "clearSearch": "Effacer la recherche"
     },
     "leads": {

@@ -7,16 +7,20 @@ import { CLIENT_ROLE } from "@/lib/domain/auth"
 import { PageHeader } from "@/components/ui/page-header"
 import { Link } from "@/i18n/navigation"
 import { computeTotalPages, parsePagination } from "@/lib/utils"
-import { PAGINATION_DEFAULT, SEVEN_DAYS_MS } from "@/lib/constants"
+import { PAGINATION_DEFAULT, SEVEN_DAYS_MS, MAIN_CONCERNS } from "@/lib/constants"
 import { ClientSearch } from "./client-search"
 import { ClientsCard } from "./clients-card"
 import { Suspense } from "react"
 import { getTranslations, setRequestLocale } from "next-intl/server"
+import type { MainConcern } from "@/lib/db/schema"
 
 type SortOption = "joined" | "checkin_desc" | "most_checkins" | "needs_attention"
 const SORT_OPTIONS: SortOption[] = ["joined", "checkin_desc", "most_checkins", "needs_attention"]
 function isValidSort(v: string | undefined): v is SortOption {
   return SORT_OPTIONS.includes(v as SortOption)
+}
+function isValidConcern(v: string | undefined): v is MainConcern {
+  return MAIN_CONCERNS.includes(v as MainConcern)
 }
 
 export default async function ClientsPage({
@@ -24,14 +28,15 @@ export default async function ClientsPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>
-  searchParams: Promise<{ page?: string; q?: string; sort?: string }>
+  searchParams: Promise<{ page?: string; q?: string; sort?: string; concern?: string }>
 }) {
   const { locale } = await params
   setRequestLocale(locale)
   const t = await getTranslations("admin.clients")
 
-  const { page: pageParam, q, sort: sortParam } = await searchParams
+  const { page: pageParam, q, sort: sortParam, concern: concernParam } = await searchParams
   const sort: SortOption = isValidSort(sortParam) ? sortParam : "joined"
+  const concern: MainConcern | undefined = isValidConcern(concernParam) ? concernParam : undefined
   const { page, offset } = parsePagination(pageParam)
 
   const searchFilter = q?.trim()
@@ -61,7 +66,12 @@ export default async function ClientsPage({
       )`
     : undefined
 
-  const whereParts = [roleFilter, searchFilter, needsAttentionFilter].filter(
+  // EXISTS subquery keeps the count query profile-join-free.
+  const concernFilter = concern
+    ? sql`EXISTS (SELECT 1 FROM ${profiles} WHERE ${profiles.userId} = ${users.id} AND ${profiles.mainConcern} = ${concern})`
+    : undefined
+
+  const whereParts = [roleFilter, searchFilter, needsAttentionFilter, concernFilter].filter(
     (p): p is NonNullable<typeof p> => p != null
   )
   const whereClause = whereParts.length > 1 ? and(...whereParts) : whereParts[0]
@@ -152,6 +162,7 @@ export default async function ClientsPage({
         staleCutoff={staleCutoff}
         q={q}
         sort={sort}
+        concern={concern}
         page={page}
         totalPages={totalPages}
       />

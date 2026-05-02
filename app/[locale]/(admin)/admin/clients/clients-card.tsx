@@ -6,6 +6,8 @@ import { Pagination } from "@/components/ui/pagination"
 import { Link } from "@/i18n/navigation"
 import { buildLastNDayStrings, daysSince, displayName } from "@/lib/utils"
 import { ClientTableRow, type ClientRow } from "./client-table-row"
+import { MAIN_CONCERNS } from "@/lib/constants"
+import type { MainConcern } from "@/lib/db/schema"
 
 type SortOption = "joined" | "checkin_desc" | "most_checkins" | "needs_attention"
 type AlertInfo = { count: number; hasHigh: boolean }
@@ -18,12 +20,14 @@ type Props = {
   staleCutoff: Date
   q: string | undefined
   sort: SortOption
+  concern: MainConcern | undefined
   page: number
   totalPages: number
 }
 
-export async function ClientsCard({ clients, alertCountMap, unreadMessageMap, cadenceMap, staleCutoff, q, sort, page, totalPages }: Props) {
+export async function ClientsCard({ clients, alertCountMap, unreadMessageMap, cadenceMap, staleCutoff, q, sort, concern, page, totalPages }: Props) {
   const t = await getTranslations("admin.clients")
+  const tConcerns = await getTranslations("concerns")
 
   const sparkDays = buildLastNDayStrings(7)
   const sparkDayLabels = {
@@ -32,19 +36,27 @@ export async function ClientsCard({ clients, alertCountMap, unreadMessageMap, ca
     pem: t("dotPem"),
   }
 
-  function pageLink(p: number) {
+  function buildParams(overrides: Record<string, string | undefined>) {
     const ps = new URLSearchParams()
-    ps.set("page", String(p))
     if (q?.trim()) ps.set("q", q.trim())
     if (sort !== "joined") ps.set("sort", sort)
-    return `/admin/clients?${ps.toString()}`
+    if (concern) ps.set("concern", concern)
+    for (const [k, v] of Object.entries(overrides)) {
+      if (v) ps.set(k, v); else ps.delete(k)
+    }
+    return ps.toString()
+  }
+
+  function pageLink(p: number) {
+    return `/admin/clients?${buildParams({ page: String(p) })}`
   }
 
   function sortLink(s: SortOption) {
-    const ps = new URLSearchParams()
-    if (q?.trim()) ps.set("q", q.trim())
-    if (s !== "joined") ps.set("sort", s)
-    return `/admin/clients?${ps.toString()}`
+    return `/admin/clients?${buildParams({ sort: s !== "joined" ? s : undefined, page: undefined })}`
+  }
+
+  function concernLink(c: MainConcern | "") {
+    return `/admin/clients?${buildParams({ concern: c || undefined, page: undefined })}`
   }
 
   return (
@@ -60,6 +72,14 @@ export async function ClientsCard({ clients, alertCountMap, unreadMessageMap, ca
           ]}
           active={sort}
           href={sortLink}
+        />
+        <FilterTabs
+          tabs={[
+            { value: "" as string, label: t("allConcerns") },
+            ...MAIN_CONCERNS.map((c) => ({ value: c, label: tConcerns(c) })),
+          ]}
+          active={concern ?? ""}
+          href={concernLink as (v: string) => string}
         />
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
