@@ -534,7 +534,11 @@
       "editAction": "Bearbeiten",
       "deleteAction": "Löschen",
       "editSymptomsEnable": "Erfassen",
-      "weeklyInsight": "Wöchentliche Einsicht"
+      "weeklyInsight": "Wöchentliche Einsicht",
+      "searchPlaceholder": "Tagebuch, Erfolge, Herausforderungen durchsuchen…",
+      "searchResults": "{n, plural, one {# Ergebnis} other {# Ergebnisse}} für \"{q}\"",
+      "noResults": "Keine Check-ins entsprechen deiner Suche",
+      "clearSearch": "Suche löschen"
     },
     "profile": {
       "title": "Ihr Profil",

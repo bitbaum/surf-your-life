@@ -534,7 +534,11 @@
       "editAction": "Edit",
       "deleteAction": "Delete",
       "editSymptomsEnable": "Track",
-      "weeklyInsight": "Weekly insight"
+      "weeklyInsight": "Weekly insight",
+      "searchPlaceholder": "Search journal, wins, challenges…",
+      "searchResults": "{n, plural, one {# result} other {# results}} for \"{q}\"",
+      "noResults": "No check-ins match your search",
+      "clearSearch": "Clear search"
     },
     "profile": {
       "title": "Your profile",

@@ -534,7 +534,11 @@
       "editAction": "Modifier",
       "deleteAction": "Supprimer",
       "editSymptomsEnable": "Saisir",
-      "weeklyInsight": "Résumé hebdomadaire"
+      "weeklyInsight": "Résumé hebdomadaire",
+      "searchPlaceholder": "Rechercher journal, victoires, défis…",
+      "searchResults": "{n, plural, one {# résultat} other {# résultats}} pour \"{q}\"",
+      "noResults": "Aucun check-in ne correspond à votre recherche",
+      "clearSearch": "Effacer la recherche"
     },
     "profile": {
       "title": "Votre profil",
