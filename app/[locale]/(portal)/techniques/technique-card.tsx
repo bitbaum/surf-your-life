@@ -114,6 +114,17 @@ export function TechniqueCard({ assignment: a, debt, categoryEmoji, submitting, 
           </p>
         </details>
       )}
+
+      {a.technique.resourceUrl && (
+        <a
+          href={a.technique.resourceUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block mt-3 text-xs text-teal-600 hover:text-teal-700 hover:underline transition-colors"
+        >
+          {t("resource")}
+        </a>
+      )}
     </div>
   )
 }
