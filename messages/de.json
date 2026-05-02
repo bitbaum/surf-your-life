@@ -1420,6 +1420,7 @@
         "orthostatic_intolerance": "Orthostatische Symptome"
       },
       "filterAll": "Alle",
+      "searchPlaceholder": "Nach Klient suchen…",
       "showHistory": "Erledigte anzeigen",
       "hideHistory": "Erledigte ausblenden",
       "resolvedLabel": "Erledigt",

@@ -1420,6 +1420,7 @@
         "orthostatic_intolerance": "Orthostatic symptoms"
       },
       "filterAll": "All",
+      "searchPlaceholder": "Search by client name…",
       "showHistory": "Show resolved",
       "hideHistory": "Hide resolved",
       "resolvedLabel": "Resolved",
