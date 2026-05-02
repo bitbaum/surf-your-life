@@ -1217,6 +1217,7 @@
       "sortMostCheckIns": "Plus de check-ins",
       "sortNeedsAttention": "Besoin d'attention",
       "sortEnergyDeclining": "Énergie en baisse",
+      "noEnergyDeclining": "Aucun client avec une énergie en baisse cette semaine — tous stables ou en hausse.",
       "noNeedsAttention": "Tous les clients sont à jour — rien à signaler pour l'instant.",
       "allConcerns": "Tous",
       "allPractitioners": "Tous",

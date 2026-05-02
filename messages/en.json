@@ -1199,6 +1199,7 @@
       "sortMostCheckIns": "Most check-ins",
       "sortNeedsAttention": "Needs attention",
       "sortEnergyDeclining": "Energy declining",
+      "noEnergyDeclining": "No clients with declining energy this week — all trending stable or up.",
       "noNeedsAttention": "All clients are up to date — nothing flagged right now.",
       "allConcerns": "All",
       "allPractitioners": "All",

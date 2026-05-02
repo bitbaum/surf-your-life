@@ -107,7 +107,9 @@ export async function ClientsCard({ clients, alertCountMap, unreadMessageMap, ca
                         ? t("noResults")
                         : sort === "needs_attention"
                           ? t("noNeedsAttention")
-                          : t("noClients")}
+                          : sort === "energy_declining"
+                            ? t("noEnergyDeclining")
+                            : t("noClients")}
                     </p>
                     {q && (
                       <Link

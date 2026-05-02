@@ -1199,6 +1199,7 @@
       "sortMostCheckIns": "Meiste Check-ins",
       "sortNeedsAttention": "Aufmerksamkeit nötig",
       "sortEnergyDeclining": "Energie sinkend",
+      "noEnergyDeclining": "Keine Klienten mit sinkender Energie diese Woche — alle stabil oder steigend.",
       "noNeedsAttention": "Alle Klienten sind auf dem neuesten Stand — derzeit nichts markiert.",
       "allConcerns": "Alle",
       "allPractitioners": "Alle",
