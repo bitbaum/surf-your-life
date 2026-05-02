@@ -1175,7 +1175,8 @@
         "statsAlerts": "Alertes",
         "statsHighAlerts": "({count} critiques)",
         "statsPem": "Épisodes SPE",
-        "statsCheckIns": "Check-ins analysés"
+        "statsCheckIns": "Check-ins analysés",
+        "statsTechniqueAdherence": "Adhérence aux techniques"
       },
       "sessionNotes": {
         "title": "Notes de séance",

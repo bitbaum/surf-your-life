@@ -14,6 +14,8 @@ type Stats = {
   avgEnergy: number | null
   energyDirection: "up" | "down" | "stable"
   checkInCount: number
+  techniqueAdherence: number | null
+  techniqueStreak: number
 }
 
 const DIRECTION_ICON: Record<string, string> = { up: "↑", down: "↓", stable: "→" }
@@ -106,6 +108,14 @@ export function SessionPrep({ clientId }: Props) {
                   <span className="text-xs text-slate-400">{t("statsCheckIns")}</span>
                   <span className="text-sm font-semibold text-slate-700">{stats.checkInCount}</span>
                 </div>
+                {stats.techniqueAdherence != null && (
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-xs text-slate-400">{t("statsTechniqueAdherence")}</span>
+                    <span className="text-sm font-semibold text-teal-600">
+                      {stats.techniqueAdherence}% · {stats.techniqueStreak}d
+                    </span>
+                  </div>
+                )}
               </div>
             )}
             <p className="text-sm text-slate-700 leading-relaxed">{summary}</p>

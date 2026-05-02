@@ -5,10 +5,11 @@
  */
 import { formatEnumValue, roundOne } from "@/lib/utils"
 import { db } from "@/lib/db"
-import { users, checkIns, clientAlerts } from "@/lib/db/schema"
-import { eq, desc, and } from "drizzle-orm"
+import { users, checkIns, clientAlerts, techniqueAssignments, techniqueLogs } from "@/lib/db/schema"
+import { eq, desc, and, gte } from "drizzle-orm"
 import { callClaude } from "@/lib/domain/anthropic"
-import { localDateString } from "@/lib/utils"
+import { localDateString, addDaysISO } from "@/lib/utils"
+import { computeDailyAdherenceTrend } from "@/lib/domain/techniques"
 import { SESSION_PREP_CHECKIN_LIMIT, SESSION_PREP_ALERTS_LIMIT, SESSION_PREP_ENERGY_AVG_WINDOW } from "@/lib/constants"
 import { notFound, okData, requireStaffAuth } from "@/lib/api"
 
@@ -21,7 +22,10 @@ export async function GET(
 
   const { id: clientId } = await params
 
-  const [client, recentCheckIns, activeAlerts] = await Promise.all([
+  const today = localDateString(new Date())
+  const thirtyDaysAgo = addDaysISO(today, -30)
+
+  const [client, recentCheckIns, activeAlerts, clientAssignments, techLogs] = await Promise.all([
     db.query.users.findFirst({
       where: eq(users.id, clientId),
       with: { profile: true },
@@ -37,13 +41,29 @@ export async function GET(
       orderBy: [desc(clientAlerts.createdAt)],
       limit: SESSION_PREP_ALERTS_LIMIT,
     }),
+    db.query.techniqueAssignments.findMany({
+      where: and(eq(techniqueAssignments.clientId, clientId), eq(techniqueAssignments.isActive, true)),
+      columns: { id: true, frequencyPerDay: true, startDate: true, endDate: true },
+    }),
+    db.query.techniqueLogs.findMany({
+      where: and(eq(techniqueLogs.userId, clientId), gte(techniqueLogs.date, thirtyDaysAgo)),
+      columns: { assignmentId: true, date: true, completedReps: true },
+    }),
   ])
 
   if (!client) {
     return notFound()
   }
 
-  const context = buildClinicalContext(client, recentCheckIns, activeAlerts)
+  const dailyTrend = computeDailyAdherenceTrend(clientAssignments, techLogs, today)
+  const avgTechAdherence = clientAssignments.length > 0 && dailyTrend.length > 0
+    ? Math.round(dailyTrend.reduce((s, d) => s + d.pct, 0) / dailyTrend.length)
+    : null
+  const reversedTrend = [...dailyTrend].reverse()
+  const rawStreak = reversedTrend.findIndex((d) => d.pct < 100)
+  const techniqueStreak = rawStreak === -1 ? dailyTrend.length : rawStreak
+
+  const context = buildClinicalContext(client, recentCheckIns, activeAlerts, avgTechAdherence, techniqueStreak)
 
   const aiSummary = await callClaude({
     messages: [
@@ -89,6 +109,8 @@ Write in a professional, clinical tone. Be specific and actionable.`,
     avgEnergy,
     energyDirection,
     checkInCount: recentCheckIns.length,
+    techniqueAdherence: avgTechAdherence,
+    techniqueStreak,
   }
 
   return okData({ summary, aiGenerated: aiSummary !== null, stats })
@@ -101,7 +123,9 @@ function buildClinicalContext(
     symptomFatigue: number | null; pemFlag: boolean | null; pemSeverity: number | null;
     stressLevel: number | null; activityLevel: string | null;
   }>,
-  alerts: Array<{ title: string; severity: string; createdAt: Date }>
+  alerts: Array<{ title: string; severity: string; createdAt: Date }>,
+  avgTechAdherence: number | null,
+  techniqueStreak: number
 ): string {
   const lines: string[] = [
     `Client: ${client.name ?? "Unknown"}`,
@@ -124,6 +148,10 @@ function buildClinicalContext(
     for (const alert of alerts) {
       lines.push(`  [${alert.severity.toUpperCase()}] ${alert.title}`)
     }
+  }
+
+  if (avgTechAdherence != null) {
+    lines.push(`\nTechnique adherence (30-day avg): ${avgTechAdherence}% | Current streak: ${techniqueStreak} day(s) at 100%`)
   }
 
   return lines.join("\n")

@@ -1157,7 +1157,8 @@
         "statsAlerts": "Alerts",
         "statsHighAlerts": "({count} high)",
         "statsPem": "PEM episodes",
-        "statsCheckIns": "Check-ins reviewed"
+        "statsCheckIns": "Check-ins reviewed",
+        "statsTechniqueAdherence": "Technique adherence"
       },
       "sessionNotes": {
         "title": "Session Notes",

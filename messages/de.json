@@ -1157,7 +1157,8 @@
         "statsAlerts": "Meldungen",
         "statsHighAlerts": "({count} kritisch)",
         "statsPem": "PEM-Episoden",
-        "statsCheckIns": "Check-ins analysiert"
+        "statsCheckIns": "Check-ins analysiert",
+        "statsTechniqueAdherence": "Techniktreue"
       },
       "sessionNotes": {
         "title": "Sitzungsnotizen",
