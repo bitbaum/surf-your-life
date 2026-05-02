@@ -1426,6 +1426,8 @@
       "filterAll": "Tous",
       "filterPem": "SPE uniquement",
       "noActivity": "Pas encore de check-ins",
+      "noResults": "Aucun check-in pour \"{q}\"",
+      "searchPlaceholder": "Rechercher par nom ou e-mail…",
       "client": "Client",
       "date": "Date",
       "mood": "Humeur",

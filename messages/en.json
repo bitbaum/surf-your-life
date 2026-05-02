@@ -1426,6 +1426,8 @@
       "filterAll": "All",
       "filterPem": "PEM only",
       "noActivity": "No check-ins yet",
+      "noResults": "No check-ins match \"{q}\"",
+      "searchPlaceholder": "Search by client name or email…",
       "client": "Client",
       "date": "Date",
       "mood": "Mood",
