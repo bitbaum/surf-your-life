@@ -1,6 +1,6 @@
 import { db } from "@/lib/db"
 import { checkIns, users } from "@/lib/db/schema"
-import { eq, and, or, ilike, desc, count } from "drizzle-orm"
+import { eq, and, or, ilike, desc, count, sql } from "drizzle-orm"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
@@ -8,17 +8,27 @@ import { Link } from "@/i18n/navigation"
 import { Pagination } from "@/components/ui/pagination"
 import { SearchInput } from "@/components/ui/search-input"
 import { formatDate, computeTotalPages, parsePagination } from "@/lib/utils"
-import { PAGINATION_DEFAULT, MOOD_EMOJI, MOODS } from "@/lib/constants"
+import { PAGINATION_DEFAULT, MOOD_EMOJI, MOODS, CLINIC_TZ } from "@/lib/constants"
 import { CLIENT_ROLE } from "@/lib/domain/auth"
 import { FilterTabs } from "@/components/ui/filter-tabs"
 import { Suspense } from "react"
+
+type FilterMode = "all" | "pem" | "today"
+const FILTER_MODES: FilterMode[] = ["all", "pem", "today"]
+function isValidFilter(v: string | undefined): v is FilterMode {
+  return FILTER_MODES.includes(v as FilterMode)
+}
+
+// Timezone-correct "today" predicate — matches check-ins whose local Zürich
+// calendar date equals today's Zürich date, regardless of UTC offset / DST.
+const todayInClinicTz = sql`(${checkIns.createdAt} AT TIME ZONE ${CLINIC_TZ})::date = (NOW() AT TIME ZONE ${CLINIC_TZ})::date`
 
 export default async function AdminCheckInsPage({
   params,
   searchParams,
 }: {
   params: Promise<{ locale: string }>
-  searchParams: Promise<{ page?: string; pem?: string; q?: string }>
+  searchParams: Promise<{ page?: string; filter?: string; q?: string }>
 }) {
   const { locale } = await params
   setRequestLocale(locale)
@@ -26,8 +36,8 @@ export default async function AdminCheckInsPage({
   const tCheckIn = await getTranslations("portal.checkIn")
   const moodMap = Object.fromEntries(MOODS.map((m) => [m.value, m]))
 
-  const { page: pageParam, pem: pemParam, q } = await searchParams
-  const pemOnly = pemParam === "true"
+  const { page: pageParam, filter: filterParam, q } = await searchParams
+  const filter: FilterMode = isValidFilter(filterParam) ? filterParam : "all"
   const { page, offset } = parsePagination(pageParam)
 
   const searchFilter = q?.trim()
@@ -38,13 +48,21 @@ export default async function AdminCheckInsPage({
     : undefined
 
   const roleFilter = eq(users.role, CLIENT_ROLE)
-  const pemFilter = pemOnly ? eq(checkIns.pemFlag, true) : undefined
-  const whereParts = [roleFilter, searchFilter, pemFilter].filter(
+  const pemFilter = filter === "pem" ? eq(checkIns.pemFlag, true) : undefined
+  const dayFilter = filter === "today" ? todayInClinicTz : undefined
+  const whereParts = [roleFilter, searchFilter, pemFilter, dayFilter].filter(
     (p): p is NonNullable<typeof p> => p != null
   )
   const whereClause = whereParts.length > 1 ? and(...whereParts) : whereParts[0]
 
-  const [rows, totalResult] = await Promise.all([
+  // Today count for badge — always computed so the tab reflects reality
+  // regardless of which filter is active.
+  const todayWhereParts = [roleFilter, searchFilter, todayInClinicTz].filter(
+    (p): p is NonNullable<typeof p> => p != null
+  )
+  const todayWhereClause = todayWhereParts.length > 1 ? and(...todayWhereParts) : todayWhereParts[0]
+
+  const [rows, totalResult, todayCountResult] = await Promise.all([
     db
       .select({
         id: checkIns.id,
@@ -69,25 +87,30 @@ export default async function AdminCheckInsPage({
       .from(checkIns)
       .innerJoin(users, eq(users.id, checkIns.userId))
       .where(whereClause),
+    db
+      .select({ count: count() })
+      .from(checkIns)
+      .innerJoin(users, eq(users.id, checkIns.userId))
+      .where(todayWhereClause),
   ])
 
   const total = totalResult[0]?.count ?? 0
+  const todayCount = todayCountResult[0]?.count ?? 0
   const totalPages = computeTotalPages(total, PAGINATION_DEFAULT)
 
-  // Build href helpers that preserve existing query params across filter/page changes
-  const pemHref = (v: string) => {
-    const params = new URLSearchParams()
-    if (v === "pem") params.set("pem", "true")
-    if (q?.trim()) params.set("q", q.trim())
-    const qs = params.toString()
+  function filterHref(v: FilterMode) {
+    const ps = new URLSearchParams()
+    if (v !== "all") ps.set("filter", v)
+    if (q?.trim()) ps.set("q", q.trim())
+    const qs = ps.toString()
     return qs ? `/admin/check-ins?${qs}` : "/admin/check-ins"
   }
-  const pageHref = (p: number) => {
-    const params = new URLSearchParams()
-    if (pemOnly) params.set("pem", "true")
-    if (q?.trim()) params.set("q", q.trim())
-    params.set("page", String(p))
-    return `/admin/check-ins?${params.toString()}`
+  function pageHref(p: number) {
+    const ps = new URLSearchParams()
+    if (filter !== "all") ps.set("filter", filter)
+    if (q?.trim()) ps.set("q", q.trim())
+    ps.set("page", String(p))
+    return `/admin/check-ins?${ps.toString()}`
   }
 
   return (
@@ -105,11 +128,12 @@ export default async function AdminCheckInsPage({
             </div>
             <FilterTabs
               tabs={[
-                { value: "all", label: t("filterAll") },
-                { value: "pem", label: t("filterPem") },
+                { value: "all" as FilterMode, label: t("filterAll") },
+                { value: "today" as FilterMode, label: t("filterToday", { count: todayCount }) },
+                { value: "pem" as FilterMode, label: t("filterPem") },
               ]}
-              active={pemOnly ? "pem" : "all"}
-              href={pemHref}
+              active={filter}
+              href={filterHref}
             />
           </div>
           <div className="overflow-x-auto">
@@ -168,7 +192,7 @@ export default async function AdminCheckInsPage({
                 {rows.length === 0 && (
                   <tr>
                     <td colSpan={6} className="py-8 text-center text-slate-400">
-                      {q ? t("noResults", { q }) : t("noActivity")}
+                      {filter === "today" ? t("noActivityToday") : q ? t("noResults", { q }) : t("noActivity")}
                     </td>
                   </tr>
                 )}
