@@ -25,7 +25,7 @@ import {
   DAY_MS,
 } from "@/lib/constants"
 import { sendEmail } from "@/lib/email"
-import { practitionerAlertEmail, missedCheckInDigestEmail } from "@/lib/email/templates"
+import { practitionerAlertEmail, missedCheckInDigestEmail, techniqueAdherenceDigestEmail } from "@/lib/email/templates"
 import { formatEnumValue, daysSince, localDateString, addDaysISO } from "@/lib/utils"
 import { computeDailyAdherenceTrend } from "@/lib/domain/techniques"
 
@@ -471,6 +471,41 @@ export async function generateTechniqueAdherenceAlerts(): Promise<number> {
     }))
 
     await db.insert(clientAlerts).values(newAlerts)
+
+    // Notify practitioners with a digest email listing all declining clients
+    const [practitioners, clientRows] = await Promise.all([
+      db.select({ email: users.email }).from(users).where(inArray(users.role, STAFF_ROLES)),
+      db.select({ id: users.id, name: users.name, email: users.email })
+        .from(users)
+        .where(inArray(users.id, decliners.map((d) => d.clientId))),
+    ])
+
+    if (practitioners.length > 0) {
+      const clientMap = new Map(clientRows.map((c) => [c.id, c]))
+      const digestClients = decliners.map((d) => ({
+        name: clientMap.get(d.clientId)?.name ?? null,
+        email: clientMap.get(d.clientId)?.email ?? "",
+        prior7avg: d.prior7avg,
+        recent7avg: d.recent7avg,
+        drop: d.drop,
+      }))
+
+      const html = techniqueAdherenceDigestEmail({
+        clients: digestClients,
+        adminUrl: `${SITE_URL}/admin/clients`,
+      })
+
+      await Promise.all(
+        practitioners.map((p) =>
+          sendEmail({
+            to: p.email,
+            subject: `[Alert] Technique adherence declining — ${newAlerts.length} client${newAlerts.length !== 1 ? "s" : ""}`,
+            html,
+          }).catch(() => {})
+        )
+      )
+    }
+
     return newAlerts.length
   } catch (err) {
     console.error("[alerts] Failed to generate technique adherence alerts", err)

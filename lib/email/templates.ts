@@ -536,6 +536,47 @@ export type FirstCheckInAlertData = {
   clientId: string
 }
 
+// ─── Technique adherence decline digest ──────────────────────────────────────
+
+export type TechniqueAdherenceDigestData = {
+  clients: Array<{ name: string | null; email: string; prior7avg: number; recent7avg: number; drop: number }>
+  adminUrl: string
+}
+
+export function techniqueAdherenceDigestEmail(data: TechniqueAdherenceDigestData): string {
+  const { clients, adminUrl } = data
+
+  const rows = clients
+    .sort((a, b) => b.drop - a.drop)
+    .map((c) => `
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f1f5f9;">
+        <div>
+          <span style="font-weight:600;color:#0f172a;">${c.name ?? "(no name)"}</span>
+          <div style="font-size:12px;color:#94a3b8;">${c.email}</div>
+        </div>
+        <span style="font-size:13px;color:#dc2626;font-weight:500;">${c.prior7avg}% → ${c.recent7avg}% (−${c.drop}%)</span>
+      </div>`)
+    .join("")
+
+  return emailShell(`
+  <div class="header" style="background:${EMAIL_ADMIN_COLOR};padding:16px 24px">
+    <h1 style="margin:0;font-size:16px;">Technique adherence declining — ${clients.length} client${clients.length !== 1 ? "s" : ""}</h1>
+  </div>
+
+  <p style="font-size:14px;color:#475569;">The following client${clients.length !== 1 ? "s have" : " has"} shown a significant drop in technique adherence over the last 7 days compared to the prior week. Consider reaching out or reviewing barriers in the next session.</p>
+
+  <div style="margin:16px 0;">
+    ${rows}
+  </div>
+
+  <a href="${adminUrl}" class="cta">Open admin panel</a>
+
+  ${emailFooter("24px")}
+`)
+}
+
+// ─── First check-in alert ─────────────────────────────────────────────────────
+
 export function firstCheckInAlertEmail(data: FirstCheckInAlertData): string {
   const { clientName, clientEmail, clientId } = data
   const displayName = clientName ?? clientEmail
