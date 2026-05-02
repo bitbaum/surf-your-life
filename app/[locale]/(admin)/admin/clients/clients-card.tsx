@@ -1,13 +1,12 @@
 import { getTranslations } from "next-intl/server"
 import type { CadenceMap } from "@/lib/db/check-in-cadence"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { FilterTabs } from "@/components/ui/filter-tabs"
 import { Pagination } from "@/components/ui/pagination"
 import { Link } from "@/i18n/navigation"
 import { buildLastNDayStrings, daysSince, displayName } from "@/lib/utils"
 import { ClientTableRow, type ClientRow } from "./client-table-row"
-import { MAIN_CONCERNS } from "@/lib/constants"
 import type { MainConcern } from "@/lib/db/schema"
+import { ClientsFilterBar } from "./clients-filter-bar"
 
 type SortOption = "joined" | "checkin_desc" | "most_checkins" | "needs_attention"
 type AlertInfo = { count: number; hasHigh: boolean }
@@ -27,7 +26,6 @@ type Props = {
 
 export async function ClientsCard({ clients, alertCountMap, unreadMessageMap, cadenceMap, staleCutoff, q, sort, concern, page, totalPages }: Props) {
   const t = await getTranslations("admin.clients")
-  const tConcerns = await getTranslations("concerns")
 
   const sparkDays = buildLastNDayStrings(7)
   const sparkDayLabels = {
@@ -36,51 +34,20 @@ export async function ClientsCard({ clients, alertCountMap, unreadMessageMap, ca
     pem: t("dotPem"),
   }
 
-  function buildParams(overrides: Record<string, string | undefined>) {
+  function pageLink(p: number) {
     const ps = new URLSearchParams()
+    ps.set("page", String(p))
     if (q?.trim()) ps.set("q", q.trim())
     if (sort !== "joined") ps.set("sort", sort)
     if (concern) ps.set("concern", concern)
-    for (const [k, v] of Object.entries(overrides)) {
-      if (v) ps.set(k, v); else ps.delete(k)
-    }
-    return ps.toString()
-  }
-
-  function pageLink(p: number) {
-    return `/admin/clients?${buildParams({ page: String(p) })}`
-  }
-
-  function sortLink(s: SortOption) {
-    return `/admin/clients?${buildParams({ sort: s !== "joined" ? s : undefined, page: undefined })}`
-  }
-
-  function concernLink(c: MainConcern | "") {
-    return `/admin/clients?${buildParams({ concern: c || undefined, page: undefined })}`
+    return `/admin/clients?${ps.toString()}`
   }
 
   return (
     <Card>
       <CardHeader><CardTitle>{t("allClients")}</CardTitle></CardHeader>
       <CardContent>
-        <FilterTabs
-          tabs={[
-            { value: "joined" as SortOption, label: t("sortJoined") },
-            { value: "checkin_desc" as SortOption, label: t("sortCheckInDesc") },
-            { value: "most_checkins" as SortOption, label: t("sortMostCheckIns") },
-            { value: "needs_attention" as SortOption, label: t("sortNeedsAttention") },
-          ]}
-          active={sort}
-          href={sortLink}
-        />
-        <FilterTabs
-          tabs={[
-            { value: "" as string, label: t("allConcerns") },
-            ...MAIN_CONCERNS.map((c) => ({ value: c, label: tConcerns(c) })),
-          ]}
-          active={concern ?? ""}
-          href={concernLink as (v: string) => string}
-        />
+        <ClientsFilterBar q={q} sort={sort} concern={concern} />
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
