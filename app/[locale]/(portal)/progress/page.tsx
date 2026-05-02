@@ -1,8 +1,10 @@
 import { auth } from "@/lib/auth"
 import { redirect } from "next/navigation"
 import { db } from "@/lib/db"
-import { functionalAssessments, checkIns } from "@/lib/db/schema"
-import { eq, asc, gte } from "drizzle-orm"
+import { functionalAssessments, checkIns, techniqueAssignments, techniqueLogs } from "@/lib/db/schema"
+import { eq, asc, gte, and } from "drizzle-orm"
+import { localDateString, addDaysISO } from "@/lib/utils"
+import { computeDailyAdherenceTrend } from "@/lib/domain/techniques"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { EmptyState } from "@/components/ui/empty-state"
 import { PageHeader } from "@/components/ui/page-header"
@@ -24,8 +26,10 @@ export default async function ProgressPage({ params }: { params: Promise<{ local
 
   const userId = session.user.id
   const ninetyDaysAgo = new Date(new Date().getTime() - NINETY_DAYS_MS)
+  const today = localDateString(new Date())
+  const thirtyDaysAgo = addDaysISO(today, -30)
 
-  const [assessments, recentCheckIns] = await Promise.all([
+  const [assessments, recentCheckIns, activeAssignments, techLogs] = await Promise.all([
     db.query.functionalAssessments.findMany({
       where: eq(functionalAssessments.userId, userId),
       orderBy: [asc(functionalAssessments.assessedAt)],
@@ -45,6 +49,14 @@ export default async function ProgressPage({ params }: { params: Promise<{ local
         stressLevel: true,
         createdAt: true,
       },
+    }),
+    db.query.techniqueAssignments.findMany({
+      where: and(eq(techniqueAssignments.clientId, userId), eq(techniqueAssignments.isActive, true)),
+      columns: { id: true, frequencyPerDay: true, startDate: true, endDate: true },
+    }),
+    db.query.techniqueLogs.findMany({
+      where: and(eq(techniqueLogs.userId, userId), gte(techniqueLogs.date, thirtyDaysAgo)),
+      columns: { assignmentId: true, date: true, completedReps: true },
     }),
   ])
 
@@ -66,6 +78,14 @@ export default async function ProgressPage({ params }: { params: Promise<{ local
   const avgMoodLabel = avgMoodNum == null ? null
     : (MOODS.find((m) => MOOD_SCORE[m.value] === Math.round(avgMoodNum))?.labelKey ?? "moodNeutral")
 
+  const techniqueTrend = computeDailyAdherenceTrend(activeAssignments, techLogs, today, 30)
+  const avgTechAdherence = techniqueTrend.length > 0
+    ? Math.round(techniqueTrend.reduce((s, d) => s + d.pct, 0) / techniqueTrend.length)
+    : 0
+  const reversedTrend = [...techniqueTrend].reverse()
+  const breakIdx = reversedTrend.findIndex((d) => d.pct < 100)
+  const currentStreak = breakIdx === -1 ? techniqueTrend.filter((d) => d.pct === 100).length : breakIdx
+
   return (
     <div className="max-w-2xl mx-auto">
       <PageHeader title={t("title")} description={t("description")} />
@@ -86,6 +106,32 @@ export default async function ProgressPage({ params }: { params: Promise<{ local
       )}
 
       <AssessmentTimeline assessments={assessments} delta={delta} />
+
+      {activeAssignments.length > 0 && (
+        <Card className="mt-6">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base">{t("techniquePractice")}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col gap-0.5">
+                <span className="text-xs text-slate-500">{t("techniqueAdherence")}</span>
+                <span className="text-xl font-bold text-slate-900">
+                  {avgTechAdherence}<span className="text-xs font-normal text-slate-400">%</span>
+                </span>
+                <span className="text-xs text-slate-400">{t("thirtyDays")}</span>
+              </div>
+              <div className="flex flex-col gap-0.5">
+                <span className="text-xs text-slate-500">{t("techniqueStreak")}</span>
+                <span className="text-xl font-bold text-slate-900">
+                  {currentStreak}<span className="text-xs font-normal text-slate-400"> {t("days")}</span>
+                </span>
+                <span className="text-xs text-slate-400">{t("streakSubtitle")}</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {totalCheckIns === 0 ? (
         <Card className="mt-6">
