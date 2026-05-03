@@ -11,7 +11,7 @@ import type { ProgramPhase } from "@/lib/domain/program"
 import { callClaude } from "@/lib/domain/anthropic"
 import { localDateString, addDaysISO } from "@/lib/utils"
 import { computeDailyAdherenceTrend } from "@/lib/domain/techniques"
-import { SESSION_PREP_CHECKIN_LIMIT, SESSION_PREP_ALERTS_LIMIT, SESSION_PREP_ENERGY_AVG_WINDOW, SESSION_PREP_NOTES_LIMIT } from "@/lib/constants"
+import { SESSION_PREP_CHECKIN_LIMIT, SESSION_PREP_ALERTS_LIMIT, SESSION_PREP_ENERGY_AVG_WINDOW, SESSION_PREP_NOTES_LIMIT, SEVEN_DAYS_MS } from "@/lib/constants"
 import { notFound, okData, requireStaffAuth } from "@/lib/api"
 
 export async function GET(
@@ -201,10 +201,15 @@ function buildClinicalContext(
   }
 
   if (activeEnrollment?.startDate) {
-    const weekNum = Math.floor((Date.now() - activeEnrollment.startDate.getTime()) / (7 * 24 * 60 * 60 * 1000)) + 1
+    const weekNum = Math.floor((Date.now() - activeEnrollment.startDate.getTime()) / SEVEN_DAYS_MS) + 1
     const total = activeEnrollment.program.durationWeeks ?? 0
     const phases = activeEnrollment.program.phaseConfig as ProgramPhase[] | null
-    const currentPhase = phases?.findLast((p) => p.week <= weekNum)
+    // Sort descending and take the first match so result is deterministic
+    // regardless of the order phases were saved (milestone-only configs are
+    // sparse — practitioners don't configure every week).
+    const currentPhase = phases
+      ?.filter((p) => p.week <= weekNum)
+      ?.sort((a, b) => b.week - a.week)[0] ?? null
     const phaseInfo = currentPhase ? ` — Phase: ${currentPhase.title}` : ""
     const weekInfo = total > 0 ? `Week ${weekNum} of ${total}` : `Week ${weekNum}`
     lines.push(`Program: ${activeEnrollment.program.title}, ${weekInfo}${phaseInfo}`)
