@@ -61,17 +61,22 @@ export function localDateString(date: Date, tz: string = CLINIC_TZ): string {
   }).format(date)
 }
 
-// Stable numeric key for the LOCAL calendar day of `d`, anchored at UTC
+// Stable numeric key for the CLINIC_TZ calendar day of `d`, anchored at UTC
 // midnight (so DAY_MS-step arithmetic stays exact across DST — local
 // midnights are not all 86_400_000 ms apart on transition days).
 //
-// Two Date objects on the same local calendar day always return the same key.
-// Two Dates one local calendar day apart always differ by exactly DAY_MS.
+// Two Date objects on the same Zurich calendar day always return the same key.
+// Two Dates one calendar day apart always differ by exactly DAY_MS.
+//
+// Uses localDateString (Intl-based, explicit TZ) rather than d.getDate() so
+// the result is correct regardless of the server's system timezone (Vercel
+// runs in UTC; tests pin TZ=Europe/Zurich — this bridges the two).
 //
 // Use for streak / gap computations on Date arrays. For day-strings, see
 // `localDateString` (single date) or `buildLastNDayStrings` (a sequence).
 export function dayKey(d: Date): number {
-  return Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())
+  const [y, m, day] = localDateString(d).split("-").map(Number)
+  return Date.UTC(y, m - 1, day)
 }
 
 // Returns the last N day strings ("YYYY-MM-DD"), oldest first, ending the
