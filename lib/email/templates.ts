@@ -494,7 +494,7 @@ export function weeklyReportEmail(data: WeeklyReportData): string {
     ? `<li>⚠️ <strong>${pemEpisodes} PEM episode(s)</strong> this week — discuss pacing with your practitioner</li>`
     : ""
   const winNote = topWin
-    ? `<div style="margin-top:16px;padding:12px 16px;background:#f0fdf4;border-left:3px solid ${EMAIL_BRAND_COLOR};border-radius:4px;"><p style="margin:0;font-size:14px;color:#065f46;">✓ <strong>Win of the week:</strong> ${topWin}</p></div>`
+    ? `<div style="margin-top:16px;padding:12px 16px;background:#f0fdf4;border-left:3px solid ${EMAIL_BRAND_COLOR};border-radius:4px;"><p style="margin:0;font-size:14px;color:#065f46;">📝 <strong>From your journal:</strong> ${topWin}</p></div>`
     : ""
   return emailShell(`
   ${emailHeader("Your weekly summary", `${weekStart} – ${weekEnd}`)}

@@ -38,6 +38,7 @@ export async function generateWeeklyDigest(clientName: string, rows: CheckInRow[
     if (r.sleepQuality != null) parts.push(`sleep_quality=${r.sleepQuality}/5`)
     if (r.orthostaticSymptoms) parts.push("orthostatic=yes")
     if (r.stressLevel != null) parts.push(`stress=${r.stressLevel}/10`)
+    if (r.journalEntry) parts.push(`journal: ${r.journalEntry.slice(0, 300)}`)
     if (r.wins) parts.push(`wins: ${r.wins}`)
     if (r.challenges) parts.push(`challenges: ${r.challenges}`)
     if (r.notes) parts.push(`notes: ${r.notes}`)

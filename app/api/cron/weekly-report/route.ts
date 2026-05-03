@@ -46,7 +46,7 @@ export async function GET(req: Request) {
       inArray(checkIns.userId, eligibleClients.map((c) => c.id)),
       gte(checkIns.createdAt, sevenDaysAgo)
     ),
-    columns: { userId: true, energyLevel: true, mood: true, pemFlag: true, wins: true, sleepHours: true, stressLevel: true },
+    columns: { userId: true, energyLevel: true, mood: true, pemFlag: true, journalEntry: true, sleepHours: true, stressLevel: true },
   })
 
   const checkInsByClient = groupBy(allWeekCheckIns, (ci) => ci.userId)
@@ -64,7 +64,8 @@ export async function GET(req: Request) {
     const avgSleep = stats.avgSleep != null ? roundOne(stats.avgSleep) : null
     const avgStress = stats.avgStress != null ? roundOne(stats.avgStress) : null
     const pemEpisodes = stats.pemCount
-    const topWin = weekCheckIns.find((ci) => ci.wins)?.wins ?? null
+    const rawJournal = weekCheckIns.find((ci) => ci.journalEntry)?.journalEntry ?? null
+    const topWin = rawJournal && rawJournal.length > 200 ? rawJournal.slice(0, 197) + "…" : rawJournal
 
     const now = new Date()
     const weekStart = new Date(Date.now() - SEVEN_DAYS_MS)
