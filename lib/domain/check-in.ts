@@ -200,6 +200,10 @@ export type ProgramProgress = {
   programTitle: string
 }
 
+export function computeCurrentProgramWeek(startDate: Date, now: Date = new Date()): number {
+  return Math.floor((now.getTime() - startDate.getTime()) / SEVEN_DAYS_MS) + 1
+}
+
 export function computeProgramProgress(enrollment: {
   startDate: Date | null
   program: {
@@ -210,7 +214,7 @@ export function computeProgramProgress(enrollment: {
 }): ProgramProgress | null {
   if (!enrollment.startDate) return null
 
-  const currentWeek = Math.floor((Date.now() - enrollment.startDate.getTime()) / SEVEN_DAYS_MS) + 1
+  const currentWeek = computeCurrentProgramWeek(enrollment.startDate)
   const totalWeeks = enrollment.program.durationWeeks ?? 0
 
   if (currentWeek < 1 || (totalWeeks > 0 && currentWeek > totalWeeks)) return null

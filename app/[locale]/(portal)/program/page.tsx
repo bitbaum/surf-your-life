@@ -8,7 +8,8 @@ import { ProgressBar } from "@/components/ui/progress-bar"
 import { PageHeader } from "@/components/ui/page-header"
 import { formatDate } from "@/lib/utils"
 import { getTranslations, setRequestLocale } from "next-intl/server"
-import { SEVEN_DAYS_MS, ENROLLMENT_STATUS_BADGE } from "@/lib/constants"
+import { ENROLLMENT_STATUS_BADGE } from "@/lib/constants"
+import { computeCurrentProgramWeek } from "@/lib/domain/check-in"
 import { CheckCircle, Clock, Pause } from "lucide-react"
 import { PhaseTimeline } from "./phase-timeline"
 import { EmptyState } from "@/components/ui/empty-state"
@@ -48,19 +49,12 @@ export default async function ProgramPage({ params }: { params: Promise<{ locale
 
   const { program } = enrollment
 
-  // Calculate progress if start date is set
-  const nowMs = Date.now() // eslint-disable-line react-hooks/purity -- server component
-  const weeksCompleted = enrollment.startDate
-    ? Math.floor((nowMs - new Date(enrollment.startDate).getTime()) / SEVEN_DAYS_MS)
+  const currentWeek = enrollment.startDate && program.durationWeeks
+    ? Math.min(computeCurrentProgramWeek(new Date(enrollment.startDate)), program.durationWeeks)
     : null
-  const currentWeek =
-    weeksCompleted !== null && program.durationWeeks
-      ? Math.min(weeksCompleted + 1, program.durationWeeks)
-      : null
-  const progressPct =
-    currentWeek && program.durationWeeks
-      ? Math.round((currentWeek / program.durationWeeks) * 100)
-      : null
+  const progressPct = currentWeek && program.durationWeeks
+    ? Math.round((currentWeek / program.durationWeeks) * 100)
+    : null
 
   const statusIcon = {
     active: <CheckCircle className="w-4 h-4 text-teal-600" />,

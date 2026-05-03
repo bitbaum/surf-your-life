@@ -11,7 +11,8 @@ import type { ProgramPhase } from "@/lib/domain/program"
 import { callClaude } from "@/lib/domain/anthropic"
 import { localDateString, addDaysISO } from "@/lib/utils"
 import { computeDailyAdherenceTrend } from "@/lib/domain/techniques"
-import { SESSION_PREP_CHECKIN_LIMIT, SESSION_PREP_ALERTS_LIMIT, SESSION_PREP_ENERGY_AVG_WINDOW, SESSION_PREP_NOTES_LIMIT, SEVEN_DAYS_MS } from "@/lib/constants"
+import { computeCurrentProgramWeek } from "@/lib/domain/check-in"
+import { SESSION_PREP_CHECKIN_LIMIT, SESSION_PREP_ALERTS_LIMIT, SESSION_PREP_ENERGY_AVG_WINDOW, SESSION_PREP_NOTES_LIMIT } from "@/lib/constants"
 import { notFound, okData, requireStaffAuth } from "@/lib/api"
 
 export async function GET(
@@ -201,7 +202,7 @@ function buildClinicalContext(
   }
 
   if (activeEnrollment?.startDate) {
-    const weekNum = Math.floor((Date.now() - activeEnrollment.startDate.getTime()) / SEVEN_DAYS_MS) + 1
+    const weekNum = computeCurrentProgramWeek(activeEnrollment.startDate)
     const total = activeEnrollment.program.durationWeeks ?? 0
     const phases = activeEnrollment.program.phaseConfig as ProgramPhase[] | null
     // Sort descending and take the first match so result is deterministic

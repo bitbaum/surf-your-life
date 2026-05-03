@@ -2,7 +2,8 @@ import { notFound } from "next/navigation"
 import { db } from "@/lib/db"
 import { programs, programEnrollments, users } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
-import { ADMIN_ENROLLMENTS_MAX, SEVEN_DAYS_MS } from "@/lib/constants"
+import { ADMIN_ENROLLMENTS_MAX } from "@/lib/constants"
+import { computeCurrentProgramWeek } from "@/lib/domain/check-in"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Link } from "@/i18n/navigation"
 import { formatDate } from "@/lib/utils"
@@ -93,7 +94,7 @@ export default async function ProgramDetailPage({
                       <span>{t("enrolledOn", { date: formatDate(e.createdAt) })}</span>
                       {(() => {
                         if (!e.startDate || !program.durationWeeks || e.status !== "active") return null
-                        const week = Math.floor((nowMs - e.startDate.getTime()) / SEVEN_DAYS_MS) + 1
+                        const week = computeCurrentProgramWeek(e.startDate, new Date(nowMs))
                         if (week < 1 || week > program.durationWeeks) return null
                         const phases = program.phaseConfig as ProgramPhase[] | null
                         const phase = phases?.filter((p) => p.week <= week)?.sort((a, b) => b.week - a.week)[0] ?? null

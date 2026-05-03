@@ -12,7 +12,7 @@ import { db } from "@/lib/db"
 import { checkIns, medicationLog, functionalAssessments, techniqueAssignments, techniqueLogs, programEnrollments } from "@/lib/db/schema"
 import { eq, desc, isNull, and, gte } from "drizzle-orm"
 import { SEVEN_DAYS_MS, AI_CONTEXT_CHECKINS, AI_CHAT_CONTEXT_WINDOW, AI_CHAT_CHECKIN_CONTEXT_LIMIT, AI_CHAT_JOURNAL_EXCERPT_LENGTH, TECHNIQUE_LOG_WINDOW_DAYS, CLIENT_ASSIGNMENTS_MAX } from "@/lib/constants"
-import { summariseCheckIns } from "@/lib/domain/check-in"
+import { summariseCheckIns, computeCurrentProgramWeek } from "@/lib/domain/check-in"
 export { summariseCheckIns, type CheckInSummaryRow } from "@/lib/domain/check-in"
 import { callClaude } from "@/lib/domain/anthropic"
 import { semanticCheckInSearch } from "@/lib/domain/embeddings"
@@ -127,7 +127,7 @@ function buildTechniqueLines(
 
 function buildProgramLine(enrollment: BuildContextResult["activeEnrollment"], today: string): string {
   if (!enrollment?.startDate) return "Not enrolled in a program."
-  const week = Math.floor((new Date(today).getTime() - enrollment.startDate.getTime()) / SEVEN_DAYS_MS) + 1
+  const week = computeCurrentProgramWeek(enrollment.startDate, new Date(today))
   const total = enrollment.program.durationWeeks ?? 0
   if (week < 1 || (total > 0 && week > total)) return `Program: ${enrollment.program.title} (completed or not yet started).`
   const phases = enrollment.program.phaseConfig as ProgramPhase[] | null
@@ -295,7 +295,7 @@ export function ruleBasedResponse(
     if (!enrollment?.startDate) {
       return "You're not currently enrolled in a program. Your practitioner will set this up for you when the time is right."
     }
-    const week = Math.floor((Date.now() - enrollment.startDate.getTime()) / SEVEN_DAYS_MS) + 1
+    const week = computeCurrentProgramWeek(enrollment.startDate)
     const total = enrollment.program.durationWeeks ?? 0
     if (week < 1 || (total > 0 && week > total)) {
       return `You're enrolled in ${enrollment.program.title}. Check in with your practitioner for an update on where you are in the program.`
