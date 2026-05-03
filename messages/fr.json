@@ -1186,7 +1186,6 @@
       "sessionPrep": {
         "title": "Préparation de séance",
         "description": "Générez un résumé clinique avant votre séance avec ce client.",
-        "generate": "Générer le résumé",
         "generating": "Génération…",
         "refresh": "Actualiser",
         "error": "Impossible de générer le résumé. Veuillez réessayer.",

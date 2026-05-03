@@ -1168,7 +1168,6 @@
       "sessionPrep": {
         "title": "Session prep",
         "description": "Generate a clinical summary before your session with this client.",
-        "generate": "Generate summary",
         "generating": "Generating…",
         "refresh": "Refresh",
         "error": "Failed to generate summary. Please try again.",

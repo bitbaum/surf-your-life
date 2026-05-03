@@ -1168,7 +1168,6 @@
       "sessionPrep": {
         "title": "Sitzungsvorbereitung",
         "description": "Erstelle eine klinische Zusammenfassung vor deiner Sitzung mit diesem Klienten.",
-        "generate": "Zusammenfassung erstellen",
         "generating": "Wird erstellt…",
         "refresh": "Aktualisieren",
         "error": "Zusammenfassung konnte nicht erstellt werden. Bitte versuche es erneut.",
