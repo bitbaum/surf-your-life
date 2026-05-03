@@ -1210,6 +1210,9 @@
         "description": "Alle Check-ins für {name} · {count} gesamt",
         "backLink": "← {name}",
         "exportCsv": "CSV exportieren",
+        "searchPlaceholder": "Journal-Einträge durchsuchen…",
+        "searchResults": "{n} Ergebnisse für \"{q}\"",
+        "noResults": "Keine Einträge für \"{q}\" gefunden",
         "filterAll": "Alle",
         "filterPem": "PEM ({count})",
         "noPem": "Keine PEM-Episoden erfasst"

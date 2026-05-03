@@ -1228,6 +1228,9 @@
         "description": "Tous les check-ins de {name} · {count} au total",
         "backLink": "← {name}",
         "exportCsv": "Exporter CSV",
+        "searchPlaceholder": "Rechercher dans les journaux…",
+        "searchResults": "{n} résultats pour « {q} »",
+        "noResults": "Aucune entrée trouvée pour « {q} »",
         "filterAll": "Tous",
         "filterPem": "PEM ({count})",
         "noPem": "Aucun épisode PEM enregistré"
