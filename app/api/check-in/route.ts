@@ -8,8 +8,8 @@ import { sendEmail } from "@/lib/email"
 import { firstCheckInAlertEmail } from "@/lib/email/templates"
 import { EMAIL_SUBJECT_FIRST_CHECKIN } from "@/lib/email/subjects"
 import { STAFF_ROLES } from "@/lib/domain/auth"
-import { eq, and, gte, count, inArray } from "drizzle-orm"
-import { API_ERR_CHECKIN_DUPLICATE } from "@/lib/constants"
+import { eq, and, count, inArray, sql } from "drizzle-orm"
+import { API_ERR_CHECKIN_DUPLICATE, CLINIC_TZ } from "@/lib/constants"
 import { created, parseBody, requireAuth } from "@/lib/api"
 import { findUserContact } from "@/lib/db/queries"
 
@@ -18,12 +18,11 @@ export async function POST(req: Request) {
   if (!authResult.ok) return authResult.response
   const { session } = authResult
 
-  // Prevent duplicate check-ins on the same calendar day
-  const startOfDay = new Date()
-  startOfDay.setHours(0, 0, 0, 0)
+  // Prevent duplicate check-ins on the same calendar day (in Zurich timezone)
+  const todayInClinicTz = sql`(${checkIns.createdAt} AT TIME ZONE ${CLINIC_TZ})::date = (NOW() AT TIME ZONE ${CLINIC_TZ})::date`
   const [existing, priorCountResult] = await Promise.all([
     db.query.checkIns.findFirst({
-      where: and(eq(checkIns.userId, session.user.id), gte(checkIns.createdAt, startOfDay)),
+      where: and(eq(checkIns.userId, session.user.id), todayInClinicTz),
     }),
     db.select({ count: count() }).from(checkIns).where(eq(checkIns.userId, session.user.id)),
   ])

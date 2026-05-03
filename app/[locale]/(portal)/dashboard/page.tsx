@@ -3,6 +3,7 @@ import { db } from "@/lib/db"
 import { checkIns, users, programEnrollments } from "@/lib/db/schema"
 import { getUserProfile } from "@/lib/db/queries"
 import { eq, desc, asc, and, gte, count, isNotNull } from "drizzle-orm"
+import { localDateString } from "@/lib/utils"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { StatCard } from "@/components/ui/stat-card"
 import { ClipboardList, TrendingUp, Flame } from "lucide-react"
@@ -91,10 +92,9 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
 
   const totalCheckIns = totalResult[0]?.value ?? 0
 
-  const todayStart = new Date()
-  todayStart.setHours(0, 0, 0, 0)
+  const todayStr = localDateString(new Date())
   const checkedInToday = recentCheckIns.length > 0 &&
-    new Date(recentCheckIns[0].createdAt) >= todayStart
+    localDateString(new Date(recentCheckIns[0].createdAt)) === todayStr
 
   const hour = new Date().getHours()
   const greetingKey = hour < 12 ? "greetingMorning" : hour < 17 ? "greetingAfternoon" : "greetingEvening"
