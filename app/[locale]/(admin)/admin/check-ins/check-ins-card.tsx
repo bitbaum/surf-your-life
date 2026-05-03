@@ -5,7 +5,7 @@ import { Pagination } from "@/components/ui/pagination"
 import { SearchInput } from "@/components/ui/search-input"
 import { FilterTabs } from "@/components/ui/filter-tabs"
 import { formatDate } from "@/lib/utils"
-import { MOOD_EMOJI, MOODS, MAIN_CONCERNS } from "@/lib/constants"
+import { MOOD_EMOJI, MOOD_MAP, MAIN_CONCERNS } from "@/lib/constants"
 import { Suspense } from "react"
 import type { MainConcern } from "@/lib/db/schema"
 
@@ -41,7 +41,6 @@ export async function CheckInsCard({ rows, filter, todayCount, concern, q, page,
   const t = await getTranslations("admin.checkIns")
   const tCheckIn = await getTranslations("portal.checkIn")
   const tConcerns = await getTranslations("concerns")
-  const moodMap = Object.fromEntries(MOODS.map((m) => [m.value, m]))
 
   return (
     <Card>
@@ -95,7 +94,7 @@ export async function CheckInsCard({ rows, filter, todayCount, concern, q, page,
                   <td className="py-3">
                     <span className="flex items-center gap-1.5">
                       <span>{MOOD_EMOJI[ci.mood] ?? "😐"}</span>
-                      <span className="text-slate-600">{tCheckIn(moodMap[ci.mood]?.labelKey ?? "moodNeutral")}</span>
+                      <span className="text-slate-600">{tCheckIn(MOOD_MAP[ci.mood]?.labelKey ?? "moodNeutral")}</span>
                       {ci.pemFlag && (
                         <span className="text-xs font-semibold text-red-600 ml-1">
                           PEM{ci.pemSeverity ? ` ${ci.pemSeverity}/10` : ""}

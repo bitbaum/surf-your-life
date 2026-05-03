@@ -1,15 +1,13 @@
 import { getTranslations } from "next-intl/server"
 import { Card, CardContent } from "@/components/ui/card"
 import { formatDate } from "@/lib/utils"
-import { MOOD_EMOJI, MOODS, SLEEP_QUALITY_OPTIONS, ACTIVITY_LEVELS } from "@/lib/constants"
+import { MOOD_EMOJI, MOOD_MAP, SLEEP_QUALITY_OPTIONS, ACTIVITY_LEVEL_MAP } from "@/lib/constants"
 import type { checkIns } from "@/lib/db/schema"
 import { CheckInActions } from "./check-in-actions"
 
 type CheckIn = typeof checkIns.$inferSelect
 
 const FIELD_LABEL_CLS = "text-xs font-medium text-slate-400 uppercase tracking-wide"
-const activityLevelMap = Object.fromEntries(ACTIVITY_LEVELS.map((a) => [a.value, a]))
-const moodMap = Object.fromEntries(MOODS.map((m) => [m.value, m]))
 
 export async function CheckInCard({ ci }: { ci: CheckIn }) {
   const t = await getTranslations("portal.checkIns")
@@ -22,7 +20,7 @@ export async function CheckInCard({ ci }: { ci: CheckIn }) {
           <div className="flex items-center gap-3">
             <span className="text-2xl">{MOOD_EMOJI[ci.mood] ?? "😐"}</span>
             <div>
-              <p className="font-medium text-slate-900">{tCheckIn(moodMap[ci.mood]?.labelKey ?? "moodNeutral")}</p>
+              <p className="font-medium text-slate-900">{tCheckIn(MOOD_MAP[ci.mood]?.labelKey ?? "moodNeutral")}</p>
               <p className="text-xs text-slate-400">{formatDate(ci.createdAt)}</p>
             </div>
           </div>
@@ -34,8 +32,8 @@ export async function CheckInCard({ ci }: { ci: CheckIn }) {
             {ci.sleepQuality != null && (
               <span>{SLEEP_QUALITY_OPTIONS[ci.sleepQuality - 1]?.emoji ?? "😴"} <strong className="text-slate-800">{ci.sleepQuality}/5</strong></span>
             )}
-            {ci.activityLevel && activityLevelMap[ci.activityLevel] && (
-              <span>{activityLevelMap[ci.activityLevel].emoji} <strong className="text-slate-800">{tCheckIn(activityLevelMap[ci.activityLevel].labelKey)}</strong></span>
+            {ci.activityLevel && ACTIVITY_LEVEL_MAP[ci.activityLevel] && (
+              <span>{ACTIVITY_LEVEL_MAP[ci.activityLevel].emoji} <strong className="text-slate-800">{tCheckIn(ACTIVITY_LEVEL_MAP[ci.activityLevel].labelKey)}</strong></span>
             )}
             {ci.orthostaticSymptoms && (
               <span className="text-orange-500 font-medium text-xs self-center">⬆ {t("orthostaticShort")}</span>

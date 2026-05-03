@@ -75,6 +75,7 @@ export const PAGINATION_DEFAULT = 20
 // Lookup maps derived from MOODS — import these instead of redefining inline
 export const MOOD_EMOJI = Object.fromEntries(MOODS.map((m) => [m.value, m.emoji])) as Record<string, string>
 export const MOOD_LABEL = Object.fromEntries(MOODS.map((m) => [m.value, m.label])) as Record<string, string>
+export const MOOD_MAP = Object.fromEntries(MOODS.map((m) => [m.value, m])) as Record<string, typeof MOODS[number]>
 export const MOOD_COLOR: Record<string, string> = {
   very_low: "bg-red-300",
   low: "bg-orange-300",
@@ -205,6 +206,9 @@ export const ACTIVITY_LEVELS = [
   { value: "moderate", emoji: "🏃", labelKey: "activityModerate" },
   { value: "active",   emoji: "⚡", labelKey: "activityActive" },
 ] as const
+
+// Lookup map derived from ACTIVITY_LEVELS — import instead of redefining inline
+export const ACTIVITY_LEVEL_MAP = Object.fromEntries(ACTIVITY_LEVELS.map((a) => [a.value, a])) as Record<string, typeof ACTIVITY_LEVELS[number]>
 
 // Functional capacity assessment scale
 export const CAPACITY_SCALE = { min: 1, max: 10, default: 5 } as const
