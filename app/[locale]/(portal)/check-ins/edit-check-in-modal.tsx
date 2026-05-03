@@ -110,15 +110,24 @@ export function EditCheckInModal({ checkIn, checkInId, onSave, onCancel }: EditC
 
       <div>
         <p className={`${COMPACT_LABEL_CLS} mb-2`}>{t("editOrthostaticLabel")}</p>
-        <label className="flex items-center gap-2 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={form.orthostaticSymptoms === true}
-            onChange={(e) => set("orthostaticSymptoms")(e.target.checked ? true : null)}
-            className="rounded border-slate-300 accent-teal-600"
-          />
-          <span className="text-sm text-slate-700">{t("editOrthostaticFlagLabel")}</span>
-        </label>
+        <div className="flex gap-2">
+          {([true, false] as const).map((val) => (
+            <button
+              key={String(val)}
+              type="button"
+              onClick={() => set("orthostaticSymptoms")(form.orthostaticSymptoms === val ? null : val)}
+              className={`px-4 py-1.5 rounded-full border text-xs font-medium transition-all ${
+                form.orthostaticSymptoms === val
+                  ? val
+                    ? "border-orange-400 bg-orange-50 text-orange-700"
+                    : "border-teal-500 bg-teal-50 text-teal-700"
+                  : "border-slate-200 bg-white text-slate-500 hover:border-slate-300"
+              }`}
+            >
+              {val ? t("editOrthostaticYes") : t("editOrthostaticNo")}
+            </button>
+          ))}
+        </div>
       </div>
 
       <EditSymptomsSection fatigue={form.fatigue} setFatigue={set("fatigue")} brainFog={form.brainFog} setBrainFog={set("brainFog")} pain={form.pain} setPain={set("pain")} stress={form.stress} setStress={set("stress")} />
