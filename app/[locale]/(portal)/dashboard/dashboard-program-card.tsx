@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server"
 import type { ProgramProgress } from "@/lib/domain/check-in"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ProgressBar } from "@/components/ui/progress-bar"
+import { Link } from "@/i18n/navigation"
 
 type Props = { programProgress: ProgramProgress | null }
 
@@ -41,6 +42,12 @@ export async function DashboardProgramCard({ programProgress }: Props) {
         ) : (
           <p className="text-sm text-slate-400">{t("programNoPhase")}</p>
         )}
+        <Link
+          href="/program"
+          className="inline-block mt-3 text-xs font-medium text-teal-600 hover:text-teal-800 transition-colors"
+        >
+          {t("viewProgram")}
+        </Link>
       </CardContent>
     </Card>
   )
