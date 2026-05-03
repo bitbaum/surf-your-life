@@ -131,7 +131,7 @@ function buildProgramLine(enrollment: BuildContextResult["activeEnrollment"], to
   const total = enrollment.program.durationWeeks ?? 0
   if (week < 1 || (total > 0 && week > total)) return `Program: ${enrollment.program.title} (completed or not yet started).`
   const phases = enrollment.program.phaseConfig as ProgramPhase[] | null
-  const phase = phases?.find((p) => p.week === week) ?? null
+  const phase = phases?.filter((p) => p.week <= week)?.sort((a, b) => b.week - a.week)[0] ?? null
   const phaseInfo = phase ? ` — Phase: "${phase.title}"${phase.guidance ? `. Guidance: ${phase.guidance}` : ""}` : ""
   return `${enrollment.program.title}, Week ${week}${total > 0 ? ` of ${total}` : ""}${phaseInfo}`
 }
@@ -301,7 +301,7 @@ export function ruleBasedResponse(
       return `You're enrolled in ${enrollment.program.title}. Check in with your practitioner for an update on where you are in the program.`
     }
     const phases = enrollment.program.phaseConfig as ProgramPhase[] | null
-    const phase = phases?.find((p) => p.week === week) ?? null
+    const phase = phases?.filter((p) => p.week <= week)?.sort((a, b) => b.week - a.week)[0] ?? null
     const phaseInfo = phase ? ` This week's focus: "${phase.title}"${phase.guidance ? ` — ${phase.guidance}` : ""}.` : ""
     return `You're in Week ${week}${total > 0 ? ` of ${total}` : ""} of ${enrollment.program.title}.${phaseInfo} Keep logging your check-ins so your practitioner can see your progress.`
   }

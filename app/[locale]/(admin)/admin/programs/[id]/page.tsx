@@ -96,7 +96,7 @@ export default async function ProgramDetailPage({
                         const week = Math.floor((nowMs - e.startDate.getTime()) / SEVEN_DAYS_MS) + 1
                         if (week < 1 || week > program.durationWeeks) return null
                         const phases = program.phaseConfig as ProgramPhase[] | null
-                        const phase = phases?.find((p) => p.week === week) ?? null
+                        const phase = phases?.filter((p) => p.week <= week)?.sort((a, b) => b.week - a.week)[0] ?? null
                         return (
                           <span className="font-medium text-teal-600">
                             {t("weekProgress", { current: week, total: program.durationWeeks })}
