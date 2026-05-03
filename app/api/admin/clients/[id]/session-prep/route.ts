@@ -5,8 +5,9 @@
  */
 import { formatEnumValue, roundOne } from "@/lib/utils"
 import { db } from "@/lib/db"
-import { users, checkIns, clientAlerts, techniqueAssignments, techniqueLogs, documents, functionalAssessments, medicationLog } from "@/lib/db/schema"
+import { users, checkIns, clientAlerts, techniqueAssignments, techniqueLogs, documents, functionalAssessments, medicationLog, programEnrollments } from "@/lib/db/schema"
 import { eq, desc, and, gte, isNull } from "drizzle-orm"
+import type { ProgramPhase } from "@/lib/domain/program"
 import { callClaude } from "@/lib/domain/anthropic"
 import { localDateString, addDaysISO } from "@/lib/utils"
 import { computeDailyAdherenceTrend } from "@/lib/domain/techniques"
@@ -25,7 +26,7 @@ export async function GET(
   const today = localDateString(new Date())
   const thirtyDaysAgo = addDaysISO(today, -30)
 
-  const [client, recentCheckIns, activeAlerts, clientAssignments, techLogs, recentSessionNotes, latestAssessment, currentMedications] = await Promise.all([
+  const [client, recentCheckIns, activeAlerts, clientAssignments, techLogs, recentSessionNotes, latestAssessment, currentMedications, activeEnrollment] = await Promise.all([
     db.query.users.findFirst({
       where: eq(users.id, clientId),
       with: { profile: true },
@@ -73,6 +74,11 @@ export async function GET(
       where: and(eq(medicationLog.userId, clientId), isNull(medicationLog.endDate)),
       columns: { medicationName: true, dose: true, frequency: true },
     }),
+    db.query.programEnrollments.findFirst({
+      where: and(eq(programEnrollments.clientId, clientId), eq(programEnrollments.status, "active")),
+      with: { program: { columns: { title: true, durationWeeks: true, phaseConfig: true } } },
+      orderBy: [desc(programEnrollments.createdAt)],
+    }),
   ])
 
   if (!client) {
@@ -88,7 +94,7 @@ export async function GET(
   const techniqueStreak = rawStreak === -1 ? dailyTrend.length : rawStreak
 
   const techniqueNames = clientAssignments.map((a) => a.technique?.name).filter(Boolean) as string[]
-  const context = buildClinicalContext(client, recentCheckIns, activeAlerts, avgTechAdherence, techniqueStreak, techniqueNames, recentSessionNotes, latestAssessment ?? null, currentMedications)
+  const context = buildClinicalContext(client, recentCheckIns, activeAlerts, avgTechAdherence, techniqueStreak, techniqueNames, recentSessionNotes, latestAssessment ?? null, currentMedications, activeEnrollment ?? null)
 
   const aiSummary = await callClaude({
     messages: [
@@ -161,7 +167,11 @@ function buildClinicalContext(
     emotionalCapacity: number | null; socialCapacity: number | null;
     notes: string | null;
   } | null = null,
-  medications: Array<{ medicationName: string; dose: string | null; frequency: string | null }> = []
+  medications: Array<{ medicationName: string; dose: string | null; frequency: string | null }> = [],
+  activeEnrollment: {
+    startDate: Date | null;
+    program: { title: string; durationWeeks: number | null; phaseConfig: unknown };
+  } | null = null
 ): string {
   const lines: string[] = [
     `Client: ${client.name ?? "Unknown"}`,
@@ -188,6 +198,16 @@ function buildClinicalContext(
     ].filter(Boolean).join(", ")
     lines.push(`Functional assessment (${date}): ${caps}`)
     if (latestAssessment.notes) lines.push(`  Assessment notes: ${latestAssessment.notes.slice(0, 200)}`)
+  }
+
+  if (activeEnrollment?.startDate) {
+    const weekNum = Math.floor((Date.now() - activeEnrollment.startDate.getTime()) / (7 * 24 * 60 * 60 * 1000)) + 1
+    const total = activeEnrollment.program.durationWeeks ?? 0
+    const phases = activeEnrollment.program.phaseConfig as ProgramPhase[] | null
+    const currentPhase = phases?.findLast((p) => p.week <= weekNum)
+    const phaseInfo = currentPhase ? ` — Phase: ${currentPhase.title}` : ""
+    const weekInfo = total > 0 ? `Week ${weekNum} of ${total}` : `Week ${weekNum}`
+    lines.push(`Program: ${activeEnrollment.program.title}, ${weekInfo}${phaseInfo}`)
   }
 
   if (techniqueNames.length > 0) {
