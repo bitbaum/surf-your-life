@@ -1227,7 +1227,10 @@
         "title": "Check-ins",
         "description": "Tous les check-ins de {name} · {count} au total",
         "backLink": "← {name}",
-        "exportCsv": "Exporter CSV"
+        "exportCsv": "Exporter CSV",
+        "filterAll": "Tous",
+        "filterPem": "PEM ({count})",
+        "noPem": "Aucun épisode PEM enregistré"
       },
       "sortJoined": "Plus récents",
       "sortCheckInDesc": "Plus actifs",
