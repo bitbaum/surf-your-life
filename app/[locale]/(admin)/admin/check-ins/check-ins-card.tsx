@@ -9,7 +9,7 @@ import { MOOD_EMOJI, MOOD_MAP, MAIN_CONCERNS } from "@/lib/constants"
 import { Suspense } from "react"
 import type { MainConcern } from "@/lib/db/schema"
 
-export type FilterMode = "all" | "pem" | "today"
+export type FilterMode = "all" | "mine" | "pem" | "today"
 
 type CheckInRow = {
   id: string
@@ -55,6 +55,7 @@ export async function CheckInsCard({ rows, filter, todayCount, concern, q, page,
           <FilterTabs
             tabs={[
               { value: "all" as FilterMode, label: t("filterAll") },
+              { value: "mine" as FilterMode, label: t("filterMine") },
               { value: "today" as FilterMode, label: t("filterToday", { count: todayCount }) },
               { value: "pem" as FilterMode, label: t("filterPem") },
             ]}
@@ -126,7 +127,7 @@ export async function CheckInsCard({ rows, filter, todayCount, concern, q, page,
               {rows.length === 0 && (
                 <tr>
                   <td colSpan={6} className="py-8 text-center text-slate-400">
-                    {filter === "today" ? t("noActivityToday") : q ? t("noResults", { q }) : t("noActivity")}
+                    {filter === "today" ? t("noActivityToday") : filter === "mine" ? t("noActivityMine") : q ? t("noResults", { q }) : t("noActivity")}
                   </td>
                 </tr>
               )}

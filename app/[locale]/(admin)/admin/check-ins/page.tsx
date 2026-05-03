@@ -1,5 +1,6 @@
+import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
-import { checkIns, users, profiles, type MainConcern } from "@/lib/db/schema"
+import { checkIns, users, profiles, assignments, type MainConcern } from "@/lib/db/schema"
 import { eq, and, or, ilike, desc, count, sql } from "drizzle-orm"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { PageHeader } from "@/components/ui/page-header"
@@ -8,7 +9,7 @@ import { PAGINATION_DEFAULT, CLINIC_TZ, MAIN_CONCERNS } from "@/lib/constants"
 import { CLIENT_ROLE } from "@/lib/domain/auth"
 import { CheckInsCard, type FilterMode } from "./check-ins-card"
 
-const FILTER_MODES: FilterMode[] = ["all", "pem", "today"]
+const FILTER_MODES: FilterMode[] = ["all", "mine", "pem", "today"]
 function isValidFilter(v: string | undefined): v is FilterMode {
   return FILTER_MODES.includes(v as FilterMode)
 }
@@ -32,6 +33,8 @@ export default async function AdminCheckInsPage({
   setRequestLocale(locale)
   const t = await getTranslations("admin.checkIns")
 
+  const session = await auth()
+
   const { page: pageParam, filter: filterParam, q, concern: concernParam } = await searchParams
   const filter: FilterMode = isValidFilter(filterParam) ? filterParam : "all"
   const concern: MainConcern | undefined = isValidConcern(concernParam) ? concernParam : undefined
@@ -52,7 +55,10 @@ export default async function AdminCheckInsPage({
   const roleFilter = eq(users.role, CLIENT_ROLE)
   const pemFilter = filter === "pem" ? eq(checkIns.pemFlag, true) : undefined
   const dayFilter = filter === "today" ? todayInClinicTz : undefined
-  const whereParts = [roleFilter, searchFilter, pemFilter, dayFilter, concernFilter].filter(
+  const mineFilter = filter === "mine" && session?.user?.id
+    ? sql`EXISTS (SELECT 1 FROM ${assignments} WHERE ${assignments.practitionerId} = ${session.user.id}::uuid AND ${assignments.clientId} = ${users.id} AND ${assignments.active} = true)`
+    : undefined
+  const whereParts = [roleFilter, searchFilter, pemFilter, dayFilter, mineFilter, concernFilter].filter(
     (p): p is NonNullable<typeof p> => p != null
   )
   const whereClause = whereParts.length > 1 ? and(...whereParts) : whereParts[0]
