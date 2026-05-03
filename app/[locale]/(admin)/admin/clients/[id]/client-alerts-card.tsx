@@ -65,12 +65,23 @@ export function ClientAlertsCard({ initialAlerts, clientId, hasHistory }: Props)
   const [showHistory, setShowHistory] = useState(false)
   const [history, setHistory] = useState<ClientAlertRow[] | null>(null)
   const [loadingHistory, setLoadingHistory] = useState(false)
+  const [resolvingAll, setResolvingAll] = useState(false)
 
   // Only hide if there are no active alerts AND no history to show
   if (alerts.length === 0 && !showHistory && !hasHistory) return null
 
   function handleResolved(id: string) {
     setAlerts((prev) => prev.filter((a) => a.id !== id))
+  }
+
+  async function handleResolveAll() {
+    setResolvingAll(true)
+    try {
+      const res = await fetch(`/api/admin/clients/${clientId}/alerts`, { method: "PATCH" })
+      if (res.ok) setAlerts([])
+    } finally {
+      setResolvingAll(false)
+    }
   }
 
   async function toggleHistory() {
@@ -103,14 +114,25 @@ export function ClientAlertsCard({ initialAlerts, clientId, hasHistory }: Props)
             <span className="w-2 h-2 rounded-full bg-red-500 inline-block" />
             {t("title")} ({alerts.length})
           </CardTitle>
-          <button
-            onClick={toggleHistory}
-            disabled={loadingHistory}
-            className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-600 transition-colors disabled:opacity-50"
-          >
-            <History className="w-3.5 h-3.5" />
-            {showHistory ? t("hideHistory") : t("showHistory")}
-          </button>
+          <div className="flex items-center gap-3">
+            {alerts.length > 1 && (
+              <button
+                onClick={handleResolveAll}
+                disabled={resolvingAll}
+                className="text-xs text-red-500 hover:text-red-700 font-medium transition-colors disabled:opacity-50"
+              >
+                {resolvingAll ? t("resolvingAll") : t("resolveAll", { n: alerts.length })}
+              </button>
+            )}
+            <button
+              onClick={toggleHistory}
+              disabled={loadingHistory}
+              className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-600 transition-colors disabled:opacity-50"
+            >
+              <History className="w-3.5 h-3.5" />
+              {showHistory ? t("hideHistory") : t("showHistory")}
+            </button>
+          </div>
         </div>
       </CardHeader>
       <CardContent>
