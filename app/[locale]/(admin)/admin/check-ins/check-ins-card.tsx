@@ -29,6 +29,7 @@ type Props = {
   rows: CheckInRow[]
   filter: FilterMode
   todayCount: number
+  pemCount: number
   concern: MainConcern | undefined
   q: string | undefined
   page: number
@@ -38,7 +39,7 @@ type Props = {
   pageHref: (p: number) => string
 }
 
-export async function CheckInsCard({ rows, filter, todayCount, concern, q, page, totalPages, filterHref, concernHref, pageHref }: Props) {
+export async function CheckInsCard({ rows, filter, todayCount, pemCount, concern, q, page, totalPages, filterHref, concernHref, pageHref }: Props) {
   const t = await getTranslations("admin.checkIns")
   const tCheckIn = await getTranslations("portal.checkIn")
   const tConcerns = await getTranslations("concerns")
@@ -58,7 +59,7 @@ export async function CheckInsCard({ rows, filter, todayCount, concern, q, page,
               { value: "all" as FilterMode, label: t("filterAll") },
               { value: "mine" as FilterMode, label: t("filterMine") },
               { value: "today" as FilterMode, label: t("filterToday", { count: todayCount }) },
-              { value: "pem" as FilterMode, label: t("filterPem") },
+              { value: "pem" as FilterMode, label: t("filterPem", { count: pemCount }) },
             ]}
             active={filter}
             href={filterHref}

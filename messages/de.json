@@ -1502,7 +1502,7 @@
       "filterAll": "Alle",
       "filterMine": "Meine Klienten",
       "filterToday": "Heute ({count})",
-      "filterPem": "Nur PEM",
+      "filterPem": "PEM ({count})",
       "noActivity": "Noch keine Check-ins",
       "noActivityToday": "Heute noch keine Check-ins",
       "noActivityMine": "Noch keine Check-ins von Ihren zugewiesenen Klienten",

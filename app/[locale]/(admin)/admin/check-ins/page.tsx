@@ -63,14 +63,18 @@ export default async function AdminCheckInsPage({
   )
   const whereClause = whereParts.length > 1 ? and(...whereParts) : whereParts[0]
 
-  // Today count for badge — always computed so the tab reflects reality
-  // regardless of which filter is active.
+  // Always-computed badge counts so tabs reflect reality regardless of active filter.
   const todayWhereParts = [roleFilter, searchFilter, todayInClinicTz, concernFilter].filter(
     (p): p is NonNullable<typeof p> => p != null
   )
   const todayWhereClause = todayWhereParts.length > 1 ? and(...todayWhereParts) : todayWhereParts[0]
 
-  const [rows, totalResult, todayCountResult] = await Promise.all([
+  const pemWhereParts = [roleFilter, searchFilter, eq(checkIns.pemFlag, true), concernFilter].filter(
+    (p): p is NonNullable<typeof p> => p != null
+  )
+  const pemWhereClause = pemWhereParts.length > 1 ? and(...pemWhereParts) : pemWhereParts[0]
+
+  const [rows, totalResult, todayCountResult, pemCountResult] = await Promise.all([
     db
       .select({
         id: checkIns.id,
@@ -101,10 +105,16 @@ export default async function AdminCheckInsPage({
       .from(checkIns)
       .innerJoin(users, eq(users.id, checkIns.userId))
       .where(todayWhereClause),
+    db
+      .select({ count: count() })
+      .from(checkIns)
+      .innerJoin(users, eq(users.id, checkIns.userId))
+      .where(pemWhereClause),
   ])
 
   const total = totalResult[0]?.count ?? 0
   const todayCount = todayCountResult[0]?.count ?? 0
+  const pemCount = pemCountResult[0]?.count ?? 0
   const totalPages = computeTotalPages(total, PAGINATION_DEFAULT)
 
   function filterHref(v: FilterMode) {
@@ -139,6 +149,7 @@ export default async function AdminCheckInsPage({
         rows={rows}
         filter={filter}
         todayCount={todayCount}
+        pemCount={pemCount}
         concern={concern}
         q={q}
         page={page}
