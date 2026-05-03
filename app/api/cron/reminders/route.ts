@@ -6,11 +6,11 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { users, checkIns, profiles } from "@/lib/db/schema"
-import { eq, and, gte, desc, inArray } from "drizzle-orm"
+import { eq, and, gte, desc, inArray, sql } from "drizzle-orm"
 import { sendEmail } from "@/lib/email"
 import { checkInReminderEmail } from "@/lib/email/templates"
 import { EMAIL_SUBJECT_CHECKIN_REMINDER } from "@/lib/email/subjects"
-import { SITE_URL, STREAK_LOOKBACK_DAYS, DAY_MS } from "@/lib/constants"
+import { SITE_URL, STREAK_LOOKBACK_DAYS, DAY_MS, CLINIC_TZ } from "@/lib/constants"
 import { generateMissedCheckInAlerts, generateTechniqueAdherenceAlerts } from "@/lib/domain/alerts"
 import { CLIENT_ROLE } from "@/lib/domain/auth"
 import { verifyCronAuth } from "@/lib/auth/cron"
@@ -20,8 +20,7 @@ export async function GET(req: Request) {
   const authError = verifyCronAuth(req)
   if (authError) return authError
 
-  const startOfToday = new Date()
-  startOfToday.setHours(0, 0, 0, 0)
+  const todayInClinicTz = sql`(${checkIns.createdAt} AT TIME ZONE ${CLINIC_TZ})::date = (NOW() AT TIME ZONE ${CLINIC_TZ})::date`
 
   const allClients = await db.query.users.findMany({
     where: eq(users.role, CLIENT_ROLE),
@@ -46,7 +45,7 @@ export async function GET(req: Request) {
 
   // Batch 1: find all clients who already checked in today (one query instead of N)
   const todayCheckIns = await db.query.checkIns.findMany({
-    where: and(inArray(checkIns.userId, clientIds), gte(checkIns.createdAt, startOfToday)),
+    where: and(inArray(checkIns.userId, clientIds), todayInClinicTz),
     columns: { userId: true },
   })
   const clientsCheckedInToday = new Set(todayCheckIns.map((ci) => ci.userId))
