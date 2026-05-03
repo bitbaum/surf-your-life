@@ -3,12 +3,24 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Activity } from "lucide-react"
 import { roundOne } from "@/lib/utils"
 import { PulseSparkline } from "./pulse-sparkline"
+import { CLINIC_PULSE_WINDOW_DAYS, CLINIC_PULSE_MIN_DATA_POINTS } from "@/lib/constants"
 
 export type PulseDay = {
   day: string
   avgEnergy: number
   avgMood: number
   activeClients: number
+}
+
+function windowAvg(days: PulseDay[], key: "avgEnergy" | "avgMood"): number | null {
+  if (days.length === 0) return null
+  return roundOne(days.reduce((s, d) => s + d[key], 0) / days.length)
+}
+
+function windowDelta(recent: PulseDay[], prior: PulseDay[], key: "avgEnergy" | "avgMood"): number | null {
+  const avg = windowAvg(recent, key)
+  const prev = windowAvg(prior, key)
+  return avg != null && prev != null ? roundOne(avg - prev) : null
 }
 
 function deltaLabel(d: number | null): string | null {
@@ -22,6 +34,8 @@ function deltaColor(d: number | null): string {
   return "text-slate-400"
 }
 
+const METRIC_VALUE_CLS = "text-2xl font-bold text-slate-800 leading-none mt-0.5"
+
 interface Props {
   data: PulseDay[]
 }
@@ -29,7 +43,7 @@ interface Props {
 export async function ClinicPulseCard({ data }: Props) {
   const t = await getTranslations("admin.dashboard.clinicPulse")
 
-  if (data.length < 3) {
+  if (data.length < CLINIC_PULSE_MIN_DATA_POINTS) {
     return (
       <Card className="mb-6">
         <CardHeader>
@@ -45,25 +59,13 @@ export async function ClinicPulseCard({ data }: Props) {
     )
   }
 
-  const recent7 = data.slice(-7)
-  const prior7 = data.slice(-14, -7)
+  const recent = data.slice(-CLINIC_PULSE_WINDOW_DAYS)
+  const prior = data.slice(-CLINIC_PULSE_WINDOW_DAYS * 2, -CLINIC_PULSE_WINDOW_DAYS)
 
-  const avg7Energy = recent7.length > 0
-    ? roundOne(recent7.reduce((s, d) => s + d.avgEnergy, 0) / recent7.length)
-    : null
-  const prev7Energy = prior7.length > 0
-    ? roundOne(prior7.reduce((s, d) => s + d.avgEnergy, 0) / prior7.length)
-    : null
-  const energyDelta = avg7Energy != null && prev7Energy != null ? roundOne(avg7Energy - prev7Energy) : null
-
-  const avg7Mood = recent7.length > 0
-    ? roundOne(recent7.reduce((s, d) => s + d.avgMood, 0) / recent7.length)
-    : null
-  const prev7Mood = prior7.length > 0
-    ? roundOne(prior7.reduce((s, d) => s + d.avgMood, 0) / prior7.length)
-    : null
-  const moodDelta = avg7Mood != null && prev7Mood != null ? roundOne(avg7Mood - prev7Mood) : null
-
+  const avg7Energy = windowAvg(recent, "avgEnergy")
+  const avg7Mood = windowAvg(recent, "avgMood")
+  const energyDelta = windowDelta(recent, prior, "avgEnergy")
+  const moodDelta = windowDelta(recent, prior, "avgMood")
   const avgDailyClients = roundOne(data.reduce((s, d) => s + d.activeClients, 0) / data.length)
 
   return (
@@ -78,7 +80,7 @@ export async function ClinicPulseCard({ data }: Props) {
         <div className="flex items-start gap-6 mb-3">
           <div>
             <p className="text-xs text-slate-400">{t("avgEnergy7d")}</p>
-            <p className="text-2xl font-bold text-slate-800 leading-none mt-0.5">
+            <p className={METRIC_VALUE_CLS}>
               {avg7Energy ?? "—"}<span className="text-sm font-normal text-slate-400">/10</span>
             </p>
             {deltaLabel(energyDelta) && (
@@ -89,7 +91,7 @@ export async function ClinicPulseCard({ data }: Props) {
           </div>
           <div>
             <p className="text-xs text-slate-400">{t("avgMood7d")}</p>
-            <p className="text-2xl font-bold text-slate-800 leading-none mt-0.5">
+            <p className={METRIC_VALUE_CLS}>
               {avg7Mood ?? "—"}<span className="text-sm font-normal text-slate-400">/5</span>
             </p>
             {deltaLabel(moodDelta) && (
@@ -100,7 +102,7 @@ export async function ClinicPulseCard({ data }: Props) {
           </div>
           <div>
             <p className="text-xs text-slate-400">{t("dailyClients")}</p>
-            <p className="text-2xl font-bold text-slate-800 leading-none mt-0.5">{avgDailyClients}</p>
+            <p className={METRIC_VALUE_CLS}>{avgDailyClients}</p>
           </div>
         </div>
         <PulseSparkline data={data} />
