@@ -80,6 +80,7 @@ export default async function AdminCheckInsPage({
         sleepHours: checkIns.sleepHours,
         pemFlag: checkIns.pemFlag,
         pemSeverity: checkIns.pemSeverity,
+        journalEntry: checkIns.journalEntry,
         clientId: users.id,
         clientName: users.name,
         clientEmail: users.email,

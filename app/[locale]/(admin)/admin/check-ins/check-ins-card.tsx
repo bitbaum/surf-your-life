@@ -19,6 +19,7 @@ type CheckInRow = {
   sleepHours: number | null
   pemFlag: boolean | null
   pemSeverity: number | null
+  journalEntry: string | null
   clientId: string
   clientName: string | null
   clientEmail: string | null
@@ -90,6 +91,9 @@ export async function CheckInsCard({ rows, filter, todayCount, concern, q, page,
                     <Link href={`/admin/clients/${ci.clientId}`} className="hover:text-teal-700 transition-colors">
                       {ci.clientName ?? ci.clientEmail}
                     </Link>
+                    {ci.journalEntry && (
+                      <p className="text-xs text-slate-400 mt-0.5 line-clamp-1">{ci.journalEntry}</p>
+                    )}
                   </td>
                   <td className="py-3 text-slate-500">{formatDate(ci.createdAt)}</td>
                   <td className="py-3">
