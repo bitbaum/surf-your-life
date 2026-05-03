@@ -5,8 +5,8 @@
  */
 import { formatEnumValue, roundOne } from "@/lib/utils"
 import { db } from "@/lib/db"
-import { users, checkIns, clientAlerts, techniqueAssignments, techniqueLogs, documents } from "@/lib/db/schema"
-import { eq, desc, and, gte } from "drizzle-orm"
+import { users, checkIns, clientAlerts, techniqueAssignments, techniqueLogs, documents, functionalAssessments, medicationLog } from "@/lib/db/schema"
+import { eq, desc, and, gte, isNull } from "drizzle-orm"
 import { callClaude } from "@/lib/domain/anthropic"
 import { localDateString, addDaysISO } from "@/lib/utils"
 import { computeDailyAdherenceTrend } from "@/lib/domain/techniques"
@@ -25,7 +25,7 @@ export async function GET(
   const today = localDateString(new Date())
   const thirtyDaysAgo = addDaysISO(today, -30)
 
-  const [client, recentCheckIns, activeAlerts, clientAssignments, techLogs, recentSessionNotes] = await Promise.all([
+  const [client, recentCheckIns, activeAlerts, clientAssignments, techLogs, recentSessionNotes, latestAssessment, currentMedications] = await Promise.all([
     db.query.users.findFirst({
       where: eq(users.id, clientId),
       with: { profile: true },
@@ -56,6 +56,23 @@ export async function GET(
       limit: SESSION_PREP_NOTES_LIMIT,
       columns: { title: true, content: true, createdAt: true },
     }),
+    db.query.functionalAssessments.findFirst({
+      where: eq(functionalAssessments.userId, clientId),
+      orderBy: [desc(functionalAssessments.assessedAt)],
+      columns: {
+        assessedAt: true,
+        overallCapacity: true,
+        cognitiveCapacity: true,
+        physicalCapacity: true,
+        emotionalCapacity: true,
+        socialCapacity: true,
+        notes: true,
+      },
+    }),
+    db.query.medicationLog.findMany({
+      where: and(eq(medicationLog.userId, clientId), isNull(medicationLog.endDate)),
+      columns: { medicationName: true, dose: true, frequency: true },
+    }),
   ])
 
   if (!client) {
@@ -71,7 +88,7 @@ export async function GET(
   const techniqueStreak = rawStreak === -1 ? dailyTrend.length : rawStreak
 
   const techniqueNames = clientAssignments.map((a) => a.technique?.name).filter(Boolean) as string[]
-  const context = buildClinicalContext(client, recentCheckIns, activeAlerts, avgTechAdherence, techniqueStreak, techniqueNames, recentSessionNotes)
+  const context = buildClinicalContext(client, recentCheckIns, activeAlerts, avgTechAdherence, techniqueStreak, techniqueNames, recentSessionNotes, latestAssessment ?? null, currentMedications)
 
   const aiSummary = await callClaude({
     messages: [
@@ -137,7 +154,14 @@ function buildClinicalContext(
   avgTechAdherence: number | null,
   techniqueStreak: number,
   techniqueNames: string[] = [],
-  sessionNotes: Array<{ title: string; content: string | null; createdAt: Date }> = []
+  sessionNotes: Array<{ title: string; content: string | null; createdAt: Date }> = [],
+  latestAssessment: {
+    assessedAt: Date; overallCapacity: number;
+    cognitiveCapacity: number | null; physicalCapacity: number | null;
+    emotionalCapacity: number | null; socialCapacity: number | null;
+    notes: string | null;
+  } | null = null,
+  medications: Array<{ medicationName: string; dose: string | null; frequency: string | null }> = []
 ): string {
   const lines: string[] = [
     `Client: ${client.name ?? "Unknown"}`,
@@ -146,6 +170,24 @@ function buildClinicalContext(
 
   if (client.profile?.goals) {
     lines.push(`Client's stated goals: ${client.profile.goals}`)
+  }
+
+  if (medications.length > 0) {
+    const medList = medications.map((m) => [m.medicationName, m.dose, m.frequency].filter(Boolean).join(" ")).join("; ")
+    lines.push(`Current medications: ${medList}`)
+  }
+
+  if (latestAssessment) {
+    const date = localDateString(latestAssessment.assessedAt)
+    const caps = [
+      `overall ${latestAssessment.overallCapacity}/10`,
+      latestAssessment.cognitiveCapacity != null ? `cognitive ${latestAssessment.cognitiveCapacity}/10` : null,
+      latestAssessment.physicalCapacity != null ? `physical ${latestAssessment.physicalCapacity}/10` : null,
+      latestAssessment.emotionalCapacity != null ? `emotional ${latestAssessment.emotionalCapacity}/10` : null,
+      latestAssessment.socialCapacity != null ? `social ${latestAssessment.socialCapacity}/10` : null,
+    ].filter(Boolean).join(", ")
+    lines.push(`Functional assessment (${date}): ${caps}`)
+    if (latestAssessment.notes) lines.push(`  Assessment notes: ${latestAssessment.notes.slice(0, 200)}`)
   }
 
   if (techniqueNames.length > 0) {
