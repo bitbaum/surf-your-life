@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server"
 import { FilterTabs } from "@/components/ui/filter-tabs"
 import { MAIN_CONCERNS } from "@/lib/constants"
+import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { users, assignments } from "@/lib/db/schema"
 import type { MainConcern } from "@/lib/db/schema"
@@ -27,6 +28,9 @@ function buildLink(base: Record<string, string | undefined>) {
 export async function ClientsFilterBar({ q, sort, concern, practitioner }: Props) {
   const t = await getTranslations("admin.clients")
   const tConcerns = await getTranslations("concerns")
+
+  const session = await auth()
+  const currentUserId = session?.user?.id
 
   const practitioners = await db
     .select({ id: users.id, name: users.name })
@@ -76,6 +80,7 @@ export async function ClientsFilterBar({ q, sort, concern, practitioner }: Props
         <FilterTabs
           tabs={[
             { value: "", label: t("allPractitioners") },
+            ...(currentUserId ? [{ value: currentUserId, label: t("myClients") }] : []),
             { value: "__none__", label: t("unassigned") },
             ...practitioners.map((p) => ({ value: p.id, label: p.name ?? p.id })),
           ]}
