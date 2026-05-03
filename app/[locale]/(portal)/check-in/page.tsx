@@ -6,7 +6,7 @@ import { useRouter } from "@/i18n/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
-import { ENERGY_SCALE, SYMPTOM_SCALE, FIELD_MAX_JOURNAL, CHIP_SELECTED, CHIP_UNSELECTED } from "@/lib/constants"
+import { ENERGY_SCALE, SYMPTOM_SCALE, FIELD_MAX_JOURNAL } from "@/lib/constants"
 import { toast } from "sonner"
 import { NlpEntry, type ParsedFill } from "./nlp-entry"
 import { MoodCard } from "./mood-card"
@@ -124,6 +124,8 @@ export default function CheckInPage() {
           setPemFlag={set("pemFlag")}
           pemSeverity={form.pemSeverity}
           setPemSeverity={set("pemSeverity")}
+          orthostaticSymptoms={form.orthostaticSymptoms}
+          setOrthostaticSymptoms={set("orthostaticSymptoms")}
         />
 
         <SleepCard
@@ -132,34 +134,6 @@ export default function CheckInPage() {
           sleepQuality={form.sleepQuality}
           setSleepQuality={set("sleepQuality")}
         />
-
-        {/* Orthostatic */}
-        <Card>
-          <CardHeader>
-            <CardTitle>{t("orthostaticCard")}</CardTitle>
-            <CardDescription>{t("orthostaticDescription")}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex gap-3">
-              {([true, false] as const).map((val) => (
-                <button
-                  key={String(val)}
-                  type="button"
-                  onClick={() => set("orthostaticSymptoms")(form.orthostaticSymptoms === val ? null : val)}
-                  className={`flex-1 py-2.5 rounded-xl border-2 text-sm font-medium transition-all ${
-                    form.orthostaticSymptoms === val
-                      ? val
-                        ? "border-orange-400 bg-orange-50 text-orange-700"
-                        : CHIP_SELECTED
-                      : CHIP_UNSELECTED
-                  }`}
-                >
-                  {val ? t("orthostaticYes") : t("orthostaticNo")}
-                </button>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
 
         {/* Journal */}
         <Card>

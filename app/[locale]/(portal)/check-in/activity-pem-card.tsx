@@ -11,12 +11,15 @@ interface Props {
   setPemFlag: (v: boolean) => void
   pemSeverity: number
   setPemSeverity: (v: number) => void
+  orthostaticSymptoms: boolean | null
+  setOrthostaticSymptoms: (v: boolean | null) => void
 }
 
 export function ActivityPemCard({
   activityLevel, setActivityLevel,
   pemFlag, setPemFlag,
   pemSeverity, setPemSeverity,
+  orthostaticSymptoms, setOrthostaticSymptoms,
 }: Props) {
   const t = useTranslations("portal.checkIn")
   const showPem = activityLevel === "moderate" || activityLevel === "active"
@@ -85,6 +88,29 @@ export function ActivityPemCard({
             )}
           </div>
         )}
+
+        <div className="mt-5 pt-4 border-t border-slate-100">
+          <p className="text-sm font-medium text-slate-700 mb-0.5">{t("orthostaticCard")}</p>
+          <p className="text-xs text-slate-400 mb-3">{t("orthostaticDescription")}</p>
+          <div className="flex gap-2">
+            {([true, false] as const).map((val) => (
+              <button
+                key={String(val)}
+                type="button"
+                onClick={() => setOrthostaticSymptoms(orthostaticSymptoms === val ? null : val)}
+                className={`px-4 py-1.5 rounded-full border text-xs font-medium transition-all ${
+                  orthostaticSymptoms === val
+                    ? val
+                      ? "border-orange-400 bg-orange-50 text-orange-700"
+                      : "border-teal-500 bg-teal-50 text-teal-700"
+                    : "border-slate-200 bg-white text-slate-500 hover:border-slate-300"
+                }`}
+              >
+                {val ? t("orthostaticYes") : t("orthostaticNo")}
+              </button>
+            ))}
+          </div>
+        </div>
       </CardContent>
     </Card>
   )
