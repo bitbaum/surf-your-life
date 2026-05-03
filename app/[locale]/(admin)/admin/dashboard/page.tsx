@@ -177,7 +177,7 @@ export default async function AdminDashboardPage({
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-6 gap-4 mb-8">
         <StatCard label={t("totalClients")} value={clientCount} icon={Users} color="teal" href="/admin/clients" />
         <StatCard label={t("checkIns30d")} value={recentCheckInsCount} icon={ClipboardList} color="slate" href="/admin/check-ins" />
-        <StatCard label={t("checkInsToday")} value={todayCheckIns} icon={CalendarCheck} color="teal" href="/admin/check-ins" />
+        <StatCard label={t("checkInsToday")} value={todayCheckIns} icon={CalendarCheck} color="teal" href="/admin/check-ins?filter=today" />
         <StatCard label={t("pendingBookings")} value={pendingBookings} icon={CalendarClock} color="slate" href="/admin/bookings" />
         <StatCard label={t("unreadMessages")} value={unreadMessages} icon={MessageSquare} color="teal" href="/admin/messages" />
         <StatCard
