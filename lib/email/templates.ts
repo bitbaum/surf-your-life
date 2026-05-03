@@ -487,17 +487,21 @@ export type WeeklyReportData = {
   avgStress: number | null
   pemEpisodes: number
   topWin: string | null
+  aiInsight: string | null
   portalUrl: string
 }
 
 export function weeklyReportEmail(data: WeeklyReportData): string {
-  const { clientName, weekStart, weekEnd, checkInCount, avgEnergy, avgMood, avgSleep, avgStress, pemEpisodes, topWin, portalUrl } = data
+  const { clientName, weekStart, weekEnd, checkInCount, avgEnergy, avgMood, avgSleep, avgStress, pemEpisodes, topWin, aiInsight, portalUrl } = data
   const name = clientName ?? "there"
   const pemNote = pemEpisodes > 0
     ? `<li>⚠️ <strong>${pemEpisodes} PEM episode(s)</strong> this week — discuss pacing with your practitioner</li>`
     : ""
   const winNote = topWin
     ? `<div style="margin-top:16px;padding:12px 16px;background:#f0fdf4;border-left:3px solid ${EMAIL_BRAND_COLOR};border-radius:4px;"><p style="margin:0;font-size:14px;color:#065f46;">📝 <strong>From your journal:</strong> ${topWin}</p></div>`
+    : ""
+  const insightNote = aiInsight
+    ? `<div style="margin-top:16px;padding:12px 16px;background:#f5f3ff;border-left:3px solid #7c3aed;border-radius:4px;"><p style="margin:0 0 6px;font-size:12px;font-weight:600;color:#7c3aed;">✨ Your AI weekly summary</p><p style="margin:0;font-size:14px;color:#4c1d95;line-height:1.6;">${aiInsight}</p></div>`
     : ""
   return emailShell(`
   ${emailHeader("Your weekly summary", `${weekStart} – ${weekEnd}`)}
@@ -522,6 +526,7 @@ export function weeklyReportEmail(data: WeeklyReportData): string {
     ${checkInCount === 7 ? "<li>🎯 Perfect week — 7/7 check-ins completed!</li>" : ""}
     ${pemNote}
   </ul>
+  ${insightNote}
   ${winNote}
   <a href="${portalUrl}/dashboard" class="cta">View full history</a>
   ${emailFooter()}

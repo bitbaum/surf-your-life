@@ -6,7 +6,7 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { users, checkIns, profiles } from "@/lib/db/schema"
-import { eq, and, gte, inArray } from "drizzle-orm"
+import { eq, and, gte, inArray, isNotNull, desc } from "drizzle-orm"
 import { sendEmail } from "@/lib/email"
 import { weeklyReportEmail } from "@/lib/email/templates"
 import { SITE_URL, SEVEN_DAYS_MS } from "@/lib/constants"
@@ -39,6 +39,19 @@ export async function GET(req: Request) {
   const eligibleClients = allClients.filter((c) => !optedOut.has(c.id))
 
   if (eligibleClients.length === 0) return NextResponse.json({ success: true, sent: 0, skipped: allClients.length })
+
+  // Batch: most recent stored AI insight per client (from any previous digest run)
+  const allInsightRows = await db.query.checkIns.findMany({
+    where: and(inArray(checkIns.userId, eligibleClients.map((c) => c.id)), isNotNull(checkIns.aiInsight)),
+    columns: { userId: true, aiInsight: true },
+    orderBy: [desc(checkIns.createdAt)],
+  })
+  const latestInsightByClient = new Map<string, string>()
+  for (const ci of allInsightRows) {
+    if (!latestInsightByClient.has(ci.userId)) {
+      latestInsightByClient.set(ci.userId, ci.aiInsight!)
+    }
+  }
 
   // Batch: fetch all check-ins for all clients in the last 7 days (one query instead of N)
   const allWeekCheckIns = await db.query.checkIns.findMany({
@@ -85,6 +98,7 @@ export async function GET(req: Request) {
         avgStress,
         pemEpisodes,
         topWin,
+        aiInsight: latestInsightByClient.get(client.id) ?? null,
         portalUrl: SITE_URL,
       }),
     }).catch(() => {})
