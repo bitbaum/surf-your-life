@@ -127,7 +127,7 @@ Write in a professional, clinical tone. Be specific and actionable.`,
 function buildClinicalContext(
   client: { name: string | null; profile?: { mainConcern?: string | null; goals?: string | null } | null },
   recentCheckIns: Array<{
-    createdAt: Date; mood: string; energyLevel: number; sleepHours: number | null;
+    createdAt: Date; mood: string; energyLevel: number; sleepHours: number | null; sleepQuality: number | null;
     symptomFatigue: number | null; symptomBrainFog: number | null; symptomPain: number | null;
     pemFlag: boolean | null; pemSeverity: number | null;
     stressLevel: number | null; activityLevel: string | null;
@@ -156,7 +156,7 @@ function buildClinicalContext(
     lines.push(`\nLast ${recentCheckIns.length} check-ins:`)
     for (const ci of recentCheckIns) {
       const date = localDateString(ci.createdAt)
-      const sleep = ci.sleepHours != null ? ` | sleep ${ci.sleepHours}h` : ""
+      const sleep = ci.sleepHours != null ? ` | sleep ${ci.sleepHours}h${ci.sleepQuality != null ? ` (quality ${ci.sleepQuality}/5)` : ""}` : ""
       const activity = ci.activityLevel ? ` | activity=${ci.activityLevel}` : ""
       const fatigue = ci.symptomFatigue != null ? ` | fatigue ${ci.symptomFatigue}` : ""
       const brainFog = ci.symptomBrainFog != null ? ` | brain-fog ${ci.symptomBrainFog}` : ""
