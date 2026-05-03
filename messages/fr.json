@@ -1236,6 +1236,7 @@
       "noNeedsAttention": "Tous les clients sont à jour — rien à signaler pour l'instant.",
       "allConcerns": "Tous",
       "allPractitioners": "Tous",
+      "unassigned": "Non attribué",
       "clearSearch": "Effacer la recherche"
     },
     "leads": {

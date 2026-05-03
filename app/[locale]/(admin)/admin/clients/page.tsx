@@ -36,7 +36,11 @@ export default async function ClientsPage({
   const { page: pageParam, q, sort: sortParam, concern: concernParam, practitioner: practitionerParam } = await searchParams
   const sort: SortOption = isValidSort(sortParam) ? sortParam : "joined"
   const concern: MainConcern | undefined = isValidConcern(concernParam) ? concernParam : undefined
-  const practitioner = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(practitionerParam ?? "") ? practitionerParam : undefined
+  const practitioner = practitionerParam === "__none__"
+    ? "__none__"
+    : /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(practitionerParam ?? "")
+      ? practitionerParam
+      : undefined
   const { page, offset } = parsePagination(pageParam)
 
   const searchFilter = q?.trim()
@@ -72,9 +76,11 @@ export default async function ClientsPage({
     ? sql`EXISTS (SELECT 1 FROM ${profiles} WHERE ${profiles.userId} = ${users.id} AND ${profiles.mainConcern} = ${concern})`
     : undefined
 
-  const practitionerFilter = practitioner
-    ? sql`EXISTS (SELECT 1 FROM ${assignments} WHERE ${assignments.clientId} = ${users.id} AND ${assignments.practitionerId}::text = ${practitioner} AND ${assignments.active} = true)`
-    : undefined
+  const practitionerFilter = practitioner === "__none__"
+    ? sql`NOT EXISTS (SELECT 1 FROM ${assignments} WHERE ${assignments.clientId} = ${users.id} AND ${assignments.active} = true)`
+    : practitioner
+      ? sql`EXISTS (SELECT 1 FROM ${assignments} WHERE ${assignments.clientId} = ${users.id} AND ${assignments.practitionerId}::text = ${practitioner} AND ${assignments.active} = true)`
+      : undefined
 
   const whereParts = [roleFilter, searchFilter, needsAttentionFilter, concernFilter, practitionerFilter].filter(
     (p): p is NonNullable<typeof p> => p != null

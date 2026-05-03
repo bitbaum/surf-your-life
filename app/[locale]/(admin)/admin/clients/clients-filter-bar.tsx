@@ -76,6 +76,7 @@ export async function ClientsFilterBar({ q, sort, concern, practitioner }: Props
         <FilterTabs
           tabs={[
             { value: "", label: t("allPractitioners") },
+            { value: "__none__", label: t("unassigned") },
             ...practitioners.map((p) => ({ value: p.id, label: p.name ?? p.id })),
           ]}
           active={practitioner ?? ""}
