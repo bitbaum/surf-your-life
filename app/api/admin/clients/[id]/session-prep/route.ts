@@ -121,7 +121,7 @@ function buildClinicalContext(
   recentCheckIns: Array<{
     createdAt: Date; mood: string; energyLevel: number; sleepHours: number | null;
     symptomFatigue: number | null; pemFlag: boolean | null; pemSeverity: number | null;
-    stressLevel: number | null; activityLevel: string | null;
+    stressLevel: number | null; activityLevel: string | null; journalEntry: string | null;
   }>,
   alerts: Array<{ title: string; severity: string; createdAt: Date }>,
   avgTechAdherence: number | null,
@@ -140,6 +140,7 @@ function buildClinicalContext(
       const fatigue = ci.symptomFatigue != null ? ` | fatigue ${ci.symptomFatigue}` : ""
       const stress = ci.stressLevel != null ? ` | stress ${ci.stressLevel}` : ""
       lines.push(`  ${date}: mood=${ci.mood}, energy=${ci.energyLevel}/10${fatigue}${stress}${pem}`)
+      if (ci.journalEntry) lines.push(`    → "${ci.journalEntry.slice(0, 200)}"`)
     }
   }
 
