@@ -14,6 +14,7 @@ import {
   THIRTY_DAYS_MS,
   SEVEN_DAYS_MS,
   DASHBOARD_INSIGHT_ENERGY_WINDOW,
+  CLINIC_TZ,
 } from "@/lib/constants"
 import {
   computeStreak,
@@ -96,8 +97,8 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
   const checkedInToday = recentCheckIns.length > 0 &&
     localDateString(new Date(recentCheckIns[0].createdAt)) === todayStr
 
-  const hour = new Date().getHours()
-  const greetingKey = hour < 12 ? "greetingMorning" : hour < 17 ? "greetingAfternoon" : "greetingEvening"
+  const zurichHour = parseInt(new Intl.DateTimeFormat("en", { timeZone: CLINIC_TZ, hour: "numeric", hour12: false }).format(new Date()), 10)
+  const greetingKey = zurichHour < 12 ? "greetingMorning" : zurichHour < 17 ? "greetingAfternoon" : "greetingEvening"
 
   const isOnboarded = ONBOARDING_REQUIRED_FIELDS.every(
     (f) => profile?.[f as keyof typeof profile]
