@@ -2,7 +2,7 @@ import { getTranslations } from "next-intl/server"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Link } from "@/i18n/navigation"
 import { AlertTriangle } from "lucide-react"
-import { DAY_MS, MOOD_EMOJI } from "@/lib/constants"
+import { DAY_MS, MOOD_EMOJI, CLIENT_ENERGY_LOW_THRESHOLD, CLIENT_ENERGY_MODERATE_THRESHOLD } from "@/lib/constants"
 import { db } from "@/lib/db"
 import { checkIns } from "@/lib/db/schema"
 import { inArray, desc } from "drizzle-orm"
@@ -60,8 +60,8 @@ export async function AtRiskClientsCard({ clients, nowMs }: Props) {
             const detail = detailMap[client.id]
             const energy = detail?.energyLevel ?? null
             const energyColor = energy == null ? "text-slate-300"
-              : energy <= 3 ? "text-red-600 font-semibold"
-              : energy <= 6 ? "text-amber-600"
+              : energy <= CLIENT_ENERGY_LOW_THRESHOLD ? "text-red-600 font-semibold"
+              : energy <= CLIENT_ENERGY_MODERATE_THRESHOLD ? "text-amber-600"
               : "text-teal-600"
             return (
               <Link

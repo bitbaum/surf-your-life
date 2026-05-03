@@ -8,7 +8,7 @@ import { PageHeader } from "@/components/ui/page-header"
 import { Link } from "@/i18n/navigation"
 import { formatDate, daysSince, displayName } from "@/lib/utils"
 import { getTranslations, setRequestLocale } from "next-intl/server"
-import { SEVEN_DAYS_MS, ADMIN_AT_RISK_MAX, MOOD_EMOJI } from "@/lib/constants"
+import { SEVEN_DAYS_MS, ADMIN_AT_RISK_MAX, MOOD_EMOJI, CLIENT_ENERGY_LOW_THRESHOLD, CLIENT_ENERGY_MODERATE_THRESHOLD } from "@/lib/constants"
 import { NewThreadButton } from "../[id]/new-thread-button"
 import { EmptyState } from "@/components/ui/empty-state"
 
@@ -111,8 +111,8 @@ export default async function AtRiskClientsPage({ params }: { params: Promise<{ 
                   const detail = lastDetails[client.id]
                   const energy = detail?.energyLevel ?? null
                   const energyColor = energy == null ? "text-slate-300"
-                    : energy <= 3 ? "text-red-600 font-semibold"
-                    : energy <= 6 ? "text-amber-600"
+                    : energy <= CLIENT_ENERGY_LOW_THRESHOLD ? "text-red-600 font-semibold"
+                    : energy <= CLIENT_ENERGY_MODERATE_THRESHOLD ? "text-amber-600"
                     : "text-teal-600"
                   return (
                     <tr
