@@ -1,8 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useTranslations } from "next-intl"
-import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Sparkles } from "lucide-react"
 
@@ -27,11 +26,13 @@ interface Props {
 
 export function SessionPrep({ clientId }: Props) {
   const t = useTranslations("admin.clients.sessionPrep")
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [summary, setSummary] = useState<string | null>(null)
   const [stats, setStats] = useState<Stats | null>(null)
   const [aiGenerated, setAiGenerated] = useState(false)
   const [error, setError] = useState("")
+
+  useEffect(() => { handleGenerate() }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   async function handleGenerate() {
     setLoading(true)
@@ -58,14 +59,12 @@ export function SessionPrep({ clientId }: Props) {
             <Sparkles className="w-4 h-4 text-teal-600" />
             {t("title")}
           </CardTitle>
-          {!summary && (
-            <Button size="sm" variant="outline" onClick={handleGenerate} disabled={loading}>
-              {loading ? t("generating") : t("generate")}
-            </Button>
+          {loading && (
+            <span className="text-xs text-slate-400 animate-pulse">{t("generating")}</span>
           )}
-          {summary && (
+          {!loading && (
             <button
-              onClick={() => { setSummary(null); setStats(null); setError("") }}
+              onClick={handleGenerate}
               className="text-xs text-slate-400 hover:text-slate-600"
             >
               {t("refresh")}
@@ -74,7 +73,14 @@ export function SessionPrep({ clientId }: Props) {
         </div>
       </CardHeader>
       <CardContent>
-        {!summary && !error && (
+        {!summary && !error && loading && (
+          <div className="space-y-2 animate-pulse">
+            <div className="h-3 bg-slate-100 rounded w-3/4" />
+            <div className="h-3 bg-slate-100 rounded w-full" />
+            <div className="h-3 bg-slate-100 rounded w-5/6" />
+          </div>
+        )}
+        {!summary && !error && !loading && (
           <p className="text-sm text-slate-400">{t("description")}</p>
         )}
         {error && <p className="text-sm text-red-500">{error}</p>}

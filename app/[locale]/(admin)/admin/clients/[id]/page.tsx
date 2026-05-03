@@ -162,6 +162,8 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
 
         <ClientWeeklySnapshot clientCheckIns={clientCheckIns} />
 
+        <SessionPrep clientId={id} />
+
         <ClientChartsSection chartCheckIns={chartCheckIns} assessments={assessments} />
 
         {(unresolvedAlerts.length > 0 || hasAlertHistory) && (
@@ -186,8 +188,6 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
         />
 
         <SessionNotes clientId={id} />
-
-        <SessionPrep clientId={id} />
 
         {activeEnrollment && <ClientEnrollmentCard enrollment={activeEnrollment} />}
       </div>
