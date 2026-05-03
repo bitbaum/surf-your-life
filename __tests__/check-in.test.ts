@@ -615,10 +615,19 @@ describe("computeProgramProgress", () => {
     expect(result?.currentPhase?.title).toBe("Build")
   })
 
-  it("returns null phase when no phase matches the current week", () => {
+  it("returns the most-recently-started phase when current week has no exact match", () => {
+    // Client is in week 3; only week 1 has a phase configured.
+    // Expected: show the week-1 phase (still active), not null.
     const phases = [{ week: 1, title: "Foundation", guidance: "..." }]
     const result = computeProgramProgress(makeEnrollment(2, 8, phases))
-    expect(result?.currentPhase).toBeNull() // week 3, only phase for week 1
+    expect(result?.currentPhase?.title).toBe("Foundation")
+  })
+
+  it("returns null phase when client has not yet reached any configured phase", () => {
+    // Client is in week 1; phases only start at week 3. Nothing active yet.
+    const phases = [{ week: 3, title: "Build", guidance: "..." }]
+    const result = computeProgramProgress(makeEnrollment(0, 8, phases))
+    expect(result?.currentPhase).toBeNull()
   })
 })
 

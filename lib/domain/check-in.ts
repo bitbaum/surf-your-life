@@ -216,7 +216,13 @@ export function computeProgramProgress(enrollment: {
   if (currentWeek < 1 || (totalWeeks > 0 && currentWeek > totalWeeks)) return null
 
   const phases = enrollment.program.phaseConfig as ProgramPhase[] | null
-  const currentPhase = phases?.find((p) => p.week === currentWeek) ?? null
+  // Show the most-recently-started phase: the phase with the highest week number
+  // that has already been reached (p.week ≤ currentWeek). Practitioners configure
+  // phases for key milestones (e.g. weeks 1, 4, 8), not every week, so clients
+  // between milestones should still see the current active phase guidance.
+  const currentPhase = phases
+    ?.filter((p) => p.week <= currentWeek)
+    ?.sort((a, b) => b.week - a.week)[0] ?? null
 
   return { currentWeek, totalWeeks, currentPhase, programTitle: enrollment.program.title }
 }
