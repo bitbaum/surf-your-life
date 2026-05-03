@@ -341,6 +341,7 @@ export function practitionerAlertEmail(data: PractitionerAlertEmailData): string
 // ─── Practitioner weekly digest ───────────────────────────────────────────────
 
 export type PractitionerDigestClientRow = {
+  clientId: string
   name: string
   email: string
   checkInCount: number
@@ -364,6 +365,7 @@ export function practitionerWeeklyDigestEmail(data: PractitionerWeeklyDigestData
   const { weekStart, weekEnd, clients, adminUrl } = data
 
   const clientRows = clients.map((c) => {
+    const clientUrl = `${SITE_URL}/admin/clients/${c.clientId}`
     const alertBadge = c.alertCount > 0
       ? `<span style="background:#fef2f2;color:#dc2626;border:1px solid #dc2626;border-radius:9999px;padding:1px 8px;font-size:11px;font-weight:600;margin-left:6px;">${c.alertCount} alert${c.alertCount > 1 ? "s" : ""}</span>`
       : ""
@@ -374,7 +376,7 @@ export function practitionerWeeklyDigestEmail(data: PractitionerWeeklyDigestData
     <div style="border:1px solid #e2e8f0;border-radius:8px;padding:16px;margin:12px 0;">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
         <div>
-          <span style="font-weight:600;color:#0f172a;">${c.name}</span>${alertBadge}
+          <a href="${clientUrl}" style="font-weight:600;color:#0f172a;text-decoration:none;">${c.name}</a>${alertBadge}
           <div style="font-size:12px;color:#94a3b8;">${c.email}</div>
         </div>
         <div style="display:flex;gap:16px;font-size:13px;color:#475569;flex-wrap:wrap;">

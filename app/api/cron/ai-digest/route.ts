@@ -119,6 +119,7 @@ export async function GET(req: Request) {
     const pemEpisodes = stats.pemCount
 
     digestRows.push({
+      clientId: client.id,
       name: client.name ?? client.email,
       email: client.email,
       checkInCount: weekCheckIns.length,
