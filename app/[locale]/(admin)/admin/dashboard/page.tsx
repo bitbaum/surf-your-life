@@ -4,9 +4,8 @@ import { eq, desc, gte, count, and, isNull, max, sql } from "drizzle-orm"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { StatCard } from "@/components/ui/stat-card"
 import { PageHeader } from "@/components/ui/page-header"
-import { Users, ClipboardList, TrendingUp, CalendarClock, MessageSquare, AlertTriangle } from "lucide-react"
+import { Users, ClipboardList, CalendarCheck, CalendarClock, MessageSquare, AlertTriangle } from "lucide-react"
 import { SEVEN_DAYS_MS, THIRTY_DAYS_MS, RECENT_CLIENTS_LIMIT, AT_RISK_CLIENTS_LIMIT, ADMIN_DASHBOARD_ALERTS_PREVIEW, ADMIN_DASHBOARD_INSIGHTS_PREVIEW, CLINIC_TZ } from "@/lib/constants"
-import { roundOne } from "@/lib/utils"
 import { CLIENT_ROLE } from "@/lib/domain/auth"
 import { fetchCadenceMap } from "@/lib/db/check-in-cadence"
 import { atRiskHaving } from "@/lib/db/at-risk"
@@ -30,9 +29,12 @@ export default async function AdminDashboardPage({
   const thirtyDaysAgo = new Date(nowMs - THIRTY_DAYS_MS)
   const sevenDaysAgo = new Date(nowMs - SEVEN_DAYS_MS)
 
+  const todayInClinicTz = sql`(${checkIns.createdAt} AT TIME ZONE ${CLINIC_TZ})::date = (NOW() AT TIME ZONE ${CLINIC_TZ})::date`
+
   const [
     clientCountResult,
     recentCheckInsCountResult,
+    todayCheckInsResult,
     pendingBookingsResult,
     unreadMessagesResult,
     recentClients,
@@ -45,6 +47,11 @@ export default async function AdminDashboardPage({
   ] = await Promise.all([
     db.select({ count: count() }).from(users).where(eq(users.role, CLIENT_ROLE)),
     db.select({ count: count() }).from(checkIns).where(gte(checkIns.createdAt, thirtyDaysAgo)),
+    db
+      .select({ count: count() })
+      .from(checkIns)
+      .innerJoin(users, eq(users.id, checkIns.userId))
+      .where(and(eq(users.role, CLIENT_ROLE), todayInClinicTz)),
     db.select({ count: count() }).from(bookings).where(eq(bookings.status, "pending")),
     db
       .select({ count: count() })
@@ -135,9 +142,9 @@ export default async function AdminDashboardPage({
 
   const clientCount = clientCountResult[0]?.count ?? 0
   const recentCheckInsCount = recentCheckInsCountResult[0]?.count ?? 0
+  const todayCheckIns = todayCheckInsResult[0]?.count ?? 0
   const pendingBookings = pendingBookingsResult[0]?.count ?? 0
   const unreadMessages = unreadMessagesResult[0]?.count ?? 0
-  const avgCheckIns = clientCount > 0 ? roundOne(recentCheckInsCount / clientCount) : 0
 
   const atRiskCount = atRiskCountResult[0]?.count ?? 0
   const atRiskClients = atRiskPreview
@@ -170,7 +177,7 @@ export default async function AdminDashboardPage({
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-6 gap-4 mb-8">
         <StatCard label={t("totalClients")} value={clientCount} icon={Users} color="teal" href="/admin/clients" />
         <StatCard label={t("checkIns30d")} value={recentCheckInsCount} icon={ClipboardList} color="slate" href="/admin/check-ins" />
-        <StatCard label={t("avgCheckIns")} value={avgCheckIns} icon={TrendingUp} color="teal" />
+        <StatCard label={t("checkInsToday")} value={todayCheckIns} icon={CalendarCheck} color="teal" href="/admin/check-ins" />
         <StatCard label={t("pendingBookings")} value={pendingBookings} icon={CalendarClock} color="slate" href="/admin/bookings" />
         <StatCard label={t("unreadMessages")} value={unreadMessages} icon={MessageSquare} color="teal" href="/admin/messages" />
         <StatCard

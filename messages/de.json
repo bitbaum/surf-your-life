@@ -933,6 +933,7 @@
       "description": "Überblick über das Surf Your Life Portal",
       "totalClients": "Klienten gesamt",
       "checkIns30d": "Check-ins (30 Tage)",
+      "checkInsToday": "Check-ins heute",
       "avgCheckIns": "Ø Check-ins / Klient",
       "pendingBookings": "Ausstehende Buchungen",
       "unreadMessages": "Ungelesene Nachrichten",
