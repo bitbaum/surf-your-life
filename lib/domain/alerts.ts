@@ -332,7 +332,7 @@ export async function generateMissedCheckInAlerts(): Promise<number> {
       const digestClients = newAlerts.map((alert) => {
         const client = clients.find((c) => c.id === alert.clientId)!
         const daysMissed = daysSince(lastCheckInMap.get(alert.clientId) ?? null)
-        return { name: client.name, email: client.email, daysMissed }
+        return { clientId: client.id, name: client.name, email: client.email, daysMissed }
       })
 
       const html = missedCheckInDigestEmail({
@@ -483,6 +483,7 @@ export async function generateTechniqueAdherenceAlerts(): Promise<number> {
     if (practitioners.length > 0) {
       const clientMap = new Map(clientRows.map((c) => [c.id, c]))
       const digestClients = decliners.map((d) => ({
+        clientId: d.clientId,
         name: clientMap.get(d.clientId)?.name ?? null,
         email: clientMap.get(d.clientId)?.email ?? "",
         prior7avg: d.prior7avg,

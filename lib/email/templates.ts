@@ -408,7 +408,7 @@ export function practitionerWeeklyDigestEmail(data: PractitionerWeeklyDigestData
 // ─── Missed check-in digest (practitioner, sent once per cron run) ───────────
 
 export type MissedCheckInDigestData = {
-  clients: { name: string | null; email: string; daysMissed: number | null }[]
+  clients: { clientId: string; name: string | null; email: string; daysMissed: number | null }[]
   adminUrl: string
 }
 
@@ -421,10 +421,11 @@ export function missedCheckInDigestEmail(data: MissedCheckInDigestData): string 
       const label = c.daysMissed != null
         ? `${c.daysMissed} day${c.daysMissed !== 1 ? "s" : ""} overdue`
         : "Never checked in"
+      const clientUrl = `${SITE_URL}/admin/clients/${c.clientId}`
       return `
       <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f1f5f9;">
         <div>
-          <span style="font-weight:600;color:#0f172a;">${c.name ?? "(no name)"}</span>
+          <a href="${clientUrl}" style="font-weight:600;color:#0f172a;text-decoration:none;">${c.name ?? "(no name)"}</a>
           <div style="font-size:12px;color:#94a3b8;">${c.email}</div>
         </div>
         <span style="font-size:13px;color:#d97706;font-weight:500;">${label}</span>
@@ -541,7 +542,7 @@ export type FirstCheckInAlertData = {
 // ─── Technique adherence decline digest ──────────────────────────────────────
 
 export type TechniqueAdherenceDigestData = {
-  clients: Array<{ name: string | null; email: string; prior7avg: number; recent7avg: number; drop: number }>
+  clients: Array<{ clientId: string; name: string | null; email: string; prior7avg: number; recent7avg: number; drop: number }>
   adminUrl: string
 }
 
@@ -550,14 +551,17 @@ export function techniqueAdherenceDigestEmail(data: TechniqueAdherenceDigestData
 
   const rows = clients
     .sort((a, b) => b.drop - a.drop)
-    .map((c) => `
+    .map((c) => {
+      const clientUrl = `${SITE_URL}/admin/clients/${c.clientId}`
+      return `
       <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f1f5f9;">
         <div>
-          <span style="font-weight:600;color:#0f172a;">${c.name ?? "(no name)"}</span>
+          <a href="${clientUrl}" style="font-weight:600;color:#0f172a;text-decoration:none;">${c.name ?? "(no name)"}</a>
           <div style="font-size:12px;color:#94a3b8;">${c.email}</div>
         </div>
         <span style="font-size:13px;color:#dc2626;font-weight:500;">${c.prior7avg}% → ${c.recent7avg}% (−${c.drop}%)</span>
-      </div>`)
+      </div>`
+    })
     .join("")
 
   return emailShell(`
