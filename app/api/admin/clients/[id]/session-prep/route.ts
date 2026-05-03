@@ -5,12 +5,12 @@
  */
 import { formatEnumValue, roundOne } from "@/lib/utils"
 import { db } from "@/lib/db"
-import { users, checkIns, clientAlerts, techniqueAssignments, techniqueLogs } from "@/lib/db/schema"
+import { users, checkIns, clientAlerts, techniqueAssignments, techniqueLogs, documents } from "@/lib/db/schema"
 import { eq, desc, and, gte } from "drizzle-orm"
 import { callClaude } from "@/lib/domain/anthropic"
 import { localDateString, addDaysISO } from "@/lib/utils"
 import { computeDailyAdherenceTrend } from "@/lib/domain/techniques"
-import { SESSION_PREP_CHECKIN_LIMIT, SESSION_PREP_ALERTS_LIMIT, SESSION_PREP_ENERGY_AVG_WINDOW } from "@/lib/constants"
+import { SESSION_PREP_CHECKIN_LIMIT, SESSION_PREP_ALERTS_LIMIT, SESSION_PREP_ENERGY_AVG_WINDOW, SESSION_PREP_NOTES_LIMIT } from "@/lib/constants"
 import { notFound, okData, requireStaffAuth } from "@/lib/api"
 
 export async function GET(
@@ -25,7 +25,7 @@ export async function GET(
   const today = localDateString(new Date())
   const thirtyDaysAgo = addDaysISO(today, -30)
 
-  const [client, recentCheckIns, activeAlerts, clientAssignments, techLogs] = await Promise.all([
+  const [client, recentCheckIns, activeAlerts, clientAssignments, techLogs, recentSessionNotes] = await Promise.all([
     db.query.users.findFirst({
       where: eq(users.id, clientId),
       with: { profile: true },
@@ -50,6 +50,12 @@ export async function GET(
       where: and(eq(techniqueLogs.userId, clientId), gte(techniqueLogs.date, thirtyDaysAgo)),
       columns: { assignmentId: true, date: true, completedReps: true },
     }),
+    db.query.documents.findMany({
+      where: and(eq(documents.userId, clientId), eq(documents.type, "session_note")),
+      orderBy: [desc(documents.createdAt)],
+      limit: SESSION_PREP_NOTES_LIMIT,
+      columns: { title: true, content: true, createdAt: true },
+    }),
   ])
 
   if (!client) {
@@ -65,7 +71,7 @@ export async function GET(
   const techniqueStreak = rawStreak === -1 ? dailyTrend.length : rawStreak
 
   const techniqueNames = clientAssignments.map((a) => a.technique?.name).filter(Boolean) as string[]
-  const context = buildClinicalContext(client, recentCheckIns, activeAlerts, avgTechAdherence, techniqueStreak, techniqueNames)
+  const context = buildClinicalContext(client, recentCheckIns, activeAlerts, avgTechAdherence, techniqueStreak, techniqueNames, recentSessionNotes)
 
   const aiSummary = await callClaude({
     messages: [
@@ -128,12 +134,17 @@ function buildClinicalContext(
   alerts: Array<{ title: string; severity: string; createdAt: Date }>,
   avgTechAdherence: number | null,
   techniqueStreak: number,
-  techniqueNames: string[] = []
+  techniqueNames: string[] = [],
+  sessionNotes: Array<{ title: string; content: string | null; createdAt: Date }> = []
 ): string {
   const lines: string[] = [
     `Client: ${client.name ?? "Unknown"}`,
     `Main concern: ${client.profile?.mainConcern ?? "not specified"}`,
   ]
+
+  if (client.profile?.goals) {
+    lines.push(`Client's stated goals: ${client.profile.goals}`)
+  }
 
   if (techniqueNames.length > 0) {
     lines.push(`Active techniques: ${techniqueNames.join(", ")}`)
@@ -160,6 +171,15 @@ function buildClinicalContext(
 
   if (avgTechAdherence != null) {
     lines.push(`\nTechnique adherence (30-day avg): ${avgTechAdherence}% | Current streak: ${techniqueStreak} day(s) at 100%`)
+  }
+
+  if (sessionNotes.length > 0) {
+    lines.push(`\nRecent session notes (${sessionNotes.length}):`)
+    for (const note of sessionNotes) {
+      const date = localDateString(note.createdAt)
+      lines.push(`  [${date}] ${note.title}`)
+      if (note.content) lines.push(`    ${note.content.slice(0, 300)}`)
+    }
   }
 
   return lines.join("\n")

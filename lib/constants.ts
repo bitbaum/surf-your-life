@@ -271,6 +271,7 @@ export const AI_CHAT_MAX_LENGTH = 1000    // max user message character length
 export const SESSION_PREP_CHECKIN_LIMIT = 10  // recent check-ins included in briefing
 export const SESSION_PREP_ALERTS_LIMIT = 5    // recent alerts included in briefing
 export const SESSION_PREP_ENERGY_AVG_WINDOW = 5  // check-ins used for energy average calculation
+export const SESSION_PREP_NOTES_LIMIT = 3     // recent session notes included in briefing
 
 // Streak calculation
 export const STREAK_LOOKBACK_DAYS = 30  // max days to look back when calculating check-in streaks
