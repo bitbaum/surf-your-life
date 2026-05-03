@@ -1,6 +1,7 @@
 import { db } from "@/lib/db"
-import { clientAlerts, users } from "@/lib/db/schema"
-import { eq, desc } from "drizzle-orm"
+import { clientAlerts, users, assignments } from "@/lib/db/schema"
+import { eq, desc, and } from "drizzle-orm"
+import { auth } from "@/lib/auth"
 import { PageHeader } from "@/components/ui/page-header"
 import { AlertList } from "./alert-list"
 import { getTranslations, setRequestLocale } from "next-intl/server"
@@ -13,6 +14,15 @@ export default async function AlertsPage({ params }: { params: Promise<{ locale:
   setRequestLocale(locale)
   const t = await getTranslations("admin.alerts")
   const tClients = await getTranslations("admin.clients")
+
+  const session = await auth()
+  const myAssignments = session?.user?.id
+    ? await db
+        .select({ clientId: assignments.clientId })
+        .from(assignments)
+        .where(and(eq(assignments.practitionerId, session.user.id), eq(assignments.active, true)))
+    : []
+  const myClientIds = myAssignments.map((a) => a.clientId)
 
   const rows = await db
     .select({
@@ -68,6 +78,7 @@ export default async function AlertsPage({ params }: { params: Promise<{ locale:
         sparkData={sparkData}
         sparkLabels={sparkLabels}
         sparkHint={tClients("cadenceHint")}
+        myClientIds={myClientIds}
       />
     </div>
   )

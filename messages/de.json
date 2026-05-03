@@ -1485,7 +1485,8 @@
       "hideHistory": "Erledigte ausblenden",
       "resolvedLabel": "Erledigt",
       "noHistory": "Keine erledigten Meldungen",
-      "noActiveAlerts": "Keine aktiven Meldungen"
+      "noActiveAlerts": "Keine aktiven Meldungen",
+      "mineOnly": "Meine Klienten"
     },
     "checkIns": {
       "title": "Letzte Aktivitäten",

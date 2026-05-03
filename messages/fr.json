@@ -1485,7 +1485,8 @@
       "hideHistory": "Masquer les résolus",
       "resolvedLabel": "Résolu",
       "noHistory": "Aucune alerte résolue",
-      "noActiveAlerts": "Aucune alerte active"
+      "noActiveAlerts": "Aucune alerte active",
+      "mineOnly": "Mes clients"
     },
     "checkIns": {
       "title": "Activité récente",

@@ -29,13 +29,15 @@ interface Props {
   sparkData: Record<string, { checkedIn: string[]; pemDays: string[] }>
   sparkLabels: Record<DayState, string>
   sparkHint: string
+  myClientIds?: string[]
 }
 
-export function AlertList({ initialAlerts, sparkDays, sparkData, sparkLabels, sparkHint }: Props) {
+export function AlertList({ initialAlerts, sparkDays, sparkData, sparkLabels, sparkHint, myClientIds }: Props) {
   const t = useTranslations("admin.alerts")
   const [alerts, setAlerts] = useState(initialAlerts)
   const [typeFilter, setTypeFilter] = useState<TypeFilter>(ALL_FILTER)
   const [search, setSearch] = useState("")
+  const [mineOnly, setMineOnly] = useState(false)
   const [resolvingAll, setResolvingAll] = useState(false)
 
   function handleResolved(id: string) {
@@ -59,9 +61,12 @@ export function AlertList({ initialAlerts, sparkDays, sparkData, sparkLabels, sp
   }
 
   const q = search.trim().toLowerCase()
-  const searched = q
+  const bySearch = q
     ? alerts.filter((a) => (a.client.name ?? a.client.email).toLowerCase().includes(q))
     : alerts
+  const searched = mineOnly && myClientIds
+    ? bySearch.filter((a) => myClientIds.includes(a.client.id))
+    : bySearch
   const activeTypes = [...new Set(searched.map((a) => a.type))] as AlertType[]
   const visible = typeFilter === ALL_FILTER ? searched : searched.filter((a) => a.type === typeFilter)
 
@@ -92,6 +97,9 @@ export function AlertList({ initialAlerts, sparkDays, sparkData, sparkLabels, sp
         visibleCount={visible.length}
         resolvingAll={resolvingAll}
         onResolveAll={handleResolveAll}
+        mineOnly={mineOnly}
+        onMineOnly={setMineOnly}
+        hasMineFilter={(myClientIds?.length ?? 0) > 0}
       />
       {ALERT_SEVERITY_ORDER.map((sev) => {
         const group = grouped[sev]
