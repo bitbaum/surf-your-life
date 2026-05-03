@@ -1,7 +1,7 @@
 import { db } from "@/lib/db"
 import { users, checkIns, profiles, clientAlerts, threads, assignments } from "@/lib/db/schema"
 import { eq, desc, count, or, ilike, and, max, inArray, sql } from "drizzle-orm"
-import { fetchCadenceMap, fetchEnergyTrendMap } from "@/lib/db/check-in-cadence"
+import { fetchCadenceMap, fetchEnergyTrendMap, type EnergyTrendEntry } from "@/lib/db/check-in-cadence"
 import { unreadFromClientExists } from "@/lib/db/thread-unread"
 import { CLIENT_ROLE } from "@/lib/domain/auth"
 import { PageHeader } from "@/components/ui/page-header"
@@ -132,7 +132,7 @@ export default async function ClientsPage({
   const alertCountMap = new Map<string, { count: number; hasHigh: boolean }>()
   const unreadMessageMap = new Map<string, number>()
   let cadenceMap = {}
-  let energyTrendMap = new Map<string, "up" | "down" | "stable">()
+  let energyTrendMap = new Map<string, EnergyTrendEntry>()
   if (clientIds.length > 0) {
     const [alertCountRows, fetchedCadence, unreadRows, fetchedEnergyTrend] = await Promise.all([
       db

@@ -54,16 +54,17 @@ export async function fetchCadenceMap(
 }
 
 export type EnergyTrend = "up" | "down" | "stable"
+export type EnergyTrendEntry = { trend: EnergyTrend | null; latestEnergy: number | null }
 
 /**
  * For each client in `clientIds`, fetches 14 days of check-ins and returns
- * the week-over-week energy direction: "up" (≥+1.0), "down" (≤−1.0), or
- * "stable". Clients with no prior-week data are omitted from the map.
+ * the week-over-week energy direction plus the latest energy score.
+ * Trend is null when there is insufficient prior-week data.
  */
 export async function fetchEnergyTrendMap(
   clientIds: string[],
   staleCutoff: Date
-): Promise<Map<string, EnergyTrend>> {
+): Promise<Map<string, EnergyTrendEntry>> {
   if (clientIds.length === 0) return new Map()
 
   const fourteenDaysAgo = new Date(staleCutoff.getTime() - SEVEN_DAYS_MS)
@@ -85,13 +86,17 @@ export async function fetchEnergyTrendMap(
     byClient.set(r.userId, arr)
   }
 
-  const out = new Map<string, EnergyTrend>()
+  const out = new Map<string, EnergyTrendEntry>()
   for (const [clientId, clientRows] of byClient) {
+    const latestRow = clientRows.reduce((best, r) => r.createdAt > best.createdAt ? r : best)
+    const latestEnergy = latestRow.energyLevel ?? null
     const delta = computeWeekDelta(clientRows)
-    if (!delta.hasPriorWindow || delta.energyDelta == null) continue
-    if (delta.energyDelta >= 1.0) out.set(clientId, "up")
-    else if (delta.energyDelta <= -1.0) out.set(clientId, "down")
-    else out.set(clientId, "stable")
+    if (!delta.hasPriorWindow || delta.energyDelta == null) {
+      out.set(clientId, { trend: null, latestEnergy })
+      continue
+    }
+    const trend: EnergyTrend = delta.energyDelta >= 1.0 ? "up" : delta.energyDelta <= -1.0 ? "down" : "stable"
+    out.set(clientId, { trend, latestEnergy })
   }
   return out
 }

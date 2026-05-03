@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server"
-import type { CadenceMap } from "@/lib/db/check-in-cadence"
+import type { CadenceMap, EnergyTrendEntry } from "@/lib/db/check-in-cadence"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Pagination } from "@/components/ui/pagination"
 import { Link } from "@/i18n/navigation"
@@ -16,7 +16,7 @@ type Props = {
   alertCountMap: Map<string, AlertInfo>
   unreadMessageMap: Map<string, number>
   cadenceMap: CadenceMap
-  energyTrendMap: Map<string, "up" | "down" | "stable">
+  energyTrendMap: Map<string, EnergyTrendEntry>
   staleCutoff: Date
   q: string | undefined
   sort: SortOption
@@ -79,7 +79,8 @@ export async function ClientsCard({ clients, alertCountMap, unreadMessageMap, ca
                     client={client}
                     alert={alertCountMap.get(client.id)}
                     unreadMessages={unreadMessageMap.get(client.id) ?? 0}
-                    energyTrend={energyTrendMap.get(client.id) ?? null}
+                    energyTrend={energyTrendMap.get(client.id)?.trend ?? null}
+                    latestEnergy={energyTrendMap.get(client.id)?.latestEnergy ?? null}
                     isStale={isStale}
                     staleHint={t("staleHint")}
                     viewLabel={t("viewLink")}
