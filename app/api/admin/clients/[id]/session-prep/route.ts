@@ -128,8 +128,10 @@ function buildClinicalContext(
   client: { name: string | null; profile?: { mainConcern?: string | null; goals?: string | null } | null },
   recentCheckIns: Array<{
     createdAt: Date; mood: string; energyLevel: number; sleepHours: number | null;
-    symptomFatigue: number | null; pemFlag: boolean | null; pemSeverity: number | null;
-    stressLevel: number | null; activityLevel: string | null; journalEntry: string | null;
+    symptomFatigue: number | null; symptomBrainFog: number | null; symptomPain: number | null;
+    pemFlag: boolean | null; pemSeverity: number | null;
+    stressLevel: number | null; activityLevel: string | null;
+    orthostaticSymptoms: boolean | null; journalEntry: string | null;
   }>,
   alerts: Array<{ title: string; severity: string; createdAt: Date }>,
   avgTechAdherence: number | null,
@@ -154,10 +156,15 @@ function buildClinicalContext(
     lines.push(`\nLast ${recentCheckIns.length} check-ins:`)
     for (const ci of recentCheckIns) {
       const date = localDateString(ci.createdAt)
-      const pem = ci.pemFlag ? ` | PEM${ci.pemSeverity ? ` ${ci.pemSeverity}/10` : ""}` : ""
+      const sleep = ci.sleepHours != null ? ` | sleep ${ci.sleepHours}h` : ""
+      const activity = ci.activityLevel ? ` | activity=${ci.activityLevel}` : ""
       const fatigue = ci.symptomFatigue != null ? ` | fatigue ${ci.symptomFatigue}` : ""
+      const brainFog = ci.symptomBrainFog != null ? ` | brain-fog ${ci.symptomBrainFog}` : ""
+      const pain = ci.symptomPain != null ? ` | pain ${ci.symptomPain}` : ""
       const stress = ci.stressLevel != null ? ` | stress ${ci.stressLevel}` : ""
-      lines.push(`  ${date}: mood=${ci.mood}, energy=${ci.energyLevel}/10${fatigue}${stress}${pem}`)
+      const pem = ci.pemFlag ? ` | PEM${ci.pemSeverity ? ` ${ci.pemSeverity}/10` : ""}` : ""
+      const ortho = ci.orthostaticSymptoms === true ? " | orthostatic+" : ""
+      lines.push(`  ${date}: mood=${ci.mood}, energy=${ci.energyLevel}/10${sleep}${activity}${fatigue}${brainFog}${pain}${stress}${pem}${ortho}`)
       if (ci.journalEntry) lines.push(`    → "${ci.journalEntry.slice(0, 200)}"`)
     }
   }
