@@ -417,6 +417,8 @@
       "practitionerNoteLink": "View all check-ins →",
       "yourPractitioner": "Your practitioner",
       "yourPractitionerLink": "Send a message →",
+      "aiInsightTitle": "Your weekly AI summary",
+      "aiInsightViewAll": "View all check-ins",
       "trend": {
         "title": "Your last 7 days",
         "checkInsCount": "{count, plural, one {# check-in} other {# check-ins}}",

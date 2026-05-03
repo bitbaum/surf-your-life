@@ -2,7 +2,7 @@ import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { checkIns, users, programEnrollments } from "@/lib/db/schema"
 import { getUserProfile } from "@/lib/db/queries"
-import { eq, desc, asc, and, gte, count } from "drizzle-orm"
+import { eq, desc, asc, and, gte, count, isNotNull } from "drizzle-orm"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { StatCard } from "@/components/ui/stat-card"
 import { ClipboardList, TrendingUp, Flame } from "lucide-react"
@@ -31,6 +31,7 @@ import { DashboardProgramCard } from "./dashboard-program-card"
 import { DashboardTechniquesCard } from "./dashboard-techniques-card"
 import { DashboardPractitionerNoteCard } from "./dashboard-practitioner-note-card"
 import { DashboardPractitionerCard } from "./dashboard-practitioner-card"
+import { DashboardAIInsightCard } from "./dashboard-ai-insight-card"
 
 export default async function DashboardPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
@@ -43,7 +44,7 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
   const nowMs = Date.now() // eslint-disable-line react-hooks/purity -- server component
   const thirtyDaysAgo = new Date(nowMs - THIRTY_DAYS_MS)
 
-  const [profile, recentCheckIns, trendCheckIns, totalResult, dbUser, activeEnrollment] = await Promise.all([
+  const [profile, recentCheckIns, trendCheckIns, totalResult, dbUser, activeEnrollment, latestAIInsight] = await Promise.all([
     getUserProfile(session.user.id),
     db.query.checkIns.findMany({
       where: eq(checkIns.userId, session.user.id),
@@ -80,6 +81,11 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
       ),
       with: { program: { columns: { id: true, title: true, durationWeeks: true, phaseConfig: true } } },
       orderBy: [desc(programEnrollments.createdAt)],
+    }),
+    db.query.checkIns.findFirst({
+      where: and(eq(checkIns.userId, session.user.id), isNotNull(checkIns.aiInsight)),
+      orderBy: [desc(checkIns.createdAt)],
+      columns: { aiInsight: true, createdAt: true },
     }),
   ])
 
@@ -174,6 +180,8 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
 
       <DashboardPractitionerCard userId={session.user.id} />
       <DashboardPractitionerNoteCard userId={session.user.id} />
+
+      <DashboardAIInsightCard insight={latestAIInsight?.aiInsight ?? null} generatedAt={latestAIInsight?.createdAt ?? null} />
 
       <DashboardProgramCard programProgress={programProgress} />
 

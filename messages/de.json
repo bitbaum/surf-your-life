@@ -417,6 +417,8 @@
       "practitionerNoteLink": "Alle Check-ins ansehen →",
       "yourPractitioner": "Deine Therapeutin",
       "yourPractitionerLink": "Nachricht senden →",
+      "aiInsightTitle": "Deine wöchentliche KI-Zusammenfassung",
+      "aiInsightViewAll": "Alle Check-ins ansehen",
       "trend": {
         "title": "Deine letzten 7 Tage",
         "checkInsCount": "{count, plural, one {# Check-in} other {# Check-ins}}",
