@@ -1,4 +1,5 @@
 import type { DailyAdherencePoint } from "@/lib/domain/techniques"
+import { ADHERENCE_TREND_COMPARISON_DAYS, ADHERENCE_TREND_THRESHOLD_PCT } from "@/lib/constants"
 
 const W = 120, H = 28, PAD = 2
 const PLOT_W = W - PAD * 2
@@ -15,10 +16,10 @@ export function TechniqueAdherenceSparkline({ trend }: { trend: DailyAdherencePo
     .join(" ")
   const areaPath = `${linePath} L ${toX(trend.length - 1).toFixed(1)} ${H} L ${PAD} ${H} Z`
 
-  const recent7avg = trend.slice(-7).reduce((s, d) => s + d.pct, 0) / 7
-  const earlier7avg = trend.slice(0, 7).reduce((s, d) => s + d.pct, 0) / 7
-  const isTrending = recent7avg >= earlier7avg + 8
-  const isDeclining = recent7avg <= earlier7avg - 8
+  const recentAvg = trend.slice(-ADHERENCE_TREND_COMPARISON_DAYS).reduce((s, d) => s + d.pct, 0) / ADHERENCE_TREND_COMPARISON_DAYS
+  const earlierAvg = trend.slice(0, ADHERENCE_TREND_COMPARISON_DAYS).reduce((s, d) => s + d.pct, 0) / ADHERENCE_TREND_COMPARISON_DAYS
+  const isTrending = recentAvg >= earlierAvg + ADHERENCE_TREND_THRESHOLD_PCT
+  const isDeclining = recentAvg <= earlierAvg - ADHERENCE_TREND_THRESHOLD_PCT
   const color = isDeclining ? "#dc2626" : isTrending ? "#0d9488" : "#64748b"
 
   return (

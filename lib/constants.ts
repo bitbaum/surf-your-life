@@ -163,6 +163,14 @@ export const ASSESSMENTS_MAX = 200               // safety cap for functional as
 export const ADMIN_DASHBOARD_INSIGHTS_PREVIEW = 6
 export const DASHBOARD_INSIGHT_ENERGY_WINDOW = 3  // recent energy levels used for portal insight calculation
 
+// Energy display thresholds (client list and detail view color coding)
+export const CLIENT_ENERGY_LOW_THRESHOLD = 3       // energy ≤ this → red
+export const CLIENT_ENERGY_MODERATE_THRESHOLD = 6  // energy ≤ this → amber; above → teal
+
+// Technique adherence sparkline trend detection
+export const ADHERENCE_TREND_COMPARISON_DAYS = 7   // days compared for trend vs. baseline
+export const ADHERENCE_TREND_THRESHOLD_PCT = 8     // percentage-point gap to call "trending" or "declining"
+
 // SVG chart dimensions (shared by all inline charts)
 export const CHART_W = 800
 export const CHART_H = 220

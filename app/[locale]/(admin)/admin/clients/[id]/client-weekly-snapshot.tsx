@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server"
 import type { checkIns } from "@/lib/db/schema"
 import { localDateString, buildLastNDayStrings } from "@/lib/utils"
-import { SEVEN_DAYS_MS } from "@/lib/constants"
+import { SEVEN_DAYS_MS, DASHBOARD_INSIGHT_ENERGY_WINDOW } from "@/lib/constants"
 import { computeWeekDelta, computeInsight, isComparativeInsight } from "@/lib/domain/check-in"
 import { InsightBanner } from "@/components/ui/insight-banner"
 import { TrendCard } from "@/components/ui/trend-card"
@@ -23,7 +23,7 @@ export async function ClientWeeklySnapshot({ clientCheckIns }: { clientCheckIns:
   const sevenDaysAgoMs = Date.now() - SEVEN_DAYS_MS // eslint-disable-line react-hooks/purity -- server component
   const weekCheckInCount = clientCheckIns.filter((ci) => ci.createdAt.getTime() >= sevenDaysAgoMs).length
   const insightHit = computeInsight(
-    clientCheckIns.slice(0, 3).map((ci) => ci.energyLevel),
+    clientCheckIns.slice(0, DASHBOARD_INSIGHT_ENERGY_WINDOW).map((ci) => ci.energyLevel),
     weekCheckInCount,
     weekDelta
   )

@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server"
 import { NewThreadButton } from "./[id]/new-thread-button"
 import { DayCadenceSparkline, type DayState } from "@/components/ui/day-cadence-sparkline"
 import { MessageSquare } from "lucide-react"
+import { CLIENT_ENERGY_LOW_THRESHOLD, CLIENT_ENERGY_MODERATE_THRESHOLD } from "@/lib/constants"
 
 export type ClientRow = {
   id: string
@@ -89,7 +90,7 @@ export async function ClientTableRow({ client, alert, unreadMessages, energyTren
         <span className="inline-flex items-center gap-1">
           {client.checkInCount > 0 ? client.checkInCount : <span className="text-slate-300">0</span>}
           {latestEnergy != null && (
-            <span className={`text-xs font-medium ${latestEnergy <= 3 ? "text-red-600" : latestEnergy <= 6 ? "text-amber-600" : "text-teal-600"}`}>
+            <span className={`text-xs font-medium ${latestEnergy <= CLIENT_ENERGY_LOW_THRESHOLD ? "text-red-600" : latestEnergy <= CLIENT_ENERGY_MODERATE_THRESHOLD ? "text-amber-600" : "text-teal-600"}`}>
               {latestEnergy}/10
             </span>
           )}
