@@ -415,6 +415,8 @@
       "dotPem": "Crash-Tag",
       "practitionerNoteTitle": "Von deinem Therapeuten",
       "practitionerNoteLink": "Alle Check-ins ansehen →",
+      "yourPractitioner": "Deine Therapeutin",
+      "yourPractitionerLink": "Nachricht senden →",
       "trend": {
         "title": "Deine letzten 7 Tage",
         "checkInsCount": "{count, plural, one {# Check-in} other {# Check-ins}}",
