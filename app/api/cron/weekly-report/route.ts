@@ -5,7 +5,7 @@
  */
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
-import { users, checkIns } from "@/lib/db/schema"
+import { users, checkIns, profiles } from "@/lib/db/schema"
 import { eq, and, gte, inArray } from "drizzle-orm"
 import { sendEmail } from "@/lib/email"
 import { weeklyReportEmail } from "@/lib/email/templates"
@@ -28,10 +28,22 @@ export async function GET(req: Request) {
 
   if (allClients.length === 0) return NextResponse.json({ success: true, sent: 0 })
 
+  const clientIds = allClients.map((c) => c.id)
+
+  // Respect opt-out preference — same pattern as daily reminder cron.
+  const profilePrefs = await db
+    .select({ userId: profiles.userId, receiveReminders: profiles.receiveReminders })
+    .from(profiles)
+    .where(inArray(profiles.userId, clientIds))
+  const optedOut = new Set(profilePrefs.filter((p) => !p.receiveReminders).map((p) => p.userId))
+  const eligibleClients = allClients.filter((c) => !optedOut.has(c.id))
+
+  if (eligibleClients.length === 0) return NextResponse.json({ success: true, sent: 0, skipped: allClients.length })
+
   // Batch: fetch all check-ins for all clients in the last 7 days (one query instead of N)
   const allWeekCheckIns = await db.query.checkIns.findMany({
     where: and(
-      inArray(checkIns.userId, allClients.map((c) => c.id)),
+      inArray(checkIns.userId, eligibleClients.map((c) => c.id)),
       gte(checkIns.createdAt, sevenDaysAgo)
     ),
     columns: { userId: true, energyLevel: true, mood: true, pemFlag: true, wins: true, sleepHours: true, stressLevel: true },
@@ -41,7 +53,7 @@ export async function GET(req: Request) {
 
   let sent = 0
 
-  for (const client of allClients) {
+  for (const client of eligibleClients) {
     const weekCheckIns = checkInsByClient.get(client.id) ?? []
 
     if (weekCheckIns.length === 0) continue // skip clients with no check-ins this week
