@@ -13,6 +13,10 @@ export type ParsedFill = {
   activityLevel?: string
   pemFlag?: boolean | null
   orthostaticSymptoms?: boolean | null
+  symptomFatigue?: number | null
+  symptomBrainFog?: number | null
+  symptomPain?: number | null
+  symptomStress?: number | null
   journalEntry?: string
 }
 

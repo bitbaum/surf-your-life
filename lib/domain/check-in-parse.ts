@@ -16,6 +16,10 @@ export type ParsedFields = {
   activityLevel?: string
   pemFlag?: boolean
   orthostaticSymptoms?: boolean
+  symptomFatigue?: number
+  symptomBrainFog?: number
+  symptomPain?: number
+  symptomStress?: number
   journalEntry?: string
 }
 
@@ -92,6 +96,64 @@ export function keywordParse(text: string): ParsedFields {
     result.orthostaticSymptoms = true
   }
 
+  // ── Symptom severity — explicit number first, then adjective ────────────────
+  const symptomNumMatch = (keyword: string) =>
+    t.match(new RegExp(`${keyword}[^0-9]{0,15}([1-9]|10)\\b|([1-9]|10)\\s*\\/\\s*10\\s*${keyword}`, "i"))
+
+  const fatigueNum = symptomNumMatch("fatigue|fatigued")
+  if (fatigueNum) {
+    const n = parseInt(fatigueNum[1] ?? fatigueNum[2])
+    if (n >= 1 && n <= 10) result.symptomFatigue = n
+  } else if (/\b(extremely fatigued|severe fatigue|complete fatigue|utterly exhausted)\b/.test(t)) {
+    result.symptomFatigue = 9
+  } else if (/\b(very fatigued|heavy fatigue|high fatigue)\b/.test(t)) {
+    result.symptomFatigue = 7
+  } else if (/\b(some fatigue|moderate fatigue|fatigued)\b/.test(t)) {
+    result.symptomFatigue = 5
+  } else if (/\b(mild fatigue|little fatigue|slight fatigue)\b/.test(t)) {
+    result.symptomFatigue = 3
+  }
+
+  const fogNum = symptomNumMatch("brain.?fog|fog")
+  if (fogNum) {
+    const n = parseInt(fogNum[1] ?? fogNum[2])
+    if (n >= 1 && n <= 10) result.symptomBrainFog = n
+  } else if (/\b(severe brain.?fog|terrible brain.?fog|very foggy|completely foggy)\b/.test(t)) {
+    result.symptomBrainFog = 9
+  } else if (/\b(bad brain.?fog|lots of brain.?fog|heavy fog)\b/.test(t)) {
+    result.symptomBrainFog = 7
+  } else if (/\b(brain.?fog|foggy|can't think|can't concentrate|unclear thinking)\b/.test(t)) {
+    result.symptomBrainFog = 5
+  } else if (/\b(mild fog|little fog|slight fog)\b/.test(t)) {
+    result.symptomBrainFog = 3
+  }
+
+  const painNum = symptomNumMatch("pain")
+  if (painNum) {
+    const n = parseInt(painNum[1] ?? painNum[2])
+    if (n >= 1 && n <= 10) result.symptomPain = n
+  } else if (/\b(severe pain|very painful|intense pain|excruciating)\b/.test(t)) {
+    result.symptomPain = 9
+  } else if (/\b(bad pain|a lot of pain|high pain)\b/.test(t)) {
+    result.symptomPain = 7
+  } else if (/\b(pain|aching|hurts|hurting|sore)\b/.test(t)) {
+    result.symptomPain = 5
+  } else if (/\b(mild pain|slight pain|a bit sore|little pain)\b/.test(t)) {
+    result.symptomPain = 3
+  }
+
+  const stressNum = symptomNumMatch("stress|stressed")
+  if (stressNum) {
+    const n = parseInt(stressNum[1] ?? stressNum[2])
+    if (n >= 1 && n <= 10) result.symptomStress = n
+  } else if (/\b(very stressed|highly stressed|overwhelmed|very anxious)\b/.test(t)) {
+    result.symptomStress = 8
+  } else if (/\b(stressed|anxious|worried|tense)\b/.test(t)) {
+    result.symptomStress = 6
+  } else if (/\b(a little stressed|slightly anxious|mild stress)\b/.test(t)) {
+    result.symptomStress = 4
+  }
+
   return result
 }
 
@@ -106,6 +168,10 @@ Return ONLY valid JSON with these optional fields (omit any you're not confident
 - activityLevel: "rest" | "light" | "moderate" | "active"
 - pemFlag: boolean (true if post-exertional malaise / crash after activity)
 - orthostaticSymptoms: boolean (true if dizziness on standing)
+- symptomFatigue: integer 1-10 (physical exhaustion beyond normal tiredness)
+- symptomBrainFog: integer 1-10 (cognitive difficulty, unclear thinking)
+- symptomPain: integer 1-10 (body pain or aching)
+- symptomStress: integer 1-10 (psychological stress or anxiety level)
 - journalEntry: the full input text, cleaned up
 
 Input: "${text.replace(/"/g, '\\"')}"

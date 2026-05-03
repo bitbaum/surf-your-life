@@ -44,6 +44,7 @@ export default function CheckInPage() {
     (val: (typeof form)[K]) => setForm((prev) => ({ ...prev, [key]: val }))
 
   function handleFill(data: ParsedFill) {
+    const hasSymptoms = data.symptomFatigue != null || data.symptomBrainFog != null || data.symptomPain != null || data.symptomStress != null
     setForm((prev) => ({
       ...prev,
       ...(data.mood && { mood: data.mood }),
@@ -53,6 +54,15 @@ export default function CheckInPage() {
       ...(data.pemFlag != null && { pemFlag: data.pemFlag }),
       ...(data.orthostaticSymptoms != null && { orthostaticSymptoms: data.orthostaticSymptoms }),
       ...(data.journalEntry && { journalEntry: data.journalEntry }),
+      ...(hasSymptoms && { trackSymptoms: true }),
+      ...(hasSymptoms && {
+        symptoms: {
+          fatigue: data.symptomFatigue ?? prev.symptoms.fatigue,
+          brainFog: data.symptomBrainFog ?? prev.symptoms.brainFog,
+          pain: data.symptomPain ?? prev.symptoms.pain,
+          stress: data.symptomStress ?? prev.symptoms.stress,
+        },
+      }),
     }))
   }
 
