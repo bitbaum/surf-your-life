@@ -44,6 +44,7 @@ export async function GET(
     db.query.techniqueAssignments.findMany({
       where: and(eq(techniqueAssignments.clientId, clientId), eq(techniqueAssignments.isActive, true)),
       columns: { id: true, frequencyPerDay: true, startDate: true, endDate: true },
+      with: { technique: { columns: { name: true, category: true } } },
     }),
     db.query.techniqueLogs.findMany({
       where: and(eq(techniqueLogs.userId, clientId), gte(techniqueLogs.date, thirtyDaysAgo)),
@@ -63,7 +64,8 @@ export async function GET(
   const rawStreak = reversedTrend.findIndex((d) => d.pct < 100)
   const techniqueStreak = rawStreak === -1 ? dailyTrend.length : rawStreak
 
-  const context = buildClinicalContext(client, recentCheckIns, activeAlerts, avgTechAdherence, techniqueStreak)
+  const techniqueNames = clientAssignments.map((a) => a.technique?.name).filter(Boolean) as string[]
+  const context = buildClinicalContext(client, recentCheckIns, activeAlerts, avgTechAdherence, techniqueStreak, techniqueNames)
 
   const aiSummary = await callClaude({
     messages: [
@@ -125,12 +127,17 @@ function buildClinicalContext(
   }>,
   alerts: Array<{ title: string; severity: string; createdAt: Date }>,
   avgTechAdherence: number | null,
-  techniqueStreak: number
+  techniqueStreak: number,
+  techniqueNames: string[] = []
 ): string {
   const lines: string[] = [
     `Client: ${client.name ?? "Unknown"}`,
     `Main concern: ${client.profile?.mainConcern ?? "not specified"}`,
   ]
+
+  if (techniqueNames.length > 0) {
+    lines.push(`Active techniques: ${techniqueNames.join(", ")}`)
+  }
 
   if (recentCheckIns.length > 0) {
     lines.push(`\nLast ${recentCheckIns.length} check-ins:`)
