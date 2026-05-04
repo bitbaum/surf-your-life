@@ -349,6 +349,7 @@ export const ALERT_TECHNIQUE_ADHERENCE_DECLINE_THRESHOLD = 20 // % point drop be
 export const AI_CONTEXT_CHECKINS = 14  // recent check-ins included as AI context
 export const AI_CHAT_CHECKIN_CONTEXT_LIMIT = 10  // check-ins summarised in AI chat context
 export const AI_CHAT_JOURNAL_EXCERPT_LENGTH = 100 // max journal chars included per check-in in AI context
+export const CLINICAL_TEXT_EXCERPT_MAX = 200       // max chars for any text excerpt in session prep / email preview
 
 // AI digest thresholds
 export const AI_DIGEST_MIN_CHECKINS = 3  // minimum check-ins in window to generate AI digest

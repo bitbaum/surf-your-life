@@ -9,7 +9,7 @@ import { users, checkIns, profiles } from "@/lib/db/schema"
 import { eq, and, gte, inArray, isNotNull, desc } from "drizzle-orm"
 import { sendEmail } from "@/lib/email"
 import { weeklyReportEmail } from "@/lib/email/templates"
-import { SITE_URL, SEVEN_DAYS_MS } from "@/lib/constants"
+import { SITE_URL, SEVEN_DAYS_MS, CLINICAL_TEXT_EXCERPT_MAX } from "@/lib/constants"
 import { roundOne, groupBy } from "@/lib/utils"
 import { CLIENT_ROLE } from "@/lib/domain/auth"
 import { verifyCronAuth } from "@/lib/auth/cron"
@@ -78,7 +78,7 @@ export async function GET(req: Request) {
     const avgStress = stats.avgStress != null ? roundOne(stats.avgStress) : null
     const pemEpisodes = stats.pemCount
     const rawJournal = weekCheckIns.find((ci) => ci.journalEntry)?.journalEntry ?? null
-    const topWin = rawJournal && rawJournal.length > 200 ? rawJournal.slice(0, 197) + "…" : rawJournal
+    const topWin = rawJournal && rawJournal.length > CLINICAL_TEXT_EXCERPT_MAX ? rawJournal.slice(0, CLINICAL_TEXT_EXCERPT_MAX - 3) + "…" : rawJournal
 
     const now = new Date()
     const weekStart = new Date(Date.now() - SEVEN_DAYS_MS)

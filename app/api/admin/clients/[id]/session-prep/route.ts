@@ -12,7 +12,7 @@ import { callClaude } from "@/lib/domain/anthropic"
 import { localDateString, addDaysISO } from "@/lib/utils"
 import { computeDailyAdherenceTrend } from "@/lib/domain/techniques"
 import { computeCurrentProgramWeek } from "@/lib/domain/check-in"
-import { SESSION_PREP_CHECKIN_LIMIT, SESSION_PREP_ALERTS_LIMIT, SESSION_PREP_ENERGY_AVG_WINDOW, SESSION_PREP_NOTES_LIMIT } from "@/lib/constants"
+import { SESSION_PREP_CHECKIN_LIMIT, SESSION_PREP_ALERTS_LIMIT, SESSION_PREP_ENERGY_AVG_WINDOW, SESSION_PREP_NOTES_LIMIT, CLINICAL_TEXT_EXCERPT_MAX } from "@/lib/constants"
 import { notFound, okData, requireStaffAuth } from "@/lib/api"
 
 export async function GET(
@@ -198,7 +198,7 @@ function buildClinicalContext(
       latestAssessment.socialCapacity != null ? `social ${latestAssessment.socialCapacity}/10` : null,
     ].filter(Boolean).join(", ")
     lines.push(`Functional assessment (${date}): ${caps}`)
-    if (latestAssessment.notes) lines.push(`  Assessment notes: ${latestAssessment.notes.slice(0, 200)}`)
+    if (latestAssessment.notes) lines.push(`  Assessment notes: ${latestAssessment.notes.slice(0, CLINICAL_TEXT_EXCERPT_MAX)}`)
   }
 
   if (activeEnrollment?.startDate) {
@@ -233,7 +233,7 @@ function buildClinicalContext(
       const pem = ci.pemFlag ? ` | PEM${ci.pemSeverity ? ` ${ci.pemSeverity}/10` : ""}` : ""
       const ortho = ci.orthostaticSymptoms === true ? " | orthostatic+" : ""
       lines.push(`  ${date}: mood=${ci.mood}, energy=${ci.energyLevel}/10${sleep}${activity}${fatigue}${brainFog}${pain}${stress}${pem}${ortho}`)
-      if (ci.journalEntry) lines.push(`    → "${ci.journalEntry.slice(0, 200)}"`)
+      if (ci.journalEntry) lines.push(`    → "${ci.journalEntry.slice(0, CLINICAL_TEXT_EXCERPT_MAX)}"`)
     }
   }
 
