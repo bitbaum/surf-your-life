@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react"
 import { formatDate } from "@/lib/utils"
+import { CHART_SVG_COLORS } from "@/lib/constants"
 import {
   CHART_W, CHART_H, CHART_PAD, CHART_PLOT_H,
   toPath, toX, findClosestIndex, computeDateIndices, tooltipTransform,
@@ -74,7 +75,7 @@ export function SymptomsChart({ data, labels }: Props) {
       {/* Legend */}
       <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 mb-3">
         {lines.map((line) => (
-          <span key={line.key} className="flex items-center gap-1.5 text-xs text-slate-500">
+          <span key={line.key} className="flex items-center gap-1.5 text-xs text-ink-muted">
             <span
               className="inline-block w-4 h-0.5 rounded-full"
               style={{ backgroundColor: line.stroke }}
@@ -106,7 +107,7 @@ export function SymptomsChart({ data, labels }: Props) {
             key={v}
             x1={CHART_PAD.left} y1={CHART_PAD.top + (1 - v) * CHART_PLOT_H}
             x2={CHART_W - CHART_PAD.right} y2={CHART_PAD.top + (1 - v) * CHART_PLOT_H}
-            stroke="#f1f5f9" strokeWidth="1"
+            stroke={CHART_SVG_COLORS.grid} strokeWidth="1"
           />
         ))}
 
@@ -115,7 +116,7 @@ export function SymptomsChart({ data, labels }: Props) {
           <line
             x1={xPts[h][0]} y1={CHART_PAD.top}
             x2={xPts[h][0]} y2={bottom}
-            stroke="#e2e8f0" strokeWidth="1.5" strokeDasharray="4 3"
+            stroke={CHART_SVG_COLORS.crosshair} strokeWidth="1.5" strokeDasharray="4 3"
           />
         )}
 
@@ -146,7 +147,7 @@ export function SymptomsChart({ data, labels }: Props) {
             x={xPts[i][0]}
             y={CHART_H - 6}
             textAnchor={i === 0 ? "start" : i === n - 1 ? "end" : "middle"}
-            fontSize="11" fill="#94a3b8"
+            fontSize="11" fill={CHART_SVG_COLORS.axis}
           >
             {formatDate(data[i].createdAt)}
           </text>
@@ -163,8 +164,8 @@ export function SymptomsChart({ data, labels }: Props) {
             transform: tooltipTransform(h, n),
           }}
         >
-          <div className="bg-slate-900 text-white text-xs rounded-xl px-3 py-2.5 shadow-xl min-w-[130px]">
-            <p className="text-slate-400 mb-1.5 font-medium">{formatDate(ci.createdAt)}</p>
+          <div className="bg-surface-overlay text-ink-on-overlay text-xs rounded-card px-3 py-2.5 shadow-xl min-w-[130px]">
+            <p className="text-ink-on-overlay-dim mb-1.5 font-medium">{formatDate(ci.createdAt)}</p>
             {lines.map((line) => {
               const val = ci[line.key]
               if (val == null) return null

@@ -11,11 +11,11 @@ export function MessageBubble({ isOwn, senderLabel, createdAt, body }: MessageBu
   return (
     <div className={`flex ${isOwn ? "justify-end" : "justify-start"}`}>
       <div
-        className={`max-w-[75%] rounded-xl px-4 py-3 ${
-          isOwn ? "bg-teal-600 text-white" : "bg-slate-100 text-slate-900"
+        className={`max-w-[75%] rounded-card px-4 py-3 ${
+          isOwn ? "bg-brand text-white" : "bg-surface-muted text-ink"
         }`}
       >
-        <p className={`text-xs mb-1 ${isOwn ? "text-teal-100" : "text-slate-400"}`}>
+        <p className={`text-xs mb-1 ${isOwn ? "text-brand-muted" : "text-ink-faint"}`}>
           {senderLabel}
           {" · "}
           {formatDate(createdAt)}

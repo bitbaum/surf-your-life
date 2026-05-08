@@ -50,8 +50,8 @@ export function LocaleSwitcher({ dark, direction = "up" }: LocaleSwitcherProps) 
         className={cn(
           "flex items-center gap-1.5 text-xs font-medium rounded-lg px-2 py-1.5 transition-colors",
           dark
-            ? "text-slate-400 hover:text-slate-200 hover:bg-slate-800"
-            : "text-slate-500 hover:text-slate-700 hover:bg-slate-100"
+            ? "text-ink-on-overlay-dim hover:text-ink-on-overlay-soft hover:bg-surface-overlay-subtle"
+            : "text-ink-muted hover:text-ink-soft hover:bg-surface-muted"
         )}
         aria-label={t("switchLanguage")}
         aria-expanded={open}
@@ -67,8 +67,8 @@ export function LocaleSwitcher({ dark, direction = "up" }: LocaleSwitcherProps) 
           className={cn(
             "absolute z-50 mt-1 w-36 rounded-xl border shadow-md py-1 overflow-hidden",
             dark
-              ? "bg-slate-800 border-slate-700"
-              : "bg-white border-slate-200"
+              ? "bg-surface-overlay-subtle border-surface-overlay-border"
+              : "bg-surface border-border"
           )}
           style={direction === "up"
             ? { bottom: "calc(100% + 4px)", left: 0 }
@@ -84,11 +84,11 @@ export function LocaleSwitcher({ dark, direction = "up" }: LocaleSwitcherProps) 
                 "w-full flex items-center justify-between px-3 py-2 text-sm transition-colors",
                 l === locale
                   ? dark
-                    ? "text-teal-400 bg-slate-700"
-                    : "text-teal-600 bg-teal-50"
+                    ? "text-brand-on-overlay bg-surface-overlay-muted"
+                    : "text-brand bg-brand-subtle"
                   : dark
-                  ? "text-slate-300 hover:bg-slate-700"
-                  : "text-slate-700 hover:bg-slate-50"
+                  ? "text-ink-on-overlay-muted hover:bg-surface-overlay-muted"
+                  : "text-ink-soft hover:bg-surface-subtle"
               )}
             >
               {LANGUAGES[l]}

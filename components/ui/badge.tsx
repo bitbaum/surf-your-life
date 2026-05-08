@@ -3,11 +3,11 @@ import { cn } from "@/lib/utils"
 export type BadgeVariant = "teal" | "blue" | "yellow" | "red" | "slate"
 
 const VARIANT_STYLES: Record<BadgeVariant, string> = {
-  teal: "bg-teal-50 text-teal-700 border border-teal-200",
-  blue: "bg-blue-50 text-blue-600 border border-blue-200",
-  yellow: "bg-yellow-50 text-yellow-700 border border-yellow-200",
-  red: "bg-red-50 text-red-600 border border-red-200",
-  slate: "bg-slate-100 text-slate-600 border border-slate-200",
+  teal:   "bg-brand-subtle text-brand-dark border border-brand-dim",
+  blue:   "bg-info-subtle text-info border border-info-dim",
+  yellow: "bg-caution-subtle text-caution-dark border border-caution-dim",
+  red:    "bg-error-subtle text-error border border-error-dim",
+  slate:  "bg-surface-muted text-ink-muted border border-border",
 }
 
 interface BadgeProps {
@@ -20,7 +20,7 @@ export function Badge({ label, variant, className }: BadgeProps) {
   return (
     <span
       className={cn(
-        "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium",
+        "inline-flex items-center px-2.5 py-0.5 rounded-pill text-xs font-medium",
         VARIANT_STYLES[variant],
         className
       )}

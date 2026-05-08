@@ -3,16 +3,16 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-element text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
-        default: "bg-teal-600 text-white hover:bg-teal-700 focus-visible:ring-teal-500",
-        secondary: "bg-slate-100 text-slate-900 hover:bg-slate-200 focus-visible:ring-slate-400",
-        outline: "border border-slate-200 bg-white text-slate-900 hover:bg-slate-50 focus-visible:ring-slate-400",
-        ghost: "text-slate-700 hover:bg-slate-100 focus-visible:ring-slate-400",
-        destructive: "bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500",
-        link: "text-teal-600 underline-offset-4 hover:underline p-0 h-auto",
+        default: "bg-brand text-white hover:bg-brand-hover focus-visible:ring-brand-ring",
+        secondary: "bg-surface-muted text-ink hover:bg-surface-emphasis focus-visible:ring-border-strong",
+        outline: "border border-border bg-surface text-ink hover:bg-surface-subtle focus-visible:ring-border-strong",
+        ghost: "text-ink-soft hover:bg-surface-muted focus-visible:ring-border-strong",
+        destructive: "bg-error text-white hover:bg-error-hover focus-visible:ring-error-ring",
+        link: "text-brand underline-offset-4 hover:underline p-0 h-auto",
       },
       size: {
         default: "h-10 px-4 py-2",

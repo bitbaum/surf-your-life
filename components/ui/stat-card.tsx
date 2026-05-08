@@ -11,9 +11,9 @@ interface StatCardProps {
 }
 
 const colorMap = {
-  teal: "bg-teal-50 text-teal-600",
-  slate: "bg-slate-100 text-slate-600",
-  amber: "bg-amber-50 text-amber-600",
+  teal:  "bg-brand-subtle text-brand",
+  slate: "bg-surface-muted text-ink-muted",
+  amber: "bg-warning-subtle text-warning",
 }
 
 export function StatCard({ label, value, icon: Icon, color = "teal", href }: StatCardProps) {
@@ -23,22 +23,22 @@ export function StatCard({ label, value, icon: Icon, color = "teal", href }: Sta
         <Icon className="w-5 h-5" />
       </div>
       <div>
-        <p className="text-2xl font-bold text-slate-900">{value}</p>
-        <p className="text-xs text-slate-500">{label}</p>
+        <p className="text-2xl font-bold text-ink">{value}</p>
+        <p className="text-xs text-ink-muted">{label}</p>
       </div>
     </div>
   )
 
   if (href) {
     return (
-      <Link href={href} className="block rounded-xl border border-slate-200 bg-white shadow-sm p-6 hover:border-teal-300 hover:shadow-md transition-all">
+      <Link href={href} className="block rounded-card border border-border bg-surface shadow-card p-6 hover:border-brand-dim hover:shadow-elevated transition-all">
         {inner}
       </Link>
     )
   }
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white shadow-sm p-6">
+    <div className="rounded-card border border-border bg-surface shadow-card p-6">
       {inner}
     </div>
   )

@@ -28,14 +28,14 @@ function DeltaBadge({ value, higherIsBetter, format }: {
   format: (n: number) => string
 }) {
   if (value == null) {
-    return <span className="text-xs text-slate-400">—</span>
+    return <span className="text-xs text-ink-faint">—</span>
   }
 
   const tone = deltaTone(value, higherIsBetter)
   const colorClass =
-    tone === "good" ? "text-teal-700 bg-teal-50"
-    : tone === "bad" ? "text-red-700 bg-red-50"
-    : "text-slate-600 bg-slate-100"
+    tone === "good" ? "text-brand-dark bg-brand-subtle"
+    : tone === "bad" ? "text-error bg-error-subtle"
+    : "text-ink-muted bg-surface-muted"
 
   const Icon = value === 0 ? Minus : value > 0 ? ArrowUp : ArrowDown
 
@@ -62,7 +62,7 @@ export async function TrendCard({ delta, namespace }: Props) {
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle>{t("title")}</CardTitle>
-          <span className="text-xs text-slate-500">
+          <span className="text-xs text-ink-muted">
             {t("checkInsCount", { count: delta.window.count })}
           </span>
         </div>
@@ -80,7 +80,7 @@ export async function TrendCard({ delta, namespace }: Props) {
           <Stat
             label={t("pemEpisodes")}
             value={String(delta.window.pemCount)}
-            valueClass={delta.window.pemCount > 0 ? "text-red-600" : "text-slate-700"}
+            valueClass={delta.window.pemCount > 0 ? "text-error" : "text-ink-soft"}
             delta={delta.hasPriorWindow ? delta.pemDelta : null}
             higherIsBetter={false}
             hasPriorWindow={delta.hasPriorWindow}
@@ -96,7 +96,7 @@ export async function TrendCard({ delta, namespace }: Props) {
           />
         </div>
         {!delta.hasPriorWindow && (
-          <p className="text-xs text-slate-400 mt-4">{t("noPriorWindow")}</p>
+          <p className="text-xs text-ink-faint mt-4">{t("noPriorWindow")}</p>
         )}
       </CardContent>
     </Card>
@@ -114,9 +114,9 @@ function Stat({ label, value, valueClass, delta, higherIsBetter, hasPriorWindow,
 }) {
   return (
     <div>
-      <p className="text-xs text-slate-500">{label}</p>
+      <p className="text-xs text-ink-muted">{label}</p>
       <div className="flex items-baseline gap-2 mt-1">
-        <p className={`text-xl font-semibold ${valueClass ?? "text-slate-900"}`}>{value}</p>
+        <p className={`text-xl font-semibold ${valueClass ?? "text-ink"}`}>{value}</p>
         {hasPriorWindow && (
           <DeltaBadge value={delta} higherIsBetter={higherIsBetter} format={format} />
         )}

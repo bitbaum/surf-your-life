@@ -45,9 +45,9 @@ export function DayCadenceSparkline({ days, checkedIn, pemDays, hint, dayLabels,
           : checkedIn.has(day) ? "checkedIn"
           : "missed"
         const fill =
-          state === "pem" ? "bg-red-500"
-          : state === "checkedIn" ? "bg-teal-500"
-          : "bg-slate-200"
+          state === "pem" ? "bg-error-vivid"
+          : state === "checkedIn" ? "bg-chart-1"
+          : "bg-surface-emphasis"
         return (
           <span
             key={day}

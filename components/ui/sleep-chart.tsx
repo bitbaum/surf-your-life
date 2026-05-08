@@ -37,11 +37,11 @@ export function SleepChart({ data, formatHours }: Props) {
             onMouseLeave={() => setTooltip(null)}
           >
             <div
-              className={`w-full rounded-t bg-blue-400 transition-all ${isHovered ? "opacity-80" : ""}`}
+              className={`w-full rounded-t bg-chart-3 transition-all ${isHovered ? "opacity-80" : ""}`}
               style={{ height: `${Math.max(pct, 8)}%` }}
             />
             {isHovered && (
-              <div className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs rounded px-2 py-1 whitespace-nowrap z-10 pointer-events-none">
+              <div className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 bg-surface-overlay-subtle text-ink-on-overlay text-xs rounded px-2 py-1 whitespace-nowrap z-10 pointer-events-none">
                 {formatHours(ci.sleepHours!)}
                 <br />
                 {formatDate(ci.createdAt)}

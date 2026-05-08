@@ -13,10 +13,10 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
       <select
         id={selectId}
         className={cn(
-          "w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900",
-          "focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent",
+          "w-full rounded-element border border-border bg-surface px-3 py-2 text-sm text-ink",
+          "focus:outline-none focus:ring-2 focus:ring-brand-ring focus:border-transparent",
           "disabled:cursor-not-allowed disabled:opacity-50 min-h-[44px]",
-          error && "border-red-400 focus:ring-red-400",
+          error && "border-error-ring focus:ring-error-ring",
           className
         )}
         ref={ref}
@@ -30,11 +30,11 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
 
     return (
       <div className="flex flex-col gap-1.5">
-        <label htmlFor={selectId} className="text-sm font-medium text-slate-700">
+        <label htmlFor={selectId} className="text-sm font-medium text-ink-soft">
           {label}
         </label>
         {select}
-        {error && <p className="text-xs text-red-600">{error}</p>}
+        {error && <p className="text-xs text-error">{error}</p>}
       </div>
     )
   }

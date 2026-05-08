@@ -36,13 +36,13 @@ export function SearchInput({ placeholder = "Search…", defaultValue = "", quer
 
   return (
     <div className="relative">
-      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-faint pointer-events-none" />
       <input
         type="search"
         defaultValue={defaultValue}
         onChange={handleChange}
         placeholder={placeholder}
-        className="w-full pl-9 pr-4 py-2 text-sm rounded-lg border border-slate-200 bg-white text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500"
+        className="w-full pl-9 pr-4 py-2 text-sm rounded-element border border-border bg-surface text-ink-soft placeholder-ink-faint focus:outline-none focus:ring-2 focus:ring-brand-ring"
       />
     </div>
   )

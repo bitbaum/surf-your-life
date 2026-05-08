@@ -13,6 +13,103 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* ==========================================================================
+     SEMANTIC DESIGN TOKENS — edit here to retheme the entire app
+     Current theme: teal brand / slate neutrals
+     ========================================================================== */
+
+  /* Brand — primary interactive color (buttons, links, active states) */
+  --color-brand:            #0d9488;  /* teal-600 */
+  --color-brand-hover:      #0f766e;  /* teal-700 */
+  --color-brand-subtle:     #f0fdfa;  /* teal-50  — light tint for surfaces */
+  --color-brand-muted:      #ccfbf1;  /* teal-100 — slightly stronger tint */
+  --color-brand-dim:        #99f6e4;  /* teal-200 — borders on brand surfaces */
+  --color-brand-ring:       #14b8a6;  /* teal-500 — focus ring */
+  --color-brand-dark:       #0f766e;  /* teal-700 — text on brand-subtle bg */
+  --color-brand-darker:     #134e4a;  /* teal-900 — strong text on brand-subtle bg */
+  --color-brand-body:       #115e59;  /* teal-800 — body text on brand-subtle bg */
+
+  /* Ink — text hierarchy (light-mode; override in dark block below) */
+  --color-ink:              #0f172a;  /* slate-900 — headings, primary text */
+  --color-ink-soft:         #334155;  /* slate-700 — labels, form values */
+  --color-ink-muted:        #64748b;  /* slate-500 — secondary text, descriptions */
+  --color-ink-faint:        #94a3b8;  /* slate-400 — placeholders, metadata */
+
+  /* Surface — background hierarchy */
+  --color-surface:          #ffffff;  /* white      — cards, inputs */
+  --color-surface-subtle:   #f8fafc;  /* slate-50   — page background */
+  --color-surface-muted:    #f1f5f9;  /* slate-100  — hover states, secondary bg */
+  --color-surface-emphasis: #e2e8f0;  /* slate-200  — active/selected states */
+
+  /* Border */
+  --color-border:           #e2e8f0;  /* slate-200 */
+  --color-border-strong:    #cbd5e1;  /* slate-300 */
+  --color-border-subtle:    #f1f5f9;  /* slate-100 */
+
+  /* Error / Destructive */
+  --color-error:            #dc2626;  /* red-600 */
+  --color-error-hover:      #b91c1c;  /* red-700 */
+  --color-error-subtle:     #fef2f2;  /* red-50  */
+  --color-error-dim:        #fecaca;  /* red-200 — borders on error surfaces */
+  --color-error-ring:       #f87171;  /* red-400 — focus ring on error inputs */
+
+  /* Warning — amber (used in stat cards, inline severity indicators) */
+  --color-warning:          #d97706;  /* amber-600 */
+  --color-warning-subtle:   #fffbeb;  /* amber-50  */
+  --color-warning-dim:      #fde68a;  /* amber-200 */
+  --color-warning-dark:     #b45309;  /* amber-700 */
+
+  /* Caution — yellow (used in badges: pending bookings, low-severity alerts) */
+  --color-caution:          #ca8a04;  /* yellow-600 */
+  --color-caution-subtle:   #fefce8;  /* yellow-50  */
+  --color-caution-dim:      #fef08a;  /* yellow-200 */
+  --color-caution-dark:     #a16207;  /* yellow-700 */
+
+  /* Info — blue (used in badges: practitioner role) */
+  --color-info:             #2563eb;  /* blue-600 */
+  --color-info-subtle:      #eff6ff;  /* blue-50  */
+  --color-info-dim:         #bfdbfe;  /* blue-200 */
+
+  /* Accent — violet (used in badges: document type "assessment") */
+  --color-accent:           #7c3aed;  /* violet-600 */
+  --color-accent-subtle:    #f5f3ff;  /* violet-50  */
+  --color-accent-dim:       #ddd6fe;  /* violet-200 */
+  --color-accent-dark:      #6d28d9;  /* violet-700 */
+
+  /* Vivid indicator dots — brighter mid-tones for small filled circles */
+  --color-error-vivid:      #ef4444;  /* red-500   */
+  --color-warning-vivid:    #f59e0b;  /* amber-500 */
+  --color-caution-vivid:    #facc15;  /* yellow-400 */
+
+  /* Chart data series colors (for Tailwind legend/tooltip classes)
+     SVG stroke/fill attrs use CHART_SVG_COLORS in lib/constants.ts */
+  --color-chart-1:          #14b8a6;  /* teal-500   — primary series (mood, overall) */
+  --color-chart-2:          #a78bfa;  /* violet-400 — secondary series (energy) */
+  --color-chart-3:          #60a5fa;  /* blue-400   — tertiary series (sleep bars) */
+  --color-chart-1-lit:      #2dd4bf;  /* teal-400   — primary label on dark bg */
+  --color-chart-2-lit:      #c4b5fd;  /* violet-300 — secondary label on dark bg */
+
+  /* Dark overlay surface — chart tooltips, dark sidebar elements */
+  --color-surface-overlay:         #0f172a;  /* slate-900 */
+  --color-surface-overlay-subtle:  #1e293b;  /* slate-800 — button hover on dark bg */
+  --color-surface-overlay-muted:   #334155;  /* slate-700 — selected/active on dark bg */
+  --color-surface-overlay-border:  #334155;  /* slate-700 — borders on dark bg */
+  --color-ink-on-overlay:          #ffffff;
+  --color-ink-on-overlay-soft:     #e2e8f0;  /* slate-200 — highlighted text on dark bg */
+  --color-ink-on-overlay-muted:    #cbd5e1;  /* slate-300 */
+  --color-ink-on-overlay-dim:      #94a3b8;  /* slate-400 — muted text on dark bg */
+  --color-brand-on-overlay:        #2dd4bf;  /* teal-400  — brand label on dark bg */
+
+  /* Shape */
+  --radius-element:  0.5rem;   /* rounded-lg  — inputs, buttons, small chips */
+  --radius-card:     0.75rem;  /* rounded-xl  — cards, modals, larger containers */
+  --radius-pill:     9999px;   /* rounded-full — badges, pills, circular icons */
+
+  /* Elevation */
+  --shadow-card:     0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-elevated: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-overlay:  0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 }
 
 @media (prefers-color-scheme: dark) {

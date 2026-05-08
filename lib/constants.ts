@@ -77,7 +77,7 @@ export const MOOD_EMOJI = Object.fromEntries(MOODS.map((m) => [m.value, m.emoji]
 export const MOOD_LABEL = Object.fromEntries(MOODS.map((m) => [m.value, m.label])) as Record<string, string>
 export const MOOD_MAP = Object.fromEntries(MOODS.map((m) => [m.value, m])) as Record<string, typeof MOODS[number]>
 export const MOOD_COLOR: Record<string, string> = {
-  very_low: "bg-red-300",
+  very_low: "bg-red-300",    // intentional: mood spectrum uses fixed hues, not semantic brand tokens
   low: "bg-orange-300",
   neutral: "bg-slate-300",
   good: "bg-teal-300",
@@ -242,9 +242,9 @@ export const TECHNIQUE_DIFFICULTIES = [
 ] as const
 
 export const DIFFICULTY_BADGE_CLASSES: Record<string, string> = {
-  easy:        "bg-teal-50 text-teal-700 border-teal-200",
-  moderate:    "bg-amber-50 text-amber-700 border-amber-200",
-  challenging: "bg-red-50 text-red-700 border-red-200",
+  easy:        "bg-brand-subtle text-brand-dark border-brand-dim",
+  moderate:    "bg-warning-subtle text-warning-dark border-warning-dim",
+  challenging: "bg-error-subtle text-error border-error-dim",
 }
 
 // Technique debt / catch-up safety defaults (clinical: protect Long COVID / PEM clients)
@@ -290,17 +290,17 @@ export const STREAK_LOOKBACK_DAYS = 30  // max days to look back when calculatin
 export const ALERT_SEVERITY_ORDER = ["high", "medium", "low"] as const
 
 // Toggle chip state classes — selected/unselected for single-select and multi-select chip groups
-export const CHIP_SELECTED = "border-teal-500 bg-teal-50 text-teal-700"
-export const CHIP_UNSELECTED = "border-slate-200 text-slate-600 hover:border-slate-300"
+export const CHIP_SELECTED = "border-brand-ring bg-brand-subtle text-brand-dark"
+export const CHIP_UNSELECTED = "border-border text-ink-muted hover:border-border-strong"
 
 // Compact uppercase section label base classes — append margin (mb-1, mb-1.5, mb-2) at each use site
-export const COMPACT_LABEL_CLS = "text-xs font-medium text-slate-500 uppercase tracking-wide"
+export const COMPACT_LABEL_CLS = "text-xs font-medium text-ink-muted uppercase tracking-wide"
 
 // Enrollment status badge classes — used by portal program page and admin enrollment-status component
 export const ENROLLMENT_STATUS_BADGE: Record<string, string> = {
-  active:    "bg-teal-50 text-teal-700 border border-teal-200",
-  paused:    "bg-yellow-50 text-yellow-700 border border-yellow-200",
-  completed: "bg-slate-100 text-slate-600 border border-slate-200",
+  active:    "bg-brand-subtle text-brand-dark border border-brand-dim",
+  paused:    "bg-caution-subtle text-caution-dark border border-caution-dim",
+  completed: "bg-surface-muted text-ink-muted border border-border",
 }
 
 // Booking status → Badge variant — used by portal booking list and admin bookings page
@@ -323,14 +323,14 @@ export const ROLE_BADGE_VARIANT: Record<string, "teal" | "blue" | "slate"> = {
 // Alert severity color config — canonical mapping used by all alert UI components
 // Dot = filled circle indicator; Badge = label pill with border
 export const ALERT_SEVERITY_DOT: Record<string, string> = {
-  high:   "bg-red-500",
-  medium: "bg-amber-500",
-  low:    "bg-yellow-400",
+  high:   "bg-error-vivid",
+  medium: "bg-warning-vivid",
+  low:    "bg-caution-vivid",
 }
 export const ALERT_SEVERITY_BADGE: Record<string, string> = {
-  high:   "bg-red-50 text-red-700 border-red-200",
-  medium: "bg-amber-50 text-amber-700 border-amber-200",
-  low:    "bg-yellow-50 text-yellow-700 border-yellow-200",
+  high:   "bg-error-subtle text-error border-error-dim",
+  medium: "bg-warning-subtle text-warning-dark border-warning-dim",
+  low:    "bg-caution-subtle text-caution-dark border-caution-dim",
 }
 
 // Alert generation thresholds
@@ -364,10 +364,10 @@ export const DOC_TYPE_I18N_KEYS: Record<string, string> = {
 
 // Document type → badge Tailwind classes
 export const DOC_TYPE_BADGE_CLASSES: Record<string, string> = {
-  assessment: "bg-violet-50 text-violet-700 border-violet-200",
-  report: "bg-blue-50 text-blue-700 border-blue-200",
-  session_note: "bg-teal-50 text-teal-700 border-teal-200",
-  upload: "bg-slate-100 text-slate-600 border-slate-200",
+  assessment:   "bg-accent-subtle text-accent-dark border-accent-dim",
+  report:       "bg-info-subtle text-info border-info-dim",
+  session_note: "bg-brand-subtle text-brand-dark border-brand-dim",
+  upload:       "bg-surface-muted text-ink-muted border-border",
 }
 
 // Form field max lengths — import these instead of hardcoding numbers in components
@@ -380,6 +380,16 @@ export const FIELD_MAX_LONG = 2000          // long descriptions, instructions, 
 export const FIELD_MAX_JOURNAL = 3000       // check-in journal / reflection
 export const FIELD_MAX_MESSAGE = 5000       // message body text
 export const EMAIL_MAX_LENGTH = 254         // RFC 5321 maximum email address length
+
+// SVG attribute colors for chart components — used where Tailwind classes can't apply (stroke, fill, stopColor).
+// Keep hex values in sync with the chart-* tokens in app/globals.css.
+export const CHART_SVG_COLORS = {
+  grid:      "#f1f5f9",  // slate-100 — horizontal grid lines
+  crosshair: "#e2e8f0",  // slate-200 — hover crosshair
+  axis:      "#94a3b8",  // slate-400 — date axis labels
+  series1:   "#14b8a6",  // teal-500  — primary series (mood, overall capacity)
+  series2:   "#a78bfa",  // violet-400 — secondary series (energy)
+} as const
 
 // pgvector embedding dimensions — must match the vector(1536) columns in lib/db/schema.ts
 // (schema cannot import this constant without creating a circular dependency)

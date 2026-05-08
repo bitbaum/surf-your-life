@@ -13,10 +13,10 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
       <textarea
         id={textareaId}
         className={cn(
-          "w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900",
-          "placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent",
+          "w-full rounded-element border border-border px-3 py-2 text-sm text-ink",
+          "placeholder:text-ink-faint focus:outline-none focus:ring-2 focus:ring-brand-ring focus:border-transparent",
           "disabled:cursor-not-allowed disabled:opacity-50 resize-none",
-          error && "border-red-400 focus:ring-red-400",
+          error && "border-error-ring focus:ring-error-ring",
           className
         )}
         ref={ref}
@@ -28,11 +28,11 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
 
     return (
       <div className="flex flex-col gap-1.5">
-        <label htmlFor={textareaId} className="text-sm font-medium text-slate-700">
+        <label htmlFor={textareaId} className="text-sm font-medium text-ink-soft">
           {label}
         </label>
         {textarea}
-        {error && <p className="text-xs text-red-600">{error}</p>}
+        {error && <p className="text-xs text-error">{error}</p>}
       </div>
     )
   }

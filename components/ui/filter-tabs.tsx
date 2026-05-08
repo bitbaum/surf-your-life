@@ -20,10 +20,10 @@ export function FilterTabs<T extends string>({ tabs, active, href }: FilterTabsP
           key={value}
           href={href(value)}
           className={cn(
-            "px-4 py-1.5 rounded-lg text-sm font-medium transition-colors border",
+            "px-4 py-1.5 rounded-element text-sm font-medium transition-colors border",
             active === value
-              ? "bg-teal-600 text-white border-teal-600"
-              : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
+              ? "bg-brand text-white border-brand"
+              : "bg-surface text-ink-muted border-border hover:bg-surface-subtle"
           )}
         >
           {label}

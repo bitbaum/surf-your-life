@@ -6,6 +6,7 @@ import {
   CHART_W, CHART_H, CHART_PAD, CHART_PLOT_H,
   toPath, toX, findClosestIndex, computeDateIndices, tooltipTransform,
 } from "@/lib/chart-utils"
+import { CHART_SVG_COLORS } from "@/lib/constants"
 
 interface DataPoint {
   assessedAt: Date
@@ -30,7 +31,7 @@ interface SeriesDef {
   color: string
 }
 
-const OVERALL_COLOR = "#14b8a6"
+const OVERALL_COLOR = CHART_SVG_COLORS.series1
 
 function toY(v: number): number {
   return CHART_PAD.top + (1 - v / 10) * CHART_PLOT_H
@@ -80,12 +81,12 @@ export function FunctionalAssessmentsChart({ data, labels }: Props) {
   return (
     <div className="relative select-none">
       <div className="flex flex-wrap items-center gap-4 mb-3">
-        <span className="flex items-center gap-1.5 text-xs text-slate-500">
-          <span className="inline-block w-4 h-0.5 rounded-full bg-teal-500" />
+        <span className="flex items-center gap-1.5 text-xs text-ink-muted">
+          <span className="inline-block w-4 h-0.5 rounded-pill bg-chart-1" />
           {labels.overall}
         </span>
         {activeSubSeries.map((s) => (
-          <span key={s.key as string} className="flex items-center gap-1.5 text-xs text-slate-400">
+          <span key={s.key as string} className="flex items-center gap-1.5 text-xs text-ink-faint">
             <span className="inline-block w-4 h-px rounded-full" style={{ backgroundColor: s.color }} />
             {s.label}
           </span>
@@ -107,11 +108,11 @@ export function FunctionalAssessmentsChart({ data, labels }: Props) {
         </defs>
 
         {[2.5, 5, 7.5, 10].map((v) => (
-          <line key={v} x1={CHART_PAD.left} y1={toY(v)} x2={CHART_W - CHART_PAD.right} y2={toY(v)} stroke="#f1f5f9" strokeWidth="1" />
+          <line key={v} x1={CHART_PAD.left} y1={toY(v)} x2={CHART_W - CHART_PAD.right} y2={toY(v)} stroke={CHART_SVG_COLORS.grid} strokeWidth="1" />
         ))}
 
         {h !== null && (
-          <line x1={overallPts[h][0]} y1={CHART_PAD.top} x2={overallPts[h][0]} y2={bottom} stroke="#e2e8f0" strokeWidth="1.5" strokeDasharray="4 3" />
+          <line x1={overallPts[h][0]} y1={CHART_PAD.top} x2={overallPts[h][0]} y2={bottom} stroke={CHART_SVG_COLORS.crosshair} strokeWidth="1.5" strokeDasharray="4 3" />
         )}
 
         <path d={overallAreaPath} fill="url(#syl-fa-overall-grad)" />
@@ -127,7 +128,7 @@ export function FunctionalAssessmentsChart({ data, labels }: Props) {
         ))}
 
         {dateIndices.map((i) => (
-          <text key={i} x={overallPts[i][0]} y={CHART_H - 6} textAnchor={i === 0 ? "start" : i === n - 1 ? "end" : "middle"} fontSize="11" fill="#94a3b8">
+          <text key={i} x={overallPts[i][0]} y={CHART_H - 6} textAnchor={i === 0 ? "start" : i === n - 1 ? "end" : "middle"} fontSize="11" fill={CHART_SVG_COLORS.axis}>
             {formatDate(data[i].assessedAt)}
           </text>
         ))}
@@ -135,9 +136,9 @@ export function FunctionalAssessmentsChart({ data, labels }: Props) {
 
       {ci !== null && h !== null && (
         <div className="absolute pointer-events-none z-10" style={{ left: `${(overallPts[h][0] / CHART_W) * 100}%`, top: "32px", transform: tooltipTransform(h, n) }}>
-          <div className="bg-slate-900 text-white text-xs rounded-xl px-3 py-2.5 shadow-xl min-w-[130px]">
-            <p className="text-slate-400 mb-1.5 font-medium">{formatDate(ci.assessedAt)}</p>
-            <p className="text-teal-400 font-medium mb-1">{labels.overall}: <span className="text-white">{ci.overallCapacity}/10</span></p>
+          <div className="bg-surface-overlay text-ink-on-overlay text-xs rounded-card px-3 py-2.5 shadow-xl min-w-[130px]">
+            <p className="text-ink-on-overlay-dim mb-1.5 font-medium">{formatDate(ci.assessedAt)}</p>
+            <p className="text-chart-1-lit font-medium mb-1">{labels.overall}: <span className="text-ink-on-overlay">{ci.overallCapacity}/10</span></p>
             {activeSubSeries.map((s) => ci[s.key] != null && (
               <p key={s.key as string} style={{ color: s.color }} className="mb-0.5">
                 {s.label}: <span className="text-white">{ci[s.key] as number}/10</span>

@@ -17,12 +17,12 @@ export function ProgressBar({ value, size = "md", track = "slate", className }: 
       className={cn(
         "rounded-full overflow-hidden",
         size === "sm" ? "h-1.5" : "h-2",
-        track === "teal" ? "bg-teal-100" : "bg-slate-100",
+        track === "teal" ? "bg-brand-muted" : "bg-surface-muted",
         className
       )}
     >
       <div
-        className="h-full rounded-full bg-teal-500 transition-all"
+        className="h-full rounded-pill bg-brand-ring transition-all"
         style={{ width: `${pct}%` }}
       />
     </div>

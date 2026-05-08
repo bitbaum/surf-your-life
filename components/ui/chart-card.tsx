@@ -15,7 +15,7 @@ export function ChartCard({ title, subtitle, action, className, children }: Prop
   const titleBlock = (
     <div>
       <CardTitle>{title}</CardTitle>
-      {subtitle && <p className="text-xs text-slate-400 mt-0.5">{subtitle}</p>}
+      {subtitle && <p className="text-xs text-ink-faint mt-0.5">{subtitle}</p>}
     </div>
   )
   return (
