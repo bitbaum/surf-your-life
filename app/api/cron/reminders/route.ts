@@ -1,6 +1,6 @@
 /**
  * Cron job: daily check-in reminders
- * Runs at 19:00 CET every day via Vercel cron.
+ * Runs at 19:00 CET every day via the self-hosted scheduler (systemd timer on the Hetzner box).
  * Sends a reminder to each client who hasn't checked in today.
  */
 import { NextResponse } from "next/server"

@@ -11,9 +11,6 @@ importers:
       '@auth/drizzle-adapter':
         specifier: ^1.11.1
         version: 1.11.1
-      '@neondatabase/serverless':
-        specifier: ^1.0.2
-        version: 1.0.2
       bcryptjs:
         specifier: ^3.0.3
         version: 3.0.3
@@ -3941,6 +3938,7 @@ snapshots:
     dependencies:
       '@types/node': 22.19.17
       '@types/pg': 8.20.0
+    optional: true
 
   '@next/env@16.2.3': {}
 
@@ -4271,6 +4269,7 @@ snapshots:
   '@types/node@22.19.17':
     dependencies:
       undici-types: 6.21.0
+    optional: true
 
   '@types/pg@8.20.0':
     dependencies:

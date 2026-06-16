@@ -1,6 +1,6 @@
 /**
  * Cron job: weekly client summary reports
- * Runs every Sunday at 18:00 CET via Vercel cron.
+ * Runs every Sunday at 18:00 CET via the self-hosted scheduler (systemd timer on the Hetzner box).
  * Sends each client a summary of their week: check-ins, avg energy, PEM episodes, wins.
  */
 import { NextResponse } from "next/server"

@@ -8,7 +8,7 @@ Surf Your Life is a psychiatry-led clinic in Zürich helping people recover from
 
 **What this is:** A health portal for burnout/Long-COVID reintegration and longevity. Clients track their wellbeing; practitioners (Manu and team) manage and analyze client progress. AI analysis of structured + unstructured data is a core future feature.
 
-**Stack:** Next.js 16 (App Router) · TypeScript strict · Neon Postgres · Drizzle ORM · pgvector · Auth.js v5 · Tailwind v4 · Vercel
+**Stack:** Next.js 16 (App Router) · TypeScript strict · self-hosted PostgreSQL (pg driver, `output: "standalone"`) · Drizzle ORM · pgvector · Auth.js v5 · Tailwind v4 · self-hosted on Hetzner (bitbaum box, behind Caddy)
 
 ---
 
@@ -350,7 +350,7 @@ All design tokens live in `app/globals.css` only. There is no `tailwind.config.t
 
 - **All migrations are SQL files in `drizzle/`.** Never use `db:push` in production — it's for development only.
 - **pgvector is enabled.** `embedding vector(1536)` columns are on `profiles`, `check_ins`, and `documents`. When adding AI features, generate embeddings using `text-embedding-3-small` (1536 dims) via OpenAI.
-- **RLS is not used** (Neon doesn't enforce it by default). Authorization is handled in application layer — always check `session.user.id` before any query.
+- **RLS is not used.** Authorization is handled in the application layer — always check `session.user.id` before any query.
 - **Never expose a user's data to another user.** Every query that fetches user-owned data must include a `where eq(table.userId, session.user.id)` clause.
 
 ---
@@ -373,30 +373,14 @@ These will be built in order of user value. Do not add scaffolding for them ahea
 ## CI/CD
 
 - **GitHub Actions** runs on every PR: `tsc --noEmit` + `eslint --max-warnings 0`
-- **Vercel** auto-deploys `main` to production. Every PR gets a preview URL.
+- **Self-hosted deploy:** `main` is deployed to the Hetzner box (bitbaum, behind Caddy). The app is built with `output: "standalone"` and runs as a Node process behind the Caddy reverse proxy.
 - **Branch protection:** PRs must pass CI before merge.
-- **Never commit `.env.local`.** All secrets go in Vercel env vars + `.env.example` for documentation.
+- **Never commit `.env.local` or `.env.selfhost.local`.** All secrets live in the box environment + `.env.example` for documentation.
 
-## Deploy Workflow (required after every push to main)
+## Scheduled jobs (cron)
 
-After `git push`, always monitor the Vercel deployment to completion. Never leave a session without confirming the build passed.
+The `/api/cron/*` routes (reminders, weekly-report, ai-digest, embed-backfill) are triggered by the box scheduler (systemd timers / cron on the Hetzner box) hitting the routes on schedule. The schedules are documented in `vercel.json` (kept as the canonical schedule reference even though Vercel cron is no longer the executor — see the `crons` array there for paths and cron expressions).
 
-```bash
-# 1. Check the latest deployment status
-vercel ls
+## Deploy Workflow
 
-# 2. Grab the top deployment URL and inspect it
-vercel inspect <deployment-url>
-
-# 3. If status is still "Building", poll until Ready or Error:
-watch -n 10 'vercel ls 2>&1 | head -5'
-
-# 4. If Error — get the build logs immediately:
-vercel logs <deployment-url> --output raw 2>&1 | tail -50
-```
-
-**Rules:**
-- A task is NOT done until Vercel shows `● Ready` for the production deployment.
-- If the build errors, fix it before ending the session — never leave a broken production.
-- The Vercel CLI is already linked to the `orangecat/surf-your-life` project (`vercel ls` works without arguments).
-- Production URL: `https://surf-your-life.vercel.app` (alias for latest Ready deployment).
+After `git push`, deploy to the Hetzner box and confirm the build succeeds and the process is healthy. Production URL: `https://surf-your-life.orangecat.ch`.

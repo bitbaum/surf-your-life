@@ -69,8 +69,8 @@ export function localDateString(date: Date, tz: string = CLINIC_TZ): string {
 // Two Dates one calendar day apart always differ by exactly DAY_MS.
 //
 // Uses localDateString (Intl-based, explicit TZ) rather than d.getDate() so
-// the result is correct regardless of the server's system timezone (Vercel
-// runs in UTC; tests pin TZ=Europe/Zurich — this bridges the two).
+// the result is correct regardless of the server's system timezone (the
+// self-hosted box runs in UTC; tests pin TZ=Europe/Zurich — this bridges the two).
 //
 // Use for streak / gap computations on Date arrays. For day-strings, see
 // `localDateString` (single date) or `buildLastNDayStrings` (a sequence).
