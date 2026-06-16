@@ -72,7 +72,7 @@ export default async function PrivacyPage({
               </li>
               <li>
                 <strong>Technical data:</strong> IP address, browser type, and access logs — collected automatically
-                by our hosting infrastructure (Vercel) for security and performance purposes.
+                by our hosting infrastructure (Hetzner, Germany) for security and performance purposes.
               </li>
             </ul>
           </section>
@@ -109,10 +109,8 @@ export default async function PrivacyPage({
             <h2 className="text-xl font-semibold text-slate-900 mb-3">5. Third-Party Processors</h2>
             <ul className="list-disc pl-5 text-slate-600 text-sm space-y-2">
               <li>
-                <strong>Vercel Inc.</strong> (USA) — hosting and edge delivery. Standard Contractual Clauses apply.
-              </li>
-              <li>
-                <strong>Neon Inc.</strong> (USA) — database hosting (PostgreSQL). Standard Contractual Clauses apply.
+                <strong>Hetzner Online GmbH</strong> (Germany, EU) — application and database hosting
+                (self-hosted PostgreSQL). Data is processed within the EU/EEA.
               </li>
               <li>
                 <strong>Google LLC</strong> — OAuth authentication if you choose &ldquo;Sign in with Google&rdquo;.
