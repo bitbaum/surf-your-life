@@ -15,22 +15,22 @@ export function SocialProofSection({ isLoggedIn }: SocialProofSectionProps) {
 
   return (
     <>
-      <section id="who" className="py-24 px-6 bg-white">
+      <section id="who" className="py-24 px-6 bg-surface">
         <div className="max-w-5xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
             <div>
-              <p className="text-teal-600 text-sm font-semibold tracking-widest uppercase mb-4">{t("who.label")}</p>
-              <h2 className="text-4xl font-bold text-slate-900 mb-6">
+              <p className="text-brand text-sm font-semibold tracking-widest uppercase mb-4">{t("who.label")}</p>
+              <h2 className="text-4xl font-bold text-ink mb-6">
                 {t("who.title")}
               </h2>
-              <p className="text-slate-500 leading-relaxed mb-8">
+              <p className="text-ink-muted leading-relaxed mb-8">
                 {t("who.body")}
               </p>
               <div className="flex flex-wrap gap-2">
                 {conditions.map((c) => (
                   <span
                     key={c}
-                    className="px-3 py-1.5 rounded-full bg-slate-50 border border-slate-200 text-sm text-slate-700 font-medium"
+                    className="px-3 py-1.5 rounded-full bg-surface-subtle border border-border text-sm text-ink-soft font-medium"
                   >
                     {c}
                   </span>
@@ -38,17 +38,17 @@ export function SocialProofSection({ isLoggedIn }: SocialProofSectionProps) {
               </div>
             </div>
 
-            <div className="bg-slate-50 rounded-xl border border-slate-200 p-8">
-              <p className="text-sm font-semibold text-slate-400 uppercase tracking-widest mb-6">
+            <div className="bg-surface-subtle rounded-xl border border-border p-8">
+              <p className="text-sm font-semibold text-ink-faint uppercase tracking-widest mb-6">
                 {t("who.testimonialsLabel")}
               </p>
               <div className="flex flex-col gap-6">
                 {testimonials.map(({ text, author }) => (
-                  <div key={author} className="border-l-2 border-teal-400 pl-4">
-                    <p className="text-slate-700 text-sm leading-relaxed italic">
+                  <div key={author} className="border-l-2 border-brand-on-overlay pl-4">
+                    <p className="text-ink-soft text-sm leading-relaxed italic">
                       &ldquo;{text}&rdquo;
                     </p>
-                    <p className="text-xs text-slate-400 mt-2">{author}</p>
+                    <p className="text-xs text-ink-faint mt-2">{author}</p>
                   </div>
                 ))}
               </div>
@@ -57,30 +57,30 @@ export function SocialProofSection({ isLoggedIn }: SocialProofSectionProps) {
         </div>
       </section>
 
-      <section className="py-20 px-6 bg-white border-y border-slate-100">
+      <section className="py-20 px-6 bg-surface border-y border-border-subtle">
         <div className="max-w-2xl mx-auto text-center">
-          <p className="text-teal-600 text-sm font-semibold tracking-widest uppercase mb-4">{t("newsletter.label")}</p>
-          <h2 className="text-3xl font-bold text-slate-900 mb-3">{t("newsletter.title")}</h2>
-          <p className="text-slate-500 mb-8">{t("newsletter.body")}</p>
+          <p className="text-brand text-sm font-semibold tracking-widest uppercase mb-4">{t("newsletter.label")}</p>
+          <h2 className="text-3xl font-bold text-ink mb-3">{t("newsletter.title")}</h2>
+          <p className="text-ink-muted mb-8">{t("newsletter.body")}</p>
           <NewsletterForm />
         </div>
       </section>
 
-      <section className="py-24 px-6 bg-slate-950">
+      <section className="py-24 px-6 bg-surface-overlay">
         <div className="max-w-3xl mx-auto text-center">
-          <div className="w-12 h-12 rounded-xl bg-teal-600 flex items-center justify-center mx-auto mb-8">
-            <Waves className="w-6 h-6 text-white" />
+          <div className="w-12 h-12 rounded-xl bg-brand flex items-center justify-center mx-auto mb-8">
+            <Waves className="w-6 h-6 text-ink-on-overlay" />
           </div>
-          <h2 className="text-4xl sm:text-5xl font-bold text-white mb-6 leading-tight">
+          <h2 className="text-4xl sm:text-5xl font-bold text-ink-on-overlay mb-6 leading-tight">
             {t("cta.title1")}<br />{t("cta.title2")}
           </h2>
-          <p className="text-slate-400 text-lg mb-10 max-w-xl mx-auto leading-relaxed">
+          <p className="text-ink-on-overlay-dim text-lg mb-10 max-w-xl mx-auto leading-relaxed">
             {t("cta.body")}
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             {isLoggedIn ? (
               <Link href="/dashboard">
-                <Button size="lg" className="w-full sm:w-auto text-base px-10 bg-teal-500 hover:bg-teal-400 text-white border-0">
+                <Button size="lg" className="w-full sm:w-auto text-base px-10 bg-brand-ring hover:bg-brand-on-overlay text-ink-on-overlay border-0">
                   {t("cta.goToDashboard")}
                   <ArrowRight className="w-4 h-4" />
                 </Button>
@@ -88,12 +88,12 @@ export function SocialProofSection({ isLoggedIn }: SocialProofSectionProps) {
             ) : (
               <>
                 <Link href="/register">
-                  <Button size="lg" className="w-full sm:w-auto text-base px-10 bg-teal-500 hover:bg-teal-400 text-white border-0">
+                  <Button size="lg" className="w-full sm:w-auto text-base px-10 bg-brand-ring hover:bg-brand-on-overlay text-ink-on-overlay border-0">
                     {t("cta.button")}
                     <ArrowRight className="w-4 h-4" />
                   </Button>
                 </Link>
-                <Link href="/login" className="text-sm text-slate-400 hover:text-white transition-colors">
+                <Link href="/login" className="text-sm text-ink-on-overlay-dim hover:text-ink-on-overlay transition-colors">
                   {t("cta.signIn")}
                 </Link>
               </>
