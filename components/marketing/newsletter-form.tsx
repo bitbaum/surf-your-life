@@ -32,7 +32,7 @@ export function NewsletterForm() {
 
   if (success) {
     return (
-      <div className="flex items-center justify-center gap-2 text-teal-600 font-medium">
+      <div className="flex items-center justify-center gap-2 text-brand font-medium">
         <CheckCircle className="w-5 h-5" />
         {t("success")}
       </div>
@@ -54,7 +54,7 @@ export function NewsletterForm() {
       <Button type="submit" disabled={loading}>
         {loading ? t("loading") : t("submit")}
       </Button>
-      {error && <p className="text-xs text-red-500 mt-1 w-full">{t("error")}</p>}
+      {error && <p className="text-xs text-error-vivid mt-1 w-full">{t("error")}</p>}
     </form>
   )
 }

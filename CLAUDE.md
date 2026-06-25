@@ -192,6 +192,7 @@ Design for 10× the current load. Don't over-engineer for 1000×.
 --color-brand-subtle:  #f0fdfa;  /* teal-50  — light surface tint */
 --color-brand-muted:   #ccfbf1;  /* teal-100 — stronger tint */
 --color-brand-dim:     #99f6e4;  /* teal-200 — borders on brand surfaces */
+--color-brand-soft:    #5eead4;  /* teal-300 — hover borders, light decorative accents */
 --color-brand-ring:    #14b8a6;  /* teal-500 — focus ring */
 --color-brand-dark:    #0f766e;  /* teal-700 — text on brand-subtle bg */
 --color-brand-darker:  #134e4a;  /* teal-900 — strong text on brand-subtle bg */

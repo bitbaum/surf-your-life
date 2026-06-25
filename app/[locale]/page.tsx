@@ -21,7 +21,7 @@ export default async function HomePage({
 
 function HomeContent({ isLoggedIn }: { isLoggedIn: boolean }) {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-surface">
       <MarketingNav isLoggedIn={isLoggedIn} />
       <HeroSection isLoggedIn={isLoggedIn} />
       <GapSection />
