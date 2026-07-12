@@ -25,7 +25,7 @@ export default async function AdminDashboardPage({
   setRequestLocale(locale)
   const t = await getTranslations("admin.dashboard")
 
-  const nowMs = Date.now()
+  const nowMs = Date.now() // eslint-disable-line react-hooks/purity -- server component
   const thirtyDaysAgo = new Date(nowMs - THIRTY_DAYS_MS)
   const sevenDaysAgo = new Date(nowMs - SEVEN_DAYS_MS)
 
