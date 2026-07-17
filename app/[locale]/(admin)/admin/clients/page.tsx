@@ -51,7 +51,7 @@ export default async function ClientsPage({
     : undefined
 
   const roleFilter = eq(users.role, CLIENT_ROLE)
-  const staleCutoff = new Date(Date.now() - SEVEN_DAYS_MS) // eslint-disable-line react-hooks/purity -- server component
+  const staleCutoff = new Date(Date.now() - SEVEN_DAYS_MS)
   const fourteenDaysAgo = new Date(staleCutoff.getTime() - SEVEN_DAYS_MS)
 
   // "Needs attention" = stale 7+ days (or never checked in) OR has any unresolved alert.
