@@ -6,46 +6,47 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 ## Design System
 
-**Tailwind v4 — no `tailwind.config.ts`.** All tokens are defined in `app/globals.css` using the `@theme inline` directive. Tailwind reads CSS vars directly.
+**Tailwind v4 — no `tailwind.config.ts`.** All tokens are defined in `app/globals.css` using the `@theme inline` directive. Tailwind reads CSS vars directly; no separate config file exists or is needed.
 
-**Token file:** `app/globals.css` — the only SSOT for all design tokens.
+**Token file:** `app/globals.css` — this is the only SSOT for all design decisions.
 
-### Colors — defined in `@theme inline`
+### Colors — `@theme inline` in `app/globals.css`
 
 **Primitive overrides (`:root`):**
 ```css
---background: #ffffff;  /* light mode */
---foreground: #171717;
-/* dark mode (prefers-color-scheme): #0a0a0a / #ededed */
+--background: #ffffff;   /* light mode page bg */
+--foreground: #171717;   /* light mode page text */
+/* dark mode via @media (prefers-color-scheme: dark): #0a0a0a / #ededed */
 ```
 
-**Brand (teal):**
+**Brand (teal — primary interactive color):**
 ```css
---color-brand:         #0d9488;  /* teal-600 */
+--color-brand:         #0d9488;  /* teal-600 — buttons, links, active states */
 --color-brand-hover:   #0f766e;  /* teal-700 */
---color-brand-subtle:  #f0fdfa;  /* teal-50  */
---color-brand-muted:   #ccfbf1;  /* teal-100 */
---color-brand-dim:     #99f6e4;  /* teal-200 */
+--color-brand-subtle:  #f0fdfa;  /* teal-50  — light surface tint */
+--color-brand-muted:   #ccfbf1;  /* teal-100 — stronger tint */
+--color-brand-dim:     #99f6e4;  /* teal-200 — borders on brand surfaces */
+--color-brand-soft:    #5eead4;  /* teal-300 — hover borders, light decorative accents */
 --color-brand-ring:    #14b8a6;  /* teal-500 — focus ring */
---color-brand-dark:    #0f766e;  /* teal-700 */
---color-brand-darker:  #134e4a;  /* teal-900 */
---color-brand-body:    #115e59;  /* teal-800 */
+--color-brand-dark:    #0f766e;  /* teal-700 — text on brand-subtle bg */
+--color-brand-darker:  #134e4a;  /* teal-900 — strong text on brand-subtle bg */
+--color-brand-body:    #115e59;  /* teal-800 — body text on brand-subtle bg */
 ```
 
-**Ink (text hierarchy):**
+**Ink (text hierarchy — light mode):**
 ```css
---color-ink:        #0f172a;  /* slate-900 */
---color-ink-soft:   #334155;  /* slate-700 */
---color-ink-muted:  #64748b;  /* slate-500 */
---color-ink-faint:  #94a3b8;  /* slate-400 */
+--color-ink:        #0f172a;  /* slate-900 — headings, primary text */
+--color-ink-soft:   #334155;  /* slate-700 — labels, form values */
+--color-ink-muted:  #64748b;  /* slate-500 — secondary text, descriptions */
+--color-ink-faint:  #94a3b8;  /* slate-400 — placeholders, metadata */
 ```
 
-**Surface:**
+**Surface (background hierarchy):**
 ```css
---color-surface:           #ffffff;
---color-surface-subtle:    #f8fafc;  /* slate-50  */
---color-surface-muted:     #f1f5f9;  /* slate-100 */
---color-surface-emphasis:  #e2e8f0;  /* slate-200 */
+--color-surface:           #ffffff;  /* white     — cards, inputs */
+--color-surface-subtle:    #f8fafc;  /* slate-50  — page background */
+--color-surface-muted:     #f1f5f9;  /* slate-100 — hover states, secondary bg */
+--color-surface-emphasis:  #e2e8f0;  /* slate-200 — active/selected states */
 ```
 
 **Border:**
@@ -55,22 +56,75 @@ This version has breaking changes — APIs, conventions, and file structure may 
 --color-border-subtle:  #f1f5f9;  /* slate-100 */
 ```
 
-**Semantic states:** error (`#dc2626`), warning/amber (`#d97706`), caution/yellow (`#ca8a04`), info/blue (`#2563eb`), accent/violet (`#7c3aed`) — each has `-subtle`, `-dim`, `-dark`, `-hover`, and `-ring` variants. See `app/globals.css` for full list.
-
-**Chart:** `--color-chart-1` `#14b8a6` (teal-500), `--color-chart-2` `#a78bfa` (violet-400), `--color-chart-3` `#60a5fa` (blue-400).
-
-**Dark overlay surface:**
+**Semantic states:**
 ```css
---color-surface-overlay:  #0f172a;  /* slate-900 — chart tooltips, dark sidebar */
+/* Error / Destructive */
+--color-error:        #dc2626;  /* red-600 */
+--color-error-hover:  #b91c1c;  /* red-700 */
+--color-error-subtle: #fef2f2;  /* red-50  */
+--color-error-dim:    #fecaca;  /* red-200 — borders on error surfaces */
+--color-error-ring:   #f87171;  /* red-400 — focus ring on error inputs */
+
+/* Warning (amber) */
+--color-warning:        #d97706;  /* amber-600 */
+--color-warning-subtle: #fffbeb;  /* amber-50  */
+--color-warning-dim:    #fde68a;  /* amber-200 */
+--color-warning-dark:   #b45309;  /* amber-700 */
+
+/* Caution (yellow) */
+--color-caution:        #ca8a04;  /* yellow-600 */
+--color-caution-subtle: #fefce8;  /* yellow-50  */
+--color-caution-dim:    #fef08a;  /* yellow-200 */
+--color-caution-dark:   #a16207;  /* yellow-700 */
+
+/* Info (blue) */
+--color-info:        #2563eb;  /* blue-600 */
+--color-info-subtle: #eff6ff;  /* blue-50  */
+--color-info-dim:    #bfdbfe;  /* blue-200 */
+
+/* Accent (violet) */
+--color-accent:        #7c3aed;  /* violet-600 */
+--color-accent-subtle: #f5f3ff;  /* violet-50  */
+--color-accent-dim:    #ddd6fe;  /* violet-200 */
+--color-accent-dark:   #6d28d9;  /* violet-700 */
+
+/* Vivid indicator dots */
+--color-error-vivid:   #ef4444;  /* red-500   */
+--color-warning-vivid: #f59e0b;  /* amber-500 */
+--color-caution-vivid: #facc15;  /* yellow-400 */
+```
+
+**Chart colors:**
+```css
+--color-chart-1:     #14b8a6;  /* teal-500   — primary series */
+--color-chart-2:     #a78bfa;  /* violet-400 — secondary series */
+--color-chart-3:     #60a5fa;  /* blue-400   — tertiary series */
+--color-chart-1-lit: #2dd4bf;  /* teal-400   — primary label on dark bg */
+--color-chart-2-lit: #c4b5fd;  /* violet-300 — secondary label on dark bg */
+```
+
+**Dark overlay surface (chart tooltips, dark sidebar):**
+```css
+--color-surface-overlay:         #0f172a;  /* slate-900 */
+--color-surface-overlay-subtle:  #1e293b;  /* slate-800 */
+--color-surface-overlay-muted:   #334155;  /* slate-700 */
+--color-surface-overlay-border:  #334155;  /* slate-700 */
+--color-ink-on-overlay:          #ffffff;
+--color-ink-on-overlay-soft:     #e2e8f0;  /* slate-200 */
+--color-ink-on-overlay-muted:    #cbd5e1;  /* slate-300 */
+--color-ink-on-overlay-dim:      #94a3b8;  /* slate-400 */
+--color-brand-on-overlay:        #2dd4bf;  /* teal-400 */
 ```
 
 ### Shape & Elevation
 
 ```css
---radius-element: 0.5rem;   /* inputs, buttons */
---radius-card:    0.75rem;  /* cards, modals */
---radius-pill:    9999px;   /* badges, pills */
+/* Border radius */
+--radius-element: 0.5rem;   /* rounded-lg  — inputs, buttons, small chips */
+--radius-card:    0.75rem;  /* rounded-xl  — cards, modals, larger containers */
+--radius-pill:    9999px;   /* rounded-full — badges, pills, circular icons */
 
+/* Shadows */
 --shadow-card:     0 1px 2px 0 rgb(0 0 0 / 0.05);
 --shadow-elevated: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 --shadow-overlay:  0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
@@ -81,27 +135,38 @@ This version has breaking changes — APIs, conventions, and file structure may 
 ```css
 --font-sans: var(--font-geist-sans);
 --font-mono: var(--font-geist-mono);
-/* Base font-size: 18px (bumped from browser default 16px) */
+/* Base font-size bumped from browser default 16px to 18px so text-sm ≈ 16px — do not touch per-component */
 ```
 
-### Tailwind v4 Class Usage
+### Tailwind class usage
 
-CSS vars from `@theme inline` become Tailwind utilities automatically:
+Because this is Tailwind v4 with `@theme inline`, CSS vars become Tailwind utilities automatically. Use semantic class names:
 
 ```
-bg-brand / text-ink / bg-surface-subtle / border-border
-rounded-element / rounded-card / rounded-pill
-shadow-card / shadow-elevated / shadow-overlay
+bg-brand            → var(--color-brand)
+text-ink            → var(--color-ink)
+text-ink-muted      → var(--color-ink-muted)
+bg-surface-subtle   → var(--color-surface-subtle)
+border-border       → var(--color-border)
+rounded-element     → var(--radius-element)
+rounded-card        → var(--radius-card)
+shadow-card         → var(--shadow-card)
 ```
+
+**Interaction states (all interactive elements must have):**
+- Hover: color shift or background
+- Focus: `focus-visible:ring-2 focus-visible:ring-brand-ring`
+- Disabled: `opacity-50 pointer-events-none`
+- Loading: spinner + disabled state, never just disabled
 
 ### SSOT Rule
 
-All design tokens live in `app/globals.css` only. Tailwind config MUST reference CSS vars (`'var(--name)'`), never literal values. Components MUST use semantic Tailwind classes, never arbitrary values like `bg-[#hex]`.
+All design tokens live in `app/globals.css` only. There is no `tailwind.config.ts` — Tailwind v4 reads the `@theme inline` block directly; do not create one. Components MUST use semantic Tailwind classes, never arbitrary values like `bg-[#hex]`.
 
 **Violations to fix when touching UI:**
 - `bg-[#hex]` / `text-[#hex]` in className → CSS var + semantic class
 - `style={{ color: '#hex' }}` → CSS var + className
-- Literal hex in tailwind.config → `'var(--color-name)'`
+- Literal hex in any config → `'var(--color-name)'`
 - Same token defined in 2+ files → consolidate to globals.css
 
 **Audit:** `grep -r '\[#' app/` — every result is a violation.
