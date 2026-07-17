@@ -16,10 +16,12 @@ Surf Your Life is a psychiatry-led clinic in Zürich helping people recover from
 
 ```
 app/
-  (auth)/          → Public: login, register, forgot-password
-  (portal)/        → Clients: dashboard, check-in, profile
-  (admin)/admin/   → Practitioners/admins: clients, documents, insights
-  api/             → Thin HTTP layer — validate input, call domain, return response
+  [locale]/        → next-intl locale segment — ALL pages live under it
+    (auth)/        → Public: login, register, forgot-password
+    (portal)/      → Clients: dashboard, check-in, profile
+    (admin)/admin/ → Practitioners/admins: clients, documents, insights
+    blog/ contact/ faq/ privacy/ → Public marketing pages
+  api/             → Thin HTTP layer, NOT localized — validate input, call domain, return response
 
 lib/
   db/
@@ -39,11 +41,12 @@ components/
 proxy.ts           → Route protection only. No business logic.
 ```
 
-### Route Groups
+### Route Groups (all under `app/[locale]/`)
 
 - `(auth)` — unauthenticated only. Middleware redirects logged-in users away.
-- `(portal)` — clients. URLs: `/dashboard`, `/check-in`, `/profile`
-- `(admin)` — practitioners + admins. URLs: `/admin/*`
+- `(portal)` — clients. URLs: `/<locale>/dashboard`, `/<locale>/check-in`, `/<locale>/profile`
+- `(admin)` — practitioners + admins. URLs: `/<locale>/admin/*`
+- API routes are NOT localized: `app/api/*` serves all locales.
 
 ---
 
@@ -364,10 +367,10 @@ These will be built in order of user value. Do not add scaffolding for them ahea
 
 ## What IS Built (Updated from "not yet" list)
 
-- **AI chat + embeddings** — `app/(portal)/ai-chat/` (client-facing), `lib/domain/ai-chat.ts` (Claude API + rule-based fallback), `lib/domain/embeddings.ts` (OpenAI text-embedding-3-small). Embeddings generated on check-in create/update, document upload, and via cron backfill at `app/api/cron/embed-backfill/`.
-- **Document upload by clients** — `app/(portal)/documents/` with `document-upload-form.tsx`; admin side at `app/(admin)/admin/clients/[id]/`. API routes at `app/api/portal/documents/` and `app/api/admin/clients/[id]/documents/`.
+- **AI chat + embeddings** — `app/[locale]/(portal)/ai-chat/` (client-facing), `lib/domain/ai-chat.ts` (Claude API + rule-based fallback), `lib/domain/embeddings.ts` (OpenAI text-embedding-3-small). Embeddings generated on check-in create/update, document upload, and via cron backfill at `app/api/cron/embed-backfill/`.
+- **Document upload by clients** — `app/[locale]/(portal)/documents/` with `document-upload-form.tsx`; admin side at `app/[locale]/(admin)/admin/clients/[id]/`. API routes at `app/api/portal/documents/` and `app/api/admin/clients/[id]/documents/`.
 - **Practitioner assignment UI** — `practitioner-assignment-card.tsx` on client detail page.
-- **At-risk clients page** — `app/(admin)/admin/clients/at-risk/` with SQL HAVING clause for efficient filtering.
+- **At-risk clients page** — `app/[locale]/(admin)/admin/clients/at-risk/` with SQL HAVING clause for efficient filtering.
 
 ---
 
