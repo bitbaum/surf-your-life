@@ -217,7 +217,14 @@ These will be built in order of user value. Do not add scaffolding for them ahea
 
 ## Scheduled jobs (cron)
 
-The `/api/cron/*` routes (reminders, weekly-report, ai-digest, embed-backfill) are triggered by the box scheduler (systemd timers / cron on the Hetzner box) hitting the routes on schedule. The schedules are documented in `vercel.json` (kept as the canonical schedule reference even though Vercel cron is no longer the executor — see the `crons` array there for paths and cron expressions).
+The `/api/cron/*` routes are triggered by the box scheduler (systemd timers / cron on the Hetzner box) hitting the routes on schedule. Canonical schedule reference:
+
+| Path | Cron expression | When |
+|------|-----------------|------|
+| `/api/cron/reminders` | `0 18 * * *` | Daily, 18:00 |
+| `/api/cron/weekly-report` | `0 17 * * 0` | Sundays, 17:00 |
+| `/api/cron/ai-digest` | `0 19 * * 0` | Sundays, 19:00 |
+| `/api/cron/embed-backfill` | `0 3 * * *` | Daily, 03:00 |
 
 ## Deploy Workflow
 
