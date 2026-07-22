@@ -8,7 +8,7 @@ on:
 
 jobs:
   check:
-    name: Typecheck & Lint
+    name: Verify & Build
     runs-on: ubuntu-latest
 
     steps:
@@ -26,13 +26,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Typecheck
-        run: pnpm tsc --noEmit
+      # Single SSOT check bundle (typecheck + lint + test) — defined in package.json.
+      - name: Verify
+        run: pnpm verify
         env:
           DATABASE_URL: postgresql://fake:fake@localhost/fake
 
-      - name: Lint
-        run: pnpm eslint . --max-warnings 0
-
-      - name: Test
-        run: pnpm test
+      # Build is hermetic (compiles with no DB reachable) — gate it to catch build breaks.
+      - name: Build
+        run: pnpm build
+        env:
+          DATABASE_URL: postgresql://fake:fake@localhost/fake

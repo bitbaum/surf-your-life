@@ -2,6 +2,25 @@
 # This is NOT the Next.js you know
 
 This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
+
+## Commands & Ops
+
+**Stack:** Next.js 16 (App Router, `output: "standalone"`) · TypeScript strict · self-hosted PostgreSQL (`pg` driver) · Drizzle ORM · pgvector · Auth.js v5 · Tailwind v4 (`@theme inline`, no config file). Package manager: **pnpm** (`pnpm install --frozen-lockfile`).
+
+| Task | Command |
+|------|---------|
+| Dev server | `pnpm dev` |
+| **Verify (SSOT check bundle)** | `pnpm verify` → `typecheck` + `lint` + `test` |
+| Typecheck only | `pnpm typecheck` (`tsc --noEmit`) |
+| Lint only | `pnpm lint` (`eslint . --max-warnings 0`) |
+| Tests only | `pnpm test` (`vitest run`) |
+| Production build | `pnpm build` (hermetic — compiles with no DB reachable) |
+
+**`verify` is the single source of truth for "is this change good."** CI (`.github/workflows/ci.yml`) runs `pnpm verify` then `pnpm build` verbatim — green `verify` + build locally ⇒ green CI. Run it before declaring any change done.
+
+**Drizzle migrations:** SQL files live in `drizzle/`. Generate with `pnpm db:generate`, apply with `pnpm db:migrate`. `pnpm db:push` is dev-only — never in production.
+
+**Deploy:** `main` deploys to the Hetzner box (bitbaum, behind Caddy) as a standalone Node process. Production URL: `https://surf-your-life.orangecat.ch`. Never commit `.env.local` / `.env.selfhost.local`.
 <!-- END:nextjs-agent-rules -->
 
 ## Design System
