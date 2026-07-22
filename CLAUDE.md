@@ -210,7 +210,7 @@ These will be built in order of user value. Do not add scaffolding for them ahea
 
 ## CI/CD
 
-- **GitHub Actions** runs on every PR: `tsc --noEmit` + `eslint --max-warnings 0`
+- **GitHub Actions** runs on every PR: `tsc --noEmit` + `eslint --max-warnings 0` + `pnpm test` + `pnpm build` (the build is hermetic — no build-time DB — and gated, so a broken build can't reach `main`)
 - **Self-hosted deploy:** `main` is deployed to the Hetzner box (bitbaum, behind Caddy). The app is built with `output: "standalone"` and runs as a Node process behind the Caddy reverse proxy.
 - **Branch protection:** PRs must pass CI before merge.
 - **Never commit `.env.local` or `.env.selfhost.local`.** All secrets live in the box environment + `.env.example` for documentation.
