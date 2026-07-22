@@ -36,3 +36,11 @@ jobs:
 
       - name: Test
         run: pnpm test
+
+      # Gate the build too: a clinical app must not be able to ship a broken
+      # build. Hermetic — verified next build compiles with no DB reachable
+      # (the sitemap does no DB reads); placeholder URL satisfies drizzle config.
+      - name: Build
+        run: pnpm build
+        env:
+          DATABASE_URL: postgresql://fake:fake@localhost/fake
