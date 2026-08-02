@@ -2,6 +2,7 @@
 
 import { useEffect } from "react"
 import { useTranslations } from "next-intl"
+import * as Sentry from "@sentry/nextjs"
 import { Button } from "@/components/ui/button"
 import { Link } from "@/i18n/navigation"
 
@@ -10,6 +11,7 @@ export default function PortalError({ error, reset }: { error: Error; reset: () 
 
   useEffect(() => {
     console.error(error)
+    Sentry.captureException(error)
   }, [error])
 
   return (
