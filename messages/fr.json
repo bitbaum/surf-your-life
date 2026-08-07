@@ -491,14 +491,9 @@
       "journalCard": "Journal",
       "journalDescription": "Victoires, défis, réflexions — ce qui vous passe par la tête.",
       "journalPlaceholder": "Comment s'est passée la journée? Qu'est-ce qui a bien marché? Qu'est-ce qui a été difficile?",
-      "nlpTitle": "Décrivez votre journée",
-      "nlpDescription": "Écrivez librement et nous remplirons le formulaire pour vous.",
-      "nlpPlaceholder": "ex. Dormi 7 heures, énergie à 4, courte promenade mais un peu épuisé maintenant…",
-      "nlpFill": "Remplir le formulaire",
-      "nlpParsing": "Analyse…",
-      "nlpFilledHint": "{n} champs remplis — vérifiez et ajustez ci-dessous.",
-      "nlpNoMatch": "Aucun champ détecté. Remplissez manuellement ci-dessous.",
-      "errorMoodRequired": "Veuillez sélectionner une humeur avant d'enregistrer."
+      "errorMoodRequired": "Veuillez sélectionner une humeur avant d'enregistrer.",
+      "aiFillPlaceholder": "ex. Dormi 7 heures, énergie à 4, courte promenade mais un peu épuisé maintenant…",
+      "aiRefinePlaceholder": "ex. La douleur était plutôt à 8, et je ne suis pas sorti"
     },
     "checkIns": {
       "title": "Historique des check-ins",
@@ -1543,5 +1538,16 @@
   },
   "ui": {
     "switchLanguage": "Changer de langue"
+  },
+  "aiForm": {
+    "fillTitle": "Décrivez votre journée",
+    "fillHint": "Écrivez librement — le formulaire se remplit et vous le vérifiez.",
+    "refineTitle": "Modifier quelque chose",
+    "refineHint": "Dites ce qu'il faut changer — cela ajuste ce qui est déjà ci-dessous.",
+    "fillSubmit": "Remplir le formulaire",
+    "refineSubmit": "Appliquer la modification",
+    "working": "Un instant…",
+    "undo": "Annuler",
+    "changedFields": "{count, plural, one {# champ mis à jour} other {# champs mis à jour}}"
   }
 }

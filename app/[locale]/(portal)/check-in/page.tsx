@@ -3,18 +3,26 @@
 import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { useRouter } from "@/i18n/navigation"
+import { useAiForm } from "@fleet/ai-forms/react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
-import { ENERGY_SCALE, SYMPTOM_SCALE, FIELD_MAX_JOURNAL } from "@/lib/constants"
+import { ENERGY_SCALE, PEM_SEVERITY_SCALE, SYMPTOM_SCALE, FIELD_MAX_JOURNAL } from "@/lib/constants"
 import { toast } from "sonner"
-import { NlpEntry, type ParsedFill } from "./nlp-entry"
+import { AiFormBar } from "@/components/ui/ai-form-bar"
+import { CHECK_IN_FORM } from "@/lib/config/ai-forms"
 import { MoodCard } from "./mood-card"
 import { EnergyCard } from "./energy-card"
 import { ActivityPemCard } from "./activity-pem-card"
 import { SleepCard } from "./sleep-card"
-import { SymptomsCard, type Symptoms } from "./symptoms-card"
+import { SymptomsCard } from "./symptoms-card"
 import { PageHeader } from "@/components/ui/page-header"
+
+/** Symptom fields, in the order the card renders them. */
+const SYMPTOM_FIELDS = ["symptomFatigue", "symptomBrainFog", "symptomPain", "symptomStress"] as const
+
+/** Read a number out of the shared store, falling back to the slider default. */
+const num = (value: unknown, fallback: number) => (typeof value === "number" ? value : fallback)
 
 export default function CheckInPage() {
   const t = useTranslations("portal.checkIn")
@@ -22,76 +30,67 @@ export default function CheckInPage() {
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string>("")
-  const [form, setForm] = useState({
-    mood: "",
-    energy: ENERGY_SCALE.default as number,
-    sleep: "",
-    sleepQuality: null as number | null,
-    activityLevel: null as string | null,
-    pemFlag: false,
-    pemSeverity: 5,
-    orthostaticSymptoms: null as boolean | null,
-    journalEntry: "",
-    trackSymptoms: false,
-    symptoms: {
-      fatigue: SYMPTOM_SCALE.default,
-      brainFog: SYMPTOM_SCALE.default,
-      pain: SYMPTOM_SCALE.default,
-      stress: SYMPTOM_SCALE.default,
-    } as Symptoms,
-  })
-  const set = <K extends keyof typeof form>(key: K) =>
-    (val: (typeof form)[K]) => setForm((prev) => ({ ...prev, [key]: val }))
 
-  function handleFill(data: ParsedFill) {
-    const hasSymptoms = data.symptomFatigue != null || data.symptomBrainFog != null || data.symptomPain != null || data.symptomStress != null
-    setForm((prev) => ({
-      ...prev,
-      ...(data.mood && { mood: data.mood }),
-      ...(data.energyLevel != null && { energy: data.energyLevel }),
-      ...(data.sleepHours != null && { sleep: String(data.sleepHours) }),
-      ...(data.activityLevel && { activityLevel: data.activityLevel }),
-      ...(data.pemFlag != null && { pemFlag: data.pemFlag }),
-      ...(data.orthostaticSymptoms != null && { orthostaticSymptoms: data.orthostaticSymptoms }),
-      ...(data.journalEntry && { journalEntry: data.journalEntry }),
-      ...(hasSymptoms && { trackSymptoms: true }),
-      ...(hasSymptoms && {
-        symptoms: {
-          fatigue: data.symptomFatigue ?? prev.symptoms.fatigue,
-          brainFog: data.symptomBrainFog ?? prev.symptoms.brainFog,
-          pain: data.symptomPain ?? prev.symptoms.pain,
-          stress: data.symptomStress ?? prev.symptoms.stress,
-        },
-      }),
-    }))
-  }
+  // One store, written by both the person and the assistant — that is what lets
+  // a follow-up ("actually the pain was more like an 8") revise what is already
+  // here instead of starting over. It replaces the per-form useState object.
+  //
+  // Sliders deliberately start empty rather than at their default. The default
+  // is what the control shows, not something the person said, and seeding it
+  // would make the form permanently non-empty — so every instruction would be
+  // treated as a refinement and the first description would never fill anything.
+  const form = useAiForm({
+    target: CHECK_IN_FORM.key,
+    fields: CHECK_IN_FORM.fields,
+    // Unanswered is not the same as "no". Starting at null keeps that
+    // distinction all the way to the database.
+    initialValues: { orthostaticSymptoms: null },
+    onApplied: (_values, changed) => {
+      // The symptoms card is collapsed until it holds something. If the
+      // assistant scored a symptom, open it — otherwise it writes values into a
+      // section nobody can see.
+      if (SYMPTOM_FIELDS.some((field) => changed.includes(field))) {
+        form.setValue("trackSymptoms", true)
+      }
+    },
+  })
+
+  const v = form.values
+  const activityLevel = (v.activityLevel as string) || null
+  const trackSymptoms = v.trackSymptoms === true
+  const showPem = activityLevel === "moderate" || activityLevel === "active"
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!form.mood) { setError(t("errorMoodRequired")); return }
+    const mood = String(v.mood ?? "")
+    if (!mood) {
+      setError(t("errorMoodRequired"))
+      return
+    }
     setLoading(true)
     setError("")
 
-    const showPem = form.activityLevel === "moderate" || form.activityLevel === "active"
+    const pemFlag = v.pemFlag === true
+    const journalEntry = String(v.journalEntry ?? "").trim()
 
     try {
       const res = await fetch("/api/check-in", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          mood: form.mood,
-          energyLevel: form.energy,
-          sleepHours: form.sleep ? parseInt(form.sleep) : null,
-          sleepQuality: form.sleepQuality,
-          activityLevel: form.activityLevel ?? null,
-          pemFlag: showPem ? form.pemFlag : false,
-          pemSeverity: showPem && form.pemFlag ? form.pemSeverity : null,
-          orthostaticSymptoms: form.orthostaticSymptoms,
-          journalEntry: form.journalEntry.trim() || null,
-          symptomFatigue: form.trackSymptoms ? form.symptoms.fatigue : null,
-          symptomBrainFog: form.trackSymptoms ? form.symptoms.brainFog : null,
-          symptomPain: form.trackSymptoms ? form.symptoms.pain : null,
-          stressLevel: form.trackSymptoms ? form.symptoms.stress : null,
+          mood,
+          energyLevel: num(v.energyLevel, ENERGY_SCALE.default),
+          sleepHours: typeof v.sleepHours === "number" ? v.sleepHours : null,
+          sleepQuality: typeof v.sleepQuality === "number" ? v.sleepQuality : null,
+          activityLevel,
+          pemFlag: showPem ? pemFlag : false,
+          pemSeverity: showPem && pemFlag ? num(v.pemSeverity, PEM_SEVERITY_SCALE.default) : null,
+          orthostaticSymptoms: typeof v.orthostaticSymptoms === "boolean" ? v.orthostaticSymptoms : null,
+          journalEntry: journalEntry || null,
+          symptomFatigue: trackSymptoms ? num(v.symptomFatigue, SYMPTOM_SCALE.default) : null,
+          symptomBrainFog: trackSymptoms ? num(v.symptomBrainFog, SYMPTOM_SCALE.default) : null,
+          symptomPain: trackSymptoms ? num(v.symptomPain, SYMPTOM_SCALE.default) : null,
+          stressLevel: trackSymptoms ? num(v.symptomStress, SYMPTOM_SCALE.default) : null,
         }),
       })
 
@@ -122,27 +121,41 @@ export default function CheckInPage() {
       <PageHeader title={t("title")} description={t("subtitle")} />
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-        <NlpEntry onFill={handleFill} />
+        <AiFormBar
+          form={form}
+          fillPlaceholder={t("aiFillPlaceholder")}
+          refinePlaceholder={t("aiRefinePlaceholder")}
+        />
 
-        <MoodCard value={form.mood} onChange={set("mood") as (v: string) => void} />
-        <EnergyCard value={form.energy} onChange={set("energy") as (v: number) => void} />
+        <MoodCard
+          value={String(v.mood ?? "")}
+          onChange={(mood) => form.setValue("mood", mood)}
+        />
+        <EnergyCard
+          value={num(v.energyLevel, ENERGY_SCALE.default)}
+          onChange={(energy) => form.setValue("energyLevel", energy)}
+        />
 
         <ActivityPemCard
-          activityLevel={form.activityLevel}
-          setActivityLevel={set("activityLevel")}
-          pemFlag={form.pemFlag}
-          setPemFlag={set("pemFlag")}
-          pemSeverity={form.pemSeverity}
-          setPemSeverity={set("pemSeverity")}
-          orthostaticSymptoms={form.orthostaticSymptoms}
-          setOrthostaticSymptoms={set("orthostaticSymptoms")}
+          activityLevel={activityLevel}
+          setActivityLevel={(level) => form.setValue("activityLevel", level)}
+          pemFlag={v.pemFlag === true}
+          setPemFlag={(flag) => form.setValue("pemFlag", flag)}
+          pemSeverity={num(v.pemSeverity, PEM_SEVERITY_SCALE.default)}
+          setPemSeverity={(severity) => form.setValue("pemSeverity", severity)}
+          orthostaticSymptoms={
+            typeof v.orthostaticSymptoms === "boolean" ? v.orthostaticSymptoms : null
+          }
+          setOrthostaticSymptoms={(value) => form.setValue("orthostaticSymptoms", value)}
         />
 
         <SleepCard
-          sleep={form.sleep}
-          setSleep={set("sleep")}
-          sleepQuality={form.sleepQuality}
-          setSleepQuality={set("sleepQuality")}
+          sleep={typeof v.sleepHours === "number" ? String(v.sleepHours) : ""}
+          // A number input reports "" while being cleared, and Number("") is 0 —
+          // which would silently record a night of no sleep.
+          setSleep={(value) => form.setValue("sleepHours", value === "" ? "" : Number(value))}
+          sleepQuality={typeof v.sleepQuality === "number" ? v.sleepQuality : null}
+          setSleepQuality={(quality) => form.setValue("sleepQuality", quality)}
         />
 
         {/* Journal */}
@@ -153,8 +166,8 @@ export default function CheckInPage() {
           </CardHeader>
           <CardContent>
             <Textarea
-              value={form.journalEntry}
-              onChange={(e) => set("journalEntry")(e.target.value)}
+              value={String(v.journalEntry ?? "")}
+              onChange={(e) => form.setValue("journalEntry", e.target.value)}
               placeholder={t("journalPlaceholder")}
               maxLength={FIELD_MAX_JOURNAL}
               rows={4}
@@ -163,13 +176,25 @@ export default function CheckInPage() {
         </Card>
 
         <SymptomsCard
-          trackSymptoms={form.trackSymptoms}
-          setTrackSymptoms={set("trackSymptoms")}
-          symptoms={form.symptoms}
-          setSymptoms={set("symptoms")}
+          trackSymptoms={trackSymptoms}
+          setTrackSymptoms={(track) => form.setValue("trackSymptoms", track)}
+          symptoms={{
+            fatigue: num(v.symptomFatigue, SYMPTOM_SCALE.default),
+            brainFog: num(v.symptomBrainFog, SYMPTOM_SCALE.default),
+            pain: num(v.symptomPain, SYMPTOM_SCALE.default),
+            stress: num(v.symptomStress, SYMPTOM_SCALE.default),
+          }}
+          setSymptoms={(next) => {
+            form.setValues({
+              symptomFatigue: next.fatigue,
+              symptomBrainFog: next.brainFog,
+              symptomPain: next.pain,
+              symptomStress: next.stress,
+            })
+          }}
         />
 
-        {error && <p className="text-sm text-red-600">{error}</p>}
+        {error && <p className="text-sm text-error">{error}</p>}
 
         <Button type="submit" disabled={loading} size="lg">
           {loading ? t("loading") : t("submit")}

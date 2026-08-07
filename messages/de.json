@@ -491,14 +491,9 @@
       "journalCard": "Tagebuch",
       "journalDescription": "Erfolge, Herausforderungen, Gedanken — was auch immer auf dem Herzen liegt.",
       "journalPlaceholder": "Wie hat sich der Tag angefühlt? Was lief gut? Was war schwierig?",
-      "nlpTitle": "Beschreiben Sie Ihren Tag",
-      "nlpDescription": "Schreiben Sie frei und wir füllen das Formular für Sie aus.",
-      "nlpPlaceholder": "z.B. 7 Stunden geschlafen, Energie war eine 4, kurzen Spaziergang gemacht, aber jetzt etwas erschöpft…",
-      "nlpFill": "Formular ausfüllen",
-      "nlpParsing": "Verarbeite…",
-      "nlpFilledHint": "{n} Felder ausgefüllt — prüfen und anpassen.",
-      "nlpNoMatch": "Keine Felder erkannt. Bitte unten manuell ausfüllen.",
-      "errorMoodRequired": "Bitte wählen Sie eine Stimmung aus."
+      "errorMoodRequired": "Bitte wählen Sie eine Stimmung aus.",
+      "aiFillPlaceholder": "z.B. 7 Stunden geschlafen, Energie war eine 4, kurzen Spaziergang gemacht, aber jetzt etwas erschöpft…",
+      "aiRefinePlaceholder": "z.B. Die Schmerzen waren eher eine 8, und ich war nicht draussen"
     },
     "checkIns": {
       "title": "Check-in-Verlauf",
@@ -1543,5 +1538,16 @@
   },
   "ui": {
     "switchLanguage": "Sprache wechseln"
+  },
+  "aiForm": {
+    "fillTitle": "Beschreiben Sie Ihren Tag",
+    "fillHint": "Schreiben Sie frei — das Formular füllt sich aus und Sie prüfen es.",
+    "refineTitle": "Etwas ändern",
+    "refineHint": "Sagen Sie, was geändert werden soll — es passt an, was unten schon steht.",
+    "fillSubmit": "Formular ausfüllen",
+    "refineSubmit": "Änderung übernehmen",
+    "working": "Einen Moment…",
+    "undo": "Rückgängig",
+    "changedFields": "{count, plural, one {# Feld aktualisiert} other {# Felder aktualisiert}}"
   }
 }

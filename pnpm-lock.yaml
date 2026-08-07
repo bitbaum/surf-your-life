@@ -11,6 +11,9 @@ importers:
       '@auth/drizzle-adapter':
         specifier: ^1.11.1
         version: 1.11.1
+      '@fleet/ai-forms':
+        specifier: github:maonakamoto/ai-forms#v0.1.0
+        version: https://codeload.github.com/maonakamoto/ai-forms/tar.gz/68087895ab9d46d73d03b91ebf5e648b969ebd76(react@19.2.4)
       '@sentry/nextjs':
         specifier: ^10.66.0
         version: 10.66.0(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.1))(next@16.2.3(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(webpack@5.108.4(esbuild@0.27.7))
@@ -720,6 +723,15 @@ packages:
   '@eslint/plugin-kit@0.4.1':
     resolution: {integrity: sha512-43/qtrDUokr7LJqoF2c3+RInu/t4zfrpYdoSDfYyhg52rwLV6TnOvdG4fXm7IkSB3wErkcmJS9iEhjVtOSEjjA==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+
+  '@fleet/ai-forms@https://codeload.github.com/maonakamoto/ai-forms/tar.gz/68087895ab9d46d73d03b91ebf5e648b969ebd76':
+    resolution: {gitHosted: true, integrity: sha512-HJv0oPISTyQnLi+F4ezhv0vhFq8v9X16a3tti4fZZwoTA8/lKu3UZzxSsdpliWpDE3Fm6R91QmSuh56RlzowXg==, tarball: https://codeload.github.com/maonakamoto/ai-forms/tar.gz/68087895ab9d46d73d03b91ebf5e648b969ebd76}
+    version: 0.1.0
+    peerDependencies:
+      react: '>=18'
+    peerDependenciesMeta:
+      react:
+        optional: true
 
   '@formatjs/bigdecimal@0.2.0':
     resolution: {integrity: sha512-GeaxHZbUoYvHL9tC5eltHLs+1zU70aPw0s7LwqgktIzF5oMhNY4o4deEtusJMsq7WFJF3Ye2zQEzdG8beVk73w==}
@@ -4480,6 +4492,10 @@ snapshots:
       '@eslint/core': 0.17.0
       levn: 0.4.1
 
+  '@fleet/ai-forms@https://codeload.github.com/maonakamoto/ai-forms/tar.gz/68087895ab9d46d73d03b91ebf5e648b969ebd76(react@19.2.4)':
+    optionalDependencies:
+      react: 19.2.4
+
   '@formatjs/bigdecimal@0.2.0': {}
 
   '@formatjs/ecma402-abstract@3.2.0':
@@ -7694,7 +7710,7 @@ snapshots:
 
   webpack@5.108.4(esbuild@0.27.7):
     dependencies:
-      '@types/estree': 1.0.8
+      '@types/estree': 1.0.9
       '@types/json-schema': 7.0.15
       '@webassemblyjs/ast': 1.14.1
       '@webassemblyjs/wasm-edit': 1.14.1
@@ -7713,7 +7729,7 @@ snapshots:
       minimizer-webpack-plugin: 5.6.1(esbuild@0.27.7)(webpack@5.108.4(esbuild@0.27.7))
       neo-async: 2.6.2
       schema-utils: 4.3.3
-      tapable: 2.3.2
+      tapable: 2.3.3
       watchpack: 2.5.2
       webpack-sources: 3.5.1
     transitivePeerDependencies:
