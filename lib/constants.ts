@@ -84,7 +84,11 @@ export const MOOD_COLOR: Record<string, string> = {
   excellent: "bg-teal-500",
 }
 
-export const SITE_URL = process.env.AUTH_URL ?? "https://surf-your-life.ch"
+// Where the site ACTUALLY serves. surf-your-life.ch has no DNS A record, so
+// everything derived from this — metadataBase, canonical URLs, the generated
+// og:image — pointed at a host that does not resolve. Point it back only once
+// that domain is live.
+export const SITE_URL = process.env.AUTH_URL ?? "https://surf-your-life.orangecat.ch"
 export const BRAND_NAME = "Surf Your Life"
 export const COMPANY_ADDRESS = "Surf Your Life · Zollikerstrasse 183, 8008 Zürich"
 
