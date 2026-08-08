@@ -21,8 +21,18 @@ const authPaths = ["/login", "/register", "/forgot-password", "/reset-password"]
  *
  * Matched by prefix on purpose: Next appends a build suffix to these routes
  * (e.g. /opengraph-image-1jdwle) when a segment generates more than one.
+ *
+ * Split in two because they don't share a route root. opengraph-image et al.
+ * live under app/[locale]/, so the request already carries a locale prefix
+ * (e.g. /de/opengraph-image) and intlMiddleware is a harmless pass-through.
+ * robots.txt and sitemap.xml live at the app root (app/robots.ts,
+ * app/sitemap.ts) by Next.js convention — a crawler only ever requests the
+ * bare /robots.txt. Handing that to intlMiddleware makes it redirect to
+ * /de/robots.txt, which matches no route and 404s, so these must bypass
+ * intlMiddleware entirely rather than just the auth check.
  */
-const metadataPaths = ["/opengraph-image", "/twitter-image", "/icon", "/apple-icon", "/robots.txt", "/sitemap.xml"]
+const localizedMetadataPaths = ["/opengraph-image", "/twitter-image", "/icon", "/apple-icon"]
+const rootMetadataPaths = ["/robots.txt", "/sitemap.xml"]
 
 function stripLocale(pathname: string): string {
   return pathname.replace(/^\/(de|en|fr)/, "") || "/"
@@ -38,7 +48,8 @@ export default auth((req) => {
   const path = stripLocale(pathname)
   const locale = getLocale(pathname)
 
-  const isMetadata = metadataPaths.some((r) => path === r || path.startsWith(r))
+  const isRootMetadata = rootMetadataPaths.some((r) => path === r || path.startsWith(r))
+  const isMetadata = isRootMetadata || localizedMetadataPaths.some((r) => path === r || path.startsWith(r))
   const isPublic = isMetadata || publicPaths.some((r) => path === r || path.startsWith(r + "/"))
   const isAuthPath = authPaths.some((r) => path === r || path.startsWith(r))
   const dest = isStaff(session?.user.role)
@@ -50,6 +61,9 @@ export default auth((req) => {
   }
   if (!session && !isPublic) {
     return NextResponse.redirect(new URL(`/${locale}/login`, req.url))
+  }
+  if (isRootMetadata) {
+    return NextResponse.next()
   }
   // Clients cannot access admin routes
   if (session && path.startsWith("/admin") && session.user.role === "client") {
