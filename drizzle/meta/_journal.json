@@ -2,26 +2,29 @@
   "version": "7",
   "dialect": "postgresql",
   "entries": [
-    {
-      "idx": 0,
-      "version": "7",
-      "when": 1776011694463,
-      "tag": "0000_misty_santa_claus",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1776011870989,
-      "tag": "0001_youthful_blue_shield",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1776013742000,
-      "tag": "0002_right_miek",
-      "breakpoints": true
-    }
+    { "idx": 0, "version": "7", "when": 1776011694463, "tag": "0000_misty_santa_claus", "breakpoints": true },
+    { "idx": 1, "version": "7", "when": 1776011870989, "tag": "0001_youthful_blue_shield", "breakpoints": true },
+    { "idx": 2, "version": "7", "when": 1776013742000, "tag": "0002_right_miek", "breakpoints": true },
+    { "idx": 3, "version": "7", "when": 1776013742001, "tag": "0003_services_bookings", "breakpoints": true },
+    { "idx": 4, "version": "7", "when": 1776013742002, "tag": "0004_leads_email_idx", "breakpoints": true },
+    { "idx": 5, "version": "7", "when": 1776013742003, "tag": "0005_messaging", "breakpoints": true },
+    { "idx": 6, "version": "7", "when": 1776013742004, "tag": "0006_leads_status", "breakpoints": true },
+    { "idx": 7, "version": "7", "when": 1776013742005, "tag": "0007_indexes", "breakpoints": true },
+    { "idx": 8, "version": "7", "when": 1776013742006, "tag": "0008_main_concern_enum", "breakpoints": true },
+    { "idx": 9, "version": "7", "when": 1776013742007, "tag": "0009_programmes", "breakpoints": true },
+    { "idx": 10, "version": "7", "when": 1776013742008, "tag": "0010_cascade_deletes", "breakpoints": true },
+    { "idx": 11, "version": "7", "when": 1776013742009, "tag": "0011_rename_programme_to_program", "breakpoints": true },
+    { "idx": 12, "version": "7", "when": 1776013742010, "tag": "0012_check_in_practitioner_note", "breakpoints": true },
+    { "idx": 13, "version": "7", "when": 1776013742011, "tag": "0013_symptom_fields", "breakpoints": true },
+    { "idx": 14, "version": "7", "when": 1776013742012, "tag": "0014_clinical_depth", "breakpoints": true },
+    { "idx": 15, "version": "7", "when": 1776013742013, "tag": "0015_program_templates", "breakpoints": true },
+    { "idx": 16, "version": "7", "when": 1776013742014, "tag": "0016_ai_chat", "breakpoints": true },
+    { "idx": 17, "version": "7", "when": 1776013742015, "tag": "0017_checkin_improvements", "breakpoints": true },
+    { "idx": 18, "version": "7", "when": 1776013742016, "tag": "0018_orthostatic_alert_type", "breakpoints": true },
+    { "idx": 19, "version": "7", "when": 1776013742017, "tag": "0019_techniques", "breakpoints": true },
+    { "idx": 20, "version": "7", "when": 1776013742018, "tag": "0020_missing_indexes", "breakpoints": true },
+    { "idx": 21, "version": "7", "when": 1776013742019, "tag": "0020_notification_preferences", "breakpoints": true },
+    { "idx": 22, "version": "7", "when": 1776013742020, "tag": "0021_alert_resolved_at", "breakpoints": true },
+    { "idx": 23, "version": "7", "when": 1776013742021, "tag": "0022_technique_adherence_alert_type", "breakpoints": true }
   ]
 }
