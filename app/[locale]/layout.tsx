@@ -7,6 +7,7 @@ import type { Metadata } from "next"
 import { Toaster } from "sonner"
 import "../globals.css"
 import { SITE_URL, BRAND_NAME } from "@/lib/constants"
+import { FeedbackWidget } from "@/components/feedback-widget"
 
 const BRAND_TITLE = `${BRAND_NAME} — Medical Performance Space Zürich`
 
@@ -56,6 +57,7 @@ export default async function LocaleLayout({
         <NextIntlClientProvider messages={messages}>
           {children}
           <Toaster richColors position="top-right" />
+          <FeedbackWidget />
         </NextIntlClientProvider>
       </body>
     </html>

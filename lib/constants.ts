@@ -407,3 +407,19 @@ export const ASSESSMENT_DIMENSIONS = [
   { key: "emotionalCapacity", required: false },
   { key: "socialCapacity",    required: false },
 ] as const
+
+// FleetCrown feedback widget — only mounted on public marketing/auth pages, never on the
+// authenticated client portal or admin area, which render clinical health data.
+export const FEEDBACK_WIDGET_SRC = "https://fleetcrown.orangecat.ch/widget.js"
+export const FEEDBACK_WIDGET_PROJECT = "fcw_a2765aec11c72950578728b86bf6d274"
+export const FEEDBACK_WIDGET_PUBLIC_PATH_PREFIXES = [
+  "/blog",
+  "/contact",
+  "/faq",
+  "/privacy",
+  "/login",
+  "/register",
+  "/forgot-password",
+  "/reset-password",
+  "/verify-email",
+] as const
