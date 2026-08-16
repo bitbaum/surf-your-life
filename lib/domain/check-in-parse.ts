@@ -1,13 +1,15 @@
 /**
- * Parse a free-text description of a day into structured check-in fields.
+ * Parse a free-text description of a day into structured check-in fields,
+ * using keyword heuristics and no network call at all.
  *
- * AI path (when ANTHROPIC_API_KEY is set): calls Claude for accurate extraction.
- * Fallback: keyword-based heuristics grounded in common English patterns.
+ * This is what /api/ai/form-assist answers with when ANTHROPIC_API_KEY is not
+ * set, so the check-in form still fills itself in on a deployment with no
+ * model. The AI path lives in lib/config/ai-forms.ts — the field list there is
+ * the only description of these fields the model ever sees, which is why there
+ * is no hand-written extraction prompt duplicating the list below.
  *
- * Returns partial check-in fields — only fields it's confident about.
- * The client form pre-fills these and lets the user review before submitting.
+ * Returns partial check-in fields — only the ones the text actually supports.
  */
-import { callClaude } from "@/lib/domain/anthropic"
 
 export type ParsedFields = {
   mood?: string
@@ -157,34 +159,16 @@ export function keywordParse(text: string): ParsedFields {
   return result
 }
 
-// ─── AI parser (to enable: set ANTHROPIC_API_KEY) ────────────────────────────
-
-export async function aiParse(text: string): Promise<ParsedFields | null> {
-  const prompt = `Extract structured health data from this daily check-in description.
-Return ONLY valid JSON with these optional fields (omit any you're not confident about):
-- mood: "very_low" | "low" | "neutral" | "good" | "excellent"
-- energyLevel: integer 1-10
-- sleepHours: integer 0-24
-- activityLevel: "rest" | "light" | "moderate" | "active"
-- pemFlag: boolean (true if post-exertional malaise / crash after activity)
-- orthostaticSymptoms: boolean (true if dizziness on standing)
-- symptomFatigue: integer 1-10 (physical exhaustion beyond normal tiredness)
-- symptomBrainFog: integer 1-10 (cognitive difficulty, unclear thinking)
-- symptomPain: integer 1-10 (body pain or aching)
-- symptomStress: integer 1-10 (psychological stress or anxiety level)
-- journalEntry: the full input text, cleaned up
-
-Input: "${text.replace(/"/g, '\\"')}"
-
-JSON only, no explanation:`
-
-  try {
-    const raw = await callClaude({ messages: [{ role: "user", content: prompt }], maxTokens: 200 })
-    if (!raw) return null
-    const jsonMatch = raw.match(/\{[\s\S]*\}/)
-    if (!jsonMatch) return null
-    return JSON.parse(jsonMatch[0]) as ParsedFields
-  } catch {
-    return null
-  }
+/**
+ * What the keyword parser can offer when no model is available.
+ *
+ * keywordParse treats its whole input as the day's journal. That is right for a
+ * fill, where the instruction *is* the description of the day, and wrong for a
+ * refine, where it is something like "the pain was more like an 8" — text that
+ * must not replace what the person already wrote about their day.
+ */
+export function keywordFallback(instruction: string, intent: "fill" | "refine"): ParsedFields {
+  const fields = keywordParse(instruction)
+  if (intent === "refine") delete fields.journalEntry
+  return fields
 }

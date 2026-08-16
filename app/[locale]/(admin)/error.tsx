@@ -2,6 +2,7 @@
 
 import { useEffect } from "react"
 import { useTranslations } from "next-intl"
+import * as Sentry from "@sentry/nextjs"
 import { Button } from "@/components/ui/button"
 
 export default function AdminError({
@@ -15,6 +16,7 @@ export default function AdminError({
 
   useEffect(() => {
     console.error("[admin]", error)
+    Sentry.captureException(error)
   }, [error])
 
   return (

@@ -210,14 +210,21 @@ These will be built in order of user value. Do not add scaffolding for them ahea
 
 ## CI/CD
 
-- **GitHub Actions** runs on every PR: `tsc --noEmit` + `eslint --max-warnings 0`
+- **GitHub Actions** runs on every PR: `tsc --noEmit` + `eslint --max-warnings 0` + `pnpm test` + `pnpm build` (the build is hermetic — no build-time DB — and gated, so a broken build can't reach `main`)
 - **Self-hosted deploy:** `main` is deployed to the Hetzner box (bitbaum, behind Caddy). The app is built with `output: "standalone"` and runs as a Node process behind the Caddy reverse proxy.
 - **Branch protection:** PRs must pass CI before merge.
 - **Never commit `.env.local` or `.env.selfhost.local`.** All secrets live in the box environment + `.env.example` for documentation.
 
 ## Scheduled jobs (cron)
 
-The `/api/cron/*` routes (reminders, weekly-report, ai-digest, embed-backfill) are triggered by the box scheduler (systemd timers / cron on the Hetzner box) hitting the routes on schedule. The schedules are documented in `vercel.json` (kept as the canonical schedule reference even though Vercel cron is no longer the executor — see the `crons` array there for paths and cron expressions).
+The `/api/cron/*` routes are triggered by the box scheduler (systemd timers / cron on the Hetzner box) hitting the routes on schedule. Canonical schedule reference:
+
+| Path | Cron expression | When |
+|------|-----------------|------|
+| `/api/cron/reminders` | `0 18 * * *` | Daily, 18:00 |
+| `/api/cron/weekly-report` | `0 17 * * 0` | Sundays, 17:00 |
+| `/api/cron/ai-digest` | `0 19 * * 0` | Sundays, 19:00 |
+| `/api/cron/embed-backfill` | `0 3 * * *` | Daily, 03:00 |
 
 ## Deploy Workflow
 

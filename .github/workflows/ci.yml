@@ -1,6 +1,7 @@
 name: CI
 
 on:
+  workflow_dispatch: {}
   push:
     branches: [main]
   pull_request:
@@ -15,12 +16,10 @@ jobs:
       - uses: actions/checkout@v4
 
       - uses: pnpm/action-setup@v4
-        with:
-          version: 10
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version-file: .nvmrc
           cache: pnpm
 
       - name: Install dependencies
@@ -32,7 +31,9 @@ jobs:
         env:
           DATABASE_URL: postgresql://fake:fake@localhost/fake
 
-      # Build is hermetic (compiles with no DB reachable) — gate it to catch build breaks.
+      # Gate the build too: a clinical app must not be able to ship a broken
+      # build. Hermetic — verified next build compiles with no DB reachable
+      # (the sitemap does no DB reads); placeholder URL satisfies drizzle config.
       - name: Build
         run: pnpm build
         env:

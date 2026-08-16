@@ -491,14 +491,9 @@
       "journalCard": "Journal",
       "journalDescription": "Wins, challenges, reflections — whatever's on your mind.",
       "journalPlaceholder": "How did the day feel? What went well? What was hard?",
-      "nlpTitle": "Describe your day",
-      "nlpDescription": "Type freely and we'll fill in the form for you.",
-      "nlpPlaceholder": "e.g. Slept 7 hours, energy was a 4, did a short walk but feeling a bit crashed now…",
-      "nlpFill": "Fill form",
-      "nlpParsing": "Parsing…",
-      "nlpFilledHint": "Filled {n} fields — review and adjust below.",
-      "nlpNoMatch": "Couldn't extract fields. Fill in manually below.",
-      "errorMoodRequired": "Please select a mood before saving."
+      "errorMoodRequired": "Please select a mood before saving.",
+      "aiFillPlaceholder": "e.g. Slept 7 hours, energy was a 4, did a short walk but feeling a bit crashed now…",
+      "aiRefinePlaceholder": "e.g. The pain was more like an 8, and I did not go outside"
     },
     "checkIns": {
       "title": "Check-in history",
@@ -1543,5 +1538,16 @@
   },
   "ui": {
     "switchLanguage": "Switch language"
+  },
+  "aiForm": {
+    "fillTitle": "Describe your day",
+    "fillHint": "Write it however you like — the form fills itself in and you check it.",
+    "refineTitle": "Change anything",
+    "refineHint": "Say what to change and it updates what is already below.",
+    "fillSubmit": "Fill the form",
+    "refineSubmit": "Apply change",
+    "working": "Working…",
+    "undo": "Undo",
+    "changedFields": "{count, plural, one {# field updated} other {# fields updated}}"
   }
 }
