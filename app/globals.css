@@ -20,8 +20,11 @@
      ========================================================================== */
 
   /* Brand — primary interactive color (buttons, links, active states) */
-  --color-brand:            #0d9488;  /* teal-600 */
-  --color-brand-hover:      #0f766e;  /* teal-700 */
+  --color-brand:            #0f766e;  /* teal-700 — WHITE text on this is 5.47:1.
+                                          teal-600 was 3.74:1: below the 4.5 AA floor on
+                                          every primary button AND on `text-brand` links. */
+  --color-brand-hover:      #115e59;  /* teal-800 — one step darker than brand, so the
+                                          hover stays visible now that brand is teal-700. */
   --color-brand-subtle:     #f0fdfa;  /* teal-50  — light tint for surfaces */
   --color-brand-muted:      #ccfbf1;  /* teal-100 — slightly stronger tint */
   --color-brand-dim:        #99f6e4;  /* teal-200 — borders on brand surfaces */
@@ -35,7 +38,9 @@
   --color-ink:              #0f172a;  /* slate-900 — headings, primary text */
   --color-ink-soft:         #334155;  /* slate-700 — labels, form values */
   --color-ink-muted:        #64748b;  /* slate-500 — secondary text, descriptions */
-  --color-ink-faint:        #94a3b8;  /* slate-400 — placeholders, metadata */
+  --color-ink-faint:        #64748b;  /* slate-500 — placeholders, metadata. 4.76:1 on white;
+                                          slate-400 was 2.56:1, which made the privacy link
+                                          in the footer unreadable rather than quiet. */
 
   /* Surface — background hierarchy */
   --color-surface:          #ffffff;  /* white      — cards, inputs */
