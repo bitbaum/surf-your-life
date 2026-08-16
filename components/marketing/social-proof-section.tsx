@@ -80,7 +80,7 @@ export function SocialProofSection({ isLoggedIn }: SocialProofSectionProps) {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             {isLoggedIn ? (
               <Link href="/dashboard">
-                <Button size="lg" className="w-full sm:w-auto text-base px-10 bg-brand-ring hover:bg-brand-on-overlay text-ink-on-overlay border-0">
+                <Button size="lg" className="w-full sm:w-auto text-base px-10 bg-brand-ring hover:bg-brand-on-overlay text-ink border-0">
                   {t("cta.goToDashboard")}
                   <ArrowRight className="w-4 h-4" />
                 </Button>
@@ -88,7 +88,7 @@ export function SocialProofSection({ isLoggedIn }: SocialProofSectionProps) {
             ) : (
               <>
                 <Link href="/register">
-                  <Button size="lg" className="w-full sm:w-auto text-base px-10 bg-brand-ring hover:bg-brand-on-overlay text-ink-on-overlay border-0">
+                  <Button size="lg" className="w-full sm:w-auto text-base px-10 bg-brand-ring hover:bg-brand-on-overlay text-ink border-0">
                     {t("cta.button")}
                     <ArrowRight className="w-4 h-4" />
                   </Button>
