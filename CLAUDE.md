@@ -9,7 +9,7 @@ Surf Your Life is a psychiatry-led clinic in Zürich helping people recover from
 
 **What this is:** A health portal for burnout/Long-COVID reintegration and longevity. Clients track their wellbeing; practitioners (Manu and team) manage and analyze client progress. AI analysis of structured + unstructured data is a core future feature.
 
-**Stack:** Next.js 16 (App Router) · TypeScript strict · self-hosted PostgreSQL (pg driver, `output: "standalone"`) · Drizzle ORM · pgvector · Auth.js v5 · Tailwind v4 · self-hosted on Hetzner (bitbaum box, behind Caddy)
+**Stack:** Next.js 16 (App Router) · TypeScript strict · self-hosted PostgreSQL on Hetzner bitbaum (database `surf_your_life`, pg driver, `output: "standalone"`) · Drizzle ORM · pgvector · Auth.js v5 · Tailwind v4. Neon was decommissioned 2026-06-12. A laptop `.env.local` naming `neon.tech` is leftover garbage, not production.
 
 ---
 
