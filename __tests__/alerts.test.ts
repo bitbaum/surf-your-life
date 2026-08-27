@@ -3,7 +3,7 @@ import { describe, it, expect, vi } from "vitest"
 // alerts.ts imports lib/db at module level; mock it so the pure evaluateAlertRules
 // function is testable without a real database connection string.
 vi.mock("@/lib/db", () => ({ db: {} }))
-vi.mock("@/lib/email", () => ({ sendEmail: vi.fn() }))
+vi.mock("@/lib/email", () => ({ sendEmail: vi.fn(), sendEmailSafe: vi.fn().mockResolvedValue(true) }))
 vi.mock("@/lib/email/templates", () => ({ practitionerAlertEmail: vi.fn(), missedCheckInDigestEmail: vi.fn(), techniqueAdherenceDigestEmail: vi.fn() }))
 
 import { evaluateAlertRules, checkTechniqueAdherenceDecline, type CheckInDataForAlerts } from "@/lib/domain/alerts"

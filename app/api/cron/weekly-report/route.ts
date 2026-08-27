@@ -7,7 +7,7 @@ import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { users, checkIns, profiles } from "@/lib/db/schema"
 import { eq, and, gte, inArray, isNotNull, desc } from "drizzle-orm"
-import { sendEmail } from "@/lib/email"
+import { sendEmailSafe } from "@/lib/email"
 import { weeklyReportEmail } from "@/lib/email/templates"
 import { SITE_URL, SEVEN_DAYS_MS, CLINICAL_TEXT_EXCERPT_MAX } from "@/lib/constants"
 import { roundOne, groupBy } from "@/lib/utils"
@@ -65,6 +65,7 @@ export async function GET(req: Request) {
   const checkInsByClient = groupBy(allWeekCheckIns, (ci) => ci.userId)
 
   let sent = 0
+  let failed = 0
 
   for (const client of eligibleClients) {
     const weekCheckIns = checkInsByClient.get(client.id) ?? []
@@ -84,27 +85,32 @@ export async function GET(req: Request) {
     const weekStart = new Date(Date.now() - SEVEN_DAYS_MS)
     const fmt = (d: Date) => d.toLocaleDateString("en-GB", { day: "numeric", month: "short" })
 
-    await sendEmail({
-      to: client.email,
-      subject: `Your week in review — ${fmt(weekStart)} to ${fmt(now)}`,
-      html: weeklyReportEmail({
-        clientName: client.name,
-        weekStart: fmt(weekStart),
-        weekEnd: fmt(now),
-        checkInCount: weekCheckIns.length,
-        avgEnergy,
-        avgMood,
-        avgSleep,
-        avgStress,
-        pemEpisodes,
-        topWin,
-        aiInsight: latestInsightByClient.get(client.id) ?? null,
-        portalUrl: SITE_URL,
-      }),
-    }).catch(() => {})
+    const delivered = await sendEmailSafe(
+      {
+        to: client.email,
+        subject: `Your week in review — ${fmt(weekStart)} to ${fmt(now)}`,
+        html: weeklyReportEmail({
+          clientName: client.name,
+          weekStart: fmt(weekStart),
+          weekEnd: fmt(now),
+          checkInCount: weekCheckIns.length,
+          avgEnergy,
+          avgMood,
+          avgSleep,
+          avgStress,
+          pemEpisodes,
+          topWin,
+          aiInsight: latestInsightByClient.get(client.id) ?? null,
+          portalUrl: SITE_URL,
+        }),
+      },
+      "cron-weekly-report"
+    )
 
-    sent++
+    // Count deliveries, not attempts — a failed batch must not report success.
+    if (delivered) sent++
+    else failed++
   }
 
-  return NextResponse.json({ success: true, sent })
+  return NextResponse.json({ success: true, sent, ...(failed > 0 && { failed }) })
 }

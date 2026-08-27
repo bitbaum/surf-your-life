@@ -15,7 +15,7 @@ import { roundOne, groupBy } from "@/lib/utils"
 import { summariseCheckIns } from "@/lib/domain/check-in"
 import { generateWeeklyDigest } from "@/lib/domain/digest"
 import { verifyCronAuth } from "@/lib/auth/cron"
-import { sendEmail } from "@/lib/email"
+import { sendEmailSafe } from "@/lib/email"
 import { practitionerWeeklyDigestEmail, type PractitionerDigestClientRow } from "@/lib/email/templates"
 
 export async function GET(req: Request) {
@@ -134,6 +134,7 @@ export async function GET(req: Request) {
   }
 
   // Send weekly digest to all practitioners and admins
+  let emailedPractitioners = 0
   if (digestRows.length > 0) {
     const practitioners = await db
       .select({ email: users.email })
@@ -153,17 +154,22 @@ export async function GET(req: Request) {
         adminUrl: `${SITE_URL}/admin/clients`,
       })
 
-      await Promise.all(
+      const deliveries = await Promise.all(
         practitioners.map((p) =>
-          sendEmail({
-            to: p.email,
-            subject: `Weekly client overview – ${fmt(weekStart)} to ${fmt(weekEnd)}`,
-            html,
-          }).catch(() => {})
+          sendEmailSafe(
+            {
+              to: p.email,
+              subject: `Weekly client overview – ${fmt(weekStart)} to ${fmt(weekEnd)}`,
+              html,
+            },
+            "cron-ai-digest"
+          )
         )
       )
+      emailedPractitioners = deliveries.filter(Boolean).length
     }
   }
 
-  return NextResponse.json({ success: true, processed, skipped, ...(failed > 0 && { failed }), emailedPractitioners: digestRows.length > 0 })
+  // emailedPractitioners is a delivered count, not "did we have rows to send".
+  return NextResponse.json({ success: true, processed, skipped, ...(failed > 0 && { failed }), emailedPractitioners })
 }

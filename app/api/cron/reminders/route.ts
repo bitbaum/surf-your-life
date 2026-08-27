@@ -7,7 +7,7 @@ import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { users, checkIns, profiles } from "@/lib/db/schema"
 import { eq, and, gte, desc, inArray, sql } from "drizzle-orm"
-import { sendEmail } from "@/lib/email"
+import { sendEmailSafe } from "@/lib/email"
 import { checkInReminderEmail } from "@/lib/email/templates"
 import { EMAIL_SUBJECT_CHECKIN_REMINDER } from "@/lib/email/subjects"
 import { SITE_URL, STREAK_LOOKBACK_DAYS, DAY_MS, CLINIC_TZ } from "@/lib/constants"
@@ -57,6 +57,7 @@ export async function GET(req: Request) {
   const skipped = allClients.length - clientsNeedingReminders.length
 
   let sent = 0
+  let failed = 0
 
   if (clientsNeedingReminders.length > 0) {
     // Batch 2: recent check-ins for streak computation — one query for all remaining clients
@@ -81,17 +82,22 @@ export async function GET(req: Request) {
       // computeStreak deduplicates multiple same-day check-ins before counting
       const streak = computeStreak(recentByClient.get(client.id) ?? [])
 
-      await sendEmail({
-        to: client.email,
-        subject: EMAIL_SUBJECT_CHECKIN_REMINDER,
-        html: checkInReminderEmail({
-          clientName: client.name,
-          portalUrl: SITE_URL,
-          currentStreak: streak,
-        }),
-      }).catch(() => {}) // swallow individual failures
+      const delivered = await sendEmailSafe(
+        {
+          to: client.email,
+          subject: EMAIL_SUBJECT_CHECKIN_REMINDER,
+          html: checkInReminderEmail({
+            clientName: client.name,
+            portalUrl: SITE_URL,
+            currentStreak: streak,
+          }),
+        },
+        "cron-reminders"
+      )
 
-      sent++
+      // Count deliveries, not attempts — a failed batch must not report success.
+      if (delivered) sent++
+      else failed++
     }
   }
 
@@ -101,5 +107,5 @@ export async function GET(req: Request) {
     generateTechniqueAdherenceAlerts(),
   ])
 
-  return NextResponse.json({ success: true, sent, skipped, missedAlerts, techniqueAlerts })
+  return NextResponse.json({ success: true, sent, ...(failed > 0 && { failed }), skipped, missedAlerts, techniqueAlerts })
 }

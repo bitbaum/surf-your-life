@@ -24,7 +24,7 @@ import {
   SITE_URL,
   DAY_MS,
 } from "@/lib/constants"
-import { sendEmail } from "@/lib/email"
+import { sendEmailSafe } from "@/lib/email"
 import { practitionerAlertEmail, missedCheckInDigestEmail, techniqueAdherenceDigestEmail } from "@/lib/email/templates"
 import { formatEnumValue, daysSince, localDateString, addDaysISO } from "@/lib/utils"
 import { computeDailyAdherenceTrend } from "@/lib/domain/techniques"
@@ -241,11 +241,14 @@ export async function generateAlerts(clientId: string, newCheckInId: string): Pr
 
         await Promise.all(
           practitioners.map((p) =>
-            sendEmail({
-              to: p.email,
-              subject: `[${topAlert.severity === "high" ? "HIGH" : "Alert"}] ${topAlert.title} — ${client.name ?? client.email}`,
-              html,
-            }).catch(() => {})
+            sendEmailSafe(
+              {
+                to: p.email,
+                subject: `[${topAlert.severity === "high" ? "HIGH" : "Alert"}] ${topAlert.title} — ${client.name ?? client.email}`,
+                html,
+              },
+              "alert-practitioner"
+            )
           )
         )
       }
@@ -342,11 +345,14 @@ export async function generateMissedCheckInAlerts(): Promise<number> {
 
       await Promise.all(
         practitioners.map((p) =>
-          sendEmail({
-            to: p.email,
-            subject: `[Alert] ${newAlerts.length} client${newAlerts.length !== 1 ? "s" : ""} missed check-ins`,
-            html,
-          }).catch(() => {})
+          sendEmailSafe(
+            {
+              to: p.email,
+              subject: `[Alert] ${newAlerts.length} client${newAlerts.length !== 1 ? "s" : ""} missed check-ins`,
+              html,
+            },
+            "alert-missed-checkin-digest"
+          )
         )
       )
     }
@@ -498,11 +504,14 @@ export async function generateTechniqueAdherenceAlerts(): Promise<number> {
 
       await Promise.all(
         practitioners.map((p) =>
-          sendEmail({
-            to: p.email,
-            subject: `[Alert] Technique adherence declining — ${newAlerts.length} client${newAlerts.length !== 1 ? "s" : ""}`,
-            html,
-          }).catch(() => {})
+          sendEmailSafe(
+            {
+              to: p.email,
+              subject: `[Alert] Technique adherence declining — ${newAlerts.length} client${newAlerts.length !== 1 ? "s" : ""}`,
+              html,
+            },
+            "alert-technique-adherence-digest"
+          )
         )
       )
     }
