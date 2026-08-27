@@ -2,7 +2,7 @@ allowBuilds:
   # Git-hosted, so pnpm runs its `prepare` script to build dist/ on install.
   # pnpm requires the exact resolved tarball here, not the bare name — bump
   # this SHA together with the #vX.Y.Z tag in package.json.
-  '@fleet/ai-forms@https://codeload.github.com/maonakamoto/ai-forms/tar.gz/68087895ab9d46d73d03b91ebf5e648b969ebd76': true
+  '@fleet/ai-forms@https://codeload.github.com/catomean/ai-forms/tar.gz/68087895ab9d46d73d03b91ebf5e648b969ebd76': true
   '@parcel/watcher': true
   '@sentry/cli': true
   '@swc/core': true

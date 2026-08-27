@@ -12,8 +12,8 @@ importers:
         specifier: ^1.11.1
         version: 1.11.1
       '@fleet/ai-forms':
-        specifier: github:maonakamoto/ai-forms#v0.1.0
-        version: https://codeload.github.com/maonakamoto/ai-forms/tar.gz/68087895ab9d46d73d03b91ebf5e648b969ebd76(react@19.2.4)
+        specifier: github:catomean/ai-forms#v0.1.0
+        version: https://codeload.github.com/catomean/ai-forms/tar.gz/68087895ab9d46d73d03b91ebf5e648b969ebd76(react@19.2.4)
       '@sentry/nextjs':
         specifier: ^10.66.0
         version: 10.66.0(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.1))(next@16.2.3(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(webpack@5.108.4(esbuild@0.27.7))
@@ -724,8 +724,8 @@ packages:
     resolution: {integrity: sha512-43/qtrDUokr7LJqoF2c3+RInu/t4zfrpYdoSDfYyhg52rwLV6TnOvdG4fXm7IkSB3wErkcmJS9iEhjVtOSEjjA==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
-  '@fleet/ai-forms@https://codeload.github.com/maonakamoto/ai-forms/tar.gz/68087895ab9d46d73d03b91ebf5e648b969ebd76':
-    resolution: {gitHosted: true, integrity: sha512-HJv0oPISTyQnLi+F4ezhv0vhFq8v9X16a3tti4fZZwoTA8/lKu3UZzxSsdpliWpDE3Fm6R91QmSuh56RlzowXg==, tarball: https://codeload.github.com/maonakamoto/ai-forms/tar.gz/68087895ab9d46d73d03b91ebf5e648b969ebd76}
+  '@fleet/ai-forms@https://codeload.github.com/catomean/ai-forms/tar.gz/68087895ab9d46d73d03b91ebf5e648b969ebd76':
+    resolution: {gitHosted: true, integrity: sha512-HJv0oPISTyQnLi+F4ezhv0vhFq8v9X16a3tti4fZZwoTA8/lKu3UZzxSsdpliWpDE3Fm6R91QmSuh56RlzowXg==, tarball: https://codeload.github.com/catomean/ai-forms/tar.gz/68087895ab9d46d73d03b91ebf5e648b969ebd76}
     version: 0.1.0
     peerDependencies:
       react: '>=18'
@@ -4492,7 +4492,7 @@ snapshots:
       '@eslint/core': 0.17.0
       levn: 0.4.1
 
-  '@fleet/ai-forms@https://codeload.github.com/maonakamoto/ai-forms/tar.gz/68087895ab9d46d73d03b91ebf5e648b969ebd76(react@19.2.4)':
+  '@fleet/ai-forms@https://codeload.github.com/catomean/ai-forms/tar.gz/68087895ab9d46d73d03b91ebf5e648b969ebd76(react@19.2.4)':
     optionalDependencies:
       react: 19.2.4
 

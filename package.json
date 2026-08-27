@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.11.1",
-    "@fleet/ai-forms": "github:maonakamoto/ai-forms#v0.1.0",
+    "@fleet/ai-forms": "github:catomean/ai-forms#v0.1.0",
     "@sentry/nextjs": "^10.66.0",
     "bcryptjs": "^3.0.3",
     "class-variance-authority": "^0.7.1",
