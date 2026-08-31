@@ -79,8 +79,13 @@ export function AdminSidebar({
           key={href}
           href={href}
           onClick={() => setOpen(false)}
+          // The comparison below already knows which item is the page you are
+          // on; it only painted it. Announce it too.
+          aria-current={pathname.startsWith(href) ? "page" : undefined}
           className={cn(
-            "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+            // min-h-11 is the 44px touch floor. py-2 on text-sm came out near
+            // 36px on the sidebar this app is driven from.
+            "flex min-h-11 items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
             pathname.startsWith(href)
               ? "bg-teal-600 text-white"
               : "text-slate-400 hover:bg-slate-800 hover:text-white",
