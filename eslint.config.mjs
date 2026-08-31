@@ -13,6 +13,11 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
+  // eslint-config-next ships `settings.react.version: 'detect'`; detection calls
+  // context.getFilename(), removed in ESLint 10, and throws on every file. Pin the version.
+  {
+    settings: { react: { version: "19.2.4" } },
+  },
   {
     rules: {
       // Allow _ prefix for intentionally unused variables (e.g. destructuring discard)
