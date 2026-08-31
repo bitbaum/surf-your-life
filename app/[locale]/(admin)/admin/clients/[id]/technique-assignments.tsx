@@ -1,26 +1,30 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { useTranslations } from "next-intl"
-import { toast } from "sonner"
-import { Plus, Trash2, BookOpen, ChevronDown, ChevronRight } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import type { Technique } from "@/lib/db/schema"
-import type { AssignmentWithTechnique, LogsGridByAssignment, DailyAdherencePoint } from "@/lib/domain/techniques"
-import { TECHNIQUE_CATEGORIES } from "@/lib/constants"
-import { TechniqueAssignForm } from "./technique-assign-form"
-import { AdherenceBadge, AdherenceGrid } from "./technique-adherence"
-import { TechniqueAdherenceSparkline } from "./technique-adherence-sparkline"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { toast } from "sonner";
+import { Plus, Trash2, BookOpen, ChevronDown, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import type { Technique } from "@/lib/db/schema";
+import type {
+  AssignmentWithTechnique,
+  LogsGridByAssignment,
+  DailyAdherencePoint,
+} from "@/lib/domain/techniques";
+import { TECHNIQUE_CATEGORIES } from "@/lib/constants";
+import { TechniqueAssignForm } from "./technique-assign-form";
+import { AdherenceBadge, AdherenceGrid } from "./technique-adherence";
+import { TechniqueAdherenceSparkline } from "./technique-adherence-sparkline";
 
 interface TechniqueAssignmentsProps {
-  clientId: string
-  assignments: AssignmentWithTechnique[]
-  allTechniques: Technique[]
-  adherenceByAssignment: Record<string, number>
-  logsGridByAssignment: LogsGridByAssignment
-  trend: DailyAdherencePoint[]
+  clientId: string;
+  assignments: AssignmentWithTechnique[];
+  allTechniques: Technique[];
+  adherenceByAssignment: Record<string, number>;
+  logsGridByAssignment: LogsGridByAssignment;
+  trend: DailyAdherencePoint[];
 }
 
 export function TechniqueAssignments({
@@ -31,35 +35,41 @@ export function TechniqueAssignments({
   logsGridByAssignment,
   trend,
 }: TechniqueAssignmentsProps) {
-  const t = useTranslations("admin.techniques")
-  const router = useRouter()
-  const [adding, setAdding] = useState(false)
-  const [expanded, setExpanded] = useState<Set<string>>(new Set())
+  const t = useTranslations("admin.techniques");
+  const router = useRouter();
+  const [adding, setAdding] = useState(false);
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
-  const assigned = new Set(assignments.map((a) => a.techniqueId))
-  const available = allTechniques.filter((t) => !assigned.has(t.id))
-  const categoryEmoji = Object.fromEntries(TECHNIQUE_CATEGORIES.map(({ value, emoji }) => [value, emoji]))
+  const assigned = new Set(assignments.map((a) => a.techniqueId));
+  const available = allTechniques.filter((t) => !assigned.has(t.id));
+  const categoryEmoji = Object.fromEntries(
+    TECHNIQUE_CATEGORIES.map(({ value, emoji }) => [value, emoji]),
+  );
 
   function toggleExpand(id: string) {
     setExpanded((prev) => {
-      const next = new Set(prev)
-      if (next.has(id)) { next.delete(id) } else { next.add(id) }
-      return next
-    })
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
   }
 
   async function handleRemove(assignmentId: string) {
-    if (!confirm(t("removeConfirm"))) return
+    if (!confirm(t("removeConfirm"))) return;
     try {
-      const res = await fetch(`/api/technique-assignments/${assignmentId}`, { method: "DELETE" })
+      const res = await fetch(`/api/technique-assignments/${assignmentId}`, { method: "DELETE" });
       if (res.ok) {
-        toast.success(t("removedSuccess"))
-        router.refresh()
+        toast.success(t("removedSuccess"));
+        router.refresh();
       } else {
-        toast.error(t("saveError"))
+        toast.error(t("saveError"));
       }
     } catch {
-      toast.error(t("saveError"))
+      toast.error(t("saveError"));
     }
   }
 
@@ -99,24 +109,32 @@ export function TechniqueAssignments({
         ) : (
           <div className="flex flex-col divide-y divide-slate-100">
             {assignments.map((a) => {
-              const isOpen = expanded.has(a.id)
+              const isOpen = expanded.has(a.id);
               return (
                 <div key={a.id} className="py-2.5">
                   <div className="flex items-center justify-between gap-3">
                     <button className="flex-1 min-w-0 text-left" onClick={() => toggleExpand(a.id)}>
                       <div className="flex items-center gap-2 flex-wrap">
-                        {isOpen
-                          ? <ChevronDown className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
-                          : <ChevronRight className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
-                        }
-                        <span className="text-sm font-medium text-slate-800">{a.technique.name}</span>
-                        <span className="text-xs text-slate-400">
-                          {categoryEmoji[a.technique.category]} {t(`category.${a.technique.category}` as Parameters<typeof t>[0])}
+                        {isOpen ? (
+                          <ChevronDown className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
+                        ) : (
+                          <ChevronRight className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
+                        )}
+                        <span className="text-sm font-medium text-slate-800">
+                          {a.technique.name}
                         </span>
-                        <span className="text-xs text-teal-600 font-medium">{a.frequencyPerDay}× {t("perDay")}</span>
+                        <span className="text-xs text-slate-400">
+                          {categoryEmoji[a.technique.category]}{" "}
+                          {t(`category.${a.technique.category}` as Parameters<typeof t>[0])}
+                        </span>
+                        <span className="text-xs text-teal-600 font-medium">
+                          {a.frequencyPerDay}× {t("perDay")}
+                        </span>
                         <AdherenceBadge days={adherenceByAssignment[a.id] ?? 0} />
                       </div>
-                      {a.notes && <p className="text-xs text-slate-400 mt-0.5 italic pl-5">{a.notes}</p>}
+                      {a.notes && (
+                        <p className="text-xs text-slate-400 mt-0.5 italic pl-5">{a.notes}</p>
+                      )}
                     </button>
                     <button
                       onClick={() => handleRemove(a.id)}
@@ -136,11 +154,11 @@ export function TechniqueAssignments({
                     </div>
                   )}
                 </div>
-              )
+              );
             })}
           </div>
         )}
       </CardContent>
     </Card>
-  )
+  );
 }

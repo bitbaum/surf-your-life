@@ -1,49 +1,49 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useTranslations } from "next-intl"
-import type { InferSelectModel } from "drizzle-orm"
-import type { services } from "@/lib/db/schema"
-import { ServiceEditRow } from "./service-edit-row"
+import { useState } from "react";
+import { useTranslations } from "next-intl";
+import type { InferSelectModel } from "drizzle-orm";
+import type { services } from "@/lib/db/schema";
+import { ServiceEditRow } from "./service-edit-row";
 
-type Service = InferSelectModel<typeof services>
+type Service = InferSelectModel<typeof services>;
 
 interface Props {
-  service: Service
+  service: Service;
 }
 
 export function ServiceRow({ service }: Props) {
-  const t = useTranslations("admin.services")
-  const [data, setData] = useState(service)
-  const [editing, setEditing] = useState(false)
-  const [saving, setSaving] = useState(false)
+  const t = useTranslations("admin.services");
+  const [data, setData] = useState(service);
+  const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({
     name: service.name,
     description: service.description ?? "",
     category: service.category,
     durationMinutes: service.durationMinutes?.toString() ?? "",
-  })
+  });
 
   async function patch(body: Record<string, unknown>) {
-    setSaving(true)
+    setSaving(true);
     try {
       const res = await fetch(`/api/admin/services/${data.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
-      })
-      const json = await res.json()
-      if (res.ok) setData(json.data)
-      return res.ok
+      });
+      const json = await res.json();
+      if (res.ok) setData(json.data);
+      return res.ok;
     } catch {
-      return false
+      return false;
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
   }
 
   async function handleToggle() {
-    await patch({ available: !data.available })
+    await patch({ available: !data.available });
   }
 
   async function handleSave() {
@@ -52,8 +52,8 @@ export function ServiceRow({ service }: Props) {
       description: form.description.trim() || null,
       category: form.category,
       durationMinutes: form.durationMinutes ? parseInt(form.durationMinutes) : null,
-    })
-    if (ok) setEditing(false)
+    });
+    if (ok) setEditing(false);
   }
 
   if (editing) {
@@ -65,7 +65,7 @@ export function ServiceRow({ service }: Props) {
         onSave={handleSave}
         onCancel={() => setEditing(false)}
       />
-    )
+    );
   }
 
   return (
@@ -100,5 +100,5 @@ export function ServiceRow({ service }: Props) {
         </button>
       </td>
     </tr>
-  )
+  );
 }

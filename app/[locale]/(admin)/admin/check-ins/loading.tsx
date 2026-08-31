@@ -1,4 +1,4 @@
-import { Card } from "@/components/ui/card"
+import { Card } from "@/components/ui/card";
 
 export default function AdminCheckInsLoading() {
   return (
@@ -18,5 +18,5 @@ export default function AdminCheckInsLoading() {
         ))}
       </Card>
     </div>
-  )
+  );
 }

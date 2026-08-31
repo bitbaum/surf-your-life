@@ -23,11 +23,7 @@
       "cta": "Start your program",
       "ctaSecondary": "See the method"
     },
-    "trust": [
-      "Psychiatry-led",
-      "Body-first methodology",
-      "Zollikerstrasse 183"
-    ],
+    "trust": ["Psychiatry-led", "Body-first methodology", "Zollikerstrasse 183"],
     "proof": [
       "230 m² performance space",
       "Psychiatry-led",
@@ -228,11 +224,7 @@
     "panel": {
       "quote": "The gap between discharge and return is where most people fall through.",
       "author": "Dr. Manu · Psychiatrist & Founder, Vitareba",
-      "bullets": [
-        "Psychiatry-led program",
-        "Body-first methodology",
-        "Zollikerstrasse 183, Zürich"
-      ]
+      "bullets": ["Psychiatry-led program", "Body-first methodology", "Zollikerstrasse 183, Zürich"]
     },
     "login": {
       "title": "Welcome back",
@@ -1283,15 +1275,7 @@
         "afternoon": "Afternoon",
         "flexible": "Flexible"
       },
-      "dayNames": [
-        "Mon",
-        "Tue",
-        "Wed",
-        "Thu",
-        "Fri",
-        "Sat",
-        "Sun"
-      ],
+      "dayNames": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
       "viewAll": "View all bookings"
     },
     "users": {

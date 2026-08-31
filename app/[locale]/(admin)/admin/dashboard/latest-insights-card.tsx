@@ -1,31 +1,35 @@
-import { getTranslations } from "next-intl/server"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Link } from "@/i18n/navigation"
-import { formatDate, buildLastNDayStrings } from "@/lib/utils"
-import { Sparkles } from "lucide-react"
-import { DayCadenceSparkline } from "@/components/ui/day-cadence-sparkline"
-import type { CadenceMap } from "@/lib/db/check-in-cadence"
+import { getTranslations } from "next-intl/server";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Link } from "@/i18n/navigation";
+import { formatDate, buildLastNDayStrings } from "@/lib/utils";
+import { Sparkles } from "lucide-react";
+import { DayCadenceSparkline } from "@/components/ui/day-cadence-sparkline";
+import type { CadenceMap } from "@/lib/db/check-in-cadence";
 
 type ClientInsight = {
-  clientId: string
-  clientName: string | null
-  aiInsight: string
-  createdAt: Date
-}
+  clientId: string;
+  clientName: string | null;
+  aiInsight: string;
+  createdAt: Date;
+};
 
 interface Props {
-  insights: ClientInsight[]
-  cadence: CadenceMap
+  insights: ClientInsight[];
+  cadence: CadenceMap;
 }
 
 export async function LatestInsightsCard({ insights, cadence }: Props) {
-  const t = await getTranslations("admin.dashboard")
-  const tClients = await getTranslations("admin.clients")
-  const sparkDays = buildLastNDayStrings(7)
-  const sparkLabels = { missed: tClients("dotMissed"), checkedIn: tClients("dotCheckedIn"), pem: tClients("dotPem") }
-  const sparkHint = tClients("cadenceHint")
+  const t = await getTranslations("admin.dashboard");
+  const tClients = await getTranslations("admin.clients");
+  const sparkDays = buildLastNDayStrings(7);
+  const sparkLabels = {
+    missed: tClients("dotMissed"),
+    checkedIn: tClients("dotCheckedIn"),
+    pem: tClients("dotPem"),
+  };
+  const sparkHint = tClients("cadenceHint");
 
-  if (insights.length === 0) return null
+  if (insights.length === 0) return null;
 
   return (
     <Card className="mb-6">
@@ -35,7 +39,10 @@ export async function LatestInsightsCard({ insights, cadence }: Props) {
             <Sparkles className="w-4 h-4" />
             {t("weeklyInsights")} ({insights.length})
           </CardTitle>
-          <Link href="/admin/clients?sort=checkin_desc" className="text-sm text-violet-600 hover:underline">
+          <Link
+            href="/admin/clients?sort=checkin_desc"
+            className="text-sm text-violet-600 hover:underline"
+          >
             {t("viewAll")} →
           </Link>
         </div>
@@ -43,7 +50,7 @@ export async function LatestInsightsCard({ insights, cadence }: Props) {
       <CardContent>
         <div className="flex flex-col divide-y divide-slate-100">
           {insights.map((row) => {
-            const spark = cadence[row.clientId]
+            const spark = cadence[row.clientId];
             return (
               <Link
                 key={row.clientId}
@@ -65,12 +72,14 @@ export async function LatestInsightsCard({ insights, cadence }: Props) {
                     {row.aiInsight}
                   </p>
                 </div>
-                <p className="text-xs text-slate-400 flex-shrink-0 pt-0.5">{formatDate(row.createdAt)}</p>
+                <p className="text-xs text-slate-400 flex-shrink-0 pt-0.5">
+                  {formatDate(row.createdAt)}
+                </p>
               </Link>
-            )
+            );
           })}
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

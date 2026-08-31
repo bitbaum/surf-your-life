@@ -1,4 +1,4 @@
-import { Card } from "@/components/ui/card"
+import { Card } from "@/components/ui/card";
 
 export default function AssessmentsLoading() {
   return (
@@ -26,5 +26,5 @@ export default function AssessmentsLoading() {
         ))}
       </div>
     </div>
-  )
+  );
 }

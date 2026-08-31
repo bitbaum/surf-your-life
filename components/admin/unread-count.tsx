@@ -1,14 +1,14 @@
-import { db } from "@/lib/db"
-import { threads, clientAlerts, leads } from "@/lib/db/schema"
-import { count, eq } from "drizzle-orm"
-import { unreadFromClientExists } from "@/lib/db/thread-unread"
+import { db } from "@/lib/db";
+import { threads, clientAlerts, leads } from "@/lib/db/schema";
+import { count, eq } from "drizzle-orm";
+import { unreadFromClientExists } from "@/lib/db/thread-unread";
 
 export async function getUnresolvedAlertCount(): Promise<number> {
   const [result] = await db
     .select({ value: count() })
     .from(clientAlerts)
-    .where(eq(clientAlerts.isResolved, false))
-  return result?.value ?? 0
+    .where(eq(clientAlerts.isResolved, false));
+  return result?.value ?? 0;
 }
 
 /**
@@ -20,14 +20,11 @@ export async function getUnreadThreadsCount(): Promise<number> {
   const [result] = await db
     .select({ value: count() })
     .from(threads)
-    .where(unreadFromClientExists())
-  return result?.value ?? 0
+    .where(unreadFromClientExists());
+  return result?.value ?? 0;
 }
 
 export async function getNewLeadsCount(): Promise<number> {
-  const [result] = await db
-    .select({ value: count() })
-    .from(leads)
-    .where(eq(leads.status, "new"))
-  return result?.value ?? 0
+  const [result] = await db.select({ value: count() }).from(leads).where(eq(leads.status, "new"));
+  return result?.value ?? 0;
 }

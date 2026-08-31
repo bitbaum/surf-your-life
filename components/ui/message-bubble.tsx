@@ -1,10 +1,10 @@
-import { formatDate } from "@/lib/utils"
+import { formatDate } from "@/lib/utils";
 
 interface MessageBubbleProps {
-  isOwn: boolean
-  senderLabel: string
-  createdAt: Date
-  body: string
+  isOwn: boolean;
+  senderLabel: string;
+  createdAt: Date;
+  body: string;
 }
 
 export function MessageBubble({ isOwn, senderLabel, createdAt, body }: MessageBubbleProps) {
@@ -23,5 +23,5 @@ export function MessageBubble({ isOwn, senderLabel, createdAt, body }: MessageBu
         <p className="text-sm whitespace-pre-wrap">{body}</p>
       </div>
     </div>
-  )
+  );
 }

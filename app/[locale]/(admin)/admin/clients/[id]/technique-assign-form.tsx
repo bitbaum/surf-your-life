@@ -1,33 +1,39 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { useTranslations } from "next-intl"
-import { toast } from "sonner"
-import { Button } from "@/components/ui/button"
-import { Select } from "@/components/ui/select"
-import type { Technique } from "@/lib/db/schema"
-import { localDateString } from "@/lib/utils"
-import { FIELD_MAX_TITLE, TECHNIQUE_DAILY_FREQUENCY_MAX } from "@/lib/constants"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Select } from "@/components/ui/select";
+import type { Technique } from "@/lib/db/schema";
+import { localDateString } from "@/lib/utils";
+import { FIELD_MAX_TITLE, TECHNIQUE_DAILY_FREQUENCY_MAX } from "@/lib/constants";
 
 interface Props {
-  clientId: string
-  available: Technique[]
-  categoryEmoji: Record<string, string>
-  onSaved: () => void
-  onCancel: () => void
+  clientId: string;
+  available: Technique[];
+  categoryEmoji: Record<string, string>;
+  onSaved: () => void;
+  onCancel: () => void;
 }
 
-export function TechniqueAssignForm({ clientId, available, categoryEmoji, onSaved, onCancel }: Props) {
-  const t = useTranslations("admin.techniques")
-  const router = useRouter()
-  const [form, setForm] = useState({ techniqueId: "", frequencyPerDay: "1", notes: "" })
-  const [saving, setSaving] = useState(false)
+export function TechniqueAssignForm({
+  clientId,
+  available,
+  categoryEmoji,
+  onSaved,
+  onCancel,
+}: Props) {
+  const t = useTranslations("admin.techniques");
+  const router = useRouter();
+  const [form, setForm] = useState({ techniqueId: "", frequencyPerDay: "1", notes: "" });
+  const [saving, setSaving] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    if (!form.techniqueId) return
-    setSaving(true)
+    e.preventDefault();
+    if (!form.techniqueId) return;
+    setSaving(true);
     try {
       const res = await fetch("/api/technique-assignments", {
         method: "POST",
@@ -39,22 +45,24 @@ export function TechniqueAssignForm({ clientId, available, categoryEmoji, onSave
           notes: form.notes || undefined,
           startDate: localDateString(new Date()),
         }),
-      })
-      if (!res.ok) throw new Error()
-      toast.success(t("assignedSuccess"))
-      router.refresh()
-      onSaved()
+      });
+      if (!res.ok) throw new Error();
+      toast.success(t("assignedSuccess"));
+      router.refresh();
+      onSaved();
     } catch {
-      toast.error(t("saveError"))
+      toast.error(t("saveError"));
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
   }
 
   return (
     <form onSubmit={handleSubmit} className="mb-4 p-3 bg-slate-50 rounded-lg flex flex-col gap-3">
       <div>
-        <label className="block text-xs font-medium text-slate-700 mb-1">{t("fieldSelectTechnique")}</label>
+        <label className="block text-xs font-medium text-slate-700 mb-1">
+          {t("fieldSelectTechnique")}
+        </label>
         <Select
           required
           value={form.techniqueId}
@@ -69,7 +77,9 @@ export function TechniqueAssignForm({ clientId, available, categoryEmoji, onSave
         </Select>
       </div>
       <div>
-        <label className="block text-xs font-medium text-slate-700 mb-1">{t("fieldFrequency")}</label>
+        <label className="block text-xs font-medium text-slate-700 mb-1">
+          {t("fieldFrequency")}
+        </label>
         <input
           type="number"
           min={1}
@@ -92,11 +102,13 @@ export function TechniqueAssignForm({ clientId, available, categoryEmoji, onSave
         />
       </div>
       <div className="flex gap-2 justify-end">
-        <Button type="button" size="sm" variant="ghost" onClick={onCancel}>{t("cancel")}</Button>
+        <Button type="button" size="sm" variant="ghost" onClick={onCancel}>
+          {t("cancel")}
+        </Button>
         <Button type="submit" size="sm" disabled={saving || !form.techniqueId}>
           {saving ? t("saving") : t("assign")}
         </Button>
       </div>
     </form>
-  )
+  );
 }

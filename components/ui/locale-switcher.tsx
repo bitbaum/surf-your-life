@@ -1,46 +1,46 @@
-"use client"
+"use client";
 
-import { useRef, useState, useEffect } from "react"
-import { useLocale, useTranslations } from "next-intl"
-import { usePathname, useRouter } from "@/i18n/navigation"
-import { routing } from "@/i18n/routing"
-import { Globe, Check } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { useRef, useState, useEffect } from "react";
+import { useLocale, useTranslations } from "next-intl";
+import { usePathname, useRouter } from "@/i18n/navigation";
+import { routing } from "@/i18n/routing";
+import { Globe, Check } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const LANGUAGES: Record<string, string> = {
   de: "Deutsch",
   en: "English",
   fr: "Français",
-}
+};
 
 interface LocaleSwitcherProps {
-  dark?: boolean
+  dark?: boolean;
   /** Which direction the dropdown opens. Default: "up" (sidebars). Use "down" for top navbars. */
-  direction?: "up" | "down"
+  direction?: "up" | "down";
 }
 
 export function LocaleSwitcher({ dark, direction = "up" }: LocaleSwitcherProps) {
-  const t = useTranslations("ui")
-  const locale = useLocale()
-  const router = useRouter()
-  const pathname = usePathname()
-  const [open, setOpen] = useState(false)
-  const ref = useRef<HTMLDivElement>(null)
+  const t = useTranslations("ui");
+  const locale = useLocale();
+  const router = useRouter();
+  const pathname = usePathname();
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
 
   // Close on outside click
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (ref.current && !ref.current.contains(e.target as Node)) {
-        setOpen(false)
+        setOpen(false);
       }
     }
-    if (open) document.addEventListener("mousedown", handleClickOutside)
-    return () => document.removeEventListener("mousedown", handleClickOutside)
-  }, [open])
+    if (open) document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [open]);
 
   function switchLocale(next: string) {
-    router.replace(pathname, { locale: next })
-    setOpen(false)
+    router.replace(pathname, { locale: next });
+    setOpen(false);
   }
 
   return (
@@ -51,7 +51,7 @@ export function LocaleSwitcher({ dark, direction = "up" }: LocaleSwitcherProps) 
           "flex items-center gap-1.5 text-xs font-medium rounded-lg px-2 py-1.5 transition-colors",
           dark
             ? "text-ink-on-overlay-dim hover:text-ink-on-overlay-soft hover:bg-surface-overlay-subtle"
-            : "text-ink-muted hover:text-ink-soft hover:bg-surface-muted"
+            : "text-ink-muted hover:text-ink-soft hover:bg-surface-muted",
         )}
         aria-label={t("switchLanguage")}
         aria-expanded={open}
@@ -68,11 +68,13 @@ export function LocaleSwitcher({ dark, direction = "up" }: LocaleSwitcherProps) 
             "absolute z-50 mt-1 w-36 rounded-xl border shadow-md py-1 overflow-hidden",
             dark
               ? "bg-surface-overlay-subtle border-surface-overlay-border"
-              : "bg-surface border-border"
+              : "bg-surface border-border",
           )}
-          style={direction === "up"
-            ? { bottom: "calc(100% + 4px)", left: 0 }
-            : { top: "calc(100% + 4px)", left: 0 }}
+          style={
+            direction === "up"
+              ? { bottom: "calc(100% + 4px)", left: 0 }
+              : { top: "calc(100% + 4px)", left: 0 }
+          }
         >
           {routing.locales.map((l) => (
             <button
@@ -87,8 +89,8 @@ export function LocaleSwitcher({ dark, direction = "up" }: LocaleSwitcherProps) 
                     ? "text-brand-on-overlay bg-surface-overlay-muted"
                     : "text-brand bg-brand-subtle"
                   : dark
-                  ? "text-ink-on-overlay-muted hover:bg-surface-overlay-muted"
-                  : "text-ink-soft hover:bg-surface-subtle"
+                    ? "text-ink-on-overlay-muted hover:bg-surface-overlay-muted"
+                    : "text-ink-soft hover:bg-surface-subtle",
               )}
             >
               {LANGUAGES[l]}
@@ -98,5 +100,5 @@ export function LocaleSwitcher({ dark, direction = "up" }: LocaleSwitcherProps) 
         </div>
       )}
     </div>
-  )
+  );
 }

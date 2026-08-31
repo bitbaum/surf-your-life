@@ -1,58 +1,61 @@
-import { getTranslations } from "next-intl/server"
-import { FilterTabs } from "@/components/ui/filter-tabs"
-import { MAIN_CONCERNS } from "@/lib/constants"
-import { auth } from "@/lib/auth"
-import { db } from "@/lib/db"
-import { users, assignments } from "@/lib/db/schema"
-import type { MainConcern } from "@/lib/db/schema"
-import { eq, and, asc, inArray } from "drizzle-orm"
-import { STAFF_ROLES } from "@/lib/domain/auth"
-import type { SortOption } from "./clients-card"
+import { getTranslations } from "next-intl/server";
+import { FilterTabs } from "@/components/ui/filter-tabs";
+import { MAIN_CONCERNS } from "@/lib/constants";
+import { auth } from "@/lib/auth";
+import { db } from "@/lib/db";
+import { users, assignments } from "@/lib/db/schema";
+import type { MainConcern } from "@/lib/db/schema";
+import { eq, and, asc, inArray } from "drizzle-orm";
+import { STAFF_ROLES } from "@/lib/domain/auth";
+import type { SortOption } from "./clients-card";
 
 interface Props {
-  q: string | undefined
-  sort: SortOption
-  concern: MainConcern | undefined
-  practitioner: string | undefined
+  q: string | undefined;
+  sort: SortOption;
+  concern: MainConcern | undefined;
+  practitioner: string | undefined;
 }
 
 function buildLink(base: Record<string, string | undefined>) {
-  const ps = new URLSearchParams()
+  const ps = new URLSearchParams();
   for (const [k, v] of Object.entries(base)) {
-    if (v) ps.set(k, v)
+    if (v) ps.set(k, v);
   }
-  const qs = ps.toString()
-  return `/admin/clients${qs ? `?${qs}` : ""}`
+  const qs = ps.toString();
+  return `/admin/clients${qs ? `?${qs}` : ""}`;
 }
 
 export async function ClientsFilterBar({ q, sort, concern, practitioner }: Props) {
-  const t = await getTranslations("admin.clients")
-  const tConcerns = await getTranslations("concerns")
+  const t = await getTranslations("admin.clients");
+  const tConcerns = await getTranslations("concerns");
 
-  const session = await auth()
-  const currentUserId = session?.user?.id
+  const session = await auth();
+  const currentUserId = session?.user?.id;
 
   const practitioners = await db
     .select({ id: users.id, name: users.name })
     .from(users)
-    .innerJoin(assignments, and(eq(assignments.practitionerId, users.id), eq(assignments.active, true)))
+    .innerJoin(
+      assignments,
+      and(eq(assignments.practitionerId, users.id), eq(assignments.active, true)),
+    )
     .where(inArray(users.role, [...STAFF_ROLES]))
     .groupBy(users.id, users.name)
-    .orderBy(asc(users.name))
+    .orderBy(asc(users.name));
 
-  const qTrim = q?.trim() || undefined
-  const sortParam = sort !== "joined" ? sort : undefined
+  const qTrim = q?.trim() || undefined;
+  const sortParam = sort !== "joined" ? sort : undefined;
 
   function sortLink(s: SortOption) {
-    return buildLink({ q: qTrim, sort: s !== "joined" ? s : undefined, concern, practitioner })
+    return buildLink({ q: qTrim, sort: s !== "joined" ? s : undefined, concern, practitioner });
   }
 
   function concernLink(c: MainConcern | "") {
-    return buildLink({ q: qTrim, sort: sortParam, concern: c || undefined, practitioner })
+    return buildLink({ q: qTrim, sort: sortParam, concern: c || undefined, practitioner });
   }
 
   function practitionerLink(p: string) {
-    return buildLink({ q: qTrim, sort: sortParam, concern, practitioner: p || undefined })
+    return buildLink({ q: qTrim, sort: sortParam, concern, practitioner: p || undefined });
   }
 
   return (
@@ -89,5 +92,5 @@ export async function ClientsFilterBar({ q, sort, concern, practitioner }: Props
         />
       )}
     </>
-  )
+  );
 }

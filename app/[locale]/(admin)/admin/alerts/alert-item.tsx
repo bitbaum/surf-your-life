@@ -1,29 +1,39 @@
-"use client"
+"use client";
 
-import { useTranslations } from "next-intl"
-import { Link } from "@/i18n/navigation"
-import { ResolveAlertButton } from "./resolve-button"
-import { formatDate } from "@/lib/utils"
-import { ALERT_SEVERITY_BADGE } from "@/lib/constants"
-import { DayCadenceSparkline, type DayState } from "@/components/ui/day-cadence-sparkline"
-import type { AlertRow } from "./alert-list"
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
+import { ResolveAlertButton } from "./resolve-button";
+import { formatDate } from "@/lib/utils";
+import { ALERT_SEVERITY_BADGE } from "@/lib/constants";
+import { DayCadenceSparkline, type DayState } from "@/components/ui/day-cadence-sparkline";
+import type { AlertRow } from "./alert-list";
 
 interface Props {
-  alert: AlertRow
-  sparkDays: string[]
-  sparkCheckedIn: Set<string>
-  sparkPemDays: Set<string>
-  sparkLabels: Record<DayState, string>
-  sparkHint: string
-  onResolved: (id: string) => void
+  alert: AlertRow;
+  sparkDays: string[];
+  sparkCheckedIn: Set<string>;
+  sparkPemDays: Set<string>;
+  sparkLabels: Record<DayState, string>;
+  sparkHint: string;
+  onResolved: (id: string) => void;
 }
 
-export function AlertItem({ alert, sparkDays, sparkCheckedIn, sparkPemDays, sparkLabels, sparkHint, onResolved }: Props) {
-  const t = useTranslations("admin.alerts")
+export function AlertItem({
+  alert,
+  sparkDays,
+  sparkCheckedIn,
+  sparkPemDays,
+  sparkLabels,
+  sparkHint,
+  onResolved,
+}: Props) {
+  const t = useTranslations("admin.alerts");
 
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-4 flex items-start gap-4">
-      <span className={`flex-shrink-0 text-xs px-2 py-0.5 rounded-full border font-medium mt-0.5 ${ALERT_SEVERITY_BADGE[alert.severity]}`}>
+      <span
+        className={`flex-shrink-0 text-xs px-2 py-0.5 rounded-full border font-medium mt-0.5 ${ALERT_SEVERITY_BADGE[alert.severity]}`}
+      >
         {t(`severity.${alert.severity}`)}
       </span>
 
@@ -53,5 +63,5 @@ export function AlertItem({ alert, sparkDays, sparkCheckedIn, sparkPemDays, spar
         <ResolveAlertButton alertId={alert.id} onResolved={onResolved} />
       </div>
     </div>
-  )
+  );
 }

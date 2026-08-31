@@ -1,14 +1,14 @@
-import * as React from "react"
-import { cn } from "@/lib/utils"
+import * as React from "react";
+import { cn } from "@/lib/utils";
 
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  label?: string
-  error?: string
+  label?: string;
+  error?: string;
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, label, error, id, ...props }, ref) => {
-    const inputId = id ?? label?.toLowerCase().replace(/\s+/g, "-")
+    const inputId = id ?? label?.toLowerCase().replace(/\s+/g, "-");
     return (
       <div className="flex flex-col gap-1.5">
         {label && (
@@ -23,16 +23,16 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             "placeholder:text-ink-faint focus:outline-none focus:ring-2 focus:ring-brand-ring focus:border-transparent",
             "disabled:cursor-not-allowed disabled:opacity-50",
             error && "border-error-ring focus:ring-error-ring",
-            className
+            className,
           )}
           ref={ref}
           {...props}
         />
         {error && <p className="text-xs text-error">{error}</p>}
       </div>
-    )
-  }
-)
-Input.displayName = "Input"
+    );
+  },
+);
+Input.displayName = "Input";
 
-export { Input }
+export { Input };

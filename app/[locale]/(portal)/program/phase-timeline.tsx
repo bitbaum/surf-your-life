@@ -1,24 +1,25 @@
-import { CheckCircle, Circle, Clock } from "lucide-react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { getTranslations } from "next-intl/server"
-import type { ProgramPhase } from "@/lib/domain/program"
+import { CheckCircle, Circle, Clock } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { getTranslations } from "next-intl/server";
+import type { ProgramPhase } from "@/lib/domain/program";
 
 interface Props {
-  phases: ProgramPhase[]
-  currentWeek: number | null
-  totalWeeks: number | null
+  phases: ProgramPhase[];
+  currentWeek: number | null;
+  totalWeeks: number | null;
 }
 
 export async function PhaseTimeline({ phases, currentWeek, totalWeeks }: Props) {
-  const t = await getTranslations("portal.program")
+  const t = await getTranslations("portal.program");
 
   // Sort phases by week ascending
-  const sorted = [...phases].sort((a, b) => a.week - b.week)
+  const sorted = [...phases].sort((a, b) => a.week - b.week);
 
   // Find the active phase: the last phase whose week <= currentWeek
-  const activeIndex = currentWeek !== null
-    ? sorted.reduce((best, p, i) => (p.week <= currentWeek ? i : best), -1)
-    : -1
+  const activeIndex =
+    currentWeek !== null
+      ? sorted.reduce((best, p, i) => (p.week <= currentWeek ? i : best), -1)
+      : -1;
 
   return (
     <Card>
@@ -32,14 +33,17 @@ export async function PhaseTimeline({ phases, currentWeek, totalWeeks }: Props) 
         <div className="relative">
           {/* Vertical connector line */}
           {sorted.length > 1 && (
-            <div className="absolute left-[15px] top-5 bottom-5 w-px bg-slate-200" aria-hidden="true" />
+            <div
+              className="absolute left-[15px] top-5 bottom-5 w-px bg-slate-200"
+              aria-hidden="true"
+            />
           )}
 
           <div className="flex flex-col gap-5">
             {sorted.map((phase, i) => {
-              const isPast = i < activeIndex
-              const isActive = i === activeIndex
-              const isFuture = i > activeIndex
+              const isPast = i < activeIndex;
+              const isActive = i === activeIndex;
+              const isFuture = i > activeIndex;
 
               return (
                 <div key={i} className="flex gap-4 relative">
@@ -72,15 +76,19 @@ export async function PhaseTimeline({ phases, currentWeek, totalWeeks }: Props) 
                         </span>
                       )}
                     </div>
-                    <p className={`text-sm font-semibold ${isActive ? "text-teal-900" : isPast ? "text-slate-700" : "text-slate-500"}`}>
+                    <p
+                      className={`text-sm font-semibold ${isActive ? "text-teal-900" : isPast ? "text-slate-700" : "text-slate-500"}`}
+                    >
                       {phase.title}
                     </p>
                     {phase.guidance && (
-                      <p className="text-sm text-slate-500 mt-1 leading-relaxed">{phase.guidance}</p>
+                      <p className="text-sm text-slate-500 mt-1 leading-relaxed">
+                        {phase.guidance}
+                      </p>
                     )}
                   </div>
                 </div>
-              )
+              );
             })}
           </div>
 
@@ -102,5 +110,5 @@ export async function PhaseTimeline({ phases, currentWeek, totalWeeks }: Props) 
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

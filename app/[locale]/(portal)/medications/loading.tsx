@@ -1,4 +1,4 @@
-import { Card } from "@/components/ui/card"
+import { Card } from "@/components/ui/card";
 
 export default function MedicationsLoading() {
   return (
@@ -17,5 +17,5 @@ export default function MedicationsLoading() {
         <div className="mt-4 h-9 bg-slate-100 rounded-lg w-32" />
       </Card>
     </div>
-  )
+  );
 }

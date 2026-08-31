@@ -1,79 +1,84 @@
-"use client"
+"use client";
 
-import { useState, useRef, useEffect } from "react"
-import { useTranslations } from "next-intl"
-import { Send } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { ChatMessageList } from "./chat-message-list"
-import { AI_CHAT_MAX_LENGTH } from "@/lib/constants"
+import { useState, useRef, useEffect } from "react";
+import { useTranslations } from "next-intl";
+import { Send } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ChatMessageList } from "./chat-message-list";
+import { AI_CHAT_MAX_LENGTH } from "@/lib/constants";
 
 export type Message = {
-  id: string
-  role: "user" | "assistant"
-  content: string
-  createdAt: string
-}
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  createdAt: string;
+};
 
 type Props = {
-  initialMessages: Message[]
-}
+  initialMessages: Message[];
+};
 
 export function ChatInterface({ initialMessages }: Props) {
-  const t = useTranslations("portal.aiChat")
-  const [messages, setMessages] = useState<Message[]>(initialMessages)
-  const [input, setInput] = useState("")
-  const [sending, setSending] = useState(false)
-  const [error, setError] = useState("")
-  const bottomRef = useRef<HTMLDivElement>(null)
+  const t = useTranslations("portal.aiChat");
+  const [messages, setMessages] = useState<Message[]>(initialMessages);
+  const [input, setInput] = useState("");
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState("");
+  const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" })
-  }, [messages])
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   async function handleSend() {
-    const content = input.trim()
-    if (!content || sending) return
+    const content = input.trim();
+    if (!content || sending) return;
 
-    setInput("")
-    setError("")
-    setSending(true)
+    setInput("");
+    setError("");
+    setSending(true);
 
-    const tempId = `temp-${Date.now()}`
+    const tempId = `temp-${Date.now()}`;
     setMessages((prev) => [
       ...prev,
       { id: tempId, role: "user", content, createdAt: new Date().toISOString() },
-    ])
+    ]);
 
     try {
       const res = await fetch("/api/portal/ai-chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content }),
-      })
-      const data = await res.json()
+      });
+      const data = await res.json();
       if (!data.success) {
-        setError(t("sendError"))
-        setMessages((prev) => prev.filter((m) => m.id !== tempId))
-        setInput(content)
-        return
+        setError(t("sendError"));
+        setMessages((prev) => prev.filter((m) => m.id !== tempId));
+        setInput(content);
+        return;
       }
       setMessages((prev) => [
         ...prev,
-        { id: data.data.id, role: "assistant", content: data.data.content, createdAt: data.data.createdAt },
-      ])
+        {
+          id: data.data.id,
+          role: "assistant",
+          content: data.data.content,
+          createdAt: data.data.createdAt,
+        },
+      ]);
     } catch {
-      setError(t("sendError"))
-      setMessages((prev) => prev.filter((m) => m.id !== tempId))
-      setInput(content)
+      setError(t("sendError"));
+      setMessages((prev) => prev.filter((m) => m.id !== tempId));
+      setInput(content);
     } finally {
-      setSending(false)
+      setSending(false);
     }
   }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault()
-      handleSend()
+      e.preventDefault();
+      handleSend();
     }
   }
 
@@ -113,5 +118,5 @@ export function ChatInterface({ initialMessages }: Props) {
         <p className="text-xs text-slate-400 mt-2">{t("disclaimer")}</p>
       </div>
     </div>
-  )
+  );
 }

@@ -1,38 +1,38 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { useTranslations } from "next-intl"
-import { Mail } from "lucide-react"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { Mail } from "lucide-react";
 
 interface Props {
-  leadId: string
-  currentStatus: "new" | "contacted" | "dismissed"
+  leadId: string;
+  currentStatus: "new" | "contacted" | "dismissed";
 }
 
 export function InviteButton({ leadId, currentStatus }: Props) {
-  const t = useTranslations("admin.leads")
-  const router = useRouter()
-  const [loading, setLoading] = useState(false)
-  const [sent, setSent] = useState(false)
+  const t = useTranslations("admin.leads");
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [sent, setSent] = useState(false);
 
   async function handleInvite() {
-    if (loading || sent) return
-    setLoading(true)
+    if (loading || sent) return;
+    setLoading(true);
     try {
-      const res = await fetch(`/api/admin/leads/${leadId}/invite`, { method: "POST" })
+      const res = await fetch(`/api/admin/leads/${leadId}/invite`, { method: "POST" });
       if (res.ok) {
-        setSent(true)
-        router.refresh()
+        setSent(true);
+        router.refresh();
       }
     } catch {
       // silently ignore; button returns to idle state
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
-  if (currentStatus === "dismissed") return null
+  if (currentStatus === "dismissed") return null;
 
   return (
     <button
@@ -48,5 +48,5 @@ export function InviteButton({ leadId, currentStatus }: Props) {
       <Mail className="w-3.5 h-3.5" />
       {loading ? t("inviting") : sent ? t("inviteSent") : t("invite")}
     </button>
-  )
+  );
 }

@@ -1,52 +1,66 @@
-import { getTranslations } from "next-intl/server"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Link } from "@/i18n/navigation"
-import { Pagination } from "@/components/ui/pagination"
-import { SearchInput } from "@/components/ui/search-input"
-import { FilterTabs } from "@/components/ui/filter-tabs"
-import { formatDate } from "@/lib/utils"
-import { MOOD_EMOJI, MOOD_MAP, MAIN_CONCERNS } from "@/lib/constants"
-import { Suspense } from "react"
-import type { MainConcern } from "@/lib/db/schema"
+import { getTranslations } from "next-intl/server";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Link } from "@/i18n/navigation";
+import { Pagination } from "@/components/ui/pagination";
+import { SearchInput } from "@/components/ui/search-input";
+import { FilterTabs } from "@/components/ui/filter-tabs";
+import { formatDate } from "@/lib/utils";
+import { MOOD_EMOJI, MOOD_MAP, MAIN_CONCERNS } from "@/lib/constants";
+import { Suspense } from "react";
+import type { MainConcern } from "@/lib/db/schema";
 
-export type FilterMode = "all" | "mine" | "pem" | "today"
+export type FilterMode = "all" | "mine" | "pem" | "today";
 
 type CheckInRow = {
-  id: string
-  createdAt: Date
-  mood: string
-  energyLevel: number
-  sleepHours: number | null
-  pemFlag: boolean | null
-  pemSeverity: number | null
-  journalEntry: string | null
-  clientId: string
-  clientName: string | null
-  clientEmail: string | null
-}
+  id: string;
+  createdAt: Date;
+  mood: string;
+  energyLevel: number;
+  sleepHours: number | null;
+  pemFlag: boolean | null;
+  pemSeverity: number | null;
+  journalEntry: string | null;
+  clientId: string;
+  clientName: string | null;
+  clientEmail: string | null;
+};
 
 type Props = {
-  rows: CheckInRow[]
-  filter: FilterMode
-  todayCount: number
-  pemCount: number
-  concern: MainConcern | undefined
-  q: string | undefined
-  page: number
-  totalPages: number
-  filterHref: (v: FilterMode) => string
-  concernHref: (c: MainConcern | "") => string
-  pageHref: (p: number) => string
-}
+  rows: CheckInRow[];
+  filter: FilterMode;
+  todayCount: number;
+  pemCount: number;
+  concern: MainConcern | undefined;
+  q: string | undefined;
+  page: number;
+  totalPages: number;
+  filterHref: (v: FilterMode) => string;
+  concernHref: (c: MainConcern | "") => string;
+  pageHref: (p: number) => string;
+};
 
-export async function CheckInsCard({ rows, filter, todayCount, pemCount, concern, q, page, totalPages, filterHref, concernHref, pageHref }: Props) {
-  const t = await getTranslations("admin.checkIns")
-  const tCheckIn = await getTranslations("portal.checkIn")
-  const tConcerns = await getTranslations("concerns")
+export async function CheckInsCard({
+  rows,
+  filter,
+  todayCount,
+  pemCount,
+  concern,
+  q,
+  page,
+  totalPages,
+  filterHref,
+  concernHref,
+  pageHref,
+}: Props) {
+  const t = await getTranslations("admin.checkIns");
+  const tCheckIn = await getTranslations("portal.checkIn");
+  const tConcerns = await getTranslations("concerns");
 
   return (
     <Card>
-      <CardHeader><CardTitle>{t("title")}</CardTitle></CardHeader>
+      <CardHeader>
+        <CardTitle>{t("title")}</CardTitle>
+      </CardHeader>
       <CardContent>
         <div className="flex items-center gap-3 mb-3">
           <div className="flex-1">
@@ -87,20 +101,30 @@ export async function CheckInsCard({ rows, filter, todayCount, pemCount, concern
             </thead>
             <tbody>
               {rows.map((ci) => (
-                <tr key={ci.id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
+                <tr
+                  key={ci.id}
+                  className="border-b border-slate-50 hover:bg-slate-50 transition-colors"
+                >
                   <td className="py-3 font-medium text-slate-800">
-                    <Link href={`/admin/clients/${ci.clientId}`} className="hover:text-teal-700 transition-colors">
+                    <Link
+                      href={`/admin/clients/${ci.clientId}`}
+                      className="hover:text-teal-700 transition-colors"
+                    >
                       {ci.clientName ?? ci.clientEmail}
                     </Link>
                     {ci.journalEntry && (
-                      <p className="text-xs text-slate-400 mt-0.5 line-clamp-1">{ci.journalEntry}</p>
+                      <p className="text-xs text-slate-400 mt-0.5 line-clamp-1">
+                        {ci.journalEntry}
+                      </p>
                     )}
                   </td>
                   <td className="py-3 text-slate-500">{formatDate(ci.createdAt)}</td>
                   <td className="py-3">
                     <span className="flex items-center gap-1.5">
                       <span>{MOOD_EMOJI[ci.mood] ?? "😐"}</span>
-                      <span className="text-slate-600">{tCheckIn(MOOD_MAP[ci.mood]?.labelKey ?? "moodNeutral")}</span>
+                      <span className="text-slate-600">
+                        {tCheckIn(MOOD_MAP[ci.mood]?.labelKey ?? "moodNeutral")}
+                      </span>
                       {ci.pemFlag && (
                         <span className="text-xs font-semibold text-red-600 ml-1">
                           PEM{ci.pemSeverity ? ` ${ci.pemSeverity}/10` : ""}
@@ -114,7 +138,9 @@ export async function CheckInsCard({ rows, filter, todayCount, pemCount, concern
                   </td>
                   <td className="py-3 text-slate-500">
                     {ci.sleepHours != null ? (
-                      <span><strong className="text-slate-700">{ci.sleepHours}</strong>h</span>
+                      <span>
+                        <strong className="text-slate-700">{ci.sleepHours}</strong>h
+                      </span>
                     ) : (
                       <span className="text-slate-300">—</span>
                     )}
@@ -132,7 +158,13 @@ export async function CheckInsCard({ rows, filter, todayCount, pemCount, concern
               {rows.length === 0 && (
                 <tr>
                   <td colSpan={6} className="py-8 text-center text-slate-400">
-                    {filter === "today" ? t("noActivityToday") : filter === "mine" ? t("noActivityMine") : q ? t("noResults", { q }) : t("noActivity")}
+                    {filter === "today"
+                      ? t("noActivityToday")
+                      : filter === "mine"
+                        ? t("noActivityMine")
+                        : q
+                          ? t("noResults", { q })
+                          : t("noActivity")}
                   </td>
                 </tr>
               )}
@@ -143,5 +175,5 @@ export async function CheckInsCard({ rows, filter, todayCount, pemCount, concern
         <Pagination page={page} totalPages={totalPages} pageLink={pageHref} />
       </CardContent>
     </Card>
-  )
+  );
 }

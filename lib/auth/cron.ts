@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server"
-import { timingSafeEqual } from "node:crypto"
-import { API_ERR_UNAUTHORIZED } from "@/lib/constants"
+import { NextResponse } from "next/server";
+import { timingSafeEqual } from "node:crypto";
+import { API_ERR_UNAUTHORIZED } from "@/lib/constants";
 
 /**
  * Validates the cron job Bearer token.
@@ -15,27 +15,27 @@ import { API_ERR_UNAUTHORIZED } from "@/lib/constants"
  * backfill; none of them should ever run for an unauthenticated caller.
  */
 export function verifyCronAuth(req: Request): NextResponse | null {
-  const expected = process.env.CRON_SECRET
+  const expected = process.env.CRON_SECRET;
   if (!expected || expected.length === 0) {
-    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
+    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 });
   }
 
-  const header = req.headers.get("authorization")
+  const header = req.headers.get("authorization");
   if (!header || !header.startsWith("Bearer ")) {
-    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
+    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 });
   }
 
-  const provided = header.slice("Bearer ".length)
+  const provided = header.slice("Bearer ".length);
   if (!secretsMatch(provided, expected)) {
-    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 })
+    return NextResponse.json({ success: false, error: API_ERR_UNAUTHORIZED }, { status: 401 });
   }
-  return null
+  return null;
 }
 
 /** Constant-time comparison; length mismatch short-circuits (timingSafeEqual throws on it). */
 function secretsMatch(provided: string, expected: string): boolean {
-  const a = Buffer.from(provided)
-  const b = Buffer.from(expected)
-  if (a.length !== b.length) return false
-  return timingSafeEqual(a, b)
+  const a = Buffer.from(provided);
+  const b = Buffer.from(expected);
+  if (a.length !== b.length) return false;
+  return timingSafeEqual(a, b);
 }

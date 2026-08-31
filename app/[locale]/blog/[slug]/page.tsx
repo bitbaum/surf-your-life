@@ -1,33 +1,36 @@
-import { setRequestLocale } from "next-intl/server"
-import { getTranslations } from "next-intl/server"
-import { Link } from "@/i18n/navigation"
-import { MarketingNav } from "@/components/marketing/nav"
-import { MarketingFooter } from "@/components/marketing/footer"
-import { auth } from "@/lib/auth"
-import { notFound } from "next/navigation"
-import { ArrowLeft } from "lucide-react"
-import type { Post } from "../types"
+import { setRequestLocale } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
+import { MarketingNav } from "@/components/marketing/nav";
+import { MarketingFooter } from "@/components/marketing/footer";
+import { auth } from "@/lib/auth";
+import { notFound } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
+import type { Post } from "../types";
 
 export default async function BlogPostPage({
   params,
 }: {
-  params: Promise<{ locale: string; slug: string }>
+  params: Promise<{ locale: string; slug: string }>;
 }) {
-  const { locale, slug } = await params
-  setRequestLocale(locale)
-  const t = await getTranslations({ locale, namespace: "blog" })
-  const session = await auth()
-  const posts = t.raw("posts") as Post[]
-  const post = posts.find((p) => p.slug === slug)
+  const { locale, slug } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations({ locale, namespace: "blog" });
+  const session = await auth();
+  const posts = t.raw("posts") as Post[];
+  const post = posts.find((p) => p.slug === slug);
 
-  if (!post) notFound()
+  if (!post) notFound();
 
   return (
     <div className="min-h-screen bg-white">
       <MarketingNav isLoggedIn={!!session} />
 
       <main className="max-w-2xl mx-auto px-6 pt-28 pb-24">
-        <Link href="/blog" className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-teal-600 transition-colors mb-10">
+        <Link
+          href="/blog"
+          className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-teal-600 transition-colors mb-10"
+        >
           <ArrowLeft className="w-3.5 h-3.5" />
           {t("title")}
         </Link>
@@ -38,7 +41,11 @@ export default async function BlogPostPage({
               {post.category}
             </span>
             <time className="text-xs text-slate-400">
-              {new Date(post.date).toLocaleDateString(locale, { year: "numeric", month: "long", day: "numeric" })}
+              {new Date(post.date).toLocaleDateString(locale, {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
             </time>
           </div>
 
@@ -75,5 +82,5 @@ export default async function BlogPostPage({
 
       <MarketingFooter />
     </div>
-  )
+  );
 }

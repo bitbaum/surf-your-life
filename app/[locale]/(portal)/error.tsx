@@ -1,18 +1,18 @@
-"use client"
+"use client";
 
-import { useEffect } from "react"
-import { useTranslations } from "next-intl"
-import * as Sentry from "@sentry/nextjs"
-import { Button } from "@/components/ui/button"
-import { Link } from "@/i18n/navigation"
+import { useEffect } from "react";
+import { useTranslations } from "next-intl";
+import * as Sentry from "@sentry/nextjs";
+import { Button } from "@/components/ui/button";
+import { Link } from "@/i18n/navigation";
 
 export default function PortalError({ error, reset }: { error: Error; reset: () => void }) {
-  const t = useTranslations("common")
+  const t = useTranslations("common");
 
   useEffect(() => {
-    console.error(error)
-    Sentry.captureException(error)
-  }, [error])
+    console.error(error);
+    Sentry.captureException(error);
+  }, [error]);
 
   return (
     <div className="flex items-center justify-center h-full min-h-[60vh] px-6">
@@ -27,5 +27,5 @@ export default function PortalError({ error, reset }: { error: Error; reset: () 
         </div>
       </div>
     </div>
-  )
+  );
 }

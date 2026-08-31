@@ -1,26 +1,32 @@
-import type { DailyAdherencePoint } from "@/lib/domain/techniques"
-import { ADHERENCE_TREND_COMPARISON_DAYS, ADHERENCE_TREND_THRESHOLD_PCT } from "@/lib/constants"
+import type { DailyAdherencePoint } from "@/lib/domain/techniques";
+import { ADHERENCE_TREND_COMPARISON_DAYS, ADHERENCE_TREND_THRESHOLD_PCT } from "@/lib/constants";
 
-const W = 120, H = 28, PAD = 2
-const PLOT_W = W - PAD * 2
-const PLOT_H = H - PAD * 2
+const W = 120,
+  H = 28,
+  PAD = 2;
+const PLOT_W = W - PAD * 2;
+const PLOT_H = H - PAD * 2;
 
 export function TechniqueAdherenceSparkline({ trend }: { trend: DailyAdherencePoint[] }) {
-  if (trend.length < 2) return null
+  if (trend.length < 2) return null;
 
-  const toX = (i: number) => PAD + (i / (trend.length - 1)) * PLOT_W
-  const toY = (pct: number) => PAD + (1 - pct / 100) * PLOT_H
+  const toX = (i: number) => PAD + (i / (trend.length - 1)) * PLOT_W;
+  const toY = (pct: number) => PAD + (1 - pct / 100) * PLOT_H;
 
   const linePath = trend
     .map((d, i) => `${i === 0 ? "M" : "L"} ${toX(i).toFixed(1)} ${toY(d.pct).toFixed(1)}`)
-    .join(" ")
-  const areaPath = `${linePath} L ${toX(trend.length - 1).toFixed(1)} ${H} L ${PAD} ${H} Z`
+    .join(" ");
+  const areaPath = `${linePath} L ${toX(trend.length - 1).toFixed(1)} ${H} L ${PAD} ${H} Z`;
 
-  const recentAvg = trend.slice(-ADHERENCE_TREND_COMPARISON_DAYS).reduce((s, d) => s + d.pct, 0) / ADHERENCE_TREND_COMPARISON_DAYS
-  const earlierAvg = trend.slice(0, ADHERENCE_TREND_COMPARISON_DAYS).reduce((s, d) => s + d.pct, 0) / ADHERENCE_TREND_COMPARISON_DAYS
-  const isTrending = recentAvg >= earlierAvg + ADHERENCE_TREND_THRESHOLD_PCT
-  const isDeclining = recentAvg <= earlierAvg - ADHERENCE_TREND_THRESHOLD_PCT
-  const color = isDeclining ? "#dc2626" : isTrending ? "#0d9488" : "#64748b"
+  const recentAvg =
+    trend.slice(-ADHERENCE_TREND_COMPARISON_DAYS).reduce((s, d) => s + d.pct, 0) /
+    ADHERENCE_TREND_COMPARISON_DAYS;
+  const earlierAvg =
+    trend.slice(0, ADHERENCE_TREND_COMPARISON_DAYS).reduce((s, d) => s + d.pct, 0) /
+    ADHERENCE_TREND_COMPARISON_DAYS;
+  const isTrending = recentAvg >= earlierAvg + ADHERENCE_TREND_THRESHOLD_PCT;
+  const isDeclining = recentAvg <= earlierAvg - ADHERENCE_TREND_THRESHOLD_PCT;
+  const color = isDeclining ? "#dc2626" : isTrending ? "#0d9488" : "#64748b";
 
   return (
     <svg width={W} height={H} className="flex-shrink-0 opacity-80">
@@ -31,7 +37,14 @@ export function TechniqueAdherenceSparkline({ trend }: { trend: DailyAdherencePo
         </linearGradient>
       </defs>
       <path d={areaPath} fill="url(#ats-fill)" />
-      <path d={linePath} stroke={color} strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+      <path
+        d={linePath}
+        stroke={color}
+        strokeWidth="1.5"
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
-  )
+  );
 }

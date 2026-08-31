@@ -1,49 +1,49 @@
-"use client"
+"use client";
 
-import { useState, useCallback } from "react"
-import { useTranslations } from "next-intl"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { FileText, Plus } from "lucide-react"
-import { SessionNoteForm } from "./session-note-form"
-import { SessionNotesList, type DocWithAuthor } from "./session-notes-list"
+import { useState, useCallback } from "react";
+import { useTranslations } from "next-intl";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { FileText, Plus } from "lucide-react";
+import { SessionNoteForm } from "./session-note-form";
+import { SessionNotesList, type DocWithAuthor } from "./session-notes-list";
 
 interface Props {
-  clientId: string
+  clientId: string;
 }
 
 export function SessionNotes({ clientId }: Props) {
-  const t = useTranslations("admin.clients.sessionNotes")
-  const [docs, setDocs] = useState<DocWithAuthor[] | null>(null)
-  const [loaded, setLoaded] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [showForm, setShowForm] = useState(false)
-  const [deleteError, setDeleteError] = useState("")
+  const t = useTranslations("admin.clients.sessionNotes");
+  const [docs, setDocs] = useState<DocWithAuthor[] | null>(null);
+  const [loaded, setLoaded] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
 
   const load = useCallback(async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const res = await fetch(`/api/admin/clients/${clientId}/documents`)
-      const json = await res.json()
-      if (json.success) setDocs(json.data)
+      const res = await fetch(`/api/admin/clients/${clientId}/documents`);
+      const json = await res.json();
+      if (json.success) setDocs(json.data);
     } finally {
-      setLoading(false)
-      setLoaded(true)
+      setLoading(false);
+      setLoaded(true);
     }
-  }, [clientId])
+  }, [clientId]);
 
   function handleExpand() {
-    if (!loaded) load()
+    if (!loaded) load();
   }
 
   async function handleDelete(id: string) {
-    setDeleteError("")
+    setDeleteError("");
     try {
-      const res = await fetch(`/api/admin/documents/${id}`, { method: "DELETE" })
-      const json = await res.json()
-      if (!json.success) throw new Error(json.error)
-      setDocs((prev) => prev?.filter((d) => d.id !== id) ?? null)
+      const res = await fetch(`/api/admin/documents/${id}`, { method: "DELETE" });
+      const json = await res.json();
+      if (!json.success) throw new Error(json.error);
+      setDocs((prev) => prev?.filter((d) => d.id !== id) ?? null);
     } catch {
-      setDeleteError(t("deleteError"))
+      setDeleteError(t("deleteError"));
     }
   }
 
@@ -52,13 +52,23 @@ export function SessionNotes({ clientId }: Props) {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ title, content }),
-    })
-    const json = await res.json()
-    if (!json.success) throw new Error(json.error)
+    });
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error);
     // Merge updated fields into local state — avoids a full reload
-    setDocs((prev) => prev?.map((d) =>
-      d.id === id ? { ...d, title: json.data.title, content: json.data.content, updatedAt: new Date(json.data.updatedAt) } : d
-    ) ?? null)
+    setDocs(
+      (prev) =>
+        prev?.map((d) =>
+          d.id === id
+            ? {
+                ...d,
+                title: json.data.title,
+                content: json.data.content,
+                updatedAt: new Date(json.data.updatedAt),
+              }
+            : d,
+        ) ?? null,
+    );
   }
 
   return (
@@ -73,7 +83,10 @@ export function SessionNotes({ clientId }: Props) {
             )}
           </CardTitle>
           <button
-            onClick={() => { setShowForm((v) => !v); handleExpand() }}
+            onClick={() => {
+              setShowForm((v) => !v);
+              handleExpand();
+            }}
             className="flex items-center gap-1.5 text-sm text-teal-600 hover:text-teal-700 font-medium transition-colors"
           >
             <Plus className="w-4 h-4" />
@@ -86,27 +99,40 @@ export function SessionNotes({ clientId }: Props) {
         {showForm && (
           <SessionNoteForm
             clientId={clientId}
-            onSaved={() => { setShowForm(false); load() }}
+            onSaved={() => {
+              setShowForm(false);
+              load();
+            }}
             onCancel={() => setShowForm(false)}
           />
         )}
 
         {!loaded && !showForm && (
-          <button onClick={handleExpand} className="text-sm text-teal-600 hover:text-teal-700 transition-colors self-start">
+          <button
+            onClick={handleExpand}
+            className="text-sm text-teal-600 hover:text-teal-700 transition-colors self-start"
+          >
             {t("loadNotes")}
           </button>
         )}
 
         {loading && (
           <div className="flex flex-col gap-2">
-            {[1, 2].map((i) => <div key={i} className="h-16 rounded-lg bg-slate-100 animate-pulse" />)}
+            {[1, 2].map((i) => (
+              <div key={i} className="h-16 rounded-lg bg-slate-100 animate-pulse" />
+            ))}
           </div>
         )}
 
         {loaded && !loading && docs !== null && (
-          <SessionNotesList docs={docs} deleteError={deleteError} onDelete={handleDelete} onEdit={handleEdit} />
+          <SessionNotesList
+            docs={docs}
+            deleteError={deleteError}
+            onDelete={handleDelete}
+            onEdit={handleEdit}
+          />
         )}
       </CardContent>
     </Card>
-  )
+  );
 }

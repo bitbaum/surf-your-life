@@ -1,28 +1,28 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { formatDate } from "@/lib/utils"
-import { MOOD_LABEL, MOOD_NUMERIC, MOOD_COLOR } from "@/lib/constants"
+import { useState } from "react";
+import { formatDate } from "@/lib/utils";
+import { MOOD_LABEL, MOOD_NUMERIC, MOOD_COLOR } from "@/lib/constants";
 
 interface DataPoint {
-  createdAt: Date
-  mood: string
+  createdAt: Date;
+  mood: string;
 }
 
 interface Props {
-  data: DataPoint[]
+  data: DataPoint[];
 }
 
 export function MoodChart({ data }: Props) {
-  const [tooltip, setTooltip] = useState<{ index: number } | null>(null)
+  const [tooltip, setTooltip] = useState<{ index: number } | null>(null);
 
   return (
     <div className="flex items-end gap-1.5 h-16 relative">
       {data.map((ci, i) => {
-        const value = MOOD_NUMERIC[ci.mood] ?? 0.5
-        const pct = value * 100
-        const colorClass = MOOD_COLOR[ci.mood] ?? "bg-slate-300"
-        const isHovered = tooltip?.index === i
+        const value = MOOD_NUMERIC[ci.mood] ?? 0.5;
+        const pct = value * 100;
+        const colorClass = MOOD_COLOR[ci.mood] ?? "bg-slate-300";
+        const isHovered = tooltip?.index === i;
 
         return (
           <div
@@ -43,8 +43,8 @@ export function MoodChart({ data }: Props) {
               </div>
             )}
           </div>
-        )
+        );
       })}
     </div>
-  )
+  );
 }

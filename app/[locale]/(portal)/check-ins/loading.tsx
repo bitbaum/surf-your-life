@@ -1,4 +1,4 @@
-import { Card } from "@/components/ui/card"
+import { Card } from "@/components/ui/card";
 
 export default function CheckInsLoading() {
   return (
@@ -9,5 +9,5 @@ export default function CheckInsLoading() {
         <Card key={i} className="p-6 mb-4 h-28" />
       ))}
     </div>
-  )
+  );
 }

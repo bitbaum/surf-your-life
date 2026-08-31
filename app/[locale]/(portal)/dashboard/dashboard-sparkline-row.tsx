@@ -1,25 +1,29 @@
-import { getTranslations } from "next-intl/server"
-import type { computeWeekDelta } from "@/lib/domain/check-in"
-import { buildLastNDayStrings, localDateString } from "@/lib/utils"
-import { DayCadenceSparkline } from "@/components/ui/day-cadence-sparkline"
-import { TrendCard } from "@/components/ui/trend-card"
+import { getTranslations } from "next-intl/server";
+import type { computeWeekDelta } from "@/lib/domain/check-in";
+import { buildLastNDayStrings, localDateString } from "@/lib/utils";
+import { DayCadenceSparkline } from "@/components/ui/day-cadence-sparkline";
+import { TrendCard } from "@/components/ui/trend-card";
 
-type SparkCheckIn = { createdAt: Date; pemFlag: boolean | null }
+type SparkCheckIn = { createdAt: Date; pemFlag: boolean | null };
 
 type Props = {
-  recentCheckIns: SparkCheckIn[]
-  weekDelta: ReturnType<typeof computeWeekDelta>
-}
+  recentCheckIns: SparkCheckIn[];
+  weekDelta: ReturnType<typeof computeWeekDelta>;
+};
 
 export async function DashboardSparklineRow({ recentCheckIns, weekDelta }: Props) {
-  const t = await getTranslations("portal.dashboard")
+  const t = await getTranslations("portal.dashboard");
 
-  const sparkDays = buildLastNDayStrings(7)
-  const sparkCheckedIn = new Set(recentCheckIns.map((ci) => localDateString(new Date(ci.createdAt))))
+  const sparkDays = buildLastNDayStrings(7);
+  const sparkCheckedIn = new Set(
+    recentCheckIns.map((ci) => localDateString(new Date(ci.createdAt))),
+  );
   const sparkPemDays = new Set(
-    recentCheckIns.filter((ci) => ci.pemFlag === true).map((ci) => localDateString(new Date(ci.createdAt)))
-  )
-  const sparkCount = sparkDays.filter((d) => sparkCheckedIn.has(d)).length
+    recentCheckIns
+      .filter((ci) => ci.pemFlag === true)
+      .map((ci) => localDateString(new Date(ci.createdAt))),
+  );
+  const sparkCount = sparkDays.filter((d) => sparkCheckedIn.has(d)).length;
 
   return (
     <>
@@ -43,5 +47,5 @@ export async function DashboardSparklineRow({ recentCheckIns, weekDelta }: Props
         </div>
       )}
     </>
-  )
+  );
 }

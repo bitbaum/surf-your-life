@@ -1,16 +1,16 @@
-"use client"
+"use client";
 
-import { useTranslations } from "next-intl"
-import { Link } from "@/i18n/navigation"
-import { BRAND_NAME } from "@/lib/constants"
-import { Waves, ClipboardList, Menu } from "lucide-react"
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
+import { BRAND_NAME } from "@/lib/constants";
+import { Waves, ClipboardList, Menu } from "lucide-react";
 
 interface Props {
-  onOpenMenu: () => void
+  onOpenMenu: () => void;
 }
 
 export function SidebarMobileBar({ onOpenMenu }: Props) {
-  const t = useTranslations("sidebar")
+  const t = useTranslations("sidebar");
 
   return (
     <div className="md:hidden fixed top-0 inset-x-0 z-40 h-14 bg-white border-b border-slate-200 flex items-center justify-between px-4">
@@ -37,5 +37,5 @@ export function SidebarMobileBar({ onOpenMenu }: Props) {
         </button>
       </div>
     </div>
-  )
+  );
 }

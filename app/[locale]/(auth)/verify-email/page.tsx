@@ -1,24 +1,26 @@
-"use client"
+"use client";
 
-import { useEffect, useState, Suspense } from "react"
-import { useSearchParams } from "next/navigation"
-import { useTranslations } from "next-intl"
-import { Link } from "@/i18n/navigation"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { useEffect, useState, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
 function VerifyContent() {
-  const t = useTranslations("auth.verifyEmail")
-  const searchParams = useSearchParams()
-  const token = searchParams.get("token") ?? ""
-  const email = searchParams.get("email") ?? ""
-  const hasParams = Boolean(token && email)
+  const t = useTranslations("auth.verifyEmail");
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token") ?? "";
+  const email = searchParams.get("email") ?? "";
+  const hasParams = Boolean(token && email);
 
-  const [status, setStatus] = useState<"loading" | "success" | "error">(hasParams ? "loading" : "error")
-  const [errorMsg, setErrorMsg] = useState(hasParams ? "" : t("invalid"))
+  const [status, setStatus] = useState<"loading" | "success" | "error">(
+    hasParams ? "loading" : "error",
+  );
+  const [errorMsg, setErrorMsg] = useState(hasParams ? "" : t("invalid"));
 
   useEffect(() => {
-    if (!hasParams) return
+    if (!hasParams) return;
 
     fetch("/api/auth/verify-email", {
       method: "POST",
@@ -27,18 +29,18 @@ function VerifyContent() {
     })
       .then(async (res) => {
         if (res.ok) {
-          setStatus("success")
+          setStatus("success");
         } else {
-          const data = await res.json().catch(() => ({}))
-          setErrorMsg(data.error ?? t("invalid"))
-          setStatus("error")
+          const data = await res.json().catch(() => ({}));
+          setErrorMsg(data.error ?? t("invalid"));
+          setStatus("error");
         }
       })
       .catch(() => {
-        setErrorMsg(t("invalid"))
-        setStatus("error")
-      })
-  }, [hasParams, token, email, t])
+        setErrorMsg(t("invalid"));
+        setStatus("error");
+      });
+  }, [hasParams, token, email, t]);
 
   if (status === "loading") {
     return (
@@ -48,7 +50,7 @@ function VerifyContent() {
           <CardDescription>{t("body")}</CardDescription>
         </CardHeader>
       </Card>
-    )
+    );
   }
 
   if (status === "success") {
@@ -64,7 +66,7 @@ function VerifyContent() {
           </Link>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   return (
@@ -75,11 +77,13 @@ function VerifyContent() {
       </CardHeader>
       <CardContent>
         <Link href="/dashboard">
-          <Button variant="outline" className="w-full">{t("goToDashboard")}</Button>
+          <Button variant="outline" className="w-full">
+            {t("goToDashboard")}
+          </Button>
         </Link>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 export default function VerifyEmailPage() {
@@ -87,5 +91,5 @@ export default function VerifyEmailPage() {
     <Suspense>
       <VerifyContent />
     </Suspense>
-  )
+  );
 }

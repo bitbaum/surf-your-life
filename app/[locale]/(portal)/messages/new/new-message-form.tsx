@@ -1,37 +1,38 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { useTranslations } from "next-intl"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { FIELD_MAX_TITLE, FIELD_MAX_MESSAGE } from "@/lib/constants"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { FIELD_MAX_TITLE, FIELD_MAX_MESSAGE } from "@/lib/constants";
 
 export function NewMessageForm() {
-  const t = useTranslations("messages")
-  const router = useRouter()
-  const [form, setForm] = useState({ subject: "", body: "" })
-  const [sending, setSending] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const t = useTranslations("messages");
+  const router = useRouter();
+  const [form, setForm] = useState({ subject: "", body: "" });
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    setSending(true)
-    setError(null)
+    e.preventDefault();
+    setSending(true);
+    setError(null);
     try {
       const res = await fetch("/api/threads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
-      })
-      const json = await res.json()
-      if (!json.success) throw new Error(typeof json.error === "string" ? json.error : t("failedToSend"))
-      router.push(`/messages/${json.data.threadId}`)
+      });
+      const json = await res.json();
+      if (!json.success)
+        throw new Error(typeof json.error === "string" ? json.error : t("failedToSend"));
+      router.push(`/messages/${json.data.threadId}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("failedToSend"))
+      setError(err instanceof Error ? err.message : t("failedToSend"));
     } finally {
-      setSending(false)
+      setSending(false);
     }
   }
 
@@ -66,5 +67,5 @@ export function NewMessageForm() {
         </Button>
       </div>
     </form>
-  )
+  );
 }

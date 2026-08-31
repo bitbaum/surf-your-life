@@ -1,4 +1,4 @@
-import { Card } from "@/components/ui/card"
+import { Card } from "@/components/ui/card";
 
 export default function NewMessageLoading() {
   return (
@@ -17,5 +17,5 @@ export default function NewMessageLoading() {
         <div className="h-10 bg-slate-200 rounded-lg w-32" />
       </Card>
     </div>
-  )
+  );
 }

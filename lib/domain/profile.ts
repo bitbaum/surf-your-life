@@ -1,12 +1,24 @@
-import { z } from "zod"
+import { z } from "zod";
 import {
-  ENERGY_SCALE, QUALITY_SCALE, SLEEP_HOURS, SLEEP_QUALITY_SCALE, PRACTITIONER_NOTE_MAX_LENGTH,
-  SYMPTOM_SCALE, PEM_SEVERITY_SCALE,
-  FIELD_MAX_TITLE, FIELD_MAX_SHORT, FIELD_MAX_NOTES, FIELD_MAX_MEDIUM, FIELD_MAX_LONG,
-  FIELD_MAX_MESSAGE, FIELD_MAX_JOURNAL,
-  HEIGHT_CM, WEIGHT_KG, WORK_HOURS_WEEK_MAX,
-} from "@/lib/constants"
-import { mainConcernEnum, activityLevelEnum } from "@/lib/db/schema"
+  ENERGY_SCALE,
+  QUALITY_SCALE,
+  SLEEP_HOURS,
+  SLEEP_QUALITY_SCALE,
+  PRACTITIONER_NOTE_MAX_LENGTH,
+  SYMPTOM_SCALE,
+  PEM_SEVERITY_SCALE,
+  FIELD_MAX_TITLE,
+  FIELD_MAX_SHORT,
+  FIELD_MAX_NOTES,
+  FIELD_MAX_MEDIUM,
+  FIELD_MAX_LONG,
+  FIELD_MAX_MESSAGE,
+  FIELD_MAX_JOURNAL,
+  HEIGHT_CM,
+  WEIGHT_KG,
+  WORK_HOURS_WEEK_MAX,
+} from "@/lib/constants";
+import { mainConcernEnum, activityLevelEnum } from "@/lib/db/schema";
 
 export const profileSchema = z.object({
   name: z.string().max(FIELD_MAX_TITLE).optional(),
@@ -28,9 +40,15 @@ export const profileSchema = z.object({
   sleepSchedule: z.string().max(FIELD_MAX_SHORT).optional(),
   exerciseFrequency: z.string().max(FIELD_MAX_TITLE).optional(),
   alcoholTobacco: z.string().max(FIELD_MAX_NOTES).optional(),
-  socialSupport: z.number().int().min(QUALITY_SCALE.min).max(QUALITY_SCALE.max).optional().nullable(),
+  socialSupport: z
+    .number()
+    .int()
+    .min(QUALITY_SCALE.min)
+    .max(QUALITY_SCALE.max)
+    .optional()
+    .nullable(),
   stressLevel: z.number().int().min(QUALITY_SCALE.min).max(QUALITY_SCALE.max).optional(),
-})
+});
 
 export const checkInSchema = z.object({
   mood: z.enum(["very_low", "low", "neutral", "good", "excellent"]),
@@ -39,22 +57,46 @@ export const checkInSchema = z.object({
   notes: z.string().max(FIELD_MAX_LONG).nullish(),
   wins: z.string().max(FIELD_MAX_MEDIUM).nullish(),
   challenges: z.string().max(FIELD_MAX_MEDIUM).nullish(),
-  symptomFatigue: z.number().int().min(SYMPTOM_SCALE.min).max(SYMPTOM_SCALE.max).nullable().optional(),
-  symptomBrainFog: z.number().int().min(SYMPTOM_SCALE.min).max(SYMPTOM_SCALE.max).nullable().optional(),
+  symptomFatigue: z
+    .number()
+    .int()
+    .min(SYMPTOM_SCALE.min)
+    .max(SYMPTOM_SCALE.max)
+    .nullable()
+    .optional(),
+  symptomBrainFog: z
+    .number()
+    .int()
+    .min(SYMPTOM_SCALE.min)
+    .max(SYMPTOM_SCALE.max)
+    .nullable()
+    .optional(),
   symptomPain: z.number().int().min(SYMPTOM_SCALE.min).max(SYMPTOM_SCALE.max).nullable().optional(),
   stressLevel: z.number().int().min(SYMPTOM_SCALE.min).max(SYMPTOM_SCALE.max).nullable().optional(),
   activityLevel: z.enum(activityLevelEnum.enumValues).nullable().optional(),
   pemFlag: z.boolean().optional(),
-  pemSeverity: z.number().int().min(PEM_SEVERITY_SCALE.min).max(PEM_SEVERITY_SCALE.max).nullable().optional(),
-  sleepQuality: z.number().int().min(SLEEP_QUALITY_SCALE.min).max(SLEEP_QUALITY_SCALE.max).nullable().optional(),
+  pemSeverity: z
+    .number()
+    .int()
+    .min(PEM_SEVERITY_SCALE.min)
+    .max(PEM_SEVERITY_SCALE.max)
+    .nullable()
+    .optional(),
+  sleepQuality: z
+    .number()
+    .int()
+    .min(SLEEP_QUALITY_SCALE.min)
+    .max(SLEEP_QUALITY_SCALE.max)
+    .nullable()
+    .optional(),
   orthostaticSymptoms: z.boolean().nullable().optional(),
   journalEntry: z.string().max(FIELD_MAX_JOURNAL).nullish(),
-})
+});
 
 export const practitionerNoteSchema = z.object({
   note: z.string().min(1).max(PRACTITIONER_NOTE_MAX_LENGTH),
-})
+});
 
-export type ProfileInput = z.infer<typeof profileSchema>
-export type CheckInInput = z.infer<typeof checkInSchema>
-export type PractitionerNoteInput = z.infer<typeof practitionerNoteSchema>
+export type ProfileInput = z.infer<typeof profileSchema>;
+export type CheckInInput = z.infer<typeof checkInSchema>;
+export type PractitionerNoteInput = z.infer<typeof practitionerNoteSchema>;

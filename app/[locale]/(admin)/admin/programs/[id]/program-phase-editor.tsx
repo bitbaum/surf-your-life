@@ -1,21 +1,21 @@
-"use client"
+"use client";
 
-import { useTranslations } from "next-intl"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Plus, Trash2 } from "lucide-react"
-import { FIELD_MAX_TITLE, FIELD_MAX_LONG, PROGRAM_DURATION_WEEKS_MAX } from "@/lib/constants"
-import type { ProgramPhase } from "@/lib/domain/program"
+import { useTranslations } from "next-intl";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Plus, Trash2 } from "lucide-react";
+import { FIELD_MAX_TITLE, FIELD_MAX_LONG, PROGRAM_DURATION_WEEKS_MAX } from "@/lib/constants";
+import type { ProgramPhase } from "@/lib/domain/program";
 
 interface Props {
-  phases: ProgramPhase[]
-  onAdd: () => void
-  onUpdate: (index: number, field: keyof ProgramPhase, value: string | number) => void
-  onRemove: (index: number) => void
+  phases: ProgramPhase[];
+  onAdd: () => void;
+  onUpdate: (index: number, field: keyof ProgramPhase, value: string | number) => void;
+  onRemove: (index: number) => void;
 }
 
 export function ProgramProgramPhaseEditor({ phases, onAdd, onUpdate, onRemove }: Props) {
-  const t = useTranslations("admin.programs")
+  const t = useTranslations("admin.programs");
 
   return (
     <div>
@@ -30,9 +30,7 @@ export function ProgramProgramPhaseEditor({ phases, onAdd, onUpdate, onRemove }:
           {t("addProgramPhase")}
         </button>
       </div>
-      {phases.length === 0 && (
-        <p className="text-xs text-slate-400">{t("noProgramPhasesHint")}</p>
-      )}
+      {phases.length === 0 && <p className="text-xs text-slate-400">{t("noProgramPhasesHint")}</p>}
       <div className="flex flex-col gap-4">
         {phases.map((phase, i) => (
           <div key={i} className="border border-slate-200 rounded-lg p-4 flex flex-col gap-3">
@@ -79,5 +77,5 @@ export function ProgramProgramPhaseEditor({ phases, onAdd, onUpdate, onRemove }:
         ))}
       </div>
     </div>
-  )
+  );
 }

@@ -1,13 +1,13 @@
-"use client"
+"use client";
 
-import { useTranslations } from "next-intl"
-import { Link } from "@/i18n/navigation"
-import { Waves } from "lucide-react"
-import { BRAND_NAME } from "@/lib/constants"
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
+import { Waves } from "lucide-react";
+import { BRAND_NAME } from "@/lib/constants";
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
-  const t = useTranslations("auth.panel")
-  const bullets = t.raw("bullets") as string[]
+  const t = useTranslations("auth.panel");
+  const bullets = t.raw("bullets") as string[];
 
   return (
     <div className="min-h-screen bg-slate-50 flex">
@@ -53,5 +53,5 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         </div>
       </div>
     </div>
-  )
+  );
 }

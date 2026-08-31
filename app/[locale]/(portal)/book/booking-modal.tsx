@@ -1,33 +1,47 @@
-"use client"
+"use client";
 
-import { useTranslations } from "next-intl"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { CheckCircle, X } from "lucide-react"
-import type { Service } from "@/lib/db/schema"
-import { localDateString } from "@/lib/utils"
-import { BOOKING_TIME_PREFERENCE_VALUES, type BookingTimePreference, CHIP_SELECTED, CHIP_UNSELECTED } from "@/lib/constants"
+import { useTranslations } from "next-intl";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { CheckCircle, X } from "lucide-react";
+import type { Service } from "@/lib/db/schema";
+import { localDateString } from "@/lib/utils";
+import {
+  BOOKING_TIME_PREFERENCE_VALUES,
+  type BookingTimePreference,
+  CHIP_SELECTED,
+  CHIP_UNSELECTED,
+} from "@/lib/constants";
 
 export type BookingForm = {
-  preferredDate: string
-  preferredTime: BookingTimePreference
-  notes: string
-}
+  preferredDate: string;
+  preferredTime: BookingTimePreference;
+  notes: string;
+};
 
 type Props = {
-  selected: Service
-  form: BookingForm
-  setForm: (updater: (f: BookingForm) => BookingForm) => void
-  loading: boolean
-  submitted: boolean
-  error: string | null
-  onClose: () => void
-  onSubmit: (e: React.FormEvent) => void
-}
+  selected: Service;
+  form: BookingForm;
+  setForm: (updater: (f: BookingForm) => BookingForm) => void;
+  loading: boolean;
+  submitted: boolean;
+  error: string | null;
+  onClose: () => void;
+  onSubmit: (e: React.FormEvent) => void;
+};
 
-export function BookingModal({ selected, form, setForm, loading, submitted, error, onClose, onSubmit }: Props) {
-  const t = useTranslations("portal.book")
+export function BookingModal({
+  selected,
+  form,
+  setForm,
+  loading,
+  submitted,
+  error,
+  onClose,
+  onSubmit,
+}: Props) {
+  const t = useTranslations("portal.book");
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -38,7 +52,10 @@ export function BookingModal({ selected, form, setForm, loading, submitted, erro
             <h2 className="text-lg font-bold text-slate-900">{selected.name}</h2>
             <p className="text-sm text-slate-500 mt-0.5">{t("subtitle")}</p>
           </div>
-          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-slate-100 transition-colors">
+          <button
+            onClick={onClose}
+            className="p-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+          >
             <X className="w-4 h-4 text-slate-500" />
           </button>
         </div>
@@ -48,7 +65,9 @@ export function BookingModal({ selected, form, setForm, loading, submitted, erro
             <CheckCircle className="w-10 h-10 text-teal-500" />
             <p className="font-semibold text-slate-900">{t("successTitle")}</p>
             <p className="text-sm text-slate-500">{t("successBody")}</p>
-            <Button variant="outline" onClick={onClose} className="mt-2">{t("cancel")}</Button>
+            <Button variant="outline" onClick={onClose} className="mt-2">
+              {t("cancel")}
+            </Button>
           </div>
         ) : (
           <form onSubmit={onSubmit} className="flex flex-col gap-4">
@@ -63,7 +82,9 @@ export function BookingModal({ selected, form, setForm, loading, submitted, erro
               />
             </div>
             <div>
-              <label className="text-sm font-medium text-slate-700 block mb-1.5">{t("preferredTime")}</label>
+              <label className="text-sm font-medium text-slate-700 block mb-1.5">
+                {t("preferredTime")}
+              </label>
               <div className="flex gap-2">
                 {BOOKING_TIME_PREFERENCE_VALUES.map((opt) => (
                   <button
@@ -71,9 +92,7 @@ export function BookingModal({ selected, form, setForm, loading, submitted, erro
                     type="button"
                     onClick={() => setForm((f) => ({ ...f, preferredTime: opt }))}
                     className={`flex-1 py-2 rounded-lg text-xs font-medium border-2 transition-all ${
-                      form.preferredTime === opt
-                        ? CHIP_SELECTED
-                        : CHIP_UNSELECTED
+                      form.preferredTime === opt ? CHIP_SELECTED : CHIP_UNSELECTED
                     }`}
                   >
                     {t(opt as Parameters<typeof t>[0])}
@@ -83,7 +102,8 @@ export function BookingModal({ selected, form, setForm, loading, submitted, erro
             </div>
             <div>
               <label className="text-sm font-medium text-slate-700 block mb-1.5">
-                {t("notes")} <span className="text-slate-400 font-normal">{t("notesOptional")}</span>
+                {t("notes")}{" "}
+                <span className="text-slate-400 font-normal">{t("notesOptional")}</span>
               </label>
               <Textarea
                 value={form.notes}
@@ -93,7 +113,9 @@ export function BookingModal({ selected, form, setForm, loading, submitted, erro
               />
             </div>
             <div className="flex gap-3 pt-1">
-              <Button type="button" variant="outline" onClick={onClose} className="flex-1">{t("cancel")}</Button>
+              <Button type="button" variant="outline" onClick={onClose} className="flex-1">
+                {t("cancel")}
+              </Button>
               <Button type="submit" disabled={loading} className="flex-1">
                 {loading ? t("submitting") : t("submitBooking")}
               </Button>
@@ -103,5 +125,5 @@ export function BookingModal({ selected, form, setForm, loading, submitted, erro
         )}
       </div>
     </div>
-  )
+  );
 }

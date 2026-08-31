@@ -1,4 +1,4 @@
-import { Card } from "@/components/ui/card"
+import { Card } from "@/components/ui/card";
 
 export default function AiChatLoading() {
   return (
@@ -19,5 +19,5 @@ export default function AiChatLoading() {
         <div className="h-12 bg-slate-100 rounded-xl" />
       </Card>
     </div>
-  )
+  );
 }

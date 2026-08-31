@@ -1,23 +1,23 @@
-"use client"
+"use client";
 
-import { useEffect } from "react"
-import { useTranslations } from "next-intl"
-import * as Sentry from "@sentry/nextjs"
-import { Button } from "@/components/ui/button"
+import { useEffect } from "react";
+import { useTranslations } from "next-intl";
+import * as Sentry from "@sentry/nextjs";
+import { Button } from "@/components/ui/button";
 
 export default function AdminError({
   error,
   reset,
 }: {
-  error: Error & { digest?: string }
-  reset: () => void
+  error: Error & { digest?: string };
+  reset: () => void;
 }) {
-  const t = useTranslations("common")
+  const t = useTranslations("common");
 
   useEffect(() => {
-    console.error("[admin]", error)
-    Sentry.captureException(error)
-  }, [error])
+    console.error("[admin]", error);
+    Sentry.captureException(error);
+  }, [error]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-8">
@@ -27,5 +27,5 @@ export default function AdminError({
         {t("tryAgain")}
       </Button>
     </div>
-  )
+  );
 }

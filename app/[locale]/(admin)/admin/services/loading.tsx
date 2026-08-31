@@ -1,4 +1,4 @@
-import { Card } from "@/components/ui/card"
+import { Card } from "@/components/ui/card";
 
 export default function ServicesLoading() {
   return (
@@ -9,7 +9,10 @@ export default function ServicesLoading() {
       </div>
       <Card>
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="p-4 border-b border-slate-100 flex items-center justify-between gap-4">
+          <div
+            key={i}
+            className="p-4 border-b border-slate-100 flex items-center justify-between gap-4"
+          >
             <div className="flex-1">
               <div className="h-4 bg-slate-200 rounded w-40 mb-2" />
               <div className="h-3 bg-slate-100 rounded w-56" />
@@ -22,5 +25,5 @@ export default function ServicesLoading() {
         ))}
       </Card>
     </div>
-  )
+  );
 }

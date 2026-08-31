@@ -1,50 +1,50 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { useTranslations } from "next-intl"
-import { bookingStatusEnum } from "@/lib/db/schema"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { bookingStatusEnum } from "@/lib/db/schema";
 
-type BookingStatus = (typeof bookingStatusEnum.enumValues)[number]
-type ActionableStatus = Exclude<BookingStatus, "pending">
+type BookingStatus = (typeof bookingStatusEnum.enumValues)[number];
+type ActionableStatus = Exclude<BookingStatus, "pending">;
 
 type Props = {
-  bookingId: string
-  currentStatus: BookingStatus
-}
+  bookingId: string;
+  currentStatus: BookingStatus;
+};
 
 export function BookingActions({ bookingId, currentStatus }: Props) {
-  const t = useTranslations("admin.bookings")
-  const router = useRouter()
-  const [loading, setLoading] = useState<ActionableStatus | null>(null)
-  const [error, setError] = useState<string | null>(null)
+  const t = useTranslations("admin.bookings");
+  const router = useRouter();
+  const [loading, setLoading] = useState<ActionableStatus | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   async function updateStatus(status: ActionableStatus) {
-    setLoading(status)
-    setError(null)
+    setLoading(status);
+    setError(null);
 
     try {
       const res = await fetch(`/api/bookings/${bookingId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status }),
-      })
+      });
 
-      const json = await res.json()
+      const json = await res.json();
       if (!json.success) {
-        setError(json.error ?? t("error"))
-        return
+        setError(json.error ?? t("error"));
+        return;
       }
 
-      router.refresh()
+      router.refresh();
     } catch {
-      setError(t("error"))
+      setError(t("error"));
     } finally {
-      setLoading(null)
+      setLoading(null);
     }
   }
 
-  if (currentStatus === "cancelled") return null
+  if (currentStatus === "cancelled") return null;
 
   return (
     <div className="flex items-center gap-2">
@@ -66,5 +66,5 @@ export function BookingActions({ bookingId, currentStatus }: Props) {
       </button>
       {error && <span className="text-xs text-red-600">{error}</span>}
     </div>
-  )
+  );
 }

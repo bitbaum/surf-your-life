@@ -1,74 +1,74 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useTranslations } from "next-intl"
-import { History } from "lucide-react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { AlertRow } from "./client-alert-row"
-import type { AlertSeverity } from "@/lib/db/schema"
+import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { History } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AlertRow } from "./client-alert-row";
+import type { AlertSeverity } from "@/lib/db/schema";
 
 export type ClientAlertRow = {
-  id: string
-  clientId: string
-  type: string
-  severity: AlertSeverity
-  title: string
-  message: string
-  createdAt: Date
-  resolvedAt: Date | string | null
-  isResolved: boolean
-}
+  id: string;
+  clientId: string;
+  type: string;
+  severity: AlertSeverity;
+  title: string;
+  message: string;
+  createdAt: Date;
+  resolvedAt: Date | string | null;
+  isResolved: boolean;
+};
 
 interface Props {
-  initialAlerts: ClientAlertRow[]
-  clientId: string
-  hasHistory: boolean
+  initialAlerts: ClientAlertRow[];
+  clientId: string;
+  hasHistory: boolean;
 }
 
 export function ClientAlertsCard({ initialAlerts, clientId, hasHistory }: Props) {
-  const t = useTranslations("admin.alerts")
-  const [alerts, setAlerts] = useState(initialAlerts)
-  const [showHistory, setShowHistory] = useState(false)
-  const [history, setHistory] = useState<ClientAlertRow[] | null>(null)
-  const [loadingHistory, setLoadingHistory] = useState(false)
-  const [resolvingAll, setResolvingAll] = useState(false)
+  const t = useTranslations("admin.alerts");
+  const [alerts, setAlerts] = useState(initialAlerts);
+  const [showHistory, setShowHistory] = useState(false);
+  const [history, setHistory] = useState<ClientAlertRow[] | null>(null);
+  const [loadingHistory, setLoadingHistory] = useState(false);
+  const [resolvingAll, setResolvingAll] = useState(false);
 
   // Only hide if there are no active alerts AND no history to show
-  if (alerts.length === 0 && !showHistory && !hasHistory) return null
+  if (alerts.length === 0 && !showHistory && !hasHistory) return null;
 
   function handleResolved(id: string) {
-    setAlerts((prev) => prev.filter((a) => a.id !== id))
+    setAlerts((prev) => prev.filter((a) => a.id !== id));
   }
 
   async function handleResolveAll() {
-    setResolvingAll(true)
+    setResolvingAll(true);
     try {
-      const res = await fetch(`/api/admin/clients/${clientId}/alerts`, { method: "PATCH" })
-      if (res.ok) setAlerts([])
+      const res = await fetch(`/api/admin/clients/${clientId}/alerts`, { method: "PATCH" });
+      if (res.ok) setAlerts([]);
     } finally {
-      setResolvingAll(false)
+      setResolvingAll(false);
     }
   }
 
   async function toggleHistory() {
     if (showHistory) {
-      setShowHistory(false)
-      return
+      setShowHistory(false);
+      return;
     }
     if (history !== null) {
-      setShowHistory(true)
-      return
+      setShowHistory(true);
+      return;
     }
-    setLoadingHistory(true)
+    setLoadingHistory(true);
     try {
-      const res = await fetch(`/api/admin/clients/${clientId}/alerts`)
+      const res = await fetch(`/api/admin/clients/${clientId}/alerts`);
       if (res.ok) {
-        const json = await res.json()
-        setHistory(json.data as ClientAlertRow[])
+        const json = await res.json();
+        setHistory(json.data as ClientAlertRow[]);
       }
     } finally {
-      setLoadingHistory(false)
-      setShowHistory(true)
+      setLoadingHistory(false);
+      setShowHistory(true);
     }
   }
 
@@ -119,11 +119,7 @@ export function ClientAlertsCard({ initialAlerts, clientId, hasHistory }: Props)
             <div className="mt-2 pt-2 border-t border-slate-100">
               {history && history.length > 0 ? (
                 history.map((alert) => (
-                  <AlertRow
-                    key={alert.id}
-                    alert={alert}
-                    showResolveButton={false}
-                  />
+                  <AlertRow key={alert.id} alert={alert} showResolveButton={false} />
                 ))
               ) : (
                 <p className="text-xs text-slate-400 py-2">{t("noHistory")}</p>
@@ -133,5 +129,5 @@ export function ClientAlertsCard({ initialAlerts, clientId, hasHistory }: Props)
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

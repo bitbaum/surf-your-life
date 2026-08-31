@@ -1,30 +1,35 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Link } from "@/i18n/navigation"
-import { PAGINATION_DEFAULT } from "@/lib/constants"
-import { CheckInRow } from "./check-in-row"
-import { EnergyMiniChart } from "./energy-mini-chart"
-import { getTranslations } from "next-intl/server"
-import { roundOne, formatDate } from "@/lib/utils"
-import type { checkIns } from "@/lib/db/schema"
-import type { InferSelectModel } from "drizzle-orm"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Link } from "@/i18n/navigation";
+import { PAGINATION_DEFAULT } from "@/lib/constants";
+import { CheckInRow } from "./check-in-row";
+import { EnergyMiniChart } from "./energy-mini-chart";
+import { getTranslations } from "next-intl/server";
+import { roundOne, formatDate } from "@/lib/utils";
+import type { checkIns } from "@/lib/db/schema";
+import type { InferSelectModel } from "drizzle-orm";
 
-type CheckIn = InferSelectModel<typeof checkIns>
+type CheckIn = InferSelectModel<typeof checkIns>;
 
 interface ClientCheckInsCardProps {
-  clientId: string
-  checkIns: CheckIn[]
-  totalCheckIns: number
+  clientId: string;
+  checkIns: CheckIn[];
+  totalCheckIns: number;
 }
 
-export async function ClientCheckInsCard({ clientId, checkIns, totalCheckIns }: ClientCheckInsCardProps) {
-  const t = await getTranslations("admin.clients")
+export async function ClientCheckInsCard({
+  clientId,
+  checkIns,
+  totalCheckIns,
+}: ClientCheckInsCardProps) {
+  const t = await getTranslations("admin.clients");
 
   // Compute summary stats from already-fetched rows — no extra queries
-  const pemCount = checkIns.filter((ci) => ci.pemFlag).length
-  const avgEnergy = checkIns.length > 0
-    ? roundOne(checkIns.reduce((s, ci) => s + ci.energyLevel, 0) / checkIns.length)
-    : null
-  const lastCheckIn = checkIns[0]?.createdAt ?? null
+  const pemCount = checkIns.filter((ci) => ci.pemFlag).length;
+  const avgEnergy =
+    checkIns.length > 0
+      ? roundOne(checkIns.reduce((s, ci) => s + ci.energyLevel, 0) / checkIns.length)
+      : null;
+  const lastCheckIn = checkIns[0]?.createdAt ?? null;
 
   return (
     <Card>
@@ -61,7 +66,9 @@ export async function ClientCheckInsCard({ clientId, checkIns, totalCheckIns }: 
               )}
               <div>
                 <p className="text-slate-400">{t("detail.pemEpisodes")}</p>
-                <p className={`font-semibold mt-0.5 ${pemCount > 0 ? "text-red-600" : "text-slate-700"}`}>
+                <p
+                  className={`font-semibold mt-0.5 ${pemCount > 0 ? "text-red-600" : "text-slate-700"}`}
+                >
                   {pemCount}
                 </p>
               </div>
@@ -74,12 +81,14 @@ export async function ClientCheckInsCard({ clientId, checkIns, totalCheckIns }: 
             </div>
             <div className="mb-4">
               <p className="text-xs text-slate-400 mb-1.5">{t("detail.energyTrend")}</p>
-              <EnergyMiniChart data={checkIns.map((ci) => ({
-                createdAt: ci.createdAt,
-                energyLevel: ci.energyLevel,
-                mood: ci.mood,
-                pemFlag: ci.pemFlag,
-              }))} />
+              <EnergyMiniChart
+                data={checkIns.map((ci) => ({
+                  createdAt: ci.createdAt,
+                  energyLevel: ci.energyLevel,
+                  mood: ci.mood,
+                  pemFlag: ci.pemFlag,
+                }))}
+              />
             </div>
             <div className="flex flex-col divide-y divide-slate-100">
               {checkIns.map((ci) => (
@@ -92,5 +101,5 @@ export async function ClientCheckInsCard({ clientId, checkIns, totalCheckIns }: 
         )}
       </CardContent>
     </Card>
-  )
+  );
 }

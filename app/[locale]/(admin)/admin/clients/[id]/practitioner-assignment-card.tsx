@@ -1,69 +1,69 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { useTranslations } from "next-intl"
-import { toast } from "sonner"
-import { UserCircle } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Select } from "@/components/ui/select"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { formatDate } from "@/lib/utils"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { toast } from "sonner";
+import { UserCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Select } from "@/components/ui/select";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatDate } from "@/lib/utils";
 
-type Practitioner = { id: string; name: string | null; email: string }
+type Practitioner = { id: string; name: string | null; email: string };
 
 type Assignment = {
-  id: string
-  practitionerId: string
-  practitionerName: string | null
-  practitionerEmail: string
-  assignedAt: Date
-}
+  id: string;
+  practitionerId: string;
+  practitionerName: string | null;
+  practitionerEmail: string;
+  assignedAt: Date;
+};
 
 interface Props {
-  clientId: string
-  current: Assignment | null
-  practitioners: Practitioner[]
+  clientId: string;
+  current: Assignment | null;
+  practitioners: Practitioner[];
 }
 
 export function PractitionerAssignmentCard({ clientId, current, practitioners }: Props) {
-  const t = useTranslations("admin.clients.detail")
-  const router = useRouter()
-  const [editing, setEditing] = useState(false)
-  const [selected, setSelected] = useState("")
-  const [saving, setSaving] = useState(false)
+  const t = useTranslations("admin.clients.detail");
+  const router = useRouter();
+  const [editing, setEditing] = useState(false);
+  const [selected, setSelected] = useState("");
+  const [saving, setSaving] = useState(false);
 
   async function handleAssign() {
-    if (!selected) return
-    setSaving(true)
+    if (!selected) return;
+    setSaving(true);
     try {
       const res = await fetch("/api/assignments", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ clientId, practitionerId: selected }),
-      })
-      if (!res.ok) throw new Error()
-      router.refresh()
-      setEditing(false)
-      setSelected("")
+      });
+      if (!res.ok) throw new Error();
+      router.refresh();
+      setEditing(false);
+      setSelected("");
     } catch {
-      toast.error(t("assignError"))
+      toast.error(t("assignError"));
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
   }
 
   async function handleRemove() {
-    if (!current) return
-    setSaving(true)
+    if (!current) return;
+    setSaving(true);
     try {
-      const res = await fetch(`/api/assignments/${current.id}`, { method: "DELETE" })
-      if (!res.ok) throw new Error()
-      router.refresh()
+      const res = await fetch(`/api/assignments/${current.id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error();
+      router.refresh();
     } catch {
-      toast.error(t("assignError"))
+      toast.error(t("assignError"));
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
   }
 
@@ -93,22 +93,38 @@ export function PractitionerAssignmentCard({ clientId, current, practitioners }:
             <Button size="sm" onClick={handleAssign} disabled={!selected || saving}>
               {saving ? t("saving") : t("assignPractitioner")}
             </Button>
-            <Button size="sm" variant="ghost" onClick={() => { setEditing(false); setSelected("") }}>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => {
+                setEditing(false);
+                setSelected("");
+              }}
+            >
               {t("cancel")}
             </Button>
           </div>
         ) : current ? (
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-sm font-medium text-slate-800">{current.practitionerName ?? current.practitionerEmail}</p>
-              <p className="text-xs text-slate-400">{t("assignedSince", { date: formatDate(current.assignedAt) })}</p>
+              <p className="text-sm font-medium text-slate-800">
+                {current.practitionerName ?? current.practitionerEmail}
+              </p>
+              <p className="text-xs text-slate-400">
+                {t("assignedSince", { date: formatDate(current.assignedAt) })}
+              </p>
             </div>
             <div className="flex items-center gap-2">
               <Button size="sm" variant="ghost" onClick={() => setEditing(true)} disabled={saving}>
                 {t("changePractitioner")}
               </Button>
-              <Button size="sm" variant="ghost" onClick={handleRemove} disabled={saving}
-                className="text-red-500 hover:text-red-700 hover:bg-red-50">
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={handleRemove}
+                disabled={saving}
+                className="text-red-500 hover:text-red-700 hover:bg-red-50"
+              >
                 {t("removePractitioner")}
               </Button>
             </div>
@@ -123,5 +139,5 @@ export function PractitionerAssignmentCard({ clientId, current, practitioners }:
         )}
       </CardContent>
     </Card>
-  )
+  );
 }

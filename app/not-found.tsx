@@ -1,5 +1,5 @@
-import { Link } from "@/i18n/navigation"
-import { Waves } from "lucide-react"
+import { Link } from "@/i18n/navigation";
+import { Waves } from "lucide-react";
 
 export default function NotFound() {
   return (
@@ -19,5 +19,5 @@ export default function NotFound() {
         Go home
       </Link>
     </div>
-  )
+  );
 }

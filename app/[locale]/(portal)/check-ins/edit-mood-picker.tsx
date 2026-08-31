@@ -1,16 +1,16 @@
-"use client"
+"use client";
 
-import { useTranslations } from "next-intl"
-import { MOODS, CHIP_SELECTED, CHIP_UNSELECTED, COMPACT_LABEL_CLS } from "@/lib/constants"
+import { useTranslations } from "next-intl";
+import { MOODS, CHIP_SELECTED, CHIP_UNSELECTED, COMPACT_LABEL_CLS } from "@/lib/constants";
 
 interface Props {
-  mood: string
-  onChange: (mood: string) => void
+  mood: string;
+  onChange: (mood: string) => void;
 }
 
 export function EditMoodPicker({ mood, onChange }: Props) {
-  const t = useTranslations("portal.checkIns")
-  const tCheckIn = useTranslations("portal.checkIn")
+  const t = useTranslations("portal.checkIns");
+  const tCheckIn = useTranslations("portal.checkIn");
 
   return (
     <div>
@@ -31,5 +31,5 @@ export function EditMoodPicker({ mood, onChange }: Props) {
         ))}
       </div>
     </div>
-  )
+  );
 }

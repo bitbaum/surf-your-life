@@ -1,37 +1,37 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useTranslations } from "next-intl"
-import { useRouter } from "@/i18n/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export function DeleteAccountForm() {
-  const t = useTranslations("portal.settings")
-  const router = useRouter()
-  const [password, setPassword] = useState("")
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState("")
+  const t = useTranslations("portal.settings");
+  const router = useRouter();
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    setError("")
-    setLoading(true)
+    e.preventDefault();
+    setError("");
+    setLoading(true);
     try {
       const res = await fetch("/api/account/delete", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password }),
-      })
-      const data = await res.json()
+      });
+      const data = await res.json();
       if (!res.ok) {
-        setError(data.error ?? t("deleteError"))
+        setError(data.error ?? t("deleteError"));
       } else {
-        router.push("/")
+        router.push("/");
       }
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
@@ -62,5 +62,5 @@ export function DeleteAccountForm() {
         </form>
       </CardContent>
     </Card>
-  )
+  );
 }

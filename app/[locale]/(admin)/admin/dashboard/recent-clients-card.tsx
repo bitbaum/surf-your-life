@@ -1,31 +1,35 @@
-import { getTranslations } from "next-intl/server"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Link } from "@/i18n/navigation"
-import { formatDate, buildLastNDayStrings } from "@/lib/utils"
-import { EmptyState } from "@/components/ui/empty-state"
-import { DayCadenceSparkline } from "@/components/ui/day-cadence-sparkline"
-import type { CadenceMap } from "@/lib/db/check-in-cadence"
+import { getTranslations } from "next-intl/server";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Link } from "@/i18n/navigation";
+import { formatDate, buildLastNDayStrings } from "@/lib/utils";
+import { EmptyState } from "@/components/ui/empty-state";
+import { DayCadenceSparkline } from "@/components/ui/day-cadence-sparkline";
+import type { CadenceMap } from "@/lib/db/check-in-cadence";
 
 type RecentClient = {
-  id: string
-  name: string | null
-  email: string | null
-  createdAt: Date
-  profile: { mainConcern: string | null } | null
-}
+  id: string;
+  name: string | null;
+  email: string | null;
+  createdAt: Date;
+  profile: { mainConcern: string | null } | null;
+};
 
 interface Props {
-  clients: RecentClient[]
-  cadence: CadenceMap
+  clients: RecentClient[];
+  cadence: CadenceMap;
 }
 
 export async function RecentClientsCard({ clients, cadence }: Props) {
-  const t = await getTranslations("admin.dashboard")
-  const tConcerns = await getTranslations("concerns")
-  const tClients = await getTranslations("admin.clients")
-  const sparkDays = buildLastNDayStrings(7)
-  const sparkLabels = { missed: tClients("dotMissed"), checkedIn: tClients("dotCheckedIn"), pem: tClients("dotPem") }
-  const sparkHint = tClients("cadenceHint")
+  const t = await getTranslations("admin.dashboard");
+  const tConcerns = await getTranslations("concerns");
+  const tClients = await getTranslations("admin.clients");
+  const sparkDays = buildLastNDayStrings(7);
+  const sparkLabels = {
+    missed: tClients("dotMissed"),
+    checkedIn: tClients("dotCheckedIn"),
+    pem: tClients("dotPem"),
+  };
+  const sparkHint = tClients("cadenceHint");
 
   return (
     <Card>
@@ -40,7 +44,7 @@ export async function RecentClientsCard({ clients, cadence }: Props) {
       <CardContent>
         <div className="flex flex-col divide-y divide-slate-100">
           {clients.map((client) => {
-            const spark = cadence[client.id]
+            const spark = cadence[client.id];
             return (
               <Link
                 key={client.id}
@@ -69,18 +73,25 @@ export async function RecentClientsCard({ clients, cadence }: Props) {
                   <p className="text-xs text-slate-400">{formatDate(client.createdAt)}</p>
                 </div>
               </Link>
-            )
+            );
           })}
           {clients.length === 0 && (
             <div className="py-6">
               <EmptyState
                 message={t("noClients")}
-                action={<Link href="/admin/clients" className="text-sm font-medium text-teal-600 hover:text-teal-700 transition-colors">{t("viewAll")} →</Link>}
+                action={
+                  <Link
+                    href="/admin/clients"
+                    className="text-sm font-medium text-teal-600 hover:text-teal-700 transition-colors"
+                  >
+                    {t("viewAll")} →
+                  </Link>
+                }
               />
             </div>
           )}
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

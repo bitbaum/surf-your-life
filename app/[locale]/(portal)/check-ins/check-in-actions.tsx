@@ -1,38 +1,38 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useTranslations } from "next-intl"
-import { useRouter } from "@/i18n/navigation"
-import { Pencil, Trash2 } from "lucide-react"
-import type { CheckIn } from "@/lib/db/schema"
-import { EditCheckInModal } from "./edit-check-in-modal"
+import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
+import { Pencil, Trash2 } from "lucide-react";
+import type { CheckIn } from "@/lib/db/schema";
+import { EditCheckInModal } from "./edit-check-in-modal";
 
 interface Props {
-  checkInId: string
-  checkIn: CheckIn
+  checkInId: string;
+  checkIn: CheckIn;
 }
 
 export function CheckInActions({ checkInId, checkIn }: Props) {
-  const t = useTranslations("portal.checkIns")
-  const router = useRouter()
-  const [mode, setMode] = useState<"idle" | "confirmDelete" | "edit">("idle")
-  const [deleting, setDeleting] = useState(false)
-  const [error, setError] = useState("")
+  const t = useTranslations("portal.checkIns");
+  const router = useRouter();
+  const [mode, setMode] = useState<"idle" | "confirmDelete" | "edit">("idle");
+  const [deleting, setDeleting] = useState(false);
+  const [error, setError] = useState("");
 
   async function handleDelete() {
-    setDeleting(true)
-    setError("")
+    setDeleting(true);
+    setError("");
     try {
-      const res = await fetch(`/api/check-in/${checkInId}`, { method: "DELETE" })
+      const res = await fetch(`/api/check-in/${checkInId}`, { method: "DELETE" });
       if (!res.ok) {
-        setError(t("deleteError"))
-        return
+        setError(t("deleteError"));
+        return;
       }
-      router.refresh()
+      router.refresh();
     } catch {
-      setError(t("deleteError"))
+      setError(t("deleteError"));
     } finally {
-      setDeleting(false)
+      setDeleting(false);
     }
   }
 
@@ -55,7 +55,7 @@ export function CheckInActions({ checkInId, checkIn }: Props) {
         </button>
         {error && <span className="text-xs text-red-500">{error}</span>}
       </div>
-    )
+    );
   }
 
   if (mode === "edit") {
@@ -63,10 +63,13 @@ export function CheckInActions({ checkInId, checkIn }: Props) {
       <EditCheckInModal
         checkIn={checkIn}
         checkInId={checkInId}
-        onSave={() => { setMode("idle"); router.refresh() }}
+        onSave={() => {
+          setMode("idle");
+          router.refresh();
+        }}
         onCancel={() => setMode("idle")}
       />
-    )
+    );
   }
 
   return (
@@ -88,5 +91,5 @@ export function CheckInActions({ checkInId, checkIn }: Props) {
         {t("deleteAction")}
       </button>
     </div>
-  )
+  );
 }

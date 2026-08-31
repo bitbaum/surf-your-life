@@ -1,30 +1,30 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { useTranslations } from "next-intl"
-import { Button } from "@/components/ui/button"
-import { Select } from "@/components/ui/select"
-import { SERVICE_CATEGORIES, type ServiceInput } from "@/lib/domain/services"
-import { SERVICE_DURATION_MINUTES } from "@/lib/constants"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { Button } from "@/components/ui/button";
+import { Select } from "@/components/ui/select";
+import { SERVICE_CATEGORIES, type ServiceInput } from "@/lib/domain/services";
+import { SERVICE_DURATION_MINUTES } from "@/lib/constants";
 
 export function CreateServiceForm() {
-  const t = useTranslations("admin.services")
-  const router = useRouter()
-  const [open, setOpen] = useState(false)
-  const [saving, setSaving] = useState(false)
-  const [error, setError] = useState("")
+  const t = useTranslations("admin.services");
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
   const [form, setForm] = useState({
     name: "",
     description: "",
     category: "consultation" as ServiceInput["category"],
     durationMinutes: "",
-  })
+  });
 
   async function handleSubmit() {
-    if (!form.name.trim()) return
-    setSaving(true)
-    setError("")
+    if (!form.name.trim()) return;
+    setSaving(true);
+    setError("");
     try {
       const res = await fetch("/api/admin/services", {
         method: "POST",
@@ -35,19 +35,19 @@ export function CreateServiceForm() {
           category: form.category,
           durationMinutes: form.durationMinutes ? parseInt(form.durationMinutes) : undefined,
         }),
-      })
-      const data = await res.json()
+      });
+      const data = await res.json();
       if (!res.ok) {
-        setError(data.error ?? t("error"))
-        return
+        setError(data.error ?? t("error"));
+        return;
       }
-      setForm({ name: "", description: "", category: "consultation", durationMinutes: "" })
-      setOpen(false)
-      router.refresh()
+      setForm({ name: "", description: "", category: "consultation", durationMinutes: "" });
+      setOpen(false);
+      router.refresh();
     } catch {
-      setError(t("error"))
+      setError(t("error"));
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
   }
 
@@ -56,7 +56,7 @@ export function CreateServiceForm() {
       <Button size="sm" onClick={() => setOpen(true)}>
         {t("newService")}
       </Button>
-    )
+    );
   }
 
   return (
@@ -64,7 +64,9 @@ export function CreateServiceForm() {
       <p className="text-sm font-medium text-teal-800 mb-3">{t("newServiceTitle")}</p>
       <div className="grid grid-cols-2 gap-3 mb-3">
         <div>
-          <label className="text-xs font-medium text-slate-500 block mb-1">{t("fieldNameRequired")}</label>
+          <label className="text-xs font-medium text-slate-500 block mb-1">
+            {t("fieldNameRequired")}
+          </label>
           <input
             value={form.name}
             onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
@@ -74,7 +76,9 @@ export function CreateServiceForm() {
           />
         </div>
         <div>
-          <label className="text-xs font-medium text-slate-500 block mb-1">{t("fieldDuration")}</label>
+          <label className="text-xs font-medium text-slate-500 block mb-1">
+            {t("fieldDuration")}
+          </label>
           <input
             type="number"
             value={form.durationMinutes}
@@ -88,18 +92,26 @@ export function CreateServiceForm() {
       </div>
       <div className="grid grid-cols-2 gap-3 mb-4">
         <div>
-          <label className="text-xs font-medium text-slate-500 block mb-1">{t("fieldCategoryRequired")}</label>
+          <label className="text-xs font-medium text-slate-500 block mb-1">
+            {t("fieldCategoryRequired")}
+          </label>
           <Select
             value={form.category}
-            onChange={(e) => setForm((f) => ({ ...f, category: e.target.value as typeof form.category }))}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, category: e.target.value as typeof form.category }))
+            }
           >
             {SERVICE_CATEGORIES.map((c) => (
-              <option key={c} value={c}>{t(`categoryLabels.${c}`)}</option>
+              <option key={c} value={c}>
+                {t(`categoryLabels.${c}`)}
+              </option>
             ))}
           </Select>
         </div>
         <div>
-          <label className="text-xs font-medium text-slate-500 block mb-1">{t("fieldDescription")}</label>
+          <label className="text-xs font-medium text-slate-500 block mb-1">
+            {t("fieldDescription")}
+          </label>
           <input
             value={form.description}
             onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
@@ -111,7 +123,10 @@ export function CreateServiceForm() {
       <div className="flex items-center gap-3">
         {error && <span className="text-xs text-red-500 flex-1">{error}</span>}
         <div className="flex gap-2 ml-auto">
-          <button onClick={() => setOpen(false)} className="text-xs text-slate-400 hover:text-slate-600">
+          <button
+            onClick={() => setOpen(false)}
+            className="text-xs text-slate-400 hover:text-slate-600"
+          >
             {t("cancel")}
           </button>
           <Button size="sm" onClick={handleSubmit} disabled={saving || !form.name.trim()}>
@@ -120,5 +135,5 @@ export function CreateServiceForm() {
         </div>
       </div>
     </div>
-  )
+  );
 }

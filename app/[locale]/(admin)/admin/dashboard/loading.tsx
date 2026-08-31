@@ -1,4 +1,4 @@
-import { Card } from "@/components/ui/card"
+import { Card } from "@/components/ui/card";
 
 export default function AdminDashboardLoading() {
   return (
@@ -12,5 +12,5 @@ export default function AdminDashboardLoading() {
       </div>
       <Card className="p-6 h-64" />
     </div>
-  )
+  );
 }

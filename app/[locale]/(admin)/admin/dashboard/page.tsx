@@ -1,35 +1,50 @@
-import { db } from "@/lib/db"
-import { users, checkIns, bookings, threadMessages, clientAlerts } from "@/lib/db/schema"
-import { eq, desc, gte, count, and, isNull, max, sql } from "drizzle-orm"
-import { getTranslations, setRequestLocale } from "next-intl/server"
-import { StatCard } from "@/components/ui/stat-card"
-import { PageHeader } from "@/components/ui/page-header"
-import { Users, ClipboardList, CalendarCheck, CalendarClock, MessageSquare, AlertTriangle } from "lucide-react"
-import { SEVEN_DAYS_MS, THIRTY_DAYS_MS, RECENT_CLIENTS_LIMIT, AT_RISK_CLIENTS_LIMIT, ADMIN_DASHBOARD_ALERTS_PREVIEW, ADMIN_DASHBOARD_INSIGHTS_PREVIEW, CLINIC_TZ } from "@/lib/constants"
-import { CLIENT_ROLE } from "@/lib/domain/auth"
-import { fetchCadenceMap } from "@/lib/db/check-in-cadence"
-import { atRiskHaving } from "@/lib/db/at-risk"
-import { getUnresolvedAlertCount } from "@/components/admin/unread-count"
-import { AlertsPreviewCard } from "./alerts-preview-card"
-import { AtRiskClientsCard } from "./at-risk-clients-card"
-import { RecentClientsCard } from "./recent-clients-card"
-import { LatestInsightsCard } from "./latest-insights-card"
-import { ClinicPulseCard } from "./clinic-pulse-card"
+import { db } from "@/lib/db";
+import { users, checkIns, bookings, threadMessages, clientAlerts } from "@/lib/db/schema";
+import { eq, desc, gte, count, and, isNull, max, sql } from "drizzle-orm";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { StatCard } from "@/components/ui/stat-card";
+import { PageHeader } from "@/components/ui/page-header";
+import {
+  Users,
+  ClipboardList,
+  CalendarCheck,
+  CalendarClock,
+  MessageSquare,
+  AlertTriangle,
+} from "lucide-react";
+import {
+  SEVEN_DAYS_MS,
+  THIRTY_DAYS_MS,
+  RECENT_CLIENTS_LIMIT,
+  AT_RISK_CLIENTS_LIMIT,
+  ADMIN_DASHBOARD_ALERTS_PREVIEW,
+  ADMIN_DASHBOARD_INSIGHTS_PREVIEW,
+  CLINIC_TZ,
+} from "@/lib/constants";
+import { CLIENT_ROLE } from "@/lib/domain/auth";
+import { fetchCadenceMap } from "@/lib/db/check-in-cadence";
+import { atRiskHaving } from "@/lib/db/at-risk";
+import { getUnresolvedAlertCount } from "@/components/admin/unread-count";
+import { AlertsPreviewCard } from "./alerts-preview-card";
+import { AtRiskClientsCard } from "./at-risk-clients-card";
+import { RecentClientsCard } from "./recent-clients-card";
+import { LatestInsightsCard } from "./latest-insights-card";
+import { ClinicPulseCard } from "./clinic-pulse-card";
 
 export default async function AdminDashboardPage({
   params,
 }: {
-  params: Promise<{ locale: string }>
+  params: Promise<{ locale: string }>;
 }) {
-  const { locale } = await params
-  setRequestLocale(locale)
-  const t = await getTranslations("admin.dashboard")
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations("admin.dashboard");
 
-  const nowMs = Date.now()
-  const thirtyDaysAgo = new Date(nowMs - THIRTY_DAYS_MS)
-  const sevenDaysAgo = new Date(nowMs - SEVEN_DAYS_MS)
+  const nowMs = Date.now();
+  const thirtyDaysAgo = new Date(nowMs - THIRTY_DAYS_MS);
+  const sevenDaysAgo = new Date(nowMs - SEVEN_DAYS_MS);
 
-  const todayInClinicTz = sql`(${checkIns.createdAt} AT TIME ZONE ${CLINIC_TZ})::date = (NOW() AT TIME ZONE ${CLINIC_TZ})::date`
+  const todayInClinicTz = sql`(${checkIns.createdAt} AT TIME ZONE ${CLINIC_TZ})::date = (NOW() AT TIME ZONE ${CLINIC_TZ})::date`;
 
   const [
     clientCountResult,
@@ -75,7 +90,7 @@ export default async function AdminDashboardPage({
           .where(eq(users.role, CLIENT_ROLE))
           .groupBy(users.id)
           .having(atRiskHaving(sevenDaysAgo))
-          .as("at_risk_sub")
+          .as("at_risk_sub"),
       ),
     // Preview: worst N at-risk clients for dashboard card
     db
@@ -122,7 +137,12 @@ export default async function AdminDashboardPage({
       ORDER BY 1 ASC
     `),
     // Latest AI insight per client — outer ORDER BY recency so we show the N most recently updated clients
-    db.execute<{ client_id: string; client_name: string | null; ai_insight: string; created_at: string }>(sql`
+    db.execute<{
+      client_id: string;
+      client_name: string | null;
+      ai_insight: string;
+      created_at: string;
+    }>(sql`
       SELECT * FROM (
         SELECT DISTINCT ON (ci.user_id)
           ci.user_id  AS client_id,
@@ -138,48 +158,75 @@ export default async function AdminDashboardPage({
       ORDER BY created_at DESC
       LIMIT ${ADMIN_DASHBOARD_INSIGHTS_PREVIEW}
     `),
-  ])
+  ]);
 
-  const clientCount = clientCountResult[0]?.count ?? 0
-  const recentCheckInsCount = recentCheckInsCountResult[0]?.count ?? 0
-  const todayCheckIns = todayCheckInsResult[0]?.count ?? 0
-  const pendingBookings = pendingBookingsResult[0]?.count ?? 0
-  const unreadMessages = unreadMessagesResult[0]?.count ?? 0
+  const clientCount = clientCountResult[0]?.count ?? 0;
+  const recentCheckInsCount = recentCheckInsCountResult[0]?.count ?? 0;
+  const todayCheckIns = todayCheckInsResult[0]?.count ?? 0;
+  const pendingBookings = pendingBookingsResult[0]?.count ?? 0;
+  const unreadMessages = unreadMessagesResult[0]?.count ?? 0;
 
-  const atRiskCount = atRiskCountResult[0]?.count ?? 0
-  const atRiskClients = atRiskPreview
+  const atRiskCount = atRiskCountResult[0]?.count ?? 0;
+  const atRiskClients = atRiskPreview;
   const clinicPulseData = clinicPulseRaw.rows.map((r) => ({
     day: r.day,
     avgEnergy: parseFloat(r.avg_energy),
     avgMood: parseFloat(r.avg_mood),
     activeClients: parseInt(r.active_clients, 10),
-  }))
+  }));
   const latestInsights = latestInsightsRaw.rows.map((r) => ({
     clientId: r.client_id,
     clientName: r.client_name,
     aiInsight: r.ai_insight,
     createdAt: new Date(r.created_at),
-  }))
+  }));
 
   // Single batched cadence fetch for both cards — avoids two round-trips.
   const cadenceClientIds = [
-    ...new Set([
-      ...recentClients.map((c) => c.id),
-      ...latestInsights.map((i) => i.clientId),
-    ]),
-  ]
-  const cadenceMap = await fetchCadenceMap(cadenceClientIds, sevenDaysAgo)
+    ...new Set([...recentClients.map((c) => c.id), ...latestInsights.map((i) => i.clientId)]),
+  ];
+  const cadenceMap = await fetchCadenceMap(cadenceClientIds, sevenDaysAgo);
 
   return (
     <div className="max-w-5xl mx-auto">
       <PageHeader title={t("title")} description={t("description")} />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-6 gap-4 mb-8">
-        <StatCard label={t("totalClients")} value={clientCount} icon={Users} color="teal" href="/admin/clients" />
-        <StatCard label={t("checkIns30d")} value={recentCheckInsCount} icon={ClipboardList} color="slate" href="/admin/check-ins" />
-        <StatCard label={t("checkInsToday")} value={todayCheckIns} icon={CalendarCheck} color="teal" href="/admin/check-ins?filter=today" />
-        <StatCard label={t("pendingBookings")} value={pendingBookings} icon={CalendarClock} color="slate" href="/admin/bookings" />
-        <StatCard label={t("unreadMessages")} value={unreadMessages} icon={MessageSquare} color="teal" href="/admin/messages" />
+        <StatCard
+          label={t("totalClients")}
+          value={clientCount}
+          icon={Users}
+          color="teal"
+          href="/admin/clients"
+        />
+        <StatCard
+          label={t("checkIns30d")}
+          value={recentCheckInsCount}
+          icon={ClipboardList}
+          color="slate"
+          href="/admin/check-ins"
+        />
+        <StatCard
+          label={t("checkInsToday")}
+          value={todayCheckIns}
+          icon={CalendarCheck}
+          color="teal"
+          href="/admin/check-ins?filter=today"
+        />
+        <StatCard
+          label={t("pendingBookings")}
+          value={pendingBookings}
+          icon={CalendarClock}
+          color="slate"
+          href="/admin/bookings"
+        />
+        <StatCard
+          label={t("unreadMessages")}
+          value={unreadMessages}
+          icon={MessageSquare}
+          color="teal"
+          href="/admin/messages"
+        />
         <StatCard
           label={t("atRiskClients")}
           value={atRiskCount}
@@ -196,5 +243,5 @@ export default async function AdminDashboardPage({
       <AtRiskClientsCard clients={atRiskClients} nowMs={nowMs} />
       <RecentClientsCard clients={recentClients} cadence={cadenceMap} />
     </div>
-  )
+  );
 }

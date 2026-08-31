@@ -1,17 +1,17 @@
-import { getTranslations } from "next-intl/server"
-import { Sparkles } from "lucide-react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Link } from "@/i18n/navigation"
-import { formatDate } from "@/lib/utils"
+import { getTranslations } from "next-intl/server";
+import { Sparkles } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Link } from "@/i18n/navigation";
+import { formatDate } from "@/lib/utils";
 
 interface Props {
-  insight: string | null
-  generatedAt: Date | string | null
+  insight: string | null;
+  generatedAt: Date | string | null;
 }
 
 export async function DashboardAIInsightCard({ insight, generatedAt }: Props) {
-  if (!insight || !generatedAt) return null
-  const t = await getTranslations("portal.dashboard")
+  if (!insight || !generatedAt) return null;
+  const t = await getTranslations("portal.dashboard");
 
   return (
     <Card className="mb-6 border-violet-200 bg-violet-50">
@@ -23,7 +23,9 @@ export async function DashboardAIInsightCard({ insight, generatedAt }: Props) {
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between gap-2 mb-1.5">
               <p className="text-sm font-semibold text-violet-800">{t("aiInsightTitle")}</p>
-              <span className="text-xs text-violet-500 flex-shrink-0">{formatDate(generatedAt)}</span>
+              <span className="text-xs text-violet-500 flex-shrink-0">
+                {formatDate(generatedAt)}
+              </span>
             </div>
             <p className="text-sm text-violet-900 leading-relaxed">{insight}</p>
             <Link
@@ -36,5 +38,5 @@ export async function DashboardAIInsightCard({ insight, generatedAt }: Props) {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

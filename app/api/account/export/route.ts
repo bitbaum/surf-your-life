@@ -1,43 +1,36 @@
-import { NextResponse } from "next/server"
-import { db } from "@/lib/db"
-import {
-  users,
-  checkIns,
-  bookings,
-  threads,
-  threadMessages,
-} from "@/lib/db/schema"
-import { eq } from "drizzle-orm"
-import { requireAuth } from "@/lib/api"
-import { getUserProfile } from "@/lib/db/queries"
+import { NextResponse } from "next/server";
+import { db } from "@/lib/db";
+import { users, checkIns, bookings, threads, threadMessages } from "@/lib/db/schema";
+import { eq } from "drizzle-orm";
+import { requireAuth } from "@/lib/api";
+import { getUserProfile } from "@/lib/db/queries";
 
 export async function GET() {
-  const authResult = await requireAuth()
-  if (!authResult.ok) return authResult.response
-  const { session } = authResult
+  const authResult = await requireAuth();
+  if (!authResult.ok) return authResult.response;
+  const { session } = authResult;
 
-  const userId = session.user.id
+  const userId = session.user.id;
 
-  const [user, profile, userCheckIns, userBookings, userThreads, sentMessages] =
-    await Promise.all([
-      db.query.users.findFirst({
-        where: eq(users.id, userId),
-        columns: { id: true, name: true, email: true, createdAt: true, role: true },
-      }),
-      getUserProfile(userId),
-      db.query.checkIns.findMany({ where: eq(checkIns.userId, userId) }),
-      db.query.bookings.findMany({
-        where: eq(bookings.userId, userId),
-        with: { service: true },
-      }),
-      db.query.threads.findMany({
-        where: eq(threads.clientId, userId),
-        with: { messages: true },
-      }),
-      db.query.threadMessages.findMany({
-        where: eq(threadMessages.senderId, userId),
-      }),
-    ])
+  const [user, profile, userCheckIns, userBookings, userThreads, sentMessages] = await Promise.all([
+    db.query.users.findFirst({
+      where: eq(users.id, userId),
+      columns: { id: true, name: true, email: true, createdAt: true, role: true },
+    }),
+    getUserProfile(userId),
+    db.query.checkIns.findMany({ where: eq(checkIns.userId, userId) }),
+    db.query.bookings.findMany({
+      where: eq(bookings.userId, userId),
+      with: { service: true },
+    }),
+    db.query.threads.findMany({
+      where: eq(threads.clientId, userId),
+      with: { messages: true },
+    }),
+    db.query.threadMessages.findMany({
+      where: eq(threadMessages.senderId, userId),
+    }),
+  ]);
 
   const payload = {
     exportedAt: new Date().toISOString(),
@@ -53,7 +46,7 @@ export async function GET() {
       threads: userThreads,
       sent: sentMessages,
     },
-  }
+  };
 
   return new NextResponse(JSON.stringify(payload, null, 2), {
     status: 200,
@@ -61,5 +54,5 @@ export async function GET() {
       "Content-Type": "application/json",
       "Content-Disposition": `attachment; filename="my-data.json"`,
     },
-  })
+  });
 }

@@ -1,42 +1,42 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "@/i18n/navigation"
-import { useTranslations } from "next-intl"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Modal } from "@/components/ui/modal"
-import { Select } from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
-import { Plus } from "lucide-react"
-import { FIELD_MAX_LONG } from "@/lib/constants"
+import { useState } from "react";
+import { useRouter } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Modal } from "@/components/ui/modal";
+import { Select } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Plus } from "lucide-react";
+import { FIELD_MAX_LONG } from "@/lib/constants";
 
 interface Program {
-  id: string
-  title: string
-  durationWeeks: number | null
+  id: string;
+  title: string;
+  durationWeeks: number | null;
 }
 
 interface EnrollProgramButtonProps {
-  clientId: string
-  programs: Program[]
+  clientId: string;
+  programs: Program[];
 }
 
 export function EnrollProgramButton({ clientId, programs }: EnrollProgramButtonProps) {
-  const t = useTranslations("admin.programs")
-  const router = useRouter()
-  const [open, setOpen] = useState(false)
-  const [programId, setProgramId] = useState("")
-  const [startDate, setStartDate] = useState("")
-  const [notes, setNotes] = useState("")
-  const [saving, setSaving] = useState(false)
-  const [error, setError] = useState("")
+  const t = useTranslations("admin.programs");
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [programId, setProgramId] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [notes, setNotes] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
   async function handleEnroll(e: React.FormEvent) {
-    e.preventDefault()
-    if (!programId) return
-    setSaving(true)
-    setError("")
+    e.preventDefault();
+    if (!programId) return;
+    setSaving(true);
+    setError("");
 
     try {
       const res = await fetch(`/api/admin/programs/${programId}/enroll`, {
@@ -47,25 +47,25 @@ export function EnrollProgramButton({ clientId, programs }: EnrollProgramButtonP
           startDate: startDate || null,
           notes: notes.trim() || undefined,
         }),
-      })
-      const data = await res.json()
+      });
+      const data = await res.json();
       if (!data.success) {
-        setError(data.error ?? t("saveError"))
-        return
+        setError(data.error ?? t("saveError"));
+        return;
       }
-      setOpen(false)
-      setProgramId("")
-      setStartDate("")
-      setNotes("")
-      router.refresh()
+      setOpen(false);
+      setProgramId("");
+      setStartDate("");
+      setNotes("");
+      router.refresh();
     } catch {
-      setError(t("saveError"))
+      setError(t("saveError"));
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
   }
 
-  if (programs.length === 0) return null
+  if (programs.length === 0) return null;
 
   return (
     <>
@@ -87,7 +87,8 @@ export function EnrollProgramButton({ clientId, programs }: EnrollProgramButtonP
               <option value="">{t("fieldSelectProgramPlaceholder")}</option>
               {programs.map((p) => (
                 <option key={p.id} value={p.id}>
-                  {p.title}{p.durationWeeks ? ` (${p.durationWeeks}w)` : ""}
+                  {p.title}
+                  {p.durationWeeks ? ` (${p.durationWeeks}w)` : ""}
                 </option>
               ))}
             </Select>
@@ -128,5 +129,5 @@ export function EnrollProgramButton({ clientId, programs }: EnrollProgramButtonP
         </Modal>
       )}
     </>
-  )
+  );
 }

@@ -1,41 +1,41 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useTranslations } from "next-intl"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { PasswordStrength } from "@/components/ui/password-strength"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { PASSWORD_MIN_LENGTH } from "@/lib/constants"
+import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { PasswordStrength } from "@/components/ui/password-strength";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { PASSWORD_MIN_LENGTH } from "@/lib/constants";
 
 export function SecurityForm() {
-  const t = useTranslations("auth.changePassword")
+  const t = useTranslations("auth.changePassword");
   const [form, setForm] = useState({
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
-  })
-  const [loading, setLoading] = useState(false)
-  const [success, setSuccess] = useState(false)
-  const [error, setError] = useState("")
+  });
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState("");
 
   function set(key: string, value: string) {
-    setForm((prev) => ({ ...prev, [key]: value }))
-    setSuccess(false)
-    setError("")
+    setForm((prev) => ({ ...prev, [key]: value }));
+    setSuccess(false);
+    setError("");
   }
 
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    setError("")
-    setSuccess(false)
+    e.preventDefault();
+    setError("");
+    setSuccess(false);
 
     if (form.newPassword !== form.confirmPassword) {
-      setError(t("mismatch"))
-      return
+      setError(t("mismatch"));
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
     try {
       const res = await fetch("/api/auth/change-password", {
         method: "POST",
@@ -44,16 +44,16 @@ export function SecurityForm() {
           currentPassword: form.currentPassword,
           newPassword: form.newPassword,
         }),
-      })
-      const data = await res.json()
+      });
+      const data = await res.json();
       if (!res.ok) {
-        setError(data.error ?? t("wrongCurrent"))
+        setError(data.error ?? t("wrongCurrent"));
       } else {
-        setSuccess(true)
-        setForm({ currentPassword: "", newPassword: "", confirmPassword: "" })
+        setSuccess(true);
+        setForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
       }
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
@@ -98,5 +98,5 @@ export function SecurityForm() {
         </form>
       </CardContent>
     </Card>
-  )
+  );
 }

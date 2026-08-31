@@ -1,9 +1,9 @@
-import { Card, CardContent } from "@/components/ui/card"
-import { Lightbulb } from "lucide-react"
+import { Card, CardContent } from "@/components/ui/card";
+import { Lightbulb } from "lucide-react";
 
 interface Props {
-  title: string
-  body: string
+  title: string;
+  body: string;
 }
 
 export function InsightBanner({ title, body }: Props) {
@@ -17,5 +17,5 @@ export function InsightBanner({ title, body }: Props) {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

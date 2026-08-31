@@ -1,20 +1,20 @@
-import { db } from "@/lib/db"
-import { programs, programEnrollments } from "@/lib/db/schema"
-import { desc, count, eq, sql } from "drizzle-orm"
-import { ADMIN_PROGRAMS_MAX } from "@/lib/constants"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { PageHeader } from "@/components/ui/page-header"
-import { Link } from "@/i18n/navigation"
-import { formatDate } from "@/lib/utils"
-import { getTranslations, setRequestLocale } from "next-intl/server"
-import { Plus, Users } from "lucide-react"
-import { EmptyState } from "@/components/ui/empty-state"
+import { db } from "@/lib/db";
+import { programs, programEnrollments } from "@/lib/db/schema";
+import { desc, count, eq, sql } from "drizzle-orm";
+import { ADMIN_PROGRAMS_MAX } from "@/lib/constants";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { PageHeader } from "@/components/ui/page-header";
+import { Link } from "@/i18n/navigation";
+import { formatDate } from "@/lib/utils";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { Plus, Users } from "lucide-react";
+import { EmptyState } from "@/components/ui/empty-state";
 
 export default async function ProgramsPage({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale } = await params
-  setRequestLocale(locale)
-  const t = await getTranslations("admin.programs")
-  const tConcerns = await getTranslations("concerns")
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations("admin.programs");
+  const tConcerns = await getTranslations("concerns");
 
   const rows = await db
     .select({
@@ -31,7 +31,7 @@ export default async function ProgramsPage({ params }: { params: Promise<{ local
     .leftJoin(programEnrollments, eq(programEnrollments.programId, programs.id))
     .groupBy(programs.id)
     .orderBy(desc(programs.createdAt))
-    .limit(ADMIN_PROGRAMS_MAX)
+    .limit(ADMIN_PROGRAMS_MAX);
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -50,13 +50,25 @@ export default async function ProgramsPage({ params }: { params: Promise<{ local
       />
 
       <Card>
-        <CardHeader><CardTitle>{t("title")} ({rows.length})</CardTitle></CardHeader>
+        <CardHeader>
+          <CardTitle>
+            {t("title")} ({rows.length})
+          </CardTitle>
+        </CardHeader>
         <CardContent>
           {rows.length === 0 ? (
             <EmptyState
               className="py-12"
               message={t("empty")}
-              action={<Link href="/admin/programs/new" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-teal-600 text-white text-sm font-medium hover:bg-teal-700 transition-colors"><Plus className="w-4 h-4" />{t("new")}</Link>}
+              action={
+                <Link
+                  href="/admin/programs/new"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-teal-600 text-white text-sm font-medium hover:bg-teal-700 transition-colors"
+                >
+                  <Plus className="w-4 h-4" />
+                  {t("new")}
+                </Link>
+              }
             />
           ) : (
             <div className="flex flex-col divide-y divide-slate-100">
@@ -69,14 +81,20 @@ export default async function ProgramsPage({ params }: { params: Promise<{ local
                   <div className="min-w-0">
                     <p className="font-medium text-slate-900">{program.title}</p>
                     {program.description && (
-                      <p className="text-sm text-slate-500 mt-0.5 line-clamp-1">{program.description}</p>
+                      <p className="text-sm text-slate-500 mt-0.5 line-clamp-1">
+                        {program.description}
+                      </p>
                     )}
                     <div className="flex flex-wrap gap-3 mt-2 text-xs text-slate-400">
                       {program.durationWeeks && (
-                        <span>{program.durationWeeks} {t("weeks")}</span>
+                        <span>
+                          {program.durationWeeks} {t("weeks")}
+                        </span>
                       )}
                       {program.targetConcern && (
-                        <span>{tConcerns(program.targetConcern as Parameters<typeof tConcerns>[0])}</span>
+                        <span>
+                          {tConcerns(program.targetConcern as Parameters<typeof tConcerns>[0])}
+                        </span>
                       )}
                       <span>{formatDate(program.createdAt)}</span>
                     </div>
@@ -84,7 +102,10 @@ export default async function ProgramsPage({ params }: { params: Promise<{ local
                   <div className="flex items-center gap-1.5 text-slate-500 flex-shrink-0 text-sm">
                     <Users className="w-3.5 h-3.5" />
                     <span>
-                      {t("activeOf", { active: program.activeCount, total: program.enrollmentCount })}
+                      {t("activeOf", {
+                        active: program.activeCount,
+                        total: program.enrollmentCount,
+                      })}
                     </span>
                   </div>
                 </Link>
@@ -94,5 +115,5 @@ export default async function ProgramsPage({ params }: { params: Promise<{ local
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

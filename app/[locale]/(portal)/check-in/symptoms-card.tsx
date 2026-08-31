@@ -1,27 +1,27 @@
-"use client"
+"use client";
 
-import { useTranslations } from "next-intl"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { SYMPTOM_SCALE, CHIP_SELECTED, CHIP_UNSELECTED } from "@/lib/constants"
+import { useTranslations } from "next-intl";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { SYMPTOM_SCALE, CHIP_SELECTED, CHIP_UNSELECTED } from "@/lib/constants";
 
-export type Symptoms = { fatigue: number; brainFog: number; pain: number; stress: number }
+export type Symptoms = { fatigue: number; brainFog: number; pain: number; stress: number };
 
 interface Props {
-  trackSymptoms: boolean
-  setTrackSymptoms: (v: boolean) => void
-  symptoms: Symptoms
-  setSymptoms: (v: Symptoms) => void
+  trackSymptoms: boolean;
+  setTrackSymptoms: (v: boolean) => void;
+  symptoms: Symptoms;
+  setSymptoms: (v: Symptoms) => void;
 }
 
 export function SymptomsCard({ trackSymptoms, setTrackSymptoms, symptoms, setSymptoms }: Props) {
-  const t = useTranslations("portal.checkIn")
+  const t = useTranslations("portal.checkIn");
 
   const fields = [
     { key: "fatigue" as const, label: t("symptomFatigue") },
     { key: "brainFog" as const, label: t("symptomBrainFog") },
     { key: "pain" as const, label: t("symptomPain") },
     { key: "stress" as const, label: t("stressLevel") },
-  ]
+  ];
 
   return (
     <Card>
@@ -35,9 +35,7 @@ export function SymptomsCard({ trackSymptoms, setTrackSymptoms, symptoms, setSym
             type="button"
             onClick={() => setTrackSymptoms(!trackSymptoms)}
             className={`text-xs font-medium px-3 py-1.5 rounded-lg border transition-colors ${
-              trackSymptoms
-                ? CHIP_SELECTED
-                : CHIP_UNSELECTED
+              trackSymptoms ? CHIP_SELECTED : CHIP_UNSELECTED
             }`}
           >
             {trackSymptoms ? t("symptomsHide") : t("symptomsShow")}
@@ -51,7 +49,9 @@ export function SymptomsCard({ trackSymptoms, setTrackSymptoms, symptoms, setSym
             <div key={key}>
               <div className="flex items-center justify-between mb-2">
                 <label className="text-sm font-medium text-slate-700">{label}</label>
-                <span className="text-sm font-bold text-slate-800 w-8 text-right">{symptoms[key]}</span>
+                <span className="text-sm font-bold text-slate-800 w-8 text-right">
+                  {symptoms[key]}
+                </span>
               </div>
               <div className="flex items-center gap-4">
                 <span className="text-xs text-slate-400 w-4">{SYMPTOM_SCALE.min}</span>
@@ -70,5 +70,5 @@ export function SymptomsCard({ trackSymptoms, setTrackSymptoms, symptoms, setSym
         </CardContent>
       )}
     </Card>
-  )
+  );
 }

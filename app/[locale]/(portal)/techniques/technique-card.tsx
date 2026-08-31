@@ -1,24 +1,31 @@
-"use client"
+"use client";
 
-import { useTranslations } from "next-intl"
-import { CheckCircle2, Circle, RotateCcw, Minus } from "lucide-react"
-import type { computeTechniqueDebt, AssignmentWithTechnique } from "@/lib/domain/techniques"
-type Debt = ReturnType<typeof computeTechniqueDebt>
+import { useTranslations } from "next-intl";
+import { CheckCircle2, Circle, RotateCcw, Minus } from "lucide-react";
+import type { computeTechniqueDebt, AssignmentWithTechnique } from "@/lib/domain/techniques";
+type Debt = ReturnType<typeof computeTechniqueDebt>;
 
 interface TechniqueCardProps {
-  assignment: AssignmentWithTechnique
-  debt: Debt
-  categoryEmoji: Record<string, string>
-  submitting: string | null
-  onLog: (a: AssignmentWithTechnique) => void
-  onUndo: (a: AssignmentWithTechnique) => void
+  assignment: AssignmentWithTechnique;
+  debt: Debt;
+  categoryEmoji: Record<string, string>;
+  submitting: string | null;
+  onLog: (a: AssignmentWithTechnique) => void;
+  onUndo: (a: AssignmentWithTechnique) => void;
 }
 
-export function TechniqueCard({ assignment: a, debt, categoryEmoji, submitting, onLog, onUndo }: TechniqueCardProps) {
-  const t = useTranslations("portal.techniques")
-  const todayDone = debt.todayCompleted
-  const targetMet = todayDone >= debt.dailyTarget
-  const hasDebt = debt.catchUpReps > 0
+export function TechniqueCard({
+  assignment: a,
+  debt,
+  categoryEmoji,
+  submitting,
+  onLog,
+  onUndo,
+}: TechniqueCardProps) {
+  const t = useTranslations("portal.techniques");
+  const todayDone = debt.todayCompleted;
+  const targetMet = todayDone >= debt.dailyTarget;
+  const hasDebt = debt.catchUpReps > 0;
 
   return (
     <div
@@ -36,11 +43,11 @@ export function TechniqueCard({ assignment: a, debt, categoryEmoji, submitting, 
             )}
           </div>
           {a.technique.description && (
-            <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">{a.technique.description}</p>
+            <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">
+              {a.technique.description}
+            </p>
           )}
-          {a.notes && (
-            <p className="text-xs text-teal-700 mt-1 italic">{a.notes}</p>
-          )}
+          {a.notes && <p className="text-xs text-teal-700 mt-1 italic">{a.notes}</p>}
         </div>
 
         {/* Rep counter */}
@@ -66,11 +73,7 @@ export function TechniqueCard({ assignment: a, debt, categoryEmoji, submitting, 
               } disabled:opacity-50`}
               title={t("logOne")}
             >
-              {targetMet ? (
-                <CheckCircle2 className="w-5 h-5" />
-              ) : (
-                <Circle className="w-5 h-5" />
-              )}
+              {targetMet ? <CheckCircle2 className="w-5 h-5" /> : <Circle className="w-5 h-5" />}
             </button>
             <span className="text-xs text-slate-500">
               {todayDone}/{debt.dailyTarget}
@@ -85,9 +88,7 @@ export function TechniqueCard({ assignment: a, debt, categoryEmoji, submitting, 
           {Array.from({ length: debt.dailyTarget }).map((_, i) => (
             <div
               key={i}
-              className={`w-2 h-2 rounded-full ${
-                i < todayDone ? "bg-teal-500" : "bg-slate-200"
-              }`}
+              className={`w-2 h-2 rounded-full ${i < todayDone ? "bg-teal-500" : "bg-slate-200"}`}
             />
           ))}
         </div>
@@ -97,9 +98,7 @@ export function TechniqueCard({ assignment: a, debt, categoryEmoji, submitting, 
       {hasDebt && !targetMet && (
         <div className="mt-3 flex items-center gap-2 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg">
           <RotateCcw className="w-3.5 h-3.5 text-amber-600 flex-shrink-0" />
-          <p className="text-xs text-amber-700">
-            {t("catchUp", { reps: debt.catchUpReps })}
-          </p>
+          <p className="text-xs text-amber-700">{t("catchUp", { reps: debt.catchUpReps })}</p>
         </div>
       )}
 
@@ -126,5 +125,5 @@ export function TechniqueCard({ assignment: a, debt, categoryEmoji, submitting, 
         </a>
       )}
     </div>
-  )
+  );
 }

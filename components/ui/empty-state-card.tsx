@@ -1,10 +1,10 @@
-import { Card, CardContent } from "@/components/ui/card"
-import { EmptyState } from "@/components/ui/empty-state"
-import type { ComponentProps } from "react"
+import { Card, CardContent } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
+import type { ComponentProps } from "react";
 
 type EmptyStateCardProps = ComponentProps<typeof EmptyState> & {
-  cardClassName?: string
-}
+  cardClassName?: string;
+};
 
 export function EmptyStateCard({ cardClassName, ...props }: EmptyStateCardProps) {
   return (
@@ -13,5 +13,5 @@ export function EmptyStateCard({ cardClassName, ...props }: EmptyStateCardProps)
         <EmptyState {...props} />
       </CardContent>
     </Card>
-  )
+  );
 }

@@ -1,38 +1,38 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useTranslations } from "next-intl"
-import { Button } from "@/components/ui/button"
-import { KeyRound, Copy, Check } from "lucide-react"
+import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { Button } from "@/components/ui/button";
+import { KeyRound, Copy, Check } from "lucide-react";
 
 export function ResetLinkButton({ userId }: { userId: string }) {
-  const t = useTranslations("admin.clients.resetLink")
-  const [loading, setLoading] = useState(false)
-  const [link, setLink] = useState<string | null>(null)
-  const [copied, setCopied] = useState(false)
+  const t = useTranslations("admin.clients.resetLink");
+  const [loading, setLoading] = useState(false);
+  const [link, setLink] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   async function generate() {
-    setLoading(true)
+    setLoading(true);
     try {
       const res = await fetch(`/api/admin/reset-link`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId }),
-      })
-      const data = await res.json()
-      setLink(data.link ?? null)
+      });
+      const data = await res.json();
+      setLink(data.link ?? null);
     } catch {
       // silently fail; button returns to idle state
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
   async function copy() {
-    if (!link) return
-    await navigator.clipboard.writeText(link)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+    if (!link) return;
+    await navigator.clipboard.writeText(link);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   }
 
   if (link) {
@@ -46,11 +46,15 @@ export function ResetLinkButton({ userId }: { userId: string }) {
             className="p-1.5 rounded hover:bg-slate-100 transition-colors"
             title={t("copyTitle")}
           >
-            {copied ? <Check className="w-4 h-4 text-teal-600" /> : <Copy className="w-4 h-4 text-slate-500" />}
+            {copied ? (
+              <Check className="w-4 h-4 text-teal-600" />
+            ) : (
+              <Copy className="w-4 h-4 text-slate-500" />
+            )}
           </button>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -58,5 +62,5 @@ export function ResetLinkButton({ userId }: { userId: string }) {
       <KeyRound className="w-3.5 h-3.5" />
       {loading ? t("generating") : t("button")}
     </Button>
-  )
+  );
 }

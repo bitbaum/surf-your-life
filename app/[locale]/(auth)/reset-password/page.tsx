@@ -1,49 +1,49 @@
-"use client"
+"use client";
 
-import { useState, Suspense } from "react"
-import { useSearchParams } from "next/navigation"
-import { useTranslations } from "next-intl"
-import { Link } from "@/i18n/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { CheckCircle } from "lucide-react"
-import { PASSWORD_MIN_LENGTH } from "@/lib/constants"
+import { useState, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { CheckCircle } from "lucide-react";
+import { PASSWORD_MIN_LENGTH } from "@/lib/constants";
 
 function ResetForm() {
-  const t = useTranslations("auth.resetPassword")
-  const searchParams = useSearchParams()
-  const token = searchParams.get("token") ?? ""
-  const [password, setPassword] = useState("")
-  const [confirm, setConfirm] = useState("")
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState("")
-  const [done, setDone] = useState(false)
+  const t = useTranslations("auth.resetPassword");
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token") ?? "";
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [done, setDone] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
+    e.preventDefault();
     if (password !== confirm) {
-      setError(t("errorMismatch"))
-      return
+      setError(t("errorMismatch"));
+      return;
     }
-    setLoading(true)
-    setError("")
+    setLoading(true);
+    setError("");
     try {
       const res = await fetch("/api/auth/reset-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token, password }),
-      })
+      });
       if (!res.ok) {
-        const data = await res.json().catch(() => ({}))
-        setError(data.error ?? t("errorInvalid"))
-        return
+        const data = await res.json().catch(() => ({}));
+        setError(data.error ?? t("errorInvalid"));
+        return;
       }
-      setDone(true)
+      setDone(true);
     } catch {
-      setError(t("errorInvalid"))
+      setError(t("errorInvalid"));
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
@@ -59,7 +59,7 @@ function ResetForm() {
           </Link>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   if (done) {
@@ -82,7 +82,7 @@ function ResetForm() {
           </Link>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   return (
@@ -116,7 +116,7 @@ function ResetForm() {
         </form>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 export default function ResetPasswordPage() {
@@ -124,5 +124,5 @@ export default function ResetPasswordPage() {
     <Suspense>
       <ResetForm />
     </Suspense>
-  )
+  );
 }

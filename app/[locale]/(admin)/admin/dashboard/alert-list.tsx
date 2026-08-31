@@ -1,45 +1,49 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Link } from "@/i18n/navigation"
-import { useRouter } from "@/i18n/navigation"
-import { useTranslations } from "next-intl"
-import { X } from "lucide-react"
-import { ALERT_SEVERITY_DOT, ALERT_SEVERITY_BADGE } from "@/lib/constants"
+import { useState } from "react";
+import { Link } from "@/i18n/navigation";
+import { useRouter } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
+import { X } from "lucide-react";
+import { ALERT_SEVERITY_DOT, ALERT_SEVERITY_BADGE } from "@/lib/constants";
 
 export type Alert = {
-  id: string
-  clientId: string
-  title: string
-  message: string
-  severity: string
-  client: { id: string; name: string | null; email: string }
-}
+  id: string;
+  clientId: string;
+  title: string;
+  message: string;
+  severity: string;
+  client: { id: string; name: string | null; email: string };
+};
 
 export function AlertList({ alerts }: { alerts: Alert[] }) {
-  const t = useTranslations("admin.dashboard")
-  const tAlerts = useTranslations("admin.alerts")
-  const router = useRouter()
-  const [dismissing, setDismissing] = useState<Set<string>>(new Set())
-  const [dismissed, setDismissed] = useState<Set<string>>(new Set())
+  const t = useTranslations("admin.dashboard");
+  const tAlerts = useTranslations("admin.alerts");
+  const router = useRouter();
+  const [dismissing, setDismissing] = useState<Set<string>>(new Set());
+  const [dismissed, setDismissed] = useState<Set<string>>(new Set());
 
   async function dismiss(alertId: string) {
-    setDismissing((s) => new Set(s).add(alertId))
+    setDismissing((s) => new Set(s).add(alertId));
     try {
-      const res = await fetch(`/api/admin/alerts/${alertId}`, { method: "PATCH" })
+      const res = await fetch(`/api/admin/alerts/${alertId}`, { method: "PATCH" });
       if (res.ok) {
-        setDismissed((s) => new Set(s).add(alertId))
-        router.refresh()
+        setDismissed((s) => new Set(s).add(alertId));
+        router.refresh();
       }
     } catch {
       // silently ignore; alert remains visible
     } finally {
-      setDismissing((s) => { const n = new Set(s); n.delete(alertId); return n })
+      setDismissing((s) => {
+        const n = new Set(s);
+        n.delete(alertId);
+        return n;
+      });
     }
   }
 
-  const visible = alerts.filter((a) => !dismissed.has(a.id))
-  if (visible.length === 0) return null
+  const visible = alerts.filter((a) => !dismissed.has(a.id));
+  if (visible.length === 0) return null;
 
   return (
     <div className="flex flex-col gap-2">
@@ -48,7 +52,9 @@ export function AlertList({ alerts }: { alerts: Alert[] }) {
           key={alert.id}
           className="flex items-start gap-3 p-3 rounded-lg border border-slate-100 hover:border-slate-200 bg-white transition-colors"
         >
-          <span className={`mt-1.5 w-2 h-2 rounded-full flex-shrink-0 ${ALERT_SEVERITY_DOT[alert.severity] ?? "bg-slate-400"}`} />
+          <span
+            className={`mt-1.5 w-2 h-2 rounded-full flex-shrink-0 ${ALERT_SEVERITY_DOT[alert.severity] ?? "bg-slate-400"}`}
+          />
 
           <Link
             href={`/admin/clients/${alert.clientId}`}
@@ -56,12 +62,16 @@ export function AlertList({ alerts }: { alerts: Alert[] }) {
           >
             <div className="flex items-center gap-2 flex-wrap">
               <p className="text-sm font-medium text-slate-800">{alert.title}</p>
-              <span className="text-xs text-slate-400">· {alert.client.name ?? alert.client.email}</span>
+              <span className="text-xs text-slate-400">
+                · {alert.client.name ?? alert.client.email}
+              </span>
             </div>
             <p className="text-xs text-slate-500 mt-0.5 truncate">{alert.message}</p>
           </Link>
 
-          <span className={`text-xs px-2 py-0.5 rounded-full font-medium flex-shrink-0 border ${ALERT_SEVERITY_BADGE[alert.severity] ?? "bg-slate-100 text-slate-600 border-slate-200"}`}>
+          <span
+            className={`text-xs px-2 py-0.5 rounded-full font-medium flex-shrink-0 border ${ALERT_SEVERITY_BADGE[alert.severity] ?? "bg-slate-100 text-slate-600 border-slate-200"}`}
+          >
             {tAlerts(`severity.${alert.severity}`)}
           </span>
 
@@ -76,5 +86,5 @@ export function AlertList({ alerts }: { alerts: Alert[] }) {
         </div>
       ))}
     </div>
-  )
+  );
 }

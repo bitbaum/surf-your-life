@@ -1,4 +1,4 @@
-import { Card } from "@/components/ui/card"
+import { Card } from "@/components/ui/card";
 
 export default function SettingsLoading() {
   return (
@@ -9,5 +9,5 @@ export default function SettingsLoading() {
         <Card key={i} className="p-6 mb-6 h-28" />
       ))}
     </div>
-  )
+  );
 }

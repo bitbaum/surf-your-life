@@ -1,16 +1,20 @@
-import { auth } from "@/lib/auth"
-import { getTranslations, setRequestLocale } from "next-intl/server"
-import { Link } from "@/i18n/navigation"
-import { PageHeader } from "@/components/ui/page-header"
-import { NewMessageForm } from "./new-message-form"
+import { auth } from "@/lib/auth";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
+import { PageHeader } from "@/components/ui/page-header";
+import { NewMessageForm } from "./new-message-form";
 
-export default async function PortalNewMessagePage({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale } = await params
-  setRequestLocale(locale)
-  const session = await auth()
-  if (!session) return null
+export default async function PortalNewMessagePage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const session = await auth();
+  if (!session) return null;
 
-  const t = await getTranslations("messages")
+  const t = await getTranslations("messages");
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -24,5 +28,5 @@ export default async function PortalNewMessagePage({ params }: { params: Promise
 
       <NewMessageForm />
     </div>
-  )
+  );
 }

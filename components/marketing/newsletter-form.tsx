@@ -1,32 +1,32 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useTranslations } from "next-intl"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { CheckCircle } from "lucide-react"
+import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { CheckCircle } from "lucide-react";
 
 export function NewsletterForm() {
-  const t = useTranslations("landing.newsletter")
-  const [email, setEmail] = useState("")
-  const [loading, setLoading] = useState(false)
-  const [success, setSuccess] = useState(false)
-  const [error, setError] = useState(false)
+  const t = useTranslations("landing.newsletter");
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    setLoading(true)
-    setError(false)
+    e.preventDefault();
+    setLoading(true);
+    setError(false);
     const res = await fetch("/api/leads", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, source: "newsletter" }),
-    })
-    setLoading(false)
+    });
+    setLoading(false);
     if (res.ok) {
-      setSuccess(true)
+      setSuccess(true);
     } else {
-      setError(true)
+      setError(true);
     }
   }
 
@@ -36,7 +36,7 @@ export function NewsletterForm() {
         <CheckCircle className="w-5 h-5" />
         {t("success")}
       </div>
-    )
+    );
   }
 
   return (
@@ -56,5 +56,5 @@ export function NewsletterForm() {
       </Button>
       {error && <p className="text-xs text-error-vivid mt-1 w-full">{t("error")}</p>}
     </form>
-  )
+  );
 }

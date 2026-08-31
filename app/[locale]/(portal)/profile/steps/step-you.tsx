@@ -1,14 +1,14 @@
-"use client"
-import { useTranslations, useLocale } from "next-intl"
-import { Input } from "@/components/ui/input"
-import { Select } from "@/components/ui/select"
-import { WORK_HOURS_WEEK_MAX } from "@/lib/constants"
-import type { FormState } from "../profile-form.helpers"
+"use client";
+import { useTranslations, useLocale } from "next-intl";
+import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
+import { WORK_HOURS_WEEK_MAX } from "@/lib/constants";
+import type { FormState } from "../profile-form.helpers";
 
 function getMonthNames(locale: string) {
   return Array.from({ length: 12 }, (_, i) =>
-    new Intl.DateTimeFormat(locale, { month: "long" }).format(new Date(2000, i, 1))
-  )
+    new Intl.DateTimeFormat(locale, { month: "long" }).format(new Date(2000, i, 1)),
+  );
 }
 
 export function StepYou({
@@ -16,13 +16,13 @@ export function StepYou({
   onChange,
   updateDob,
 }: {
-  form: FormState
-  onChange: <K extends keyof FormState>(key: K, val: FormState[K]) => void
-  updateDob: (field: "dobDay" | "dobMonth" | "dobYear", val: string) => void
+  form: FormState;
+  onChange: <K extends keyof FormState>(key: K, val: FormState[K]) => void;
+  updateDob: (field: "dobDay" | "dobMonth" | "dobYear", val: string) => void;
 }) {
-  const t = useTranslations("portal.profile")
-  const locale = useLocale()
-  const monthNames = getMonthNames(locale)
+  const t = useTranslations("portal.profile");
+  const locale = useLocale();
+  const monthNames = getMonthNames(locale);
 
   return (
     <div className="flex flex-col gap-4">
@@ -36,7 +36,11 @@ export function StepYou({
         <p className="text-xs text-slate-400 mt-1">{t("namePrivacyNote")}</p>
       </div>
 
-      <Select label={t("genderLabel")} value={form.gender} onChange={(e) => onChange("gender", e.target.value)}>
+      <Select
+        label={t("genderLabel")}
+        value={form.gender}
+        onChange={(e) => onChange("gender", e.target.value)}
+      >
         <option value="">—</option>
         <option value="male">{t("genderMale")}</option>
         <option value="female">{t("genderFemale")}</option>
@@ -45,24 +49,32 @@ export function StepYou({
       </Select>
 
       <div>
-        <label className="text-sm font-medium text-slate-700 block mb-1.5">{t("dateOfBirth")}</label>
+        <label className="text-sm font-medium text-slate-700 block mb-1.5">
+          {t("dateOfBirth")}
+        </label>
         <div className="grid grid-cols-3 gap-2">
           <Select value={form.dobDay} onChange={(e) => updateDob("dobDay", e.target.value)}>
             <option value="">{t("dobDay")}</option>
             {Array.from({ length: 31 }, (_, i) => i + 1).map((d) => (
-              <option key={d} value={String(d).padStart(2, "0")}>{d}</option>
+              <option key={d} value={String(d).padStart(2, "0")}>
+                {d}
+              </option>
             ))}
           </Select>
           <Select value={form.dobMonth} onChange={(e) => updateDob("dobMonth", e.target.value)}>
             <option value="">{t("dobMonth")}</option>
             {monthNames.map((name, i) => (
-              <option key={i} value={String(i + 1).padStart(2, "0")}>{name}</option>
+              <option key={i} value={String(i + 1).padStart(2, "0")}>
+                {name}
+              </option>
             ))}
           </Select>
           <Select value={form.dobYear} onChange={(e) => updateDob("dobYear", e.target.value)}>
             <option value="">{t("dobYear")}</option>
             {Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - 15 - i).map((y) => (
-              <option key={y} value={String(y)}>{y}</option>
+              <option key={y} value={String(y)}>
+                {y}
+              </option>
             ))}
           </Select>
         </div>
@@ -91,5 +103,5 @@ export function StepYou({
         />
       </div>
     </div>
-  )
+  );
 }

@@ -1,45 +1,48 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { useTranslations } from "next-intl"
-import { toast } from "sonner"
-import { Button } from "@/components/ui/button"
-import { DOCUMENT_UPLOAD_MAX_CONTENT, FIELD_MAX_TITLE } from "@/lib/constants"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { DOCUMENT_UPLOAD_MAX_CONTENT, FIELD_MAX_TITLE } from "@/lib/constants";
 
 interface Props {
-  onCancel: () => void
+  onCancel: () => void;
 }
 
 export function DocumentUploadForm({ onCancel }: Props) {
-  const t = useTranslations("portal.documents")
-  const router = useRouter()
-  const [form, setForm] = useState({ title: "", content: "" })
-  const [saving, setSaving] = useState(false)
+  const t = useTranslations("portal.documents");
+  const router = useRouter();
+  const [form, setForm] = useState({ title: "", content: "" });
+  const [saving, setSaving] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    if (!form.content.trim()) return
-    setSaving(true)
+    e.preventDefault();
+    if (!form.content.trim()) return;
+    setSaving(true);
     try {
       const res = await fetch("/api/portal/documents", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title: form.title || undefined, content: form.content }),
-      })
-      if (!res.ok) throw new Error()
-      toast.success(t("submitSuccess"))
-      router.refresh()
-      onCancel()
+      });
+      if (!res.ok) throw new Error();
+      toast.success(t("submitSuccess"));
+      router.refresh();
+      onCancel();
     } catch {
-      toast.error(t("submitError"))
+      toast.error(t("submitError"));
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mb-6 p-4 border border-slate-200 rounded-xl bg-slate-50 flex flex-col gap-4">
+    <form
+      onSubmit={handleSubmit}
+      className="mb-6 p-4 border border-slate-200 rounded-xl bg-slate-50 flex flex-col gap-4"
+    >
       <p className="text-sm font-medium text-slate-700">{t("formTitle")}</p>
 
       <div>
@@ -79,5 +82,5 @@ export function DocumentUploadForm({ onCancel }: Props) {
         </Button>
       </div>
     </form>
-  )
+  );
 }

@@ -1,34 +1,34 @@
-import { auth } from "@/lib/auth"
-import { redirect } from "next/navigation"
-import { db } from "@/lib/db"
-import { programEnrollments } from "@/lib/db/schema"
-import { eq, desc } from "drizzle-orm"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ProgressBar } from "@/components/ui/progress-bar"
-import { PageHeader } from "@/components/ui/page-header"
-import { formatDate } from "@/lib/utils"
-import { getTranslations, setRequestLocale } from "next-intl/server"
-import { ENROLLMENT_STATUS_BADGE } from "@/lib/constants"
-import { computeCurrentProgramWeek } from "@/lib/domain/check-in"
-import { CheckCircle, Clock, Pause } from "lucide-react"
-import { PhaseTimeline } from "./phase-timeline"
-import { EmptyState } from "@/components/ui/empty-state"
-import { Link } from "@/i18n/navigation"
+import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
+import { db } from "@/lib/db";
+import { programEnrollments } from "@/lib/db/schema";
+import { eq, desc } from "drizzle-orm";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ProgressBar } from "@/components/ui/progress-bar";
+import { PageHeader } from "@/components/ui/page-header";
+import { formatDate } from "@/lib/utils";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { ENROLLMENT_STATUS_BADGE } from "@/lib/constants";
+import { computeCurrentProgramWeek } from "@/lib/domain/check-in";
+import { CheckCircle, Clock, Pause } from "lucide-react";
+import { PhaseTimeline } from "./phase-timeline";
+import { EmptyState } from "@/components/ui/empty-state";
+import { Link } from "@/i18n/navigation";
 
 export default async function ProgramPage({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale } = await params
-  setRequestLocale(locale)
-  const t = await getTranslations("portal.program")
-  const tConcerns = await getTranslations("concerns")
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations("portal.program");
+  const tConcerns = await getTranslations("concerns");
 
-  const session = await auth()
-  if (!session?.user?.id) redirect("/login")
+  const session = await auth();
+  if (!session?.user?.id) redirect("/login");
 
   const enrollment = await db.query.programEnrollments.findFirst({
     where: eq(programEnrollments.clientId, session.user.id),
     with: { program: true },
     orderBy: [desc(programEnrollments.createdAt)],
-  })
+  });
 
   if (!enrollment) {
     return (
@@ -37,32 +37,45 @@ export default async function ProgramPage({ params }: { params: Promise<{ locale
         <Card>
           <CardContent className="py-12">
             <EmptyState
-              icon={<div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center"><Clock className="w-6 h-6 text-slate-400" /></div>}
+              icon={
+                <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center">
+                  <Clock className="w-6 h-6 text-slate-400" />
+                </div>
+              }
               message={t("noProgramDescription")}
-              action={<Link href="/messages/new" className="text-sm font-medium text-teal-600 hover:text-teal-700 transition-colors">{t("messagePractitioner")}</Link>}
+              action={
+                <Link
+                  href="/messages/new"
+                  className="text-sm font-medium text-teal-600 hover:text-teal-700 transition-colors"
+                >
+                  {t("messagePractitioner")}
+                </Link>
+              }
             />
           </CardContent>
         </Card>
       </div>
-    )
+    );
   }
 
-  const { program } = enrollment
+  const { program } = enrollment;
 
-  const currentWeek = enrollment.startDate && program.durationWeeks
-    ? Math.min(computeCurrentProgramWeek(new Date(enrollment.startDate)), program.durationWeeks)
-    : null
-  const progressPct = currentWeek && program.durationWeeks
-    ? Math.round((currentWeek / program.durationWeeks) * 100)
-    : null
+  const currentWeek =
+    enrollment.startDate && program.durationWeeks
+      ? Math.min(computeCurrentProgramWeek(new Date(enrollment.startDate)), program.durationWeeks)
+      : null;
+  const progressPct =
+    currentWeek && program.durationWeeks
+      ? Math.round((currentWeek / program.durationWeeks) * 100)
+      : null;
 
   const statusIcon = {
     active: <CheckCircle className="w-4 h-4 text-teal-600" />,
     paused: <Pause className="w-4 h-4 text-yellow-600" />,
     completed: <CheckCircle className="w-4 h-4 text-slate-500" />,
-  }[enrollment.status]
+  }[enrollment.status];
 
-  const statusStyle = ENROLLMENT_STATUS_BADGE[enrollment.status]
+  const statusStyle = ENROLLMENT_STATUS_BADGE[enrollment.status];
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -73,7 +86,9 @@ export default async function ProgramPage({ params }: { params: Promise<{ locale
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle>{program.title}</CardTitle>
-              <span className={`inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full font-medium ${statusStyle}`}>
+              <span
+                className={`inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full font-medium ${statusStyle}`}
+              >
                 {statusIcon}
                 {t(`status.${enrollment.status}`)}
               </span>
@@ -88,7 +103,9 @@ export default async function ProgramPage({ params }: { params: Promise<{ locale
               {program.durationWeeks && (
                 <div className="rounded-lg bg-slate-50 p-4">
                   <p className="text-xs text-slate-400 mb-1">{t("duration")}</p>
-                  <p className="font-semibold text-slate-900">{program.durationWeeks} {t("weeks")}</p>
+                  <p className="font-semibold text-slate-900">
+                    {program.durationWeeks} {t("weeks")}
+                  </p>
                 </div>
               )}
               {enrollment.startDate && (
@@ -100,7 +117,9 @@ export default async function ProgramPage({ params }: { params: Promise<{ locale
               {program.targetConcern && (
                 <div className="rounded-lg bg-slate-50 p-4">
                   <p className="text-xs text-slate-400 mb-1">{t("focus")}</p>
-                  <p className="font-semibold text-slate-900">{tConcerns(program.targetConcern as Parameters<typeof tConcerns>[0])}</p>
+                  <p className="font-semibold text-slate-900">
+                    {tConcerns(program.targetConcern as Parameters<typeof tConcerns>[0])}
+                  </p>
                 </div>
               )}
               {currentWeek && program.durationWeeks && (
@@ -127,7 +146,9 @@ export default async function ProgramPage({ params }: { params: Promise<{ locale
 
         {enrollment.notes && (
           <Card>
-            <CardHeader><CardTitle>{t("notesFromPractitioner")}</CardTitle></CardHeader>
+            <CardHeader>
+              <CardTitle>{t("notesFromPractitioner")}</CardTitle>
+            </CardHeader>
             <CardContent>
               <p className="text-sm text-slate-700 leading-relaxed">{enrollment.notes}</p>
             </CardContent>
@@ -143,5 +164,5 @@ export default async function ProgramPage({ params }: { params: Promise<{ locale
         )}
       </div>
     </div>
-  )
+  );
 }

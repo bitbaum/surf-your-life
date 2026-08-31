@@ -1,16 +1,16 @@
-import { useTranslations } from "next-intl"
-import { Link } from "@/i18n/navigation"
-import { Button } from "@/components/ui/button"
-import { ArrowRight, CheckCircle, MapPin } from "lucide-react"
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
+import { Button } from "@/components/ui/button";
+import { ArrowRight, CheckCircle, MapPin } from "lucide-react";
 
 interface HeroSectionProps {
-  isLoggedIn: boolean
+  isLoggedIn: boolean;
 }
 
 export function HeroSection({ isLoggedIn }: HeroSectionProps) {
-  const t = useTranslations("landing")
-  const trustItems = t.raw("trust") as string[]
-  const proofItems = t.raw("proof") as string[]
+  const t = useTranslations("landing");
+  const trustItems = t.raw("trust") as string[];
+  const proofItems = t.raw("proof") as string[];
 
   return (
     <>
@@ -26,8 +26,10 @@ export function HeroSection({ isLoggedIn }: HeroSectionProps) {
             </div>
 
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-ink leading-[1.05] tracking-tight">
-              {t("hero.line1")}<br />
-              {t("hero.line2")}<br />
+              {t("hero.line1")}
+              <br />
+              {t("hero.line2")}
+              <br />
               <span className="text-brand">{t("hero.line3")}</span>
             </h1>
 
@@ -75,10 +77,12 @@ export function HeroSection({ isLoggedIn }: HeroSectionProps) {
       <div className="border-y border-border-subtle bg-surface-subtle py-5 px-6">
         <div className="max-w-5xl mx-auto flex flex-wrap items-center justify-center gap-x-10 gap-y-3">
           {proofItems.map((item) => (
-            <span key={item} className="text-sm text-ink-muted font-medium">{item}</span>
+            <span key={item} className="text-sm text-ink-muted font-medium">
+              {item}
+            </span>
           ))}
         </div>
       </div>
     </>
-  )
+  );
 }

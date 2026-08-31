@@ -1,26 +1,23 @@
-import { db } from "@/lib/db"
-import { programs } from "@/lib/db/schema"
-import { eq } from "drizzle-orm"
-import { createProgramSchema } from "@/lib/domain/program"
-import { ADMIN_ROLE } from "@/lib/domain/auth"
-import { forbidden, notFound, parseBody, requireStaffAuth, ok } from "@/lib/api"
+import { db } from "@/lib/db";
+import { programs } from "@/lib/db/schema";
+import { eq } from "drizzle-orm";
+import { createProgramSchema } from "@/lib/domain/program";
+import { ADMIN_ROLE } from "@/lib/domain/auth";
+import { forbidden, notFound, parseBody, requireStaffAuth, ok } from "@/lib/api";
 
-export async function PATCH(
-  req: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const authResult = await requireStaffAuth()
-  if (!authResult.ok) return authResult.response
+export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const authResult = await requireStaffAuth();
+  if (!authResult.ok) return authResult.response;
 
-  const { id } = await params
+  const { id } = await params;
 
-  const existing = await db.query.programs.findFirst({ where: eq(programs.id, id) })
+  const existing = await db.query.programs.findFirst({ where: eq(programs.id, id) });
   if (!existing) {
-    return notFound()
+    return notFound();
   }
 
-  const result = await parseBody(req, createProgramSchema)
-  if (!result.ok) return result.response
+  const result = await parseBody(req, createProgramSchema);
+  if (!result.ok) return result.response;
 
   await db
     .update(programs)
@@ -33,23 +30,20 @@ export async function PATCH(
       phaseConfig: result.data.phaseConfig ?? null,
       updatedAt: new Date(),
     })
-    .where(eq(programs.id, id))
+    .where(eq(programs.id, id));
 
-  return ok()
+  return ok();
 }
 
-export async function DELETE(
-  _req: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const authResult = await requireStaffAuth()
-  if (!authResult.ok) return authResult.response
-  const { session } = authResult
-  if (session.user.role !== ADMIN_ROLE) return forbidden()
+export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const authResult = await requireStaffAuth();
+  if (!authResult.ok) return authResult.response;
+  const { session } = authResult;
+  if (session.user.role !== ADMIN_ROLE) return forbidden();
 
-  const { id } = await params
+  const { id } = await params;
 
-  await db.delete(programs).where(eq(programs.id, id))
+  await db.delete(programs).where(eq(programs.id, id));
 
-  return ok()
+  return ok();
 }

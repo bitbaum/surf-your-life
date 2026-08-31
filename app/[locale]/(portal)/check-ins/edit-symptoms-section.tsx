@@ -1,34 +1,44 @@
-"use client"
+"use client";
 
-import { useTranslations } from "next-intl"
-import { SYMPTOM_SCALE, COMPACT_LABEL_CLS } from "@/lib/constants"
+import { useTranslations } from "next-intl";
+import { SYMPTOM_SCALE, COMPACT_LABEL_CLS } from "@/lib/constants";
 
 interface Props {
-  fatigue: number | null
-  setFatigue: (v: number | null) => void
-  brainFog: number | null
-  setBrainFog: (v: number | null) => void
-  pain: number | null
-  setPain: (v: number | null) => void
-  stress: number | null
-  setStress: (v: number | null) => void
+  fatigue: number | null;
+  setFatigue: (v: number | null) => void;
+  brainFog: number | null;
+  setBrainFog: (v: number | null) => void;
+  pain: number | null;
+  setPain: (v: number | null) => void;
+  stress: number | null;
+  setStress: (v: number | null) => void;
 }
 
-export function EditSymptomsSection({ fatigue, setFatigue, brainFog, setBrainFog, pain, setPain, stress, setStress }: Props) {
-  const t = useTranslations("portal.checkIns")
-  const tCheckIn = useTranslations("portal.checkIn")
+export function EditSymptomsSection({
+  fatigue,
+  setFatigue,
+  brainFog,
+  setBrainFog,
+  pain,
+  setPain,
+  stress,
+  setStress,
+}: Props) {
+  const t = useTranslations("portal.checkIns");
+  const tCheckIn = useTranslations("portal.checkIn");
 
   const fields = [
     { label: tCheckIn("symptomFatigue"), value: fatigue, set: setFatigue },
     { label: tCheckIn("symptomBrainFog"), value: brainFog, set: setBrainFog },
     { label: tCheckIn("symptomPain"), value: pain, set: setPain },
     { label: tCheckIn("stressLevel"), value: stress, set: setStress },
-  ]
+  ];
 
   return (
     <div>
       <p className={`${COMPACT_LABEL_CLS} mb-1`}>
-        {t("editSymptomsLabel")} <span className="text-slate-400 font-normal normal-case">{t("editOptional")}</span>
+        {t("editSymptomsLabel")}{" "}
+        <span className="text-slate-400 font-normal normal-case">{t("editOptional")}</span>
       </p>
       <p className="text-xs text-slate-400 mb-3">{t("editSymptomsHint")}</p>
       <div className="flex flex-col gap-3">
@@ -62,5 +72,5 @@ export function EditSymptomsSection({ fatigue, setFatigue, brainFog, setBrainFog
         ))}
       </div>
     </div>
-  )
+  );
 }

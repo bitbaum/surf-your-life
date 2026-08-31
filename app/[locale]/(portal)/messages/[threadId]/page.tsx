@@ -1,28 +1,28 @@
-import { auth } from "@/lib/auth"
-import { db } from "@/lib/db"
-import { threads } from "@/lib/db/schema"
-import { eq } from "drizzle-orm"
-import { markThreadAsReadFor } from "@/lib/db/thread-unread"
-import { notFound, redirect } from "next/navigation"
-import { getTranslations } from "next-intl/server"
-import { setRequestLocale } from "next-intl/server"
-import { Link } from "@/i18n/navigation"
-import { ArrowLeft } from "lucide-react"
-import { ReplyForm } from "@/components/ui/reply-form"
-import { MessageBubble } from "@/components/ui/message-bubble"
+import { auth } from "@/lib/auth";
+import { db } from "@/lib/db";
+import { threads } from "@/lib/db/schema";
+import { eq } from "drizzle-orm";
+import { markThreadAsReadFor } from "@/lib/db/thread-unread";
+import { notFound, redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
+import { setRequestLocale } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
+import { ArrowLeft } from "lucide-react";
+import { ReplyForm } from "@/components/ui/reply-form";
+import { MessageBubble } from "@/components/ui/message-bubble";
 
 export default async function PortalThreadPage({
   params,
 }: {
-  params: Promise<{ locale: string; threadId: string }>
+  params: Promise<{ locale: string; threadId: string }>;
 }) {
-  const { locale, threadId } = await params
-  setRequestLocale(locale)
+  const { locale, threadId } = await params;
+  setRequestLocale(locale);
 
-  const session = await auth()
-  if (!session?.user?.id) redirect(`/${locale}/login`)
+  const session = await auth();
+  if (!session?.user?.id) redirect(`/${locale}/login`);
 
-  const t = await getTranslations("messages")
+  const t = await getTranslations("messages");
 
   const thread = await db.query.threads.findFirst({
     where: eq(threads.id, threadId),
@@ -32,12 +32,12 @@ export default async function PortalThreadPage({
         orderBy: (msgs, { asc }) => [asc(msgs.createdAt)],
       },
     },
-  })
+  });
 
-  if (!thread) notFound()
-  if (thread.clientId !== session.user.id) notFound()
+  if (!thread) notFound();
+  if (thread.clientId !== session.user.id) notFound();
 
-  await markThreadAsReadFor(threadId, session.user.id)
+  await markThreadAsReadFor(threadId, session.user.id);
 
   return (
     <div className="max-w-3xl mx-auto">
@@ -52,14 +52,12 @@ export default async function PortalThreadPage({
       </div>
 
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-slate-900">
-          {thread.subject ?? t("noSubject")}
-        </h1>
+        <h1 className="text-2xl font-bold text-slate-900">{thread.subject ?? t("noSubject")}</h1>
       </div>
 
       <div className="flex flex-col gap-3 mb-6">
         {thread.messages.map((msg) => {
-          const isOwn = msg.senderId === session.user.id
+          const isOwn = msg.senderId === session.user.id;
           return (
             <MessageBubble
               key={msg.id}
@@ -68,7 +66,7 @@ export default async function PortalThreadPage({
               createdAt={msg.createdAt}
               body={msg.body}
             />
-          )
+          );
         })}
       </div>
 
@@ -76,5 +74,5 @@ export default async function PortalThreadPage({
         <ReplyForm threadId={threadId} />
       </div>
     </div>
-  )
+  );
 }

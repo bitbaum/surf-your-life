@@ -1,40 +1,38 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Link } from "@/i18n/navigation"
-import { useTranslations } from "next-intl"
-import { cn } from "@/lib/utils"
-import { isStaff } from "@/lib/domain/auth"
-import { BRAND_NAME } from "@/lib/constants"
-import { Waves, X } from "lucide-react"
-import { SidebarMobileBar } from "./sidebar-mobile-bar"
-import { PortalSidebarNav } from "./sidebar-nav"
-import { PortalSidebarBottom } from "./sidebar-bottom"
+import { useState } from "react";
+import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
+import { cn } from "@/lib/utils";
+import { isStaff } from "@/lib/domain/auth";
+import { BRAND_NAME } from "@/lib/constants";
+import { Waves, X } from "lucide-react";
+import { SidebarMobileBar } from "./sidebar-mobile-bar";
+import { PortalSidebarNav } from "./sidebar-nav";
+import { PortalSidebarBottom } from "./sidebar-bottom";
 
 interface PortalSidebarProps {
-  role?: string
-  unreadThreads?: number
+  role?: string;
+  unreadThreads?: number;
 }
 
 export function PortalSidebar({ role, unreadThreads = 0 }: PortalSidebarProps) {
-  const t = useTranslations("sidebar")
-  const [open, setOpen] = useState(false)
-  const close = () => setOpen(false)
-  const isAdminUser = isStaff(role)
+  const t = useTranslations("sidebar");
+  const [open, setOpen] = useState(false);
+  const close = () => setOpen(false);
+  const isAdminUser = isStaff(role);
 
   return (
     <>
       <SidebarMobileBar onOpenMenu={() => setOpen(true)} />
 
-      {open && (
-        <div className="md:hidden fixed inset-0 z-50 bg-black/40" onClick={close} />
-      )}
+      {open && <div className="md:hidden fixed inset-0 z-50 bg-black/40" onClick={close} />}
 
       <aside
         className={cn(
           "flex flex-col w-60 bg-white border-r border-slate-200 py-6 px-4",
           "hidden md:flex md:min-h-screen",
-          open && "!flex fixed inset-y-0 left-0 z-50 shadow-xl"
+          open && "!flex fixed inset-y-0 left-0 z-50 shadow-xl",
         )}
       >
         <div className="md:hidden flex justify-end mb-4">
@@ -58,5 +56,5 @@ export function PortalSidebar({ role, unreadThreads = 0 }: PortalSidebarProps) {
         <PortalSidebarBottom isAdminUser={isAdminUser} onClose={close} />
       </aside>
     </>
-  )
+  );
 }

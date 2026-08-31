@@ -1,33 +1,33 @@
-import { db } from "@/lib/db"
-import { users } from "@/lib/db/schema"
-import { desc, count } from "drizzle-orm"
-import { auth } from "@/lib/auth"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { PageHeader } from "@/components/ui/page-header"
-import { formatDate, computeTotalPages, parsePagination } from "@/lib/utils"
-import { PAGINATION_DEFAULT, ROLE_BADGE_VARIANT } from "@/lib/constants"
-import { ADMIN_ROLE } from "@/lib/domain/auth"
-import { RoleButton } from "./role-button"
-import { getTranslations, setRequestLocale } from "next-intl/server"
-import { Badge } from "@/components/ui/badge"
-import { Pagination } from "@/components/ui/pagination"
+import { db } from "@/lib/db";
+import { users } from "@/lib/db/schema";
+import { desc, count } from "drizzle-orm";
+import { auth } from "@/lib/auth";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { PageHeader } from "@/components/ui/page-header";
+import { formatDate, computeTotalPages, parsePagination } from "@/lib/utils";
+import { PAGINATION_DEFAULT, ROLE_BADGE_VARIANT } from "@/lib/constants";
+import { ADMIN_ROLE } from "@/lib/domain/auth";
+import { RoleButton } from "./role-button";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { Badge } from "@/components/ui/badge";
+import { Pagination } from "@/components/ui/pagination";
 
 export default async function UsersPage({
   params,
   searchParams,
 }: {
-  params: Promise<{ locale: string }>
-  searchParams: Promise<{ page?: string }>
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ page?: string }>;
 }) {
-  const { locale } = await params
-  setRequestLocale(locale)
-  const t = await getTranslations("admin.users")
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations("admin.users");
 
-  const session = await auth()
-  const canEdit = session?.user?.role === ADMIN_ROLE
+  const session = await auth();
+  const canEdit = session?.user?.role === ADMIN_ROLE;
 
-  const { page: pageParam } = await searchParams
-  const { page, offset } = parsePagination(pageParam)
+  const { page: pageParam } = await searchParams;
+  const { page, offset } = parsePagination(pageParam);
 
   const [allUsers, totalResult] = await Promise.all([
     db
@@ -43,13 +43,13 @@ export default async function UsersPage({
       .limit(PAGINATION_DEFAULT)
       .offset(offset),
     db.select({ count: count() }).from(users),
-  ])
+  ]);
 
-  const total = totalResult[0]?.count ?? 0
-  const totalPages = computeTotalPages(total, PAGINATION_DEFAULT)
+  const total = totalResult[0]?.count ?? 0;
+  const totalPages = computeTotalPages(total, PAGINATION_DEFAULT);
 
   function pageLink(p: number) {
-    return `/admin/users?page=${p}`
+    return `/admin/users?page=${p}`;
   }
 
   return (
@@ -68,12 +68,17 @@ export default async function UsersPage({
                 <th className="text-left py-2 font-medium text-slate-500">{t("email")}</th>
                 <th className="text-left py-2 font-medium text-slate-500">{t("role")}</th>
                 <th className="text-left py-2 font-medium text-slate-500">{t("joined")}</th>
-                {canEdit && <th className="text-right py-2 font-medium text-slate-500">{t("changeRole")}</th>}
+                {canEdit && (
+                  <th className="text-right py-2 font-medium text-slate-500">{t("changeRole")}</th>
+                )}
               </tr>
             </thead>
             <tbody>
               {allUsers.map((user) => (
-                <tr key={user.id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
+                <tr
+                  key={user.id}
+                  className="border-b border-slate-50 hover:bg-slate-50 transition-colors"
+                >
                   <td className="py-3 font-medium text-slate-800">{user.name ?? "—"}</td>
                   <td className="py-3 text-slate-600">{user.email}</td>
                   <td className="py-3">
@@ -85,11 +90,7 @@ export default async function UsersPage({
                   <td className="py-3 text-slate-400">{formatDate(user.createdAt)}</td>
                   {canEdit && (
                     <td className="py-3 text-right">
-                      <RoleButton
-                        userId={user.id}
-                        currentRole={user.role}
-                        canEdit={canEdit}
-                      />
+                      <RoleButton userId={user.id} currentRole={user.role} canEdit={canEdit} />
                     </td>
                   )}
                 </tr>
@@ -108,5 +109,5 @@ export default async function UsersPage({
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

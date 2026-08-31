@@ -1,30 +1,30 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { useTranslations } from "next-intl"
-import { toast } from "sonner"
-import { Pencil, Archive } from "lucide-react"
-import type { Technique } from "@/lib/db/schema"
-import { TechniqueForm } from "./technique-form"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { toast } from "sonner";
+import { Pencil, Archive } from "lucide-react";
+import type { Technique } from "@/lib/db/schema";
+import { TechniqueForm } from "./technique-form";
 
 export function TechniqueActions({ technique }: { technique: Technique }) {
-  const t = useTranslations("admin.techniques")
-  const router = useRouter()
-  const [editing, setEditing] = useState(false)
+  const t = useTranslations("admin.techniques");
+  const router = useRouter();
+  const [editing, setEditing] = useState(false);
 
   async function handleArchive() {
-    if (!confirm(t("archiveConfirm"))) return
+    if (!confirm(t("archiveConfirm"))) return;
     try {
-      const res = await fetch(`/api/techniques/${technique.id}`, { method: "DELETE" })
+      const res = await fetch(`/api/techniques/${technique.id}`, { method: "DELETE" });
       if (res.ok) {
-        toast.success(t("archivedSuccess"))
-        router.refresh()
+        toast.success(t("archivedSuccess"));
+        router.refresh();
       } else {
-        toast.error(t("saveError"))
+        toast.error(t("saveError"));
       }
     } catch {
-      toast.error(t("saveError"))
+      toast.error(t("saveError"));
     }
   }
 
@@ -53,9 +53,12 @@ export function TechniqueActions({ technique }: { technique: Technique }) {
         <TechniqueForm
           technique={technique}
           onClose={() => setEditing(false)}
-          onSaved={() => { setEditing(false); router.refresh() }}
+          onSaved={() => {
+            setEditing(false);
+            router.refresh();
+          }}
         />
       )}
     </>
-  )
+  );
 }
