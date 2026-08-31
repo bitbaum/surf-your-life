@@ -63,8 +63,9 @@ export function PortalSidebarNav({ onClose, unreadThreads = 0 }: Props) {
       key={href}
       href={href}
       onClick={onClose}
+      aria-current={isActive(href) ? "page" : undefined}
       className={cn(
-        "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+        "flex min-h-11 items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
         isActive(href)
           ? "bg-teal-50 text-teal-700"
           : "text-slate-600 hover:bg-slate-50 hover:text-slate-900",
@@ -81,8 +82,9 @@ export function PortalSidebarNav({ onClose, unreadThreads = 0 }: Props) {
       <Link
         href="/check-in"
         onClick={onClose}
+        aria-current={isActive("/check-in") ? "page" : undefined}
         className={cn(
-          "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold transition-colors",
+          "flex min-h-11 items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold transition-colors",
           isActive("/check-in")
             ? "bg-teal-600 text-white"
             : "bg-teal-600 text-white hover:bg-teal-700",
