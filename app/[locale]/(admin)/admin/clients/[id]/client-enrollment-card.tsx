@@ -1,25 +1,23 @@
-import { getTranslations } from "next-intl/server"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Link } from "@/i18n/navigation"
-import { formatDate } from "@/lib/utils"
-import { EnrollmentStatus } from "../../programs/[id]/enrollment-status"
-import { computeProgramProgress } from "@/lib/domain/check-in"
-import type { programEnrollments, programs } from "@/lib/db/schema"
+import { getTranslations } from "next-intl/server";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Link } from "@/i18n/navigation";
+import { formatDate } from "@/lib/utils";
+import { EnrollmentStatus } from "../../programs/[id]/enrollment-status";
+import { computeProgramProgress } from "@/lib/domain/check-in";
+import type { programEnrollments, programs } from "@/lib/db/schema";
 
 type Enrollment = typeof programEnrollments.$inferSelect & {
-  program: Pick<typeof programs.$inferSelect, "title" | "durationWeeks" | "phaseConfig">
-}
+  program: Pick<typeof programs.$inferSelect, "title" | "durationWeeks" | "phaseConfig">;
+};
 
 interface Props {
-  enrollment: Enrollment
+  enrollment: Enrollment;
 }
 
 export async function ClientEnrollmentCard({ enrollment }: Props) {
-  const t = await getTranslations("admin.clients")
+  const t = await getTranslations("admin.clients");
 
-  const progress = enrollment.status === "active"
-    ? computeProgramProgress(enrollment)
-    : null
+  const progress = enrollment.status === "active" ? computeProgramProgress(enrollment) : null;
 
   return (
     <Card>
@@ -41,11 +39,16 @@ export async function ClientEnrollmentCard({ enrollment }: Props) {
               )}
               {progress && enrollment.program.durationWeeks && (
                 <span className="font-medium text-teal-700">
-                  {t("detail.weekOf", { current: progress.currentWeek, total: enrollment.program.durationWeeks })}
+                  {t("detail.weekOf", {
+                    current: progress.currentWeek,
+                    total: enrollment.program.durationWeeks,
+                  })}
                 </span>
               )}
               {!progress && enrollment.program.durationWeeks && (
-                <span>{enrollment.program.durationWeeks} {t("detail.weeks")}</span>
+                <span>
+                  {enrollment.program.durationWeeks} {t("detail.weeks")}
+                </span>
               )}
             </div>
             {progress?.currentPhase && (
@@ -59,16 +62,11 @@ export async function ClientEnrollmentCard({ enrollment }: Props) {
                 )}
               </div>
             )}
-            {enrollment.notes && (
-              <p className="text-slate-500 mt-2 italic">{enrollment.notes}</p>
-            )}
+            {enrollment.notes && <p className="text-slate-500 mt-2 italic">{enrollment.notes}</p>}
           </div>
-          <EnrollmentStatus
-            enrollmentId={enrollment.id}
-            currentStatus={enrollment.status}
-          />
+          <EnrollmentStatus enrollmentId={enrollment.id} currentStatus={enrollment.status} />
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

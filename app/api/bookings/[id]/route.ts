@@ -1,50 +1,50 @@
-import { NextResponse } from "next/server"
-import { z } from "zod"
-import { isStaff, CLIENT_ROLE } from "@/lib/domain/auth"
-import { db } from "@/lib/db"
-import { bookings, users } from "@/lib/db/schema"
-import { eq } from "drizzle-orm"
-import { sendEmailFire } from "@/lib/email"
-import { bookingStatusEmail } from "@/lib/email/templates"
-import { API_ERR_BOOKING_ALREADY_CANCELLED } from "@/lib/constants"
-import { forbidden, notFound, okData, parseBody, requireAuth } from "@/lib/api"
+import { NextResponse } from "next/server";
+import { z } from "zod";
+import { isStaff, CLIENT_ROLE } from "@/lib/domain/auth";
+import { db } from "@/lib/db";
+import { bookings, users } from "@/lib/db/schema";
+import { eq } from "drizzle-orm";
+import { sendEmailFire } from "@/lib/email";
+import { bookingStatusEmail } from "@/lib/email/templates";
+import { API_ERR_BOOKING_ALREADY_CANCELLED } from "@/lib/constants";
+import { forbidden, notFound, okData, parseBody, requireAuth } from "@/lib/api";
 
-const adminUpdateSchema = z.object({ status: z.enum(["confirmed", "cancelled"]) })
-const clientUpdateSchema = z.object({ status: z.literal("cancelled") })
+const adminUpdateSchema = z.object({ status: z.enum(["confirmed", "cancelled"]) });
+const clientUpdateSchema = z.object({ status: z.literal("cancelled") });
 
-export async function PATCH(
-  req: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const authResult = await requireAuth()
-  if (!authResult.ok) return authResult.response
-  const { session } = authResult
+export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const authResult = await requireAuth();
+  if (!authResult.ok) return authResult.response;
+  const { session } = authResult;
 
-  const isAdmin = isStaff(session.user.role)
-  const isClient = session.user.role === CLIENT_ROLE
+  const isAdmin = isStaff(session.user.role);
+  const isClient = session.user.role === CLIENT_ROLE;
 
-  const bodySchema = isAdmin ? adminUpdateSchema : clientUpdateSchema
-  const result = await parseBody(req, bodySchema)
-  if (!result.ok) return result.response
+  const bodySchema = isAdmin ? adminUpdateSchema : clientUpdateSchema;
+  const result = await parseBody(req, bodySchema);
+  if (!result.ok) return result.response;
 
-  const { id } = await params
+  const { id } = await params;
 
   const booking = await db.query.bookings.findFirst({
     where: eq(bookings.id, id),
     with: { user: true, service: true },
-  })
+  });
 
   if (!booking) {
-    return notFound()
+    return notFound();
   }
 
   // Clients can only cancel their own bookings; cannot act on already-cancelled ones
   if (isClient) {
     if (booking.userId !== session.user.id) {
-      return forbidden()
+      return forbidden();
     }
     if (booking.status === "cancelled") {
-      return NextResponse.json({ success: false, error: API_ERR_BOOKING_ALREADY_CANCELLED }, { status: 400 })
+      return NextResponse.json(
+        { success: false, error: API_ERR_BOOKING_ALREADY_CANCELLED },
+        { status: 400 },
+      );
     }
   }
 
@@ -52,12 +52,12 @@ export async function PATCH(
     .update(bookings)
     .set({ status: result.data.status })
     .where(eq(bookings.id, id))
-    .returning({ id: bookings.id, status: bookings.status })
+    .returning({ id: bookings.id, status: bookings.status });
 
   // Send status email to the client — fire-and-forget
   const client = await db.query.users.findFirst({
     where: eq(users.id, booking.userId),
-  })
+  });
 
   if (client?.email) {
     const html = bookingStatusEmail({
@@ -66,15 +66,15 @@ export async function PATCH(
       status: result.data.status,
       preferredDate: booking.preferredDate ?? null,
       preferredTime: booking.preferredTime ?? null,
-    })
+    });
 
     const subject =
       result.data.status === "confirmed"
         ? `Booking confirmed: ${booking.service.name}`
-        : `Booking cancelled: ${booking.service.name}`
+        : `Booking cancelled: ${booking.service.name}`;
 
-    sendEmailFire({ to: client.email, subject, html }, "booking-status-notify")
+    sendEmailFire({ to: client.email, subject, html }, "booking-status-notify");
   }
 
-  return okData(updated)
+  return okData(updated);
 }

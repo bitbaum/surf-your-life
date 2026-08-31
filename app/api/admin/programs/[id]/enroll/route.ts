@@ -1,27 +1,27 @@
-import { db } from "@/lib/db"
-import { programs, programEnrollments, users } from "@/lib/db/schema"
-import { eq } from "drizzle-orm"
-import { enrollClientSchema } from "@/lib/domain/program"
-import { CLIENT_ROLE } from "@/lib/domain/auth"
-import { created, notFound, parseBody, requireStaffAuth } from "@/lib/api"
+import { db } from "@/lib/db";
+import { programs, programEnrollments, users } from "@/lib/db/schema";
+import { eq } from "drizzle-orm";
+import { enrollClientSchema } from "@/lib/domain/program";
+import { CLIENT_ROLE } from "@/lib/domain/auth";
+import { created, notFound, parseBody, requireStaffAuth } from "@/lib/api";
 
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const authResult = await requireStaffAuth()
-  if (!authResult.ok) return authResult.response
+  const authResult = await requireStaffAuth();
+  if (!authResult.ok) return authResult.response;
 
-  const { id: programId } = await params
+  const { id: programId } = await params;
 
-  const program = await db.query.programs.findFirst({ where: eq(programs.id, programId) })
+  const program = await db.query.programs.findFirst({ where: eq(programs.id, programId) });
   if (!program) {
-    return notFound()
+    return notFound();
   }
 
-  const result = await parseBody(req, enrollClientSchema)
-  if (!result.ok) return result.response
+  const result = await parseBody(req, enrollClientSchema);
+  if (!result.ok) return result.response;
 
-  const client = await db.query.users.findFirst({ where: eq(users.id, result.data.clientId) })
+  const client = await db.query.users.findFirst({ where: eq(users.id, result.data.clientId) });
   if (!client || client.role !== CLIENT_ROLE) {
-    return notFound()
+    return notFound();
   }
 
   const [enrollment] = await db
@@ -33,7 +33,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
       notes: result.data.notes ?? null,
       status: "active",
     })
-    .returning({ id: programEnrollments.id })
+    .returning({ id: programEnrollments.id });
 
-  return created({ id: enrollment.id })
+  return created({ id: enrollment.id });
 }

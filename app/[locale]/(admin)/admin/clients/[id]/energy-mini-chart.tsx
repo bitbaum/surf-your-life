@@ -1,36 +1,36 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { formatDate } from "@/lib/utils"
+import { useState } from "react";
+import { formatDate } from "@/lib/utils";
 
 interface DataPoint {
-  createdAt: Date
-  energyLevel: number
-  mood: string
-  pemFlag: boolean | null
+  createdAt: Date;
+  energyLevel: number;
+  mood: string;
+  pemFlag: boolean | null;
 }
 
 interface Props {
-  data: DataPoint[]
+  data: DataPoint[];
 }
 
 // Show oldest → newest (left to right)
 export function EnergyMiniChart({ data }: Props) {
-  const [tooltip, setTooltip] = useState<{ index: number } | null>(null)
-  const sorted = [...data].reverse()
+  const [tooltip, setTooltip] = useState<{ index: number } | null>(null);
+  const sorted = [...data].reverse();
 
   return (
     <div className="flex items-end gap-1 h-12 relative">
       {sorted.map((ci, i) => {
-        const pct = (ci.energyLevel / 10) * 100
-        const isHovered = tooltip?.index === i
+        const pct = (ci.energyLevel / 10) * 100;
+        const isHovered = tooltip?.index === i;
         const barColor = ci.pemFlag
           ? "bg-red-400"
           : ci.energyLevel >= 7
-          ? "bg-teal-400"
-          : ci.energyLevel >= 4
-          ? "bg-amber-300"
-          : "bg-slate-300"
+            ? "bg-teal-400"
+            : ci.energyLevel >= 4
+              ? "bg-amber-300"
+              : "bg-slate-300";
 
         return (
           <div
@@ -51,8 +51,8 @@ export function EnergyMiniChart({ data }: Props) {
               </div>
             )}
           </div>
-        )
+        );
       })}
     </div>
-  )
+  );
 }

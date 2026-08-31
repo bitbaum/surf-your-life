@@ -14,7 +14,7 @@
  * fallback is a real fallback rather than a degraded one.
  */
 
-import { defineFields, type FormTarget } from "@fleet/ai-forms"
+import { defineFields, type FormTarget } from "@fleet/ai-forms";
 import {
   ACTIVITY_LEVELS,
   ENERGY_SCALE,
@@ -22,17 +22,16 @@ import {
   MOODS,
   SLEEP_HOURS,
   SYMPTOM_SCALE,
-} from "@/lib/constants"
+} from "@/lib/constants";
 
-const severity = (name: string, label: string) =>
-  ({
-    name,
-    label,
-    type: "number" as const,
-    min: SYMPTOM_SCALE.min,
-    max: SYMPTOM_SCALE.max,
-    hint: `${SYMPTOM_SCALE.min} = none, ${SYMPTOM_SCALE.max} = severe. Only set it if the text says something about this symptom.`,
-  })
+const severity = (name: string, label: string) => ({
+  name,
+  label,
+  type: "number" as const,
+  min: SYMPTOM_SCALE.min,
+  max: SYMPTOM_SCALE.max,
+  hint: `${SYMPTOM_SCALE.min} = none, ${SYMPTOM_SCALE.max} = severe. Only set it if the text says something about this symptom.`,
+});
 
 export const CHECK_IN_FORM: FormTarget = {
   key: "check-in",
@@ -104,7 +103,7 @@ export const CHECK_IN_FORM: FormTarget = {
     "Leave a field out when the text does not support it. A guessed symptom score becomes their medical record.",
     "The person may write in German, French or English. Answer with the option values as given, whatever language they used.",
   ],
-}
+};
 
 /** Every form the assistant may touch. The client can only name these keys. */
-export const AI_FORMS: readonly FormTarget[] = [CHECK_IN_FORM]
+export const AI_FORMS: readonly FormTarget[] = [CHECK_IN_FORM];

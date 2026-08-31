@@ -1,54 +1,70 @@
-import { getTranslations } from "next-intl/server"
-import type { CadenceMap, EnergyTrendEntry } from "@/lib/db/check-in-cadence"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Pagination } from "@/components/ui/pagination"
-import { Link } from "@/i18n/navigation"
-import { buildLastNDayStrings, daysSince, displayName } from "@/lib/utils"
-import { ClientTableRow, type ClientRow } from "./client-table-row"
-import type { MainConcern } from "@/lib/db/schema"
-import { ClientsFilterBar } from "./clients-filter-bar"
+import { getTranslations } from "next-intl/server";
+import type { CadenceMap, EnergyTrendEntry } from "@/lib/db/check-in-cadence";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Pagination } from "@/components/ui/pagination";
+import { Link } from "@/i18n/navigation";
+import { buildLastNDayStrings, daysSince, displayName } from "@/lib/utils";
+import { ClientTableRow, type ClientRow } from "./client-table-row";
+import type { MainConcern } from "@/lib/db/schema";
+import { ClientsFilterBar } from "./clients-filter-bar";
 
-export type SortOption = "joined" | "checkin_desc" | "most_checkins" | "needs_attention" | "energy_declining"
-type AlertInfo = { count: number; hasHigh: boolean }
+export type SortOption =
+  "joined" | "checkin_desc" | "most_checkins" | "needs_attention" | "energy_declining";
+type AlertInfo = { count: number; hasHigh: boolean };
 
 type Props = {
-  clients: ClientRow[]
-  alertCountMap: Map<string, AlertInfo>
-  unreadMessageMap: Map<string, number>
-  cadenceMap: CadenceMap
-  energyTrendMap: Map<string, EnergyTrendEntry>
-  staleCutoff: Date
-  q: string | undefined
-  sort: SortOption
-  concern: MainConcern | undefined
-  practitioner: string | undefined
-  page: number
-  totalPages: number
-}
+  clients: ClientRow[];
+  alertCountMap: Map<string, AlertInfo>;
+  unreadMessageMap: Map<string, number>;
+  cadenceMap: CadenceMap;
+  energyTrendMap: Map<string, EnergyTrendEntry>;
+  staleCutoff: Date;
+  q: string | undefined;
+  sort: SortOption;
+  concern: MainConcern | undefined;
+  practitioner: string | undefined;
+  page: number;
+  totalPages: number;
+};
 
-export async function ClientsCard({ clients, alertCountMap, unreadMessageMap, cadenceMap, energyTrendMap, staleCutoff, q, sort, concern, practitioner, page, totalPages }: Props) {
-  const t = await getTranslations("admin.clients")
+export async function ClientsCard({
+  clients,
+  alertCountMap,
+  unreadMessageMap,
+  cadenceMap,
+  energyTrendMap,
+  staleCutoff,
+  q,
+  sort,
+  concern,
+  practitioner,
+  page,
+  totalPages,
+}: Props) {
+  const t = await getTranslations("admin.clients");
 
-  const sparkDays = buildLastNDayStrings(7)
+  const sparkDays = buildLastNDayStrings(7);
   const sparkDayLabels = {
     missed: t("dotMissed"),
     checkedIn: t("dotCheckedIn"),
     pem: t("dotPem"),
-  }
+  };
 
   function pageLink(p: number) {
-    const ps = new URLSearchParams()
-    ps.set("page", String(p))
-    if (q?.trim()) ps.set("q", q.trim())
-    if (sort !== "joined") ps.set("sort", sort)
-    if (concern) ps.set("concern", concern)
-    if (practitioner) ps.set("practitioner", practitioner)
-    return `/admin/clients?${ps.toString()}`
+    const ps = new URLSearchParams();
+    ps.set("page", String(p));
+    if (q?.trim()) ps.set("q", q.trim());
+    if (sort !== "joined") ps.set("sort", sort);
+    if (concern) ps.set("concern", concern);
+    if (practitioner) ps.set("practitioner", practitioner);
+    return `/admin/clients?${ps.toString()}`;
   }
 
   return (
     <Card>
-      <CardHeader><CardTitle>{t("allClients")}</CardTitle></CardHeader>
+      <CardHeader>
+        <CardTitle>{t("allClients")}</CardTitle>
+      </CardHeader>
       <CardContent>
         <ClientsFilterBar q={q} sort={sort} concern={concern} practitioner={practitioner} />
         <div className="overflow-x-auto">
@@ -58,7 +74,9 @@ export async function ClientsCard({ clients, alertCountMap, unreadMessageMap, ca
                 <th className="text-left py-2 font-medium text-slate-500">{t("columnName")}</th>
                 <th className="text-left py-2 font-medium text-slate-500">{t("columnEmail")}</th>
                 <th className="text-left py-2 font-medium text-slate-500">{t("columnConcern")}</th>
-                <th className="text-left py-2 font-medium text-slate-500">{t("columnLastCheckIn")}</th>
+                <th className="text-left py-2 font-medium text-slate-500">
+                  {t("columnLastCheckIn")}
+                </th>
                 <th className="text-left py-2 font-medium text-slate-500">{t("columnCheckIns")}</th>
                 <th className="text-left py-2 font-medium text-slate-500">{t("columnJoined")}</th>
                 <th />
@@ -66,13 +84,16 @@ export async function ClientsCard({ clients, alertCountMap, unreadMessageMap, ca
             </thead>
             <tbody>
               {clients.map((client) => {
-                const isStale = client.lastCheckIn == null || client.lastCheckIn < staleCutoff
-                const days = daysSince(client.lastCheckIn)
+                const isStale = client.lastCheckIn == null || client.lastCheckIn < staleCutoff;
+                const days = daysSince(client.lastCheckIn);
                 const nudgeBody = isStale
                   ? days != null
-                    ? t("atRisk.nudgeBodyWithDays", { name: displayName(client.name, client.email), days })
+                    ? t("atRisk.nudgeBodyWithDays", {
+                        name: displayName(client.name, client.email),
+                        days,
+                      })
                     : t("atRisk.nudgeBodyNever", { name: displayName(client.name, client.email) })
-                  : null
+                  : null;
                 return (
                   <ClientTableRow
                     key={client.id}
@@ -89,16 +110,18 @@ export async function ClientsCard({ clients, alertCountMap, unreadMessageMap, ca
                     sparkPemDays={new Set(cadenceMap[client.id]?.pemDays ?? [])}
                     sparkHint={t("cadenceHint")}
                     sparkDayLabels={sparkDayLabels}
-                    nudge={isStale && nudgeBody
-                      ? {
-                          label: t("atRisk.nudgeButton"),
-                          modalTitle: t("atRisk.nudgeModalTitle"),
-                          subject: t("atRisk.nudgeSubject"),
-                          body: nudgeBody,
-                        }
-                      : null}
+                    nudge={
+                      isStale && nudgeBody
+                        ? {
+                            label: t("atRisk.nudgeButton"),
+                            modalTitle: t("atRisk.nudgeModalTitle"),
+                            subject: t("atRisk.nudgeSubject"),
+                            body: nudgeBody,
+                          }
+                        : null
+                    }
                   />
-                )
+                );
               })}
               {clients.length === 0 && (
                 <tr>
@@ -129,5 +152,5 @@ export async function ClientsCard({ clients, alertCountMap, unreadMessageMap, ca
         <Pagination page={page} totalPages={totalPages} pageLink={pageLink} />
       </CardContent>
     </Card>
-  )
+  );
 }

@@ -1,15 +1,15 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useTranslations } from "next-intl"
-import { useRouter } from "@/i18n/navigation"
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
-import { CAPACITY_SCALE, ASSESSMENT_DIMENSIONS, FIELD_MAX_LONG } from "@/lib/constants"
+import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { CAPACITY_SCALE, ASSESSMENT_DIMENSIONS, FIELD_MAX_LONG } from "@/lib/constants";
 
 export function NewAssessmentForm({ onDone }: { onDone: () => void }) {
-  const t = useTranslations("portal.assessments")
-  const router = useRouter()
+  const t = useTranslations("portal.assessments");
+  const router = useRouter();
 
   const [values, setValues] = useState<Record<string, number>>({
     overallCapacity: CAPACITY_SCALE.default,
@@ -17,29 +17,33 @@ export function NewAssessmentForm({ onDone }: { onDone: () => void }) {
     cognitiveCapacity: CAPACITY_SCALE.default,
     emotionalCapacity: CAPACITY_SCALE.default,
     socialCapacity: CAPACITY_SCALE.default,
-  })
-  const [notes, setNotes] = useState("")
-  const [saving, setSaving] = useState(false)
-  const [error, setError] = useState("")
-  const [enabled, setEnabled] = useState<Set<string>>(new Set(["overallCapacity"]))
+  });
+  const [notes, setNotes] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  const [enabled, setEnabled] = useState<Set<string>>(new Set(["overallCapacity"]));
 
   function toggle(key: string) {
-    if (key === "overallCapacity") return // always required
+    if (key === "overallCapacity") return; // always required
     setEnabled((prev) => {
-      const next = new Set(prev)
-      if (next.has(key)) { next.delete(key) } else { next.add(key) }
-      return next
-    })
+      const next = new Set(prev);
+      if (next.has(key)) {
+        next.delete(key);
+      } else {
+        next.add(key);
+      }
+      return next;
+    });
   }
 
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    setSaving(true)
-    setError("")
+    e.preventDefault();
+    setSaving(true);
+    setError("");
 
-    const body: Record<string, unknown> = { notes: notes.trim() || undefined }
+    const body: Record<string, unknown> = { notes: notes.trim() || undefined };
     for (const { key } of ASSESSMENT_DIMENSIONS) {
-      if (enabled.has(key)) body[key] = values[key]
+      if (enabled.has(key)) body[key] = values[key];
     }
 
     try {
@@ -47,18 +51,18 @@ export function NewAssessmentForm({ onDone }: { onDone: () => void }) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
-      })
-      const data = await res.json()
+      });
+      const data = await res.json();
       if (!data.success) {
-        setError(t("saveError"))
-        return
+        setError(t("saveError"));
+        return;
       }
-      router.refresh()
-      onDone()
+      router.refresh();
+      onDone();
     } catch {
-      setError(t("saveError"))
+      setError(t("saveError"));
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
   }
 
@@ -67,12 +71,14 @@ export function NewAssessmentForm({ onDone }: { onDone: () => void }) {
       <p className="text-xs text-slate-400">{t("formHint")}</p>
 
       {ASSESSMENT_DIMENSIONS.map(({ key, required }) => {
-        const active = enabled.has(key)
+        const active = enabled.has(key);
         return (
           <div key={key} className={active ? "" : "opacity-40"}>
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
-                <label className="text-sm font-medium text-slate-700">{t(key as Parameters<typeof t>[0])}</label>
+                <label className="text-sm font-medium text-slate-700">
+                  {t(key as Parameters<typeof t>[0])}
+                </label>
                 {!required && (
                   <button
                     type="button"
@@ -105,7 +111,7 @@ export function NewAssessmentForm({ onDone }: { onDone: () => void }) {
               <span className="text-xs text-slate-400 w-4">{CAPACITY_SCALE.max}</span>
             </div>
           </div>
-        )
+        );
       })}
 
       <div>
@@ -132,5 +138,5 @@ export function NewAssessmentForm({ onDone }: { onDone: () => void }) {
         </Button>
       </div>
     </form>
-  )
+  );
 }

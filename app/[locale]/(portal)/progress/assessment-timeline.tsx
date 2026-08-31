@@ -1,18 +1,18 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ProgressBar } from "@/components/ui/progress-bar"
-import { EmptyStateCard } from "@/components/ui/empty-state-card"
-import { Link } from "@/i18n/navigation"
-import { getTranslations } from "next-intl/server"
-import { formatDate } from "@/lib/utils"
-import type { FunctionalAssessment } from "@/lib/db/schema"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ProgressBar } from "@/components/ui/progress-bar";
+import { EmptyStateCard } from "@/components/ui/empty-state-card";
+import { Link } from "@/i18n/navigation";
+import { getTranslations } from "next-intl/server";
+import { formatDate } from "@/lib/utils";
+import type { FunctionalAssessment } from "@/lib/db/schema";
 
 interface Props {
-  assessments: FunctionalAssessment[]
-  delta: number | null
+  assessments: FunctionalAssessment[];
+  delta: number | null;
 }
 
 export async function AssessmentTimeline({ assessments, delta }: Props) {
-  const t = await getTranslations("portal.progress")
+  const t = await getTranslations("portal.progress");
 
   if (assessments.length === 0) {
     return (
@@ -20,29 +20,36 @@ export async function AssessmentTimeline({ assessments, delta }: Props) {
         cardClassName="mt-4"
         message={t("noAssessments")}
         action={
-          <Link href="/assessments" className="text-sm font-medium text-teal-600 hover:text-teal-700 transition-colors">
+          <Link
+            href="/assessments"
+            className="text-sm font-medium text-teal-600 hover:text-teal-700 transition-colors"
+          >
             {t("doAssessment")} →
           </Link>
         }
       />
-    )
+    );
   }
 
-  const first = assessments[0]
-  const latest = assessments[assessments.length - 1]
+  const first = assessments[0];
+  const latest = assessments[assessments.length - 1];
 
   return (
     <>
       <p className="text-sm text-slate-600 mt-2 mb-6">
         {assessments.length === 1
           ? t("narrativeSingle", { capacity: first.overallCapacity })
-          : t("narrativeMultiple", { n: assessments.length, first: first.overallCapacity, latest: latest.overallCapacity })}
+          : t("narrativeMultiple", {
+              n: assessments.length,
+              first: first.overallCapacity,
+              latest: latest.overallCapacity,
+            })}
       </p>
 
       <div className="flex flex-col gap-3">
         {assessments.map((a, i) => {
-          const isFirst = i === 0
-          const isLatest = i === assessments.length - 1
+          const isFirst = i === 0;
+          const isLatest = i === assessments.length - 1;
 
           return (
             <Card key={a.id}>
@@ -65,8 +72,12 @@ export async function AssessmentTimeline({ assessments, delta }: Props) {
                   </div>
                   <div className="flex items-center gap-2">
                     {isLatest && delta != null && (
-                      <span className={`text-xs font-medium ${delta >= 0 ? "text-teal-600" : "text-red-500"}`}>
-                        {delta >= 0 ? t("improvementSince", { n: `+${delta}` }) : t("declineSince", { n: delta })}
+                      <span
+                        className={`text-xs font-medium ${delta >= 0 ? "text-teal-600" : "text-red-500"}`}
+                      >
+                        {delta >= 0
+                          ? t("improvementSince", { n: `+${delta}` })
+                          : t("declineSince", { n: delta })}
                       </span>
                     )}
                     <span className="text-xl font-bold text-teal-700">
@@ -83,9 +94,9 @@ export async function AssessmentTimeline({ assessments, delta }: Props) {
                 </div>
               </CardContent>
             </Card>
-          )
+          );
         })}
       </div>
     </>
-  )
+  );
 }

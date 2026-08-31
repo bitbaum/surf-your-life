@@ -1,24 +1,24 @@
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
 interface ProgressBarProps {
   /** Percentage 0–100. Clamped automatically. */
-  value: number
+  value: number;
   /** h-1.5 (sm) or h-2 (md). Default md. */
-  size?: "sm" | "md"
+  size?: "sm" | "md";
   /** Track background. Use "teal" when the bar sits inside a teal-tinted surface. */
-  track?: "teal" | "slate"
-  className?: string
+  track?: "teal" | "slate";
+  className?: string;
 }
 
 export function ProgressBar({ value, size = "md", track = "slate", className }: ProgressBarProps) {
-  const pct = Math.min(Math.max(value, 0), 100)
+  const pct = Math.min(Math.max(value, 0), 100);
   return (
     <div
       className={cn(
         "rounded-full overflow-hidden",
         size === "sm" ? "h-1.5" : "h-2",
         track === "teal" ? "bg-brand-muted" : "bg-surface-muted",
-        className
+        className,
       )}
     >
       <div
@@ -26,5 +26,5 @@ export function ProgressBar({ value, size = "md", track = "slate", className }: 
         style={{ width: `${pct}%` }}
       />
     </div>
-  )
+  );
 }

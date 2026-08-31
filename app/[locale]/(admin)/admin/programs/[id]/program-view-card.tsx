@@ -1,21 +1,21 @@
-"use client"
+"use client";
 
-import { useTranslations } from "next-intl"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { formatDate } from "@/lib/utils"
-import { Pencil, Clock, Calendar } from "lucide-react"
-import type { Program } from "@/lib/db/schema"
-import type { ProgramPhase } from "@/lib/domain/program"
+import { useTranslations } from "next-intl";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatDate } from "@/lib/utils";
+import { Pencil, Clock, Calendar } from "lucide-react";
+import type { Program } from "@/lib/db/schema";
+import type { ProgramPhase } from "@/lib/domain/program";
 
 interface Props {
-  program: Program
-  phases: ProgramPhase[]
-  onEdit: () => void
+  program: Program;
+  phases: ProgramPhase[];
+  onEdit: () => void;
 }
 
 export function ProgramViewCard({ program, phases, onEdit }: Props) {
-  const t = useTranslations("admin.programs")
-  const tConcerns = useTranslations("concerns")
+  const t = useTranslations("admin.programs");
+  const tConcerns = useTranslations("concerns");
 
   return (
     <Card>
@@ -70,7 +70,9 @@ export function ProgramViewCard({ program, phases, onEdit }: Props) {
                   <div>
                     <p className="font-medium text-slate-800">{phase.title}</p>
                     {phase.guidance && (
-                      <p className="text-slate-500 text-xs mt-0.5 leading-relaxed">{phase.guidance}</p>
+                      <p className="text-slate-500 text-xs mt-0.5 leading-relaxed">
+                        {phase.guidance}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -80,5 +82,5 @@ export function ProgramViewCard({ program, phases, onEdit }: Props) {
         )}
       </CardContent>
     </Card>
-  )
+  );
 }

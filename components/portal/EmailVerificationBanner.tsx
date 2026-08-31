@@ -1,24 +1,24 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useTranslations } from "next-intl"
-import { X } from "lucide-react"
+import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { X } from "lucide-react";
 
 export function EmailVerificationBanner() {
-  const t = useTranslations("auth")
-  const [dismissed, setDismissed] = useState(false)
-  const [sent, setSent] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const t = useTranslations("auth");
+  const [dismissed, setDismissed] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  if (dismissed) return null
+  if (dismissed) return null;
 
   async function handleResend() {
-    setLoading(true)
+    setLoading(true);
     try {
-      await fetch("/api/auth/resend-verification", { method: "POST" })
-      setSent(true)
+      await fetch("/api/auth/resend-verification", { method: "POST" });
+      setSent(true);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
@@ -47,5 +47,5 @@ export function EmailVerificationBanner() {
         <X size={16} />
       </button>
     </div>
-  )
+  );
 }

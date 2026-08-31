@@ -1,9 +1,9 @@
-import { z } from "zod"
-import { techniqueCategoryEnum, techniqueDifficultyEnum } from "@/lib/db/schema"
-import type { Technique, TechniqueAssignment } from "@/lib/db/schema"
+import { z } from "zod";
+import { techniqueCategoryEnum, techniqueDifficultyEnum } from "@/lib/db/schema";
+import type { Technique, TechniqueAssignment } from "@/lib/db/schema";
 
-export type AssignmentWithTechnique = TechniqueAssignment & { technique: Technique }
-import { addDaysISO } from "@/lib/utils"
+export type AssignmentWithTechnique = TechniqueAssignment & { technique: Technique };
+import { addDaysISO } from "@/lib/utils";
 import {
   TECHNIQUE_DEFAULT_FREQUENCY,
   TECHNIQUE_DEFAULT_MAX_DEBT_DAYS,
@@ -14,7 +14,7 @@ import {
   TECHNIQUE_NAME_MAX,
   FIELD_MAX_NOTES,
   FIELD_MAX_LONG,
-} from "@/lib/constants"
+} from "@/lib/constants";
 
 // ─── Zod schemas (SSOT for input validation) ─────────────────────────────────
 
@@ -23,26 +23,39 @@ export const createTechniqueSchema = z.object({
   description: z.string().max(FIELD_MAX_NOTES).optional(),
   category: z.enum(techniqueCategoryEnum.enumValues),
   instructions: z.string().max(FIELD_MAX_LONG).optional(),
-  durationMinutes: z.number().int().min(TECHNIQUE_DURATION_MINUTES.min).max(TECHNIQUE_DURATION_MINUTES.max).optional(),
+  durationMinutes: z
+    .number()
+    .int()
+    .min(TECHNIQUE_DURATION_MINUTES.min)
+    .max(TECHNIQUE_DURATION_MINUTES.max)
+    .optional(),
   difficulty: z.enum(techniqueDifficultyEnum.enumValues).default("easy"),
   resourceUrl: z.string().url().optional().or(z.literal("")),
-})
+});
 
 export const updateTechniqueSchema = createTechniqueSchema.partial().extend({
   isActive: z.boolean().optional(),
-})
+});
 
 export const createAssignmentSchema = z.object({
   techniqueId: z.string().uuid(),
   clientId: z.string().uuid(),
-  frequencyPerDay: z.number().int().min(1).max(TECHNIQUE_DAILY_FREQUENCY_MAX).default(TECHNIQUE_DEFAULT_FREQUENCY),
+  frequencyPerDay: z
+    .number()
+    .int()
+    .min(1)
+    .max(TECHNIQUE_DAILY_FREQUENCY_MAX)
+    .default(TECHNIQUE_DEFAULT_FREQUENCY),
   // safetyCapMultiplier stored ×100: 150 = 1.5× daily target
   safetyCapMultiplier: z.number().int().min(100).max(300).default(TECHNIQUE_DEFAULT_SAFETY_CAP),
   maxDebtDays: z.number().int().min(1).max(30).default(TECHNIQUE_DEFAULT_MAX_DEBT_DAYS),
   startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-  endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  endDate: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .optional(),
   notes: z.string().max(FIELD_MAX_NOTES).optional(),
-})
+});
 
 export const logTechniqueSchema = z.object({
   assignmentId: z.string().uuid(),
@@ -50,28 +63,28 @@ export const logTechniqueSchema = z.object({
   completedReps: z.number().int().min(1).max(TECHNIQUE_LOG_MAX_REPS),
   notes: z.string().max(FIELD_MAX_NOTES).optional(),
   isRestDay: z.boolean().default(false),
-})
+});
 
-export type CreateTechniqueInput = z.infer<typeof createTechniqueSchema>
-export type UpdateTechniqueInput = z.infer<typeof updateTechniqueSchema>
-export type CreateAssignmentInput = z.infer<typeof createAssignmentSchema>
-export type LogTechniqueInput = z.infer<typeof logTechniqueSchema>
+export type CreateTechniqueInput = z.infer<typeof createTechniqueSchema>;
+export type UpdateTechniqueInput = z.infer<typeof updateTechniqueSchema>;
+export type CreateAssignmentInput = z.infer<typeof createAssignmentSchema>;
+export type LogTechniqueInput = z.infer<typeof logTechniqueSchema>;
 
 // ─── Debt / catch-up calculation ─────────────────────────────────────────────
 
-export type LogByDate = Record<string, number> // date → completed reps that day
+export type LogByDate = Record<string, number>; // date → completed reps that day
 
 export interface TechniqueDebtResult {
   /** Total reps missed over the debt window (before safety cap) */
-  rawDebt: number
+  rawDebt: number;
   /** Max additional reps allowed today (daily target × safety cap) */
-  safetyCapReps: number
+  safetyCapReps: number;
   /** Catch-up reps to show the user: min(rawDebt, safetyCapReps - todayCompleted) */
-  catchUpReps: number
+  catchUpReps: number;
   /** Reps already completed today */
-  todayCompleted: number
+  todayCompleted: number;
   /** Normal daily target */
-  dailyTarget: number
+  dailyTarget: number;
 }
 
 /**
@@ -86,35 +99,35 @@ export interface TechniqueDebtResult {
  */
 export function computeTechniqueDebt(
   assignment: {
-    frequencyPerDay: number
-    safetyCapMultiplier: number // ×100
-    maxDebtDays: number
-    startDate: string
-    endDate?: string | null
-    isActive: boolean
+    frequencyPerDay: number;
+    safetyCapMultiplier: number; // ×100
+    maxDebtDays: number;
+    startDate: string;
+    endDate?: string | null;
+    isActive: boolean;
   },
   logs: LogByDate,
-  today: string // ISO YYYY-MM-DD
+  today: string, // ISO YYYY-MM-DD
 ): TechniqueDebtResult {
-  const dailyTarget = assignment.frequencyPerDay
-  const safetyCapReps = Math.floor(dailyTarget * (assignment.safetyCapMultiplier / 100))
+  const dailyTarget = assignment.frequencyPerDay;
+  const safetyCapReps = Math.floor(dailyTarget * (assignment.safetyCapMultiplier / 100));
 
   // Build the window: last maxDebtDays days ending yesterday (not today)
-  const todayCompleted = logs[today] ?? 0
-  let rawDebt = 0
+  const todayCompleted = logs[today] ?? 0;
+  let rawDebt = 0;
 
   for (let i = 1; i <= assignment.maxDebtDays; i++) {
-    const d = addDaysISO(today, -i)
+    const d = addDaysISO(today, -i);
     // Only count days after the assignment start
-    if (d < assignment.startDate) break
-    if (assignment.endDate && d > assignment.endDate) continue
-    const done = logs[d] ?? 0
-    rawDebt += Math.max(0, dailyTarget - done)
+    if (d < assignment.startDate) break;
+    if (assignment.endDate && d > assignment.endDate) continue;
+    const done = logs[d] ?? 0;
+    rawDebt += Math.max(0, dailyTarget - done);
   }
 
-  const catchUpReps = Math.max(0, Math.min(rawDebt, safetyCapReps - todayCompleted))
+  const catchUpReps = Math.max(0, Math.min(rawDebt, safetyCapReps - todayCompleted));
 
-  return { rawDebt, safetyCapReps, catchUpReps, todayCompleted, dailyTarget }
+  return { rawDebt, safetyCapReps, catchUpReps, todayCompleted, dailyTarget };
 }
 
 // ─── Adherence computation ────────────────────────────────────────────────────
@@ -130,37 +143,37 @@ export function computeTechniqueDebt(
  */
 export function computeAdherenceByAssignment(
   assignments: Array<{ id: string; frequencyPerDay: number }>,
-  logs: Array<{ assignmentId: string; date: string; completedReps: number }>
+  logs: Array<{ assignmentId: string; date: string; completedReps: number }>,
 ): Record<string, number> {
-  const frequencyById = Object.fromEntries(assignments.map((a) => [a.id, a.frequencyPerDay]))
+  const frequencyById = Object.fromEntries(assignments.map((a) => [a.id, a.frequencyPerDay]));
 
   // Each tap inserts a new row with completedReps = cumulative total so far that day
   // (e.g. 3 taps → rows [1, 2, 3]). Take the MAX per (assignmentId, date) to get the
   // actual reps done — summing would triple-count each rep.
-  const repsByDay: Record<string, number> = {}
+  const repsByDay: Record<string, number> = {};
   for (const log of logs) {
-    const key = `${log.assignmentId}:${log.date}`
-    repsByDay[key] = Math.max(repsByDay[key] ?? 0, log.completedReps)
+    const key = `${log.assignmentId}:${log.date}`;
+    repsByDay[key] = Math.max(repsByDay[key] ?? 0, log.completedReps);
   }
 
   // Count days where reps met the daily goal
-  const result: Record<string, number> = {}
+  const result: Record<string, number> = {};
   for (const [key, reps] of Object.entries(repsByDay)) {
-    const assignmentId = key.split(":")[0]
-    const goal = frequencyById[assignmentId]
-    if (goal == null) continue
+    const assignmentId = key.split(":")[0];
+    const goal = frequencyById[assignmentId];
+    if (goal == null) continue;
     if (reps >= goal) {
-      result[assignmentId] = (result[assignmentId] ?? 0) + 1
+      result[assignmentId] = (result[assignmentId] ?? 0) + 1;
     }
   }
 
-  return result
+  return result;
 }
 
 // ─── Logs grid (7-day drill-down) ────────────────────────────────────────────
 
 /** assignmentId → date (YYYY-MM-DD) → total reps completed that day */
-export type LogsGridByAssignment = Record<string, Record<string, number>>
+export type LogsGridByAssignment = Record<string, Record<string, number>>;
 
 /**
  * Build a lookup of reps-by-date per assignment from the raw log rows.
@@ -168,51 +181,56 @@ export type LogsGridByAssignment = Record<string, Record<string, number>>
  * (assignmentId, date) — same invariant as the portal's logsByAssignment.
  */
 export function computeLogsGridByAssignment(
-  logs: Array<{ assignmentId: string; date: string; completedReps: number }>
+  logs: Array<{ assignmentId: string; date: string; completedReps: number }>,
 ): LogsGridByAssignment {
-  const result: LogsGridByAssignment = {}
+  const result: LogsGridByAssignment = {};
   for (const log of logs) {
-    if (!result[log.assignmentId]) result[log.assignmentId] = {}
+    if (!result[log.assignmentId]) result[log.assignmentId] = {};
     result[log.assignmentId][log.date] = Math.max(
       result[log.assignmentId][log.date] ?? 0,
-      log.completedReps
-    )
+      log.completedReps,
+    );
   }
-  return result
+  return result;
 }
 
 // ─── Daily adherence trend (30-day sparkline) ────────────────────────────────
 
-export type DailyAdherencePoint = { date: string; pct: number }
+export type DailyAdherencePoint = { date: string; pct: number };
 
 /**
  * For each of the last `days` days, computes the % of active assignments
  * where the client met their daily rep goal. Used for the 30-day sparkline.
  */
 export function computeDailyAdherenceTrend(
-  assignments: Array<{ id: string; frequencyPerDay: number; startDate: string; endDate?: string | null }>,
+  assignments: Array<{
+    id: string;
+    frequencyPerDay: number;
+    startDate: string;
+    endDate?: string | null;
+  }>,
   logs: Array<{ assignmentId: string; date: string; completedReps: number }>,
   today: string,
-  days = 30
+  days = 30,
 ): DailyAdherencePoint[] {
-  const repsMap: Record<string, number> = {}
+  const repsMap: Record<string, number> = {};
   for (const log of logs) {
-    const key = `${log.assignmentId}:${log.date}`
-    repsMap[key] = Math.max(repsMap[key] ?? 0, log.completedReps)
+    const key = `${log.assignmentId}:${log.date}`;
+    repsMap[key] = Math.max(repsMap[key] ?? 0, log.completedReps);
   }
 
-  const result: DailyAdherencePoint[] = []
+  const result: DailyAdherencePoint[] = [];
   for (let i = days - 1; i >= 0; i--) {
-    const date = addDaysISO(today, -i)
+    const date = addDaysISO(today, -i);
     const active = assignments.filter(
-      (a) => a.startDate <= date && (!a.endDate || a.endDate >= date)
-    )
+      (a) => a.startDate <= date && (!a.endDate || a.endDate >= date),
+    );
     if (active.length === 0) {
-      result.push({ date, pct: 0 })
-      continue
+      result.push({ date, pct: 0 });
+      continue;
     }
-    const met = active.filter((a) => (repsMap[`${a.id}:${date}`] ?? 0) >= a.frequencyPerDay).length
-    result.push({ date, pct: Math.round((met / active.length) * 100) })
+    const met = active.filter((a) => (repsMap[`${a.id}:${date}`] ?? 0) >= a.frequencyPerDay).length;
+    result.push({ date, pct: Math.round((met / active.length) * 100) });
   }
-  return result
+  return result;
 }

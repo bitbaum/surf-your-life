@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { ChevronDown } from "lucide-react"
+import { useState } from "react";
+import { ChevronDown } from "lucide-react";
 
 export function FaqAccordion({ items }: { items: Array<{ q: string; a: string }> }) {
-  const [open, setOpen] = useState<number | null>(0)
+  const [open, setOpen] = useState<number | null>(0);
 
   return (
     <div className="divide-y divide-slate-100">
@@ -15,7 +15,9 @@ export function FaqAccordion({ items }: { items: Array<{ q: string; a: string }>
             onClick={() => setOpen(open === i ? null : i)}
             className="w-full flex items-start justify-between gap-4 py-5 text-left group"
           >
-            <span className={`text-base font-medium leading-snug transition-colors ${open === i ? "text-teal-700" : "text-slate-900 group-hover:text-teal-700"}`}>
+            <span
+              className={`text-base font-medium leading-snug transition-colors ${open === i ? "text-teal-700" : "text-slate-900 group-hover:text-teal-700"}`}
+            >
               {q}
             </span>
             <ChevronDown
@@ -30,5 +32,5 @@ export function FaqAccordion({ items }: { items: Array<{ q: string; a: string }>
         </div>
       ))}
     </div>
-  )
+  );
 }

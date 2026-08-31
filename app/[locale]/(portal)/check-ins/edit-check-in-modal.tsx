@@ -1,53 +1,55 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useTranslations } from "next-intl"
-import { Button } from "@/components/ui/button"
-import { ENERGY_SCALE, COMPACT_LABEL_CLS } from "@/lib/constants"
-import type { CheckIn } from "@/lib/db/schema"
-import { EditMoodPicker } from "./edit-mood-picker"
-import { EditSleepSection } from "./edit-sleep-section"
-import { EditActivityPemSection } from "./edit-activity-pem-section"
-import { EditSymptomsSection } from "./edit-symptoms-section"
-import { EditTextFields } from "./edit-text-fields"
+import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { Button } from "@/components/ui/button";
+import { ENERGY_SCALE, COMPACT_LABEL_CLS } from "@/lib/constants";
+import type { CheckIn } from "@/lib/db/schema";
+import { EditMoodPicker } from "./edit-mood-picker";
+import { EditSleepSection } from "./edit-sleep-section";
+import { EditActivityPemSection } from "./edit-activity-pem-section";
+import { EditSymptomsSection } from "./edit-symptoms-section";
+import { EditTextFields } from "./edit-text-fields";
 
 interface EditCheckInModalProps {
-  checkIn: CheckIn
-  checkInId: string
-  onSave: () => void
-  onCancel: () => void
+  checkIn: CheckIn;
+  checkInId: string;
+  onSave: () => void;
+  onCancel: () => void;
 }
 
 export function EditCheckInModal({ checkIn, checkInId, onSave, onCancel }: EditCheckInModalProps) {
-  const t = useTranslations("portal.checkIns")
+  const t = useTranslations("portal.checkIns");
 
-  const [saving, setSaving] = useState(false)
-  const [error, setError] = useState("")
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
   const [form, setForm] = useState({
     mood: checkIn.mood,
     energy: checkIn.energyLevel ?? ENERGY_SCALE.default,
     sleep: checkIn.sleepHours != null ? String(checkIn.sleepHours) : "",
-    sleepQuality: checkIn.sleepQuality ?? null as number | null,
-    activityLevel: checkIn.activityLevel ?? null as string | null,
+    sleepQuality: checkIn.sleepQuality ?? (null as number | null),
+    activityLevel: checkIn.activityLevel ?? (null as string | null),
     pemFlag: checkIn.pemFlag ?? false,
     pemSeverity: checkIn.pemSeverity ?? 5,
-    orthostaticSymptoms: checkIn.orthostaticSymptoms ?? null as boolean | null,
+    orthostaticSymptoms: checkIn.orthostaticSymptoms ?? (null as boolean | null),
     journalEntry: checkIn.journalEntry ?? "",
-    fatigue: checkIn.symptomFatigue ?? null as number | null,
-    brainFog: checkIn.symptomBrainFog ?? null as number | null,
-    pain: checkIn.symptomPain ?? null as number | null,
-    stress: checkIn.stressLevel ?? null as number | null,
+    fatigue: checkIn.symptomFatigue ?? (null as number | null),
+    brainFog: checkIn.symptomBrainFog ?? (null as number | null),
+    pain: checkIn.symptomPain ?? (null as number | null),
+    stress: checkIn.stressLevel ?? (null as number | null),
     wins: checkIn.wins ?? "",
     challenges: checkIn.challenges ?? "",
     notes: checkIn.notes ?? "",
-  })
-  const set = <K extends keyof typeof form>(key: K) =>
-    (val: (typeof form)[K]) => setForm((prev) => ({ ...prev, [key]: val }))
+  });
+  const set =
+    <K extends keyof typeof form>(key: K) =>
+    (val: (typeof form)[K]) =>
+      setForm((prev) => ({ ...prev, [key]: val }));
 
   async function handleSave(e: React.FormEvent) {
-    e.preventDefault()
-    setSaving(true)
-    setError("")
+    e.preventDefault();
+    setSaving(true);
+    setError("");
     try {
       const res = await fetch(`/api/check-in/${checkInId}`, {
         method: "PUT",
@@ -70,16 +72,16 @@ export function EditCheckInModal({ checkIn, checkInId, onSave, onCancel }: EditC
           challenges: form.challenges || undefined,
           notes: form.notes || undefined,
         }),
-      })
+      });
       if (!res.ok) {
-        setError(t("editError"))
-        return
+        setError(t("editError"));
+        return;
       }
-      onSave()
+      onSave();
     } catch {
-      setError(t("editError"))
+      setError(t("editError"));
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
   }
 
@@ -88,9 +90,7 @@ export function EditCheckInModal({ checkIn, checkInId, onSave, onCancel }: EditC
       <EditMoodPicker mood={form.mood} onChange={set("mood") as (v: string) => void} />
 
       <div>
-        <p className={`${COMPACT_LABEL_CLS} mb-2`}>
-          {t("editEnergy", { n: form.energy })}
-        </p>
+        <p className={`${COMPACT_LABEL_CLS} mb-2`}>{t("editEnergy", { n: form.energy })}</p>
         <div className="flex items-center gap-4">
           <span className="text-sm text-slate-400">{ENERGY_SCALE.min}</span>
           <input
@@ -105,8 +105,20 @@ export function EditCheckInModal({ checkIn, checkInId, onSave, onCancel }: EditC
         </div>
       </div>
 
-      <EditSleepSection sleep={form.sleep} setSleep={set("sleep")} sleepQuality={form.sleepQuality} setSleepQuality={set("sleepQuality")} />
-      <EditActivityPemSection activityLevel={form.activityLevel} setActivityLevel={set("activityLevel")} pemFlag={form.pemFlag} setPemFlag={set("pemFlag")} pemSeverity={form.pemSeverity} setPemSeverity={set("pemSeverity")} />
+      <EditSleepSection
+        sleep={form.sleep}
+        setSleep={set("sleep")}
+        sleepQuality={form.sleepQuality}
+        setSleepQuality={set("sleepQuality")}
+      />
+      <EditActivityPemSection
+        activityLevel={form.activityLevel}
+        setActivityLevel={set("activityLevel")}
+        pemFlag={form.pemFlag}
+        setPemFlag={set("pemFlag")}
+        pemSeverity={form.pemSeverity}
+        setPemSeverity={set("pemSeverity")}
+      />
 
       <div>
         <p className={`${COMPACT_LABEL_CLS} mb-2`}>{t("editOrthostaticLabel")}</p>
@@ -115,7 +127,9 @@ export function EditCheckInModal({ checkIn, checkInId, onSave, onCancel }: EditC
             <button
               key={String(val)}
               type="button"
-              onClick={() => set("orthostaticSymptoms")(form.orthostaticSymptoms === val ? null : val)}
+              onClick={() =>
+                set("orthostaticSymptoms")(form.orthostaticSymptoms === val ? null : val)
+              }
               className={`px-4 py-1.5 rounded-full border text-xs font-medium transition-all ${
                 form.orthostaticSymptoms === val
                   ? val
@@ -130,8 +144,27 @@ export function EditCheckInModal({ checkIn, checkInId, onSave, onCancel }: EditC
         </div>
       </div>
 
-      <EditSymptomsSection fatigue={form.fatigue} setFatigue={set("fatigue")} brainFog={form.brainFog} setBrainFog={set("brainFog")} pain={form.pain} setPain={set("pain")} stress={form.stress} setStress={set("stress")} />
-      <EditTextFields hasJournal={checkIn.journalEntry != null} journalEntry={form.journalEntry} setJournalEntry={set("journalEntry")} wins={form.wins} setWins={set("wins")} challenges={form.challenges} setChallenges={set("challenges")} notes={form.notes} setNotes={set("notes")} />
+      <EditSymptomsSection
+        fatigue={form.fatigue}
+        setFatigue={set("fatigue")}
+        brainFog={form.brainFog}
+        setBrainFog={set("brainFog")}
+        pain={form.pain}
+        setPain={set("pain")}
+        stress={form.stress}
+        setStress={set("stress")}
+      />
+      <EditTextFields
+        hasJournal={checkIn.journalEntry != null}
+        journalEntry={form.journalEntry}
+        setJournalEntry={set("journalEntry")}
+        wins={form.wins}
+        setWins={set("wins")}
+        challenges={form.challenges}
+        setChallenges={set("challenges")}
+        notes={form.notes}
+        setNotes={set("notes")}
+      />
 
       {error && <p className="text-sm text-red-600">{error}</p>}
 
@@ -148,5 +181,5 @@ export function EditCheckInModal({ checkIn, checkInId, onSave, onCancel }: EditC
         </button>
       </div>
     </form>
-  )
+  );
 }

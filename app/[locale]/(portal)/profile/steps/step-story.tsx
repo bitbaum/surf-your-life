@@ -1,16 +1,16 @@
-"use client"
-import { useTranslations } from "next-intl"
-import { Textarea } from "@/components/ui/textarea"
-import type { FormState } from "../profile-form.helpers"
+"use client";
+import { useTranslations } from "next-intl";
+import { Textarea } from "@/components/ui/textarea";
+import type { FormState } from "../profile-form.helpers";
 
 export function StepStory({
   form,
   onChange,
 }: {
-  form: FormState
-  onChange: <K extends keyof FormState>(key: K, val: FormState[K]) => void
+  form: FormState;
+  onChange: <K extends keyof FormState>(key: K, val: FormState[K]) => void;
 }) {
-  const t = useTranslations("portal.profile")
+  const t = useTranslations("portal.profile");
 
   return (
     <div className="flex flex-col gap-4">
@@ -29,5 +29,5 @@ export function StepStory({
         placeholder={t("goalsPlaceholder")}
       />
     </div>
-  )
+  );
 }

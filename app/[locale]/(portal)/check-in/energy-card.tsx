@@ -1,16 +1,16 @@
-"use client"
+"use client";
 
-import { useTranslations } from "next-intl"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { ENERGY_SCALE } from "@/lib/constants"
+import { useTranslations } from "next-intl";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { ENERGY_SCALE } from "@/lib/constants";
 
 interface Props {
-  value: number
-  onChange: (v: number) => void
+  value: number;
+  onChange: (v: number) => void;
 }
 
 export function EnergyCard({ value, onChange }: Props) {
-  const t = useTranslations("portal.checkIn")
+  const t = useTranslations("portal.checkIn");
 
   return (
     <Card>
@@ -34,5 +34,5 @@ export function EnergyCard({ value, onChange }: Props) {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

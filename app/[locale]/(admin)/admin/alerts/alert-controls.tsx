@@ -1,30 +1,43 @@
-"use client"
+"use client";
 
-import { useTranslations } from "next-intl"
-import { CheckCircle } from "lucide-react"
-import type { AlertType } from "@/lib/db/schema"
-import type { AlertRow } from "./alert-list"
+import { useTranslations } from "next-intl";
+import { CheckCircle } from "lucide-react";
+import type { AlertType } from "@/lib/db/schema";
+import type { AlertRow } from "./alert-list";
 
-const ALL_FILTER = "all" as const
-type TypeFilter = AlertType | typeof ALL_FILTER
+const ALL_FILTER = "all" as const;
+type TypeFilter = AlertType | typeof ALL_FILTER;
 
 interface Props {
-  search: string
-  onSearch: (v: string) => void
-  searched: AlertRow[]
-  activeTypes: AlertType[]
-  typeFilter: TypeFilter
-  onTypeFilter: (v: TypeFilter) => void
-  visibleCount: number
-  resolvingAll: boolean
-  onResolveAll: () => void
-  mineOnly: boolean
-  onMineOnly: (v: boolean) => void
-  hasMineFilter: boolean
+  search: string;
+  onSearch: (v: string) => void;
+  searched: AlertRow[];
+  activeTypes: AlertType[];
+  typeFilter: TypeFilter;
+  onTypeFilter: (v: TypeFilter) => void;
+  visibleCount: number;
+  resolvingAll: boolean;
+  onResolveAll: () => void;
+  mineOnly: boolean;
+  onMineOnly: (v: boolean) => void;
+  hasMineFilter: boolean;
 }
 
-export function AlertControls({ search, onSearch, searched, activeTypes, typeFilter, onTypeFilter, visibleCount, resolvingAll, onResolveAll, mineOnly, onMineOnly, hasMineFilter }: Props) {
-  const t = useTranslations("admin.alerts")
+export function AlertControls({
+  search,
+  onSearch,
+  searched,
+  activeTypes,
+  typeFilter,
+  onTypeFilter,
+  visibleCount,
+  resolvingAll,
+  onResolveAll,
+  mineOnly,
+  onMineOnly,
+  hasMineFilter,
+}: Props) {
+  const t = useTranslations("admin.alerts");
 
   return (
     <>
@@ -55,7 +68,7 @@ export function AlertControls({ search, onSearch, searched, activeTypes, typeFil
               {t("filterAll")} ({searched.length})
             </button>
             {activeTypes.map((type) => {
-              const count = searched.filter((a) => a.type === type).length
+              const count = searched.filter((a) => a.type === type).length;
               return (
                 <button
                   key={type}
@@ -64,7 +77,7 @@ export function AlertControls({ search, onSearch, searched, activeTypes, typeFil
                 >
                   {t(`type.${type}`)} ({count})
                 </button>
-              )
+              );
             })}
           </div>
         ) : (
@@ -82,5 +95,5 @@ export function AlertControls({ search, onSearch, searched, activeTypes, typeFil
         )}
       </div>
     </>
-  )
+  );
 }

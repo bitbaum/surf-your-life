@@ -5,35 +5,43 @@
  * narrative summary and stores it in the most recent check-in's aiInsight field.
  * Gracefully degrades when ANTHROPIC_API_KEY is absent.
  */
-import { NextResponse } from "next/server"
-import { db } from "@/lib/db"
-import { users, checkIns, clientAlerts } from "@/lib/db/schema"
-import { eq, and, gte, desc, inArray, count } from "drizzle-orm"
-import { STAFF_ROLES, CLIENT_ROLE } from "@/lib/domain/auth"
-import { SEVEN_DAYS_MS, SITE_URL, AI_DIGEST_MIN_CHECKINS } from "@/lib/constants"
-import { roundOne, groupBy } from "@/lib/utils"
-import { summariseCheckIns } from "@/lib/domain/check-in"
-import { generateWeeklyDigest } from "@/lib/domain/digest"
-import { verifyCronAuth } from "@/lib/auth/cron"
-import { sendEmailSafe } from "@/lib/email"
-import { practitionerWeeklyDigestEmail, type PractitionerDigestClientRow } from "@/lib/email/templates"
+import { NextResponse } from "next/server";
+import { db } from "@/lib/db";
+import { users, checkIns, clientAlerts } from "@/lib/db/schema";
+import { eq, and, gte, desc, inArray, count } from "drizzle-orm";
+import { STAFF_ROLES, CLIENT_ROLE } from "@/lib/domain/auth";
+import { SEVEN_DAYS_MS, SITE_URL, AI_DIGEST_MIN_CHECKINS } from "@/lib/constants";
+import { roundOne, groupBy } from "@/lib/utils";
+import { summariseCheckIns } from "@/lib/domain/check-in";
+import { generateWeeklyDigest } from "@/lib/domain/digest";
+import { verifyCronAuth } from "@/lib/auth/cron";
+import { sendEmailSafe } from "@/lib/email";
+import {
+  practitionerWeeklyDigestEmail,
+  type PractitionerDigestClientRow,
+} from "@/lib/email/templates";
 
 export async function GET(req: Request) {
-  const authError = verifyCronAuth(req)
-  if (authError) return authError
+  const authError = verifyCronAuth(req);
+  if (authError) return authError;
 
-  const sevenDaysAgo = new Date(Date.now() - SEVEN_DAYS_MS)
+  const sevenDaysAgo = new Date(Date.now() - SEVEN_DAYS_MS);
 
   const allClients = await db.query.users.findMany({
     where: eq(users.role, CLIENT_ROLE),
     columns: { id: true, name: true, email: true },
-  })
+  });
 
   if (allClients.length === 0) {
-    return NextResponse.json({ success: true, processed: 0, skipped: 0, emailedPractitioners: false })
+    return NextResponse.json({
+      success: true,
+      processed: 0,
+      skipped: 0,
+      emailedPractitioners: false,
+    });
   }
 
-  const clientIds = allClients.map((c) => c.id)
+  const clientIds = allClients.map((c) => c.id);
 
   // Batch: all check-ins for all clients this week (one query instead of N)
   const allWeekCheckIns = await db.query.checkIns.findMany({
@@ -60,63 +68,62 @@ export async function GET(req: Request) {
       notes: true,
     },
     orderBy: [desc(checkIns.createdAt)],
-  })
+  });
 
   // Batch: unresolved alert counts per client this week (one query instead of N)
   const alertCountRows = await db
     .select({ clientId: clientAlerts.clientId, count: count() })
     .from(clientAlerts)
-    .where(and(
-      inArray(clientAlerts.clientId, clientIds),
-      eq(clientAlerts.isResolved, false),
-      gte(clientAlerts.createdAt, sevenDaysAgo)
-    ))
-    .groupBy(clientAlerts.clientId)
-  const alertCountMap = new Map(alertCountRows.map((r) => [r.clientId, r.count]))
+    .where(
+      and(
+        inArray(clientAlerts.clientId, clientIds),
+        eq(clientAlerts.isResolved, false),
+        gte(clientAlerts.createdAt, sevenDaysAgo),
+      ),
+    )
+    .groupBy(clientAlerts.clientId);
+  const alertCountMap = new Map(alertCountRows.map((r) => [r.clientId, r.count]));
 
-  const checkInsByClient = groupBy(allWeekCheckIns, (ci) => ci.userId)
+  const checkInsByClient = groupBy(allWeekCheckIns, (ci) => ci.userId);
 
-  let processed = 0
-  let skipped = 0
-  let failed = 0
-  const digestRows: PractitionerDigestClientRow[] = []
+  let processed = 0;
+  let skipped = 0;
+  let failed = 0;
+  const digestRows: PractitionerDigestClientRow[] = [];
 
   for (const client of allClients) {
-    const weekCheckIns = checkInsByClient.get(client.id) ?? []
+    const weekCheckIns = checkInsByClient.get(client.id) ?? [];
 
     if (weekCheckIns.length < AI_DIGEST_MIN_CHECKINS) {
-      skipped++
-      continue
+      skipped++;
+      continue;
     }
 
-    const digest = await generateWeeklyDigest(client.name ?? "Client", weekCheckIns)
+    const digest = await generateWeeklyDigest(client.name ?? "Client", weekCheckIns);
     if (!digest) {
-      skipped++
-      continue
+      skipped++;
+      continue;
     }
 
     // Store on the most recent check-in — count only on success
-    const mostRecentId = weekCheckIns[0].id
+    const mostRecentId = weekCheckIns[0].id;
     try {
-      await db
-        .update(checkIns)
-        .set({ aiInsight: digest })
-        .where(eq(checkIns.id, mostRecentId))
+      await db.update(checkIns).set({ aiInsight: digest }).where(eq(checkIns.id, mostRecentId));
     } catch (err) {
-      console.error("[ai-digest] DB write failed for client", client.id, err)
-      failed++
-      continue
+      console.error("[ai-digest] DB write failed for client", client.id, err);
+      failed++;
+      continue;
     }
 
-    processed++
+    processed++;
 
     // Collect stats for the practitioner digest email
-    const stats = summariseCheckIns(weekCheckIns)!
-    const avgEnergy = roundOne(stats.avgEnergy)
-    const avgMood = stats.avgMood
-    const avgSleep = stats.avgSleep != null ? roundOne(stats.avgSleep) : null
-    const avgStress = stats.avgStress != null ? roundOne(stats.avgStress) : null
-    const pemEpisodes = stats.pemCount
+    const stats = summariseCheckIns(weekCheckIns)!;
+    const avgEnergy = roundOne(stats.avgEnergy);
+    const avgMood = stats.avgMood;
+    const avgSleep = stats.avgSleep != null ? roundOne(stats.avgSleep) : null;
+    const avgStress = stats.avgStress != null ? roundOne(stats.avgStress) : null;
+    const pemEpisodes = stats.pemCount;
 
     digestRows.push({
       clientId: client.id,
@@ -130,29 +137,29 @@ export async function GET(req: Request) {
       pemEpisodes,
       alertCount: alertCountMap.get(client.id) ?? 0,
       aiNarrative: digest,
-    })
+    });
   }
 
   // Send weekly digest to all practitioners and admins
-  let emailedPractitioners = 0
+  let emailedPractitioners = 0;
   if (digestRows.length > 0) {
     const practitioners = await db
       .select({ email: users.email })
       .from(users)
-      .where(inArray(users.role, STAFF_ROLES))
+      .where(inArray(users.role, STAFF_ROLES));
 
     if (practitioners.length > 0) {
-      const weekEnd = new Date()
-      const weekStart = new Date(weekEnd.getTime() - SEVEN_DAYS_MS)
+      const weekEnd = new Date();
+      const weekStart = new Date(weekEnd.getTime() - SEVEN_DAYS_MS);
       const fmt = (d: Date) =>
-        d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })
+        d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
 
       const html = practitionerWeeklyDigestEmail({
         weekStart: fmt(weekStart),
         weekEnd: fmt(weekEnd),
         clients: digestRows,
         adminUrl: `${SITE_URL}/admin/clients`,
-      })
+      });
 
       const deliveries = await Promise.all(
         practitioners.map((p) =>
@@ -162,14 +169,20 @@ export async function GET(req: Request) {
               subject: `Weekly client overview – ${fmt(weekStart)} to ${fmt(weekEnd)}`,
               html,
             },
-            "cron-ai-digest"
-          )
-        )
-      )
-      emailedPractitioners = deliveries.filter(Boolean).length
+            "cron-ai-digest",
+          ),
+        ),
+      );
+      emailedPractitioners = deliveries.filter(Boolean).length;
     }
   }
 
   // emailedPractitioners is a delivered count, not "did we have rows to send".
-  return NextResponse.json({ success: true, processed, skipped, ...(failed > 0 && { failed }), emailedPractitioners })
+  return NextResponse.json({
+    success: true,
+    processed,
+    skipped,
+    ...(failed > 0 && { failed }),
+    emailedPractitioners,
+  });
 }

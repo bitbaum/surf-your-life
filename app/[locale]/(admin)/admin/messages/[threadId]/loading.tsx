@@ -1,4 +1,4 @@
-import { Card } from "@/components/ui/card"
+import { Card } from "@/components/ui/card";
 
 export default function AdminThreadLoading() {
   return (
@@ -17,5 +17,5 @@ export default function AdminThreadLoading() {
         <div className="h-12 bg-slate-100 rounded-xl" />
       </Card>
     </div>
-  )
+  );
 }

@@ -1,4 +1,4 @@
-import { Card } from "@/components/ui/card"
+import { Card } from "@/components/ui/card";
 
 export default function CheckInsLoading() {
   return (
@@ -19,5 +19,5 @@ export default function CheckInsLoading() {
         ))}
       </Card>
     </div>
-  )
+  );
 }

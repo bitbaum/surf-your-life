@@ -1,24 +1,31 @@
-"use client"
+"use client";
 
-import { useTranslations } from "next-intl"
-import { SLEEP_HOURS, SLEEP_QUALITY_OPTIONS, CHIP_SELECTED, CHIP_UNSELECTED, COMPACT_LABEL_CLS } from "@/lib/constants"
+import { useTranslations } from "next-intl";
+import {
+  SLEEP_HOURS,
+  SLEEP_QUALITY_OPTIONS,
+  CHIP_SELECTED,
+  CHIP_UNSELECTED,
+  COMPACT_LABEL_CLS,
+} from "@/lib/constants";
 
 interface Props {
-  sleep: string
-  setSleep: (v: string) => void
-  sleepQuality: number | null
-  setSleepQuality: (v: number | null) => void
+  sleep: string;
+  setSleep: (v: string) => void;
+  sleepQuality: number | null;
+  setSleepQuality: (v: number | null) => void;
 }
 
 export function EditSleepSection({ sleep, setSleep, sleepQuality, setSleepQuality }: Props) {
-  const t = useTranslations("portal.checkIns")
-  const tCheckIn = useTranslations("portal.checkIn")
+  const t = useTranslations("portal.checkIns");
+  const tCheckIn = useTranslations("portal.checkIn");
 
   return (
     <>
       <div>
         <label className={`${COMPACT_LABEL_CLS} block mb-1.5`}>
-          {t("editSleepLabel")} <span className="text-slate-400 font-normal normal-case">{t("editOptional")}</span>
+          {t("editSleepLabel")}{" "}
+          <span className="text-slate-400 font-normal normal-case">{t("editOptional")}</span>
         </label>
         <input
           type="number"
@@ -33,7 +40,8 @@ export function EditSleepSection({ sleep, setSleep, sleepQuality, setSleepQualit
 
       <div>
         <p className={`${COMPACT_LABEL_CLS} mb-2`}>
-          {t("editSleepQualityLabel")} <span className="text-slate-400 font-normal normal-case">{t("editOptional")}</span>
+          {t("editSleepQualityLabel")}{" "}
+          <span className="text-slate-400 font-normal normal-case">{t("editOptional")}</span>
         </p>
         <div className="flex gap-2 flex-wrap">
           {SLEEP_QUALITY_OPTIONS.map((opt) => (
@@ -46,11 +54,13 @@ export function EditSleepSection({ sleep, setSleep, sleepQuality, setSleepQualit
               }`}
             >
               <span className="text-lg">{opt.emoji}</span>
-              <span className="text-xs text-slate-600">{tCheckIn(opt.labelKey as Parameters<typeof tCheckIn>[0])}</span>
+              <span className="text-xs text-slate-600">
+                {tCheckIn(opt.labelKey as Parameters<typeof tCheckIn>[0])}
+              </span>
             </button>
           ))}
         </div>
       </div>
     </>
-  )
+  );
 }

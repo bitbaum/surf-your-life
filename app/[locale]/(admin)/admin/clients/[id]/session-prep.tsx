@@ -1,53 +1,59 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { useTranslations } from "next-intl"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Sparkles } from "lucide-react"
+import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Sparkles } from "lucide-react";
 
 type Stats = {
-  alertCount: number
-  highAlertCount: number
-  pemCount: number
-  latestEnergy: number | null
-  avgEnergy: number | null
-  energyDirection: "up" | "down" | "stable"
-  checkInCount: number
-  techniqueAdherence: number | null
-  techniqueStreak: number
-}
+  alertCount: number;
+  highAlertCount: number;
+  pemCount: number;
+  latestEnergy: number | null;
+  avgEnergy: number | null;
+  energyDirection: "up" | "down" | "stable";
+  checkInCount: number;
+  techniqueAdherence: number | null;
+  techniqueStreak: number;
+};
 
-const DIRECTION_ICON: Record<string, string> = { up: "↑", down: "↓", stable: "→" }
-const DIRECTION_COLOR: Record<string, string> = { up: "text-teal-600", down: "text-red-500", stable: "text-slate-500" }
+const DIRECTION_ICON: Record<string, string> = { up: "↑", down: "↓", stable: "→" };
+const DIRECTION_COLOR: Record<string, string> = {
+  up: "text-teal-600",
+  down: "text-red-500",
+  stable: "text-slate-500",
+};
 
 interface Props {
-  clientId: string
+  clientId: string;
 }
 
 export function SessionPrep({ clientId }: Props) {
-  const t = useTranslations("admin.clients.sessionPrep")
-  const [loading, setLoading] = useState(true)
-  const [summary, setSummary] = useState<string | null>(null)
-  const [stats, setStats] = useState<Stats | null>(null)
-  const [aiGenerated, setAiGenerated] = useState(false)
-  const [error, setError] = useState("")
+  const t = useTranslations("admin.clients.sessionPrep");
+  const [loading, setLoading] = useState(true);
+  const [summary, setSummary] = useState<string | null>(null);
+  const [stats, setStats] = useState<Stats | null>(null);
+  const [aiGenerated, setAiGenerated] = useState(false);
+  const [error, setError] = useState("");
 
-  useEffect(() => { handleGenerate() }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    handleGenerate();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function handleGenerate() {
-    setLoading(true)
-    setError("")
+    setLoading(true);
+    setError("");
     try {
-      const res = await fetch(`/api/admin/clients/${clientId}/session-prep`)
-      const json = await res.json()
-      if (!json.success) throw new Error(json.error)
-      setSummary(json.data.summary)
-      setStats(json.data.stats ?? null)
-      setAiGenerated(json.data.aiGenerated)
+      const res = await fetch(`/api/admin/clients/${clientId}/session-prep`);
+      const json = await res.json();
+      if (!json.success) throw new Error(json.error);
+      setSummary(json.data.summary);
+      setStats(json.data.stats ?? null);
+      setAiGenerated(json.data.aiGenerated);
     } catch {
-      setError(t("error"))
+      setError(t("error"));
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
@@ -91,7 +97,9 @@ export function SessionPrep({ clientId }: Props) {
                 {stats.latestEnergy != null && (
                   <div className="flex flex-col gap-0.5">
                     <span className="text-xs text-slate-400">{t("statsEnergy")}</span>
-                    <span className={`text-sm font-semibold ${DIRECTION_COLOR[stats.energyDirection]}`}>
+                    <span
+                      className={`text-sm font-semibold ${DIRECTION_COLOR[stats.energyDirection]}`}
+                    >
                       {stats.latestEnergy}/10 {DIRECTION_ICON[stats.energyDirection]}
                     </span>
                   </div>
@@ -99,8 +107,13 @@ export function SessionPrep({ clientId }: Props) {
                 {stats.alertCount > 0 && (
                   <div className="flex flex-col gap-0.5">
                     <span className="text-xs text-slate-400">{t("statsAlerts")}</span>
-                    <span className={`text-sm font-semibold ${stats.highAlertCount > 0 ? "text-red-600" : "text-amber-600"}`}>
-                      {stats.alertCount}{stats.highAlertCount > 0 ? ` ${t("statsHighAlerts", { count: stats.highAlertCount })}` : ""}
+                    <span
+                      className={`text-sm font-semibold ${stats.highAlertCount > 0 ? "text-red-600" : "text-amber-600"}`}
+                    >
+                      {stats.alertCount}
+                      {stats.highAlertCount > 0
+                        ? ` ${t("statsHighAlerts", { count: stats.highAlertCount })}`
+                        : ""}
                     </span>
                   </div>
                 )}
@@ -132,5 +145,5 @@ export function SessionPrep({ clientId }: Props) {
         )}
       </CardContent>
     </Card>
-  )
+  );
 }

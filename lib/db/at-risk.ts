@@ -1,5 +1,5 @@
-import { isNull, lt, max, or, type SQL } from "drizzle-orm"
-import { checkIns } from "./schema"
+import { isNull, lt, max, or, type SQL } from "drizzle-orm";
+import { checkIns } from "./schema";
 
 /**
  * SQL HAVING fragment for "at-risk" clients: a client whose most recent
@@ -11,8 +11,5 @@ import { checkIns } from "./schema"
  * agree on which clients qualify.
  */
 export function atRiskHaving(cutoff: Date): SQL<unknown> {
-  return or(
-    isNull(max(checkIns.createdAt)),
-    lt(max(checkIns.createdAt), cutoff)
-  )!
+  return or(isNull(max(checkIns.createdAt)), lt(max(checkIns.createdAt), cutoff))!;
 }

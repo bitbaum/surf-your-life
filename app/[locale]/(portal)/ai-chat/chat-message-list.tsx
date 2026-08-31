@@ -1,17 +1,17 @@
-"use client"
+"use client";
 
-import { useTranslations } from "next-intl"
-import type { Message } from "./chat-interface"
+import { useTranslations } from "next-intl";
+import type { Message } from "./chat-interface";
 
 type Props = {
-  messages: Message[]
-  sending: boolean
-  bottomRef: React.RefObject<HTMLDivElement | null>
-  onSuggestion: (text: string) => void
-}
+  messages: Message[];
+  sending: boolean;
+  bottomRef: React.RefObject<HTMLDivElement | null>;
+  onSuggestion: (text: string) => void;
+};
 
 export function ChatMessageList({ messages, sending, bottomRef, onSuggestion }: Props) {
-  const t = useTranslations("portal.aiChat")
+  const t = useTranslations("portal.aiChat");
 
   return (
     <div className="flex-1 overflow-y-auto flex flex-col gap-4 py-4 pr-1">
@@ -77,5 +77,5 @@ export function ChatMessageList({ messages, sending, bottomRef, onSuggestion }: 
 
       <div ref={bottomRef} />
     </div>
-  )
+  );
 }

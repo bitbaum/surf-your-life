@@ -1,17 +1,16 @@
-import { formatDate } from "@/lib/utils"
-import { MOOD_EMOJI, MOOD_MAP, ACTIVITY_LEVEL_MAP } from "@/lib/constants"
-import { CheckInNote } from "./check-in-note"
-import type { CheckIn } from "@/lib/db/schema"
-import { getTranslations } from "next-intl/server"
-
+import { formatDate } from "@/lib/utils";
+import { MOOD_EMOJI, MOOD_MAP, ACTIVITY_LEVEL_MAP } from "@/lib/constants";
+import { CheckInNote } from "./check-in-note";
+import type { CheckIn } from "@/lib/db/schema";
+import { getTranslations } from "next-intl/server";
 
 type Props = {
-  ci: CheckIn
-}
+  ci: CheckIn;
+};
 
 export async function CheckInRow({ ci }: Props) {
-  const t = await getTranslations("admin.clients")
-  const tCheckIn = await getTranslations("portal.checkIn")
+  const t = await getTranslations("admin.clients");
+  const tCheckIn = await getTranslations("portal.checkIn");
 
   return (
     <div className="py-3">
@@ -23,30 +22,72 @@ export async function CheckInRow({ ci }: Props) {
         <span className="text-xs text-slate-400">{formatDate(ci.createdAt)}</span>
       </div>
       <div className="flex flex-wrap gap-3 text-xs text-slate-500 mt-1">
-        <span>{t("detail.energy")}: <strong className="text-slate-700">{ci.energyLevel}/10</strong></span>
-        {ci.sleepHours != null && <span>{t("detail.sleep")}: <strong className="text-slate-700">{ci.sleepHours}h</strong></span>}
-        {ci.activityLevel && ACTIVITY_LEVEL_MAP[ci.activityLevel] && <span>{t("detail.activityLevel")}: <strong className="text-slate-700">{tCheckIn(ACTIVITY_LEVEL_MAP[ci.activityLevel].labelKey)}</strong></span>}
-        {ci.sleepQuality != null && <span>{t("detail.sleepQuality")}: <strong className="text-slate-700">{ci.sleepQuality}/5</strong></span>}
+        <span>
+          {t("detail.energy")}: <strong className="text-slate-700">{ci.energyLevel}/10</strong>
+        </span>
+        {ci.sleepHours != null && (
+          <span>
+            {t("detail.sleep")}: <strong className="text-slate-700">{ci.sleepHours}h</strong>
+          </span>
+        )}
+        {ci.activityLevel && ACTIVITY_LEVEL_MAP[ci.activityLevel] && (
+          <span>
+            {t("detail.activityLevel")}:{" "}
+            <strong className="text-slate-700">
+              {tCheckIn(ACTIVITY_LEVEL_MAP[ci.activityLevel].labelKey)}
+            </strong>
+          </span>
+        )}
+        {ci.sleepQuality != null && (
+          <span>
+            {t("detail.sleepQuality")}:{" "}
+            <strong className="text-slate-700">{ci.sleepQuality}/5</strong>
+          </span>
+        )}
         {ci.pemFlag && (
           <span className="text-red-600 font-medium">
-            {t("detail.pem")}{ci.pemSeverity ? ` ${ci.pemSeverity}/10` : ""}
+            {t("detail.pem")}
+            {ci.pemSeverity ? ` ${ci.pemSeverity}/10` : ""}
           </span>
         )}
         {ci.orthostaticSymptoms && (
           <span className="text-orange-600 font-medium">{t("detail.orthostatic")}</span>
         )}
       </div>
-      {(ci.symptomFatigue != null || ci.symptomBrainFog != null || ci.symptomPain != null || ci.stressLevel != null) && (
+      {(ci.symptomFatigue != null ||
+        ci.symptomBrainFog != null ||
+        ci.symptomPain != null ||
+        ci.stressLevel != null) && (
         <div className="flex flex-wrap gap-2 text-xs text-slate-400 mt-1">
-          {ci.symptomFatigue != null && <span>{t("detail.fatigue")}: <strong>{ci.symptomFatigue}</strong></span>}
-          {ci.symptomBrainFog != null && <span>{t("detail.brainFog")}: <strong>{ci.symptomBrainFog}</strong></span>}
-          {ci.symptomPain != null && <span>{t("detail.pain")}: <strong>{ci.symptomPain}</strong></span>}
-          {ci.stressLevel != null && <span>{t("detail.stress")}: <strong>{ci.stressLevel}</strong></span>}
+          {ci.symptomFatigue != null && (
+            <span>
+              {t("detail.fatigue")}: <strong>{ci.symptomFatigue}</strong>
+            </span>
+          )}
+          {ci.symptomBrainFog != null && (
+            <span>
+              {t("detail.brainFog")}: <strong>{ci.symptomBrainFog}</strong>
+            </span>
+          )}
+          {ci.symptomPain != null && (
+            <span>
+              {t("detail.pain")}: <strong>{ci.symptomPain}</strong>
+            </span>
+          )}
+          {ci.stressLevel != null && (
+            <span>
+              {t("detail.stress")}: <strong>{ci.stressLevel}</strong>
+            </span>
+          )}
         </div>
       )}
-      {ci.journalEntry && <p className="text-xs text-slate-600 mt-1 leading-relaxed">{ci.journalEntry}</p>}
+      {ci.journalEntry && (
+        <p className="text-xs text-slate-600 mt-1 leading-relaxed">{ci.journalEntry}</p>
+      )}
       {!ci.journalEntry && ci.wins && <p className="text-xs text-teal-700 mt-1">✓ {ci.wins}</p>}
-      {!ci.journalEntry && ci.challenges && <p className="text-xs text-slate-500 mt-1 italic">{ci.challenges}</p>}
+      {!ci.journalEntry && ci.challenges && (
+        <p className="text-xs text-slate-500 mt-1 italic">{ci.challenges}</p>
+      )}
       {!ci.journalEntry && ci.notes && <p className="text-xs text-slate-400 mt-1">{ci.notes}</p>}
       {ci.aiInsight && (
         <div className="mt-2 p-2 bg-violet-50 border border-violet-100 rounded-lg">
@@ -60,5 +101,5 @@ export async function CheckInRow({ ci }: Props) {
         existingNoteAt={ci.practitionerNoteAt ?? null}
       />
     </div>
-  )
+  );
 }

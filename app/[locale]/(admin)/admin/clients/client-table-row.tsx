@@ -1,58 +1,78 @@
-import { Link } from "@/i18n/navigation"
-import { formatDate } from "@/lib/utils"
-import { getTranslations } from "next-intl/server"
-import { NewThreadButton } from "./[id]/new-thread-button"
-import { DayCadenceSparkline, type DayState } from "@/components/ui/day-cadence-sparkline"
-import { MessageSquare } from "lucide-react"
-import { CLIENT_ENERGY_LOW_THRESHOLD, CLIENT_ENERGY_MODERATE_THRESHOLD } from "@/lib/constants"
+import { Link } from "@/i18n/navigation";
+import { formatDate } from "@/lib/utils";
+import { getTranslations } from "next-intl/server";
+import { NewThreadButton } from "./[id]/new-thread-button";
+import { DayCadenceSparkline, type DayState } from "@/components/ui/day-cadence-sparkline";
+import { MessageSquare } from "lucide-react";
+import { CLIENT_ENERGY_LOW_THRESHOLD, CLIENT_ENERGY_MODERATE_THRESHOLD } from "@/lib/constants";
 
 export type ClientRow = {
-  id: string
-  name: string | null
-  email: string
-  createdAt: Date
-  mainConcern: string | null
-  lastCheckIn: Date | null
-  checkInCount: number
-}
+  id: string;
+  name: string | null;
+  email: string;
+  createdAt: Date;
+  mainConcern: string | null;
+  lastCheckIn: Date | null;
+  checkInCount: number;
+};
 
-type AlertInfo = { count: number; hasHigh: boolean }
+type AlertInfo = { count: number; hasHigh: boolean };
 
 type NudgeProps = {
-  label: string
-  modalTitle: string
-  subject: string
-  body: string
-}
+  label: string;
+  modalTitle: string;
+  subject: string;
+  body: string;
+};
 
 interface Props {
-  client: ClientRow
-  alert: AlertInfo | undefined
-  unreadMessages: number
-  energyTrend: "up" | "down" | "stable" | null
-  latestEnergy: number | null
-  isStale: boolean
-  staleHint: string
-  viewLabel: string
-  sparkDays: string[]
-  sparkCheckedIn: Set<string>
-  sparkPemDays: Set<string>
-  sparkHint: string
-  sparkDayLabels: Record<DayState, string>
-  nudge?: NudgeProps | null
+  client: ClientRow;
+  alert: AlertInfo | undefined;
+  unreadMessages: number;
+  energyTrend: "up" | "down" | "stable" | null;
+  latestEnergy: number | null;
+  isStale: boolean;
+  staleHint: string;
+  viewLabel: string;
+  sparkDays: string[];
+  sparkCheckedIn: Set<string>;
+  sparkPemDays: Set<string>;
+  sparkHint: string;
+  sparkDayLabels: Record<DayState, string>;
+  nudge?: NudgeProps | null;
 }
 
-export async function ClientTableRow({ client, alert, unreadMessages, energyTrend, latestEnergy, isStale, staleHint, viewLabel, sparkDays, sparkCheckedIn, sparkPemDays, sparkHint, sparkDayLabels, nudge }: Props) {
-  const tConcerns = await getTranslations("concerns")
+export async function ClientTableRow({
+  client,
+  alert,
+  unreadMessages,
+  energyTrend,
+  latestEnergy,
+  isStale,
+  staleHint,
+  viewLabel,
+  sparkDays,
+  sparkCheckedIn,
+  sparkPemDays,
+  sparkHint,
+  sparkDayLabels,
+  nudge,
+}: Props) {
+  const tConcerns = await getTranslations("concerns");
   return (
     <tr className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
       <td className="py-3 font-medium text-slate-800">
         <span className="flex items-center gap-2">
-          <Link href={`/admin/clients/${client.id}`} className="hover:text-teal-700 transition-colors">
+          <Link
+            href={`/admin/clients/${client.id}`}
+            className="hover:text-teal-700 transition-colors"
+          >
             {client.name ?? "—"}
           </Link>
           {(alert?.count ?? 0) > 0 && (
-            <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full leading-none ${alert!.hasHigh ? "text-white bg-red-600" : "text-red-600 bg-red-50"}`}>
+            <span
+              className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full leading-none ${alert!.hasHigh ? "text-white bg-red-600" : "text-red-600 bg-red-50"}`}
+            >
               {alert!.count}
             </span>
           )}
@@ -69,7 +89,9 @@ export async function ClientTableRow({ client, alert, unreadMessages, energyTren
       </td>
       <td className="py-3 text-slate-600">{client.email}</td>
       <td className="py-3 text-slate-500">
-        {client.mainConcern ? tConcerns(client.mainConcern as Parameters<typeof tConcerns>[0]) : "—"}
+        {client.mainConcern
+          ? tConcerns(client.mainConcern as Parameters<typeof tConcerns>[0])
+          : "—"}
       </td>
       <td className="py-3 text-slate-500">
         <span className="inline-flex items-center gap-2">
@@ -81,22 +103,56 @@ export async function ClientTableRow({ client, alert, unreadMessages, energyTren
                 className="w-1.5 h-1.5 rounded-full bg-amber-500 flex-shrink-0"
               />
             )}
-            {client.lastCheckIn ? formatDate(client.lastCheckIn) : <span className="text-slate-300">—</span>}
+            {client.lastCheckIn ? (
+              formatDate(client.lastCheckIn)
+            ) : (
+              <span className="text-slate-300">—</span>
+            )}
           </span>
-          <DayCadenceSparkline days={sparkDays} checkedIn={sparkCheckedIn} pemDays={sparkPemDays} hint={sparkHint} dayLabels={sparkDayLabels} />
+          <DayCadenceSparkline
+            days={sparkDays}
+            checkedIn={sparkCheckedIn}
+            pemDays={sparkPemDays}
+            hint={sparkHint}
+            dayLabels={sparkDayLabels}
+          />
         </span>
       </td>
       <td className="py-3 text-slate-500">
         <span className="inline-flex items-center gap-1">
-          {client.checkInCount > 0 ? client.checkInCount : <span className="text-slate-300">0</span>}
+          {client.checkInCount > 0 ? (
+            client.checkInCount
+          ) : (
+            <span className="text-slate-300">0</span>
+          )}
           {latestEnergy != null && (
-            <span className={`text-xs font-medium ${latestEnergy <= CLIENT_ENERGY_LOW_THRESHOLD ? "text-red-600" : latestEnergy <= CLIENT_ENERGY_MODERATE_THRESHOLD ? "text-amber-600" : "text-teal-600"}`}>
+            <span
+              className={`text-xs font-medium ${latestEnergy <= CLIENT_ENERGY_LOW_THRESHOLD ? "text-red-600" : latestEnergy <= CLIENT_ENERGY_MODERATE_THRESHOLD ? "text-amber-600" : "text-teal-600"}`}
+            >
               {latestEnergy}/10
             </span>
           )}
-          {energyTrend === "up" && <span className="text-teal-600 text-xs font-semibold leading-none" title="Energy improving (7-day avg)">↑</span>}
-          {energyTrend === "down" && <span className="text-red-500 text-xs font-semibold leading-none" title="Energy declining (7-day avg)">↓</span>}
-          {energyTrend === "stable" && <span className="text-slate-400 text-xs leading-none" title="Energy stable (7-day avg)">→</span>}
+          {energyTrend === "up" && (
+            <span
+              className="text-teal-600 text-xs font-semibold leading-none"
+              title="Energy improving (7-day avg)"
+            >
+              ↑
+            </span>
+          )}
+          {energyTrend === "down" && (
+            <span
+              className="text-red-500 text-xs font-semibold leading-none"
+              title="Energy declining (7-day avg)"
+            >
+              ↓
+            </span>
+          )}
+          {energyTrend === "stable" && (
+            <span className="text-slate-400 text-xs leading-none" title="Energy stable (7-day avg)">
+              →
+            </span>
+          )}
         </span>
       </td>
       <td className="py-3 text-slate-400">{formatDate(client.createdAt)}</td>
@@ -120,5 +176,5 @@ export async function ClientTableRow({ client, alert, unreadMessages, energyTren
         </div>
       </td>
     </tr>
-  )
+  );
 }

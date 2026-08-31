@@ -1,36 +1,36 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { useTranslations } from "next-intl"
-import { Button } from "@/components/ui/button"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { Button } from "@/components/ui/button";
 
 export function ReplyForm({ threadId }: { threadId: string }) {
-  const t = useTranslations("messages")
-  const router = useRouter()
-  const [body, setBody] = useState("")
-  const [sending, setSending] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const t = useTranslations("messages");
+  const router = useRouter();
+  const [body, setBody] = useState("");
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    if (!body.trim()) return
-    setSending(true)
-    setError(null)
+    e.preventDefault();
+    if (!body.trim()) return;
+    setSending(true);
+    setError(null);
     try {
       const res = await fetch(`/api/threads/${threadId}/messages`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ body: body.trim() }),
-      })
-      const json = await res.json()
-      if (!json.success) throw new Error(json.error ?? t("failedToSend"))
-      setBody("")
-      router.refresh()
+      });
+      const json = await res.json();
+      if (!json.success) throw new Error(json.error ?? t("failedToSend"));
+      setBody("");
+      router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("failedToSend"))
+      setError(err instanceof Error ? err.message : t("failedToSend"));
     } finally {
-      setSending(false)
+      setSending(false);
     }
   }
 
@@ -51,5 +51,5 @@ export function ReplyForm({ threadId }: { threadId: string }) {
         </Button>
       </div>
     </form>
-  )
+  );
 }

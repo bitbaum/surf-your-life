@@ -16,7 +16,10 @@ const eslintConfig = defineConfig([
   {
     rules: {
       // Allow _ prefix for intentionally unused variables (e.g. destructuring discard)
-      "@typescript-eslint/no-unused-vars": ["warn", { varsIgnorePattern: "^_", argsIgnorePattern: "^_" }],
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        { varsIgnorePattern: "^_", argsIgnorePattern: "^_" },
+      ],
       // An empty .catch() discards a real failure. Six batch email senders did
       // this and turned a total delivery outage into {"success":true,"sent":40}.
       // If a failure genuinely must not propagate, use a helper that logs it

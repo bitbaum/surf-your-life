@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useTranslations } from "next-intl"
-import { Link } from "@/i18n/navigation"
-import { Waves, Menu, X, LayoutDashboard } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { LocaleSwitcher } from "@/components/ui/locale-switcher"
-import { BRAND_NAME } from "@/lib/constants"
+import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
+import { Waves, Menu, X, LayoutDashboard } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { LocaleSwitcher } from "@/components/ui/locale-switcher";
+import { BRAND_NAME } from "@/lib/constants";
 
 // anchor=true → rendered as <a href="..."> (same-page scroll)
 // anchor=false → rendered as <Link href="..."> (route navigation)
@@ -17,11 +17,11 @@ const NAV_LINKS = [
   { href: "/faq", labelKey: "faq", anchor: false },
   { href: "/blog", labelKey: "blog", anchor: false },
   { href: "/contact", labelKey: "contact", anchor: false },
-] as const
+] as const;
 
 export function MarketingNav({ isLoggedIn = false }: { isLoggedIn?: boolean }) {
-  const t = useTranslations("nav")
-  const [open, setOpen] = useState(false)
+  const t = useTranslations("nav");
+  const [open, setOpen] = useState(false);
 
   return (
     <>
@@ -37,14 +37,22 @@ export function MarketingNav({ isLoggedIn = false }: { isLoggedIn?: boolean }) {
           <nav className="hidden md:flex items-center gap-8">
             {NAV_LINKS.map(({ href, labelKey, anchor }) =>
               anchor ? (
-                <a key={href} href={href} className="text-sm text-ink-muted hover:text-ink transition-colors">
+                <a
+                  key={href}
+                  href={href}
+                  className="text-sm text-ink-muted hover:text-ink transition-colors"
+                >
                   {t(labelKey)}
                 </a>
               ) : (
-                <Link key={href} href={href} className="text-sm text-ink-muted hover:text-ink transition-colors">
+                <Link
+                  key={href}
+                  href={href}
+                  className="text-sm text-ink-muted hover:text-ink transition-colors"
+                >
                   {t(labelKey)}
                 </Link>
-              )
+              ),
             )}
           </nav>
 
@@ -59,7 +67,10 @@ export function MarketingNav({ isLoggedIn = false }: { isLoggedIn?: boolean }) {
               </Link>
             ) : (
               <>
-                <Link href="/login" className="text-sm text-ink-muted hover:text-ink transition-colors">
+                <Link
+                  href="/login"
+                  className="text-sm text-ink-muted hover:text-ink transition-colors"
+                >
                   {t("signIn")}
                 </Link>
                 <Link href="/register">
@@ -74,7 +85,11 @@ export function MarketingNav({ isLoggedIn = false }: { isLoggedIn?: boolean }) {
             onClick={() => setOpen(!open)}
             aria-label={open ? t("close") : t("open")}
           >
-            {open ? <X className="w-5 h-5 text-ink-soft" /> : <Menu className="w-5 h-5 text-ink-soft" />}
+            {open ? (
+              <X className="w-5 h-5 text-ink-soft" />
+            ) : (
+              <Menu className="w-5 h-5 text-ink-soft" />
+            )}
           </button>
         </div>
 
@@ -99,7 +114,7 @@ export function MarketingNav({ isLoggedIn = false }: { isLoggedIn?: boolean }) {
                 >
                   {t(labelKey)}
                 </Link>
-              )
+              ),
             )}
             <div className="pt-3 border-t border-border-subtle flex flex-col gap-2">
               <LocaleSwitcher />
@@ -113,7 +128,9 @@ export function MarketingNav({ isLoggedIn = false }: { isLoggedIn?: boolean }) {
               ) : (
                 <>
                   <Link href="/login" onClick={() => setOpen(false)}>
-                    <Button variant="outline" className="w-full">{t("signIn")}</Button>
+                    <Button variant="outline" className="w-full">
+                      {t("signIn")}
+                    </Button>
                   </Link>
                   <Link href="/register" onClick={() => setOpen(false)}>
                     <Button className="w-full">{t("getStarted")}</Button>
@@ -125,5 +142,5 @@ export function MarketingNav({ isLoggedIn = false }: { isLoggedIn?: boolean }) {
         )}
       </header>
     </>
-  )
+  );
 }

@@ -1,13 +1,13 @@
-import type { NextConfig } from "next"
-import createNextIntlPlugin from "next-intl/plugin"
-import { withSentryConfig } from "@sentry/nextjs"
+import type { NextConfig } from "next";
+import createNextIntlPlugin from "next-intl/plugin";
+import { withSentryConfig } from "@sentry/nextjs";
 
 const nextConfig: NextConfig = {
   output: "standalone",
   serverExternalPackages: ["pg"],
-}
+};
 
-const withNextIntl = createNextIntlPlugin("./i18n/request.ts")
+const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
 export default withSentryConfig(withNextIntl(nextConfig), {
   // Sourcemap upload is optional: only runs when SENTRY_AUTH_TOKEN is set.
@@ -15,4 +15,4 @@ export default withSentryConfig(withNextIntl(nextConfig), {
   sourcemaps: { disable: !process.env.SENTRY_AUTH_TOKEN },
   silent: true,
   telemetry: false,
-})
+});

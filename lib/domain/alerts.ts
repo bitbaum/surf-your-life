@@ -3,11 +3,18 @@
  * Deterministic safety signals — runs synchronously after each check-in save.
  * Never throws; failures are logged but don't block the check-in response.
  */
-import { db } from "@/lib/db"
-import { checkIns, clientAlerts, users, techniqueAssignments, techniqueLogs, type AlertType } from "@/lib/db/schema"
-import { findUserContact } from "@/lib/db/queries"
-import { eq, desc, gte, and, inArray, max } from "drizzle-orm"
-import { STAFF_ROLES, CLIENT_ROLE } from "@/lib/domain/auth"
+import { db } from "@/lib/db";
+import {
+  checkIns,
+  clientAlerts,
+  users,
+  techniqueAssignments,
+  techniqueLogs,
+  type AlertType,
+} from "@/lib/db/schema";
+import { findUserContact } from "@/lib/db/queries";
+import { eq, desc, gte, and, inArray, max } from "drizzle-orm";
+import { STAFF_ROLES, CLIENT_ROLE } from "@/lib/domain/auth";
 import {
   ALERT_CHECKIN_WINDOW,
   ALERT_ENERGY_DECLINE_THRESHOLD,
@@ -23,35 +30,39 @@ import {
   MOOD_SCORE,
   SITE_URL,
   DAY_MS,
-} from "@/lib/constants"
-import { sendEmailSafe } from "@/lib/email"
-import { practitionerAlertEmail, missedCheckInDigestEmail, techniqueAdherenceDigestEmail } from "@/lib/email/templates"
-import { formatEnumValue, daysSince, localDateString, addDaysISO } from "@/lib/utils"
-import { computeDailyAdherenceTrend } from "@/lib/domain/techniques"
+} from "@/lib/constants";
+import { sendEmailSafe } from "@/lib/email";
+import {
+  practitionerAlertEmail,
+  missedCheckInDigestEmail,
+  techniqueAdherenceDigestEmail,
+} from "@/lib/email/templates";
+import { formatEnumValue, daysSince, localDateString, addDaysISO } from "@/lib/utils";
+import { computeDailyAdherenceTrend } from "@/lib/domain/techniques";
 
-type AlertInsert = typeof clientAlerts.$inferInsert
+type AlertInsert = typeof clientAlerts.$inferInsert;
 
 // ─── Pure rule evaluation ─────────────────────────────────────────────────────
 
 /** Minimal check-in shape required for alert rule evaluation. */
 export type CheckInDataForAlerts = {
-  energyLevel: number
-  symptomFatigue: number | null
-  stressLevel: number | null
-  pemFlag: boolean | null
-  createdAt: Date
-  mood: string
-  orthostaticSymptoms: boolean | null
-  activityLevel: string | null
-}
+  energyLevel: number;
+  symptomFatigue: number | null;
+  stressLevel: number | null;
+  pemFlag: boolean | null;
+  createdAt: Date;
+  mood: string;
+  orthostaticSymptoms: boolean | null;
+  activityLevel: string | null;
+};
 
 /** Alert specification produced by a firing rule — no DB IDs, no client context. */
 export type AlertSpec = {
-  type: AlertType
-  severity: "high" | "medium" | "low"
-  title: string
-  message: string
-}
+  type: AlertType;
+  severity: "high" | "medium" | "low";
+  title: string;
+  message: string;
+};
 
 /**
  * Evaluate all 7 clinical alert rules against a set of recent check-ins.
@@ -62,25 +73,25 @@ export type AlertSpec = {
  */
 export function evaluateAlertRules(
   recent: CheckInDataForAlerts[],
-  now: Date = new Date()
+  now: Date = new Date(),
 ): AlertSpec[] {
-  if (recent.length === 0) return []
+  if (recent.length === 0) return [];
 
-  const alerts: AlertSpec[] = []
-  const sevenDaysAgo = new Date(now.getTime() - SEVEN_DAYS_MS)
-  const [latest] = recent
+  const alerts: AlertSpec[] = [];
+  const sevenDaysAgo = new Date(now.getTime() - SEVEN_DAYS_MS);
+  const [latest] = recent;
 
   // ─── Rule 1: Energy decline ────────────────────────────────────────────────
   if (recent.length >= 3) {
-    const [, , prev2] = recent
-    const drop = prev2.energyLevel - latest.energyLevel
+    const [, , prev2] = recent;
+    const drop = prev2.energyLevel - latest.energyLevel;
     if (drop >= ALERT_ENERGY_DECLINE_THRESHOLD) {
       alerts.push({
         type: "energy_decline",
         severity: drop >= 5 ? "high" : "medium",
         title: "Energy decline detected",
         message: `Energy dropped from ${prev2.energyLevel} to ${latest.energyLevel} over the last 3 check-ins (−${drop} points).`,
-      })
+      });
     }
   }
 
@@ -91,7 +102,7 @@ export function evaluateAlertRules(
       severity: latest.symptomFatigue >= 9 ? "high" : "medium",
       title: "High fatigue reported",
       message: `Client reported fatigue ${latest.symptomFatigue}/10 today.`,
-    })
+    });
   }
 
   // ─── Rule 3: Stress spike ──────────────────────────────────────────────────
@@ -101,69 +112,70 @@ export function evaluateAlertRules(
       severity: latest.stressLevel >= 9 ? "high" : "medium",
       title: "High stress reported",
       message: `Client reported stress ${latest.stressLevel}/10 today.`,
-    })
+    });
   }
 
   // ─── Rule 4: PEM cluster ───────────────────────────────────────────────────
-  const recentPemCount = recent.filter((ci) => ci.pemFlag && ci.createdAt >= sevenDaysAgo).length
+  const recentPemCount = recent.filter((ci) => ci.pemFlag && ci.createdAt >= sevenDaysAgo).length;
   if (recentPemCount >= ALERT_PEM_CLUSTER_COUNT) {
     alerts.push({
       type: "pem_cluster",
       severity: "high",
       title: "PEM cluster in last 7 days",
       message: `Client reported ${recentPemCount} PEM/crash episodes in the last 7 days. Consider reviewing activity pacing.`,
-    })
+    });
   }
 
   // ─── Rule 5: Mood decline ──────────────────────────────────────────────────
   // recent is newest-first; moodValues[0] = newest, moodValues[2] = oldest.
   // moodDrop = newest_score - oldest_score → negative means mood has fallen.
   if (recent.length >= ALERT_MOOD_DECLINE_WINDOW) {
-    const moodValues = recent.slice(0, ALERT_MOOD_DECLINE_WINDOW).map((ci) => MOOD_SCORE[ci.mood] ?? 3)
-    const moodDrop = moodValues[0] - moodValues[ALERT_MOOD_DECLINE_WINDOW - 1]
+    const moodValues = recent
+      .slice(0, ALERT_MOOD_DECLINE_WINDOW)
+      .map((ci) => MOOD_SCORE[ci.mood] ?? 3);
+    const moodDrop = moodValues[0] - moodValues[ALERT_MOOD_DECLINE_WINDOW - 1];
     if (moodDrop <= ALERT_MOOD_DECLINE_THRESHOLD) {
       alerts.push({
         type: "mood_decline",
         severity: moodDrop <= -3 ? "high" : "medium",
         title: "Mood decline detected",
         message: `Mood has dropped from "${formatEnumValue(recent[ALERT_MOOD_DECLINE_WINDOW - 1].mood)}" to "${formatEnumValue(recent[0].mood)}" over the last 3 check-ins.`,
-      })
+      });
     }
   }
 
   // ─── Rule 6: Orthostatic symptom cluster ──────────────────────────────────
   const orthostaticCount = recent.filter(
-    (ci) => ci.orthostaticSymptoms && ci.createdAt >= sevenDaysAgo
-  ).length
+    (ci) => ci.orthostaticSymptoms && ci.createdAt >= sevenDaysAgo,
+  ).length;
   if (orthostaticCount >= ALERT_ORTHOSTATIC_CLUSTER_COUNT) {
     alerts.push({
       type: "orthostatic_intolerance",
       severity: "medium",
       title: "Orthostatic symptoms recurring",
       message: `Client reported dizziness on standing ${orthostaticCount} times in the last 7 days. Consider screening for POTS/orthostatic intolerance.`,
-    })
+    });
   }
 
   // ─── Rule 7: PEM lag pattern ───────────────────────────────────────────────
   if (latest.pemFlag && recent.length >= 2) {
-    const prevCheckIns = recent.slice(1, 3)
+    const prevCheckIns = recent.slice(1, 3);
     const triggerDay = prevCheckIns.find(
-      (ci) => ci.activityLevel === "moderate" || ci.activityLevel === "active"
-    )
+      (ci) => ci.activityLevel === "moderate" || ci.activityLevel === "active",
+    );
     if (triggerDay) {
-      const dayDiff = Math.round(
-        (latest.createdAt.getTime() - triggerDay.createdAt.getTime()) / DAY_MS
-      ) || 1
+      const dayDiff =
+        Math.round((latest.createdAt.getTime() - triggerDay.createdAt.getTime()) / DAY_MS) || 1;
       alerts.push({
         type: "pem_cluster",
         severity: "high",
         title: "PEM lag detected",
         message: `PEM reported today following ${triggerDay.activityLevel} activity ${dayDiff} day${dayDiff !== 1 ? "s" : ""} ago. This delayed crash pattern is a key Long COVID pacing signal — consider reviewing the client's activity envelope.`,
-      })
+      });
     }
   }
 
-  return alerts
+  return alerts;
 }
 
 // ─── DB orchestration ─────────────────────────────────────────────────────────
@@ -179,23 +191,25 @@ export async function generateAlerts(clientId: string, newCheckInId: string): Pr
       where: eq(checkIns.userId, clientId),
       orderBy: [desc(checkIns.createdAt)],
       limit: ALERT_CHECKIN_WINDOW,
-    })
+    });
 
-    if (recent.length === 0) return
+    if (recent.length === 0) return;
 
-    const now = new Date()
-    const candidates = evaluateAlertRules(recent, now)
+    const now = new Date();
+    const candidates = evaluateAlertRules(recent, now);
 
     // Deduplicate: batch-fetch all open alert types for this client in the last 7 days
     const existingOpenTypes = await db
       .select({ type: clientAlerts.type })
       .from(clientAlerts)
-      .where(and(
-        eq(clientAlerts.clientId, clientId),
-        eq(clientAlerts.isResolved, false),
-        gte(clientAlerts.createdAt, new Date(now.getTime() - SEVEN_DAYS_MS))
-      ))
-    const openTypeSet = new Set(existingOpenTypes.map((a) => a.type))
+      .where(
+        and(
+          eq(clientAlerts.clientId, clientId),
+          eq(clientAlerts.isResolved, false),
+          gte(clientAlerts.createdAt, new Date(now.getTime() - SEVEN_DAYS_MS)),
+        ),
+      );
+    const openTypeSet = new Set(existingOpenTypes.map((a) => a.type));
 
     const newAlerts: AlertInsert[] = candidates
       .filter((c) => !openTypeSet.has(c.type))
@@ -207,28 +221,27 @@ export async function generateAlerts(clientId: string, newCheckInId: string): Pr
         message: c.message,
         checkInId: newCheckInId,
         createdAt: now,
-      }))
+      }));
 
-    const alerts = newAlerts
+    const alerts = newAlerts;
     if (alerts.length > 0) {
-      await db.insert(clientAlerts).values(alerts)
+      await db.insert(clientAlerts).values(alerts);
     }
 
     // Send email to all practitioners/admins for high or medium severity alerts
-    const highOrMedium = alerts.filter((a) => a.severity === "high" || a.severity === "medium")
+    const highOrMedium = alerts.filter((a) => a.severity === "high" || a.severity === "medium");
     if (highOrMedium.length > 0) {
       const [client, practitioners] = await Promise.all([
         findUserContact(clientId),
-        db.select({ email: users.email }).from(users)
-          .where(inArray(users.role, STAFF_ROLES)),
-      ])
+        db.select({ email: users.email }).from(users).where(inArray(users.role, STAFF_ROLES)),
+      ]);
 
       if (client && practitioners.length > 0) {
-        const adminUrl = `${SITE_URL}/admin/clients/${clientId}`
+        const adminUrl = `${SITE_URL}/admin/clients/${clientId}`;
         // Send one email per alert (use only the highest-severity one to avoid spam)
-        const topAlert = highOrMedium.sort((a, b) =>
-          (a.severity === "high" ? 0 : 1) - (b.severity === "high" ? 0 : 1)
-        )[0]
+        const topAlert = highOrMedium.sort(
+          (a, b) => (a.severity === "high" ? 0 : 1) - (b.severity === "high" ? 0 : 1),
+        )[0];
 
         const html = practitionerAlertEmail({
           clientName: client.name ?? client.email,
@@ -237,7 +250,7 @@ export async function generateAlerts(clientId: string, newCheckInId: string): Pr
           alertMessage: topAlert.message,
           severity: topAlert.severity as "low" | "medium" | "high",
           adminUrl,
-        })
+        });
 
         await Promise.all(
           practitioners.map((p) =>
@@ -247,15 +260,15 @@ export async function generateAlerts(clientId: string, newCheckInId: string): Pr
                 subject: `[${topAlert.severity === "high" ? "HIGH" : "Alert"}] ${topAlert.title} — ${client.name ?? client.email}`,
                 html,
               },
-              "alert-practitioner"
-            )
-          )
-        )
+              "alert-practitioner",
+            ),
+          ),
+        );
       }
     }
   } catch (err) {
     // Never let alert generation block the check-in response
-    console.error("[alerts] Failed to generate alerts for client", clientId, err)
+    console.error("[alerts] Failed to generate alerts for client", clientId, err);
   }
 }
 
@@ -267,81 +280,84 @@ export async function generateAlerts(clientId: string, newCheckInId: string): Pr
  */
 export async function generateMissedCheckInAlerts(): Promise<number> {
   try {
-    const cutoff = new Date(Date.now() - ALERT_MISSED_CHECKINS_DAYS * DAY_MS)
+    const cutoff = new Date(Date.now() - ALERT_MISSED_CHECKINS_DAYS * DAY_MS);
 
     const clients = await db
       .select({ id: users.id, name: users.name, email: users.email })
       .from(users)
-      .where(eq(users.role, CLIENT_ROLE))
+      .where(eq(users.role, CLIENT_ROLE));
 
-    if (clients.length === 0) return 0
+    if (clients.length === 0) return 0;
 
-    const clientIds = clients.map((c) => c.id)
+    const clientIds = clients.map((c) => c.id);
 
     // Batch: last check-in date per client (one query instead of N)
     const lastCheckInRows = await db
       .select({ userId: checkIns.userId, lastCheckIn: max(checkIns.createdAt) })
       .from(checkIns)
       .where(inArray(checkIns.userId, clientIds))
-      .groupBy(checkIns.userId)
-    const lastCheckInMap = new Map(lastCheckInRows.map((r) => [r.userId, r.lastCheckIn]))
+      .groupBy(checkIns.userId);
+    const lastCheckInMap = new Map(lastCheckInRows.map((r) => [r.userId, r.lastCheckIn]));
 
     // Batch: clients with an open missed_checkins alert (one query instead of N)
     const existingAlertRows = await db
       .select({ clientId: clientAlerts.clientId })
       .from(clientAlerts)
-      .where(and(
-        eq(clientAlerts.type, "missed_checkins"),
-        eq(clientAlerts.isResolved, false),
-        inArray(clientAlerts.clientId, clientIds)
-      ))
-    const clientsWithOpenAlert = new Set(existingAlertRows.map((a) => a.clientId))
+      .where(
+        and(
+          eq(clientAlerts.type, "missed_checkins"),
+          eq(clientAlerts.isResolved, false),
+          inArray(clientAlerts.clientId, clientIds),
+        ),
+      );
+    const clientsWithOpenAlert = new Set(existingAlertRows.map((a) => a.clientId));
 
-    const newAlerts: AlertInsert[] = []
+    const newAlerts: AlertInsert[] = [];
 
     for (const client of clients) {
-      if (clientsWithOpenAlert.has(client.id)) continue
+      if (clientsWithOpenAlert.has(client.id)) continue;
 
-      const lastCheckIn = lastCheckInMap.get(client.id) ?? null
+      const lastCheckIn = lastCheckInMap.get(client.id) ?? null;
 
       // Checked in recently — nothing to flag
-      if (lastCheckIn && lastCheckIn >= cutoff) continue
+      if (lastCheckIn && lastCheckIn >= cutoff) continue;
 
-      const daysMissed = daysSince(lastCheckIn)
+      const daysMissed = daysSince(lastCheckIn);
 
       newAlerts.push({
         clientId: client.id,
         type: "missed_checkins",
         severity: "medium",
         title: `No check-ins for ${ALERT_MISSED_CHECKINS_DAYS}+ days`,
-        message: daysMissed != null
-          ? `Client has not checked in for ${daysMissed} day${daysMissed !== 1 ? "s" : ""}.`
-          : "Client has never submitted a check-in.",
+        message:
+          daysMissed != null
+            ? `Client has not checked in for ${daysMissed} day${daysMissed !== 1 ? "s" : ""}.`
+            : "Client has never submitted a check-in.",
         createdAt: new Date(),
-      })
+      });
     }
 
-    if (newAlerts.length === 0) return 0
+    if (newAlerts.length === 0) return 0;
 
-    await db.insert(clientAlerts).values(newAlerts)
+    await db.insert(clientAlerts).values(newAlerts);
 
     // Notify practitioners with a single digest email listing all newly overdue clients
     const practitioners = await db
       .select({ email: users.email })
       .from(users)
-      .where(inArray(users.role, STAFF_ROLES))
+      .where(inArray(users.role, STAFF_ROLES));
 
     if (practitioners.length > 0) {
       const digestClients = newAlerts.map((alert) => {
-        const client = clients.find((c) => c.id === alert.clientId)!
-        const daysMissed = daysSince(lastCheckInMap.get(alert.clientId) ?? null)
-        return { clientId: client.id, name: client.name, email: client.email, daysMissed }
-      })
+        const client = clients.find((c) => c.id === alert.clientId)!;
+        const daysMissed = daysSince(lastCheckInMap.get(alert.clientId) ?? null);
+        return { clientId: client.id, name: client.name, email: client.email, daysMissed };
+      });
 
       const html = missedCheckInDigestEmail({
         clients: digestClients,
         adminUrl: `${SITE_URL}/admin/clients`,
-      })
+      });
 
       await Promise.all(
         practitioners.map((p) =>
@@ -351,28 +367,28 @@ export async function generateMissedCheckInAlerts(): Promise<number> {
               subject: `[Alert] ${newAlerts.length} client${newAlerts.length !== 1 ? "s" : ""} missed check-ins`,
               html,
             },
-            "alert-missed-checkin-digest"
-          )
-        )
-      )
+            "alert-missed-checkin-digest",
+          ),
+        ),
+      );
     }
 
-    return newAlerts.length
+    return newAlerts.length;
   } catch (err) {
-    console.error("[alerts] Failed to generate missed check-in alerts", err)
-    return 0
+    console.error("[alerts] Failed to generate missed check-in alerts", err);
+    return 0;
   }
 }
 
 // ─── Technique adherence decline ─────────────────────────────────────────────
 
 export type TechniqueAdherenceDeclineResult = {
-  clientId: string
-  recent7avg: number
-  prior7avg: number
-  drop: number
-  severity: "high" | "medium"
-}
+  clientId: string;
+  recent7avg: number;
+  prior7avg: number;
+  drop: number;
+  severity: "high" | "medium";
+};
 
 /**
  * Pure function — identifies clients whose technique adherence has dropped
@@ -380,37 +396,48 @@ export type TechniqueAdherenceDeclineResult = {
  * No DB access; deterministic; testable in isolation.
  */
 export function checkTechniqueAdherenceDecline(
-  assignments: Array<{ id: string; clientId: string; frequencyPerDay: number; startDate: string; endDate?: string | null }>,
+  assignments: Array<{
+    id: string;
+    clientId: string;
+    frequencyPerDay: number;
+    startDate: string;
+    endDate?: string | null;
+  }>,
   logs: Array<{ assignmentId: string; date: string; completedReps: number; userId: string }>,
   today: string,
-  threshold = ALERT_TECHNIQUE_ADHERENCE_DECLINE_THRESHOLD
+  threshold = ALERT_TECHNIQUE_ADHERENCE_DECLINE_THRESHOLD,
 ): TechniqueAdherenceDeclineResult[] {
-  if (assignments.length === 0) return []
+  if (assignments.length === 0) return [];
 
-  const logsByClient = new Map<string, Array<{ assignmentId: string; date: string; completedReps: number }>>()
+  const logsByClient = new Map<
+    string,
+    Array<{ assignmentId: string; date: string; completedReps: number }>
+  >();
   for (const log of logs) {
-    if (!logsByClient.has(log.userId)) logsByClient.set(log.userId, [])
-    logsByClient.get(log.userId)!.push({ assignmentId: log.assignmentId, date: log.date, completedReps: log.completedReps })
+    if (!logsByClient.has(log.userId)) logsByClient.set(log.userId, []);
+    logsByClient
+      .get(log.userId)!
+      .push({ assignmentId: log.assignmentId, date: log.date, completedReps: log.completedReps });
   }
 
-  const clientIds = [...new Set(assignments.map((a) => a.clientId))]
-  const results: TechniqueAdherenceDeclineResult[] = []
+  const clientIds = [...new Set(assignments.map((a) => a.clientId))];
+  const results: TechniqueAdherenceDeclineResult[] = [];
 
   for (const clientId of clientIds) {
-    const clientAssignments = assignments.filter((a) => a.clientId === clientId)
-    const clientLogs = logsByClient.get(clientId) ?? []
+    const clientAssignments = assignments.filter((a) => a.clientId === clientId);
+    const clientLogs = logsByClient.get(clientId) ?? [];
 
-    const trend14 = computeDailyAdherenceTrend(clientAssignments, clientLogs, today, 14)
-    if (trend14.length < 14) continue
+    const trend14 = computeDailyAdherenceTrend(clientAssignments, clientLogs, today, 14);
+    if (trend14.length < 14) continue;
 
-    const prior7 = trend14.slice(0, 7)
-    const recent7 = trend14.slice(7)
-    const prior7avg = Math.round(prior7.reduce((s, d) => s + d.pct, 0) / 7)
-    const recent7avg = Math.round(recent7.reduce((s, d) => s + d.pct, 0) / 7)
+    const prior7 = trend14.slice(0, 7);
+    const recent7 = trend14.slice(7);
+    const prior7avg = Math.round(prior7.reduce((s, d) => s + d.pct, 0) / 7);
+    const recent7avg = Math.round(recent7.reduce((s, d) => s + d.pct, 0) / 7);
 
-    if (prior7avg === 0) continue
+    if (prior7avg === 0) continue;
 
-    const drop = prior7avg - recent7avg
+    const drop = prior7avg - recent7avg;
     if (drop >= threshold) {
       results.push({
         clientId,
@@ -418,11 +445,11 @@ export function checkTechniqueAdherenceDecline(
         prior7avg,
         drop,
         severity: drop >= 40 ? "high" : "medium",
-      })
+      });
     }
   }
 
-  return results
+  return results;
 }
 
 /**
@@ -433,39 +460,45 @@ export function checkTechniqueAdherenceDecline(
  */
 export async function generateTechniqueAdherenceAlerts(): Promise<number> {
   try {
-    const today = localDateString(new Date())
-    const fourteenDaysAgo = addDaysISO(today, -14)
+    const today = localDateString(new Date());
+    const fourteenDaysAgo = addDaysISO(today, -14);
 
     const allAssignments = await db.query.techniqueAssignments.findMany({
       where: eq(techniqueAssignments.isActive, true),
       columns: { id: true, clientId: true, frequencyPerDay: true, startDate: true, endDate: true },
-    })
+    });
 
-    if (allAssignments.length === 0) return 0
+    if (allAssignments.length === 0) return 0;
 
-    const clientIds = [...new Set(allAssignments.map((a) => a.clientId))]
+    const clientIds = [...new Set(allAssignments.map((a) => a.clientId))];
 
     const [recentLogs, existingAlerts] = await Promise.all([
       db.query.techniqueLogs.findMany({
-        where: and(inArray(techniqueLogs.userId, clientIds), gte(techniqueLogs.date, fourteenDaysAgo)),
+        where: and(
+          inArray(techniqueLogs.userId, clientIds),
+          gte(techniqueLogs.date, fourteenDaysAgo),
+        ),
         columns: { assignmentId: true, date: true, completedReps: true, userId: true },
       }),
       db
         .select({ clientId: clientAlerts.clientId })
         .from(clientAlerts)
-        .where(and(
-          eq(clientAlerts.type, "technique_adherence_decline"),
-          eq(clientAlerts.isResolved, false),
-          inArray(clientAlerts.clientId, clientIds)
-        )),
-    ])
+        .where(
+          and(
+            eq(clientAlerts.type, "technique_adherence_decline"),
+            eq(clientAlerts.isResolved, false),
+            inArray(clientAlerts.clientId, clientIds),
+          ),
+        ),
+    ]);
 
-    const clientsWithOpenAlert = new Set(existingAlerts.map((a) => a.clientId))
+    const clientsWithOpenAlert = new Set(existingAlerts.map((a) => a.clientId));
 
-    const decliners = checkTechniqueAdherenceDecline(allAssignments, recentLogs, today)
-      .filter((r) => !clientsWithOpenAlert.has(r.clientId))
+    const decliners = checkTechniqueAdherenceDecline(allAssignments, recentLogs, today).filter(
+      (r) => !clientsWithOpenAlert.has(r.clientId),
+    );
 
-    if (decliners.length === 0) return 0
+    if (decliners.length === 0) return 0;
 
     const newAlerts: AlertInsert[] = decliners.map((r) => ({
       clientId: r.clientId,
@@ -474,20 +507,26 @@ export async function generateTechniqueAdherenceAlerts(): Promise<number> {
       title: "Technique adherence declining",
       message: `Adherence dropped from ${r.prior7avg}% (prior week) to ${r.recent7avg}% (last 7 days) — a ${r.drop}% decline. Consider reviewing barriers with the client.`,
       createdAt: new Date(),
-    }))
+    }));
 
-    await db.insert(clientAlerts).values(newAlerts)
+    await db.insert(clientAlerts).values(newAlerts);
 
     // Notify practitioners with a digest email listing all declining clients
     const [practitioners, clientRows] = await Promise.all([
       db.select({ email: users.email }).from(users).where(inArray(users.role, STAFF_ROLES)),
-      db.select({ id: users.id, name: users.name, email: users.email })
+      db
+        .select({ id: users.id, name: users.name, email: users.email })
         .from(users)
-        .where(inArray(users.id, decliners.map((d) => d.clientId))),
-    ])
+        .where(
+          inArray(
+            users.id,
+            decliners.map((d) => d.clientId),
+          ),
+        ),
+    ]);
 
     if (practitioners.length > 0) {
-      const clientMap = new Map(clientRows.map((c) => [c.id, c]))
+      const clientMap = new Map(clientRows.map((c) => [c.id, c]));
       const digestClients = decliners.map((d) => ({
         clientId: d.clientId,
         name: clientMap.get(d.clientId)?.name ?? null,
@@ -495,12 +534,12 @@ export async function generateTechniqueAdherenceAlerts(): Promise<number> {
         prior7avg: d.prior7avg,
         recent7avg: d.recent7avg,
         drop: d.drop,
-      }))
+      }));
 
       const html = techniqueAdherenceDigestEmail({
         clients: digestClients,
         adminUrl: `${SITE_URL}/admin/clients`,
-      })
+      });
 
       await Promise.all(
         practitioners.map((p) =>
@@ -510,15 +549,15 @@ export async function generateTechniqueAdherenceAlerts(): Promise<number> {
               subject: `[Alert] Technique adherence declining — ${newAlerts.length} client${newAlerts.length !== 1 ? "s" : ""}`,
               html,
             },
-            "alert-technique-adherence-digest"
-          )
-        )
-      )
+            "alert-technique-adherence-digest",
+          ),
+        ),
+      );
     }
 
-    return newAlerts.length
+    return newAlerts.length;
   } catch (err) {
-    console.error("[alerts] Failed to generate technique adherence alerts", err)
-    return 0
+    console.error("[alerts] Failed to generate technique adherence alerts", err);
+    return 0;
   }
 }

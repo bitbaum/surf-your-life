@@ -1,25 +1,25 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useTranslations } from "next-intl"
-import { CheckCircle } from "lucide-react"
+import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { CheckCircle } from "lucide-react";
 
 interface Props {
-  alertId: string
-  onResolved: (id: string) => void
+  alertId: string;
+  onResolved: (id: string) => void;
 }
 
 export function ResolveAlertButton({ alertId, onResolved }: Props) {
-  const t = useTranslations("admin.alerts")
-  const [loading, setLoading] = useState(false)
+  const t = useTranslations("admin.alerts");
+  const [loading, setLoading] = useState(false);
 
   async function handleResolve() {
-    setLoading(true)
+    setLoading(true);
     try {
-      const res = await fetch(`/api/admin/alerts/${alertId}`, { method: "PATCH" })
-      if (res.ok) onResolved(alertId)
+      const res = await fetch(`/api/admin/alerts/${alertId}`, { method: "PATCH" });
+      if (res.ok) onResolved(alertId);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
@@ -33,5 +33,5 @@ export function ResolveAlertButton({ alertId, onResolved }: Props) {
       <CheckCircle className="w-4 h-4" />
       {t("resolve")}
     </button>
-  )
+  );
 }

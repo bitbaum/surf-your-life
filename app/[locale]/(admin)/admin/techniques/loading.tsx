@@ -1,4 +1,4 @@
-import { Card } from "@/components/ui/card"
+import { Card } from "@/components/ui/card";
 
 export default function TechniquesAdminLoading() {
   return (
@@ -32,5 +32,5 @@ export default function TechniquesAdminLoading() {
         </Card>
       ))}
     </div>
-  )
+  );
 }

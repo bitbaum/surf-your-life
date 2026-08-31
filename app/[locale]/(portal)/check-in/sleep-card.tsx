@@ -1,18 +1,23 @@
-"use client"
+"use client";
 
-import { useTranslations } from "next-intl"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { SLEEP_HOURS, SLEEP_QUALITY_OPTIONS, CHIP_SELECTED, CHIP_UNSELECTED } from "@/lib/constants"
+import { useTranslations } from "next-intl";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  SLEEP_HOURS,
+  SLEEP_QUALITY_OPTIONS,
+  CHIP_SELECTED,
+  CHIP_UNSELECTED,
+} from "@/lib/constants";
 
 interface Props {
-  sleep: string
-  setSleep: (v: string) => void
-  sleepQuality: number | null
-  setSleepQuality: (v: number | null) => void
+  sleep: string;
+  setSleep: (v: string) => void;
+  sleepQuality: number | null;
+  setSleepQuality: (v: number | null) => void;
 }
 
 export function SleepCard({ sleep, setSleep, sleepQuality, setSleepQuality }: Props) {
-  const t = useTranslations("portal.checkIn")
+  const t = useTranslations("portal.checkIn");
 
   return (
     <Card>
@@ -23,7 +28,8 @@ export function SleepCard({ sleep, setSleep, sleepQuality, setSleepQuality }: Pr
         <div className="flex items-end gap-6 flex-wrap">
           <div>
             <label className="text-sm font-medium text-slate-700 block mb-1.5">
-              {t("sleepHours")} <span className="text-slate-400 font-normal">{t("sleepOptional")}</span>
+              {t("sleepHours")}{" "}
+              <span className="text-slate-400 font-normal">{t("sleepOptional")}</span>
             </label>
             <input
               type="number"
@@ -39,7 +45,8 @@ export function SleepCard({ sleep, setSleep, sleepQuality, setSleepQuality }: Pr
 
         <div>
           <label className="text-sm font-medium text-slate-700 block mb-2">
-            {t("sleepQuality")} <span className="text-slate-400 font-normal">{t("sleepOptional")}</span>
+            {t("sleepQuality")}{" "}
+            <span className="text-slate-400 font-normal">{t("sleepOptional")}</span>
           </label>
           <div className="flex gap-2">
             {SLEEP_QUALITY_OPTIONS.map((opt) => (
@@ -48,9 +55,7 @@ export function SleepCard({ sleep, setSleep, sleepQuality, setSleepQuality }: Pr
                 type="button"
                 onClick={() => setSleepQuality(sleepQuality === opt.value ? null : opt.value)}
                 className={`flex flex-col items-center gap-1 p-2.5 rounded-xl border-2 flex-1 transition-all ${
-                  sleepQuality === opt.value
-                    ? CHIP_SELECTED
-                    : CHIP_UNSELECTED
+                  sleepQuality === opt.value ? CHIP_SELECTED : CHIP_UNSELECTED
                 }`}
               >
                 <span className="text-xl">{opt.emoji}</span>
@@ -63,5 +68,5 @@ export function SleepCard({ sleep, setSleep, sleepQuality, setSleepQuality }: Pr
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

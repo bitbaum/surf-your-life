@@ -1,38 +1,38 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { useTranslations } from "next-intl"
-import type { Booking, Service } from "@/lib/db/schema"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { BOOKING_STATUS_BADGE_VARIANT } from "@/lib/constants"
-import { EmptyState } from "@/components/ui/empty-state"
-import { Link } from "@/i18n/navigation"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import type { Booking, Service } from "@/lib/db/schema";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { BOOKING_STATUS_BADGE_VARIANT } from "@/lib/constants";
+import { EmptyState } from "@/components/ui/empty-state";
+import { Link } from "@/i18n/navigation";
 
-type BookingWithService = Booking & { service: Service }
+type BookingWithService = Booking & { service: Service };
 
 function CancelButton({ bookingId }: { bookingId: string }) {
-  const t = useTranslations("portal.book")
-  const router = useRouter()
-  const [cancelling, setCancelling] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const t = useTranslations("portal.book");
+  const router = useRouter();
+  const [cancelling, setCancelling] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function handleCancel() {
-    setCancelling(true)
-    setError(null)
+    setCancelling(true);
+    setError(null);
     try {
       const res = await fetch(`/api/bookings/${bookingId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: "cancelled" }),
-      })
-      const json = await res.json()
-      if (!json.success) throw new Error(json.error ?? "Failed")
-      router.refresh()
+      });
+      const json = await res.json();
+      if (!json.success) throw new Error(json.error ?? "Failed");
+      router.refresh();
     } catch {
-      setError(t("cancelError"))
-      setCancelling(false)
+      setError(t("cancelError"));
+      setCancelling(false);
     }
   }
 
@@ -47,11 +47,11 @@ function CancelButton({ bookingId }: { bookingId: string }) {
       </button>
       {error && <p className="text-xs text-red-500">{error}</p>}
     </div>
-  )
+  );
 }
 
 export function BookingList({ bookings }: { bookings: BookingWithService[] }) {
-  const t = useTranslations("portal.book")
+  const t = useTranslations("portal.book");
 
   return (
     <Card>
@@ -63,7 +63,14 @@ export function BookingList({ bookings }: { bookings: BookingWithService[] }) {
           <div className="py-6">
             <EmptyState
               message={t("noBookings")}
-              action={<Link href="/messages/new" className="text-sm font-medium text-teal-600 hover:text-teal-700 transition-colors">{t("messagePractitioner")}</Link>}
+              action={
+                <Link
+                  href="/messages/new"
+                  className="text-sm font-medium text-teal-600 hover:text-teal-700 transition-colors"
+                >
+                  {t("messagePractitioner")}
+                </Link>
+              }
             />
           </div>
         ) : (
@@ -83,7 +90,11 @@ export function BookingList({ bookings }: { bookings: BookingWithService[] }) {
                 <div className="flex items-center gap-3">
                   <Badge
                     variant={BOOKING_STATUS_BADGE_VARIANT[b.status] ?? "slate"}
-                    label={t(`status${b.status.charAt(0).toUpperCase() + b.status.slice(1)}` as Parameters<typeof t>[0])}
+                    label={t(
+                      `status${b.status.charAt(0).toUpperCase() + b.status.slice(1)}` as Parameters<
+                        typeof t
+                      >[0],
+                    )}
                   />
                   {b.status !== "cancelled" && <CancelButton bookingId={b.id} />}
                 </div>
@@ -93,5 +104,5 @@ export function BookingList({ bookings }: { bookings: BookingWithService[] }) {
         )}
       </CardContent>
     </Card>
-  )
+  );
 }

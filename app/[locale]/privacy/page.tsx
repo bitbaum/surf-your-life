@@ -1,23 +1,19 @@
-import { setRequestLocale } from "next-intl/server"
-import { MarketingNav } from "@/components/marketing/nav"
-import { MarketingFooter } from "@/components/marketing/footer"
-import { auth } from "@/lib/auth"
-import type { Metadata } from "next"
+import { setRequestLocale } from "next-intl/server";
+import { MarketingNav } from "@/components/marketing/nav";
+import { MarketingFooter } from "@/components/marketing/footer";
+import { auth } from "@/lib/auth";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
   description:
     "How Surf Your Life collects, processes, and protects your personal and health data. Swiss nFADP and EU GDPR compliant.",
-}
+};
 
-export default async function PrivacyPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>
-}) {
-  const { locale } = await params
-  setRequestLocale(locale)
-  const session = await auth()
+export default async function PrivacyPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const session = await auth();
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
@@ -27,7 +23,8 @@ export default async function PrivacyPage({
         <div className="max-w-3xl mx-auto">
           <h1 className="text-3xl font-bold text-slate-900 mb-2">Privacy Policy</h1>
           <p className="text-slate-500 mb-10">
-            Last updated: April 2026 · Applies to surf-your-life.ch and the Surf Your Life client portal
+            Last updated: April 2026 · Applies to surf-your-life.ch and the Surf Your Life client
+            portal
           </p>
 
           {/* 1 — Data Controller */}
@@ -59,20 +56,21 @@ export default async function PrivacyPage({
             </p>
             <ul className="list-disc pl-5 text-slate-600 text-sm space-y-2">
               <li>
-                <strong>Account information:</strong> name, email address, and (optionally) a profile photo when you
-                register via Google OAuth or email/password.
+                <strong>Account information:</strong> name, email address, and (optionally) a
+                profile photo when you register via Google OAuth or email/password.
               </li>
               <li>
-                <strong>Health tracking data:</strong> mood ratings, energy levels, sleep duration, and free-text
-                reflections you enter during check-ins.
+                <strong>Health tracking data:</strong> mood ratings, energy levels, sleep duration,
+                and free-text reflections you enter during check-ins.
               </li>
               <li>
-                <strong>Contact information:</strong> messages sent through the contact form or the in-portal
-                messaging feature.
+                <strong>Contact information:</strong> messages sent through the contact form or the
+                in-portal messaging feature.
               </li>
               <li>
-                <strong>Technical data:</strong> IP address, browser type, and access logs — collected automatically
-                by our hosting infrastructure (Hetzner, Germany) for security and performance purposes.
+                <strong>Technical data:</strong> IP address, browser type, and access logs —
+                collected automatically by our hosting infrastructure (Hetzner, Germany) for
+                security and performance purposes.
               </li>
             </ul>
           </section>
@@ -88,8 +86,9 @@ export default async function PrivacyPage({
               <li>Complying with legal obligations under Swiss and EU law.</li>
             </ul>
             <p className="text-slate-600 text-sm mt-3">
-              The legal basis for processing health data is your explicit consent (Art. 6(1)(a) and Art. 9(2)(a)
-              GDPR; Art. 31 nFADP). You may withdraw consent at any time — see Section 6.
+              The legal basis for processing health data is your explicit consent (Art. 6(1)(a) and
+              Art. 9(2)(a) GDPR; Art. 31 nFADP). You may withdraw consent at any time — see Section
+              6.
             </p>
           </section>
 
@@ -97,10 +96,10 @@ export default async function PrivacyPage({
           <section className="mb-10">
             <h2 className="text-xl font-semibold text-slate-900 mb-3">4. Data Retention</h2>
             <p className="text-slate-600 text-sm leading-relaxed">
-              We retain your data for as long as your account is active and for a maximum of 5 years after account
-              closure, unless a longer retention period is required by applicable law (e.g., Swiss medical record
-              obligations). Check-in data and health records may be subject to a 10-year retention minimum under
-              Swiss health legislation.
+              We retain your data for as long as your account is active and for a maximum of 5 years
+              after account closure, unless a longer retention period is required by applicable law
+              (e.g., Swiss medical record obligations). Check-in data and health records may be
+              subject to a 10-year retention minimum under Swiss health legislation.
             </p>
           </section>
 
@@ -109,17 +108,17 @@ export default async function PrivacyPage({
             <h2 className="text-xl font-semibold text-slate-900 mb-3">5. Third-Party Processors</h2>
             <ul className="list-disc pl-5 text-slate-600 text-sm space-y-2">
               <li>
-                <strong>Hetzner Online GmbH</strong> (Germany, EU) — application and database hosting
-                (self-hosted PostgreSQL). Data is processed within the EU/EEA.
+                <strong>Hetzner Online GmbH</strong> (Germany, EU) — application and database
+                hosting (self-hosted PostgreSQL). Data is processed within the EU/EEA.
               </li>
               <li>
-                <strong>Google LLC</strong> — OAuth authentication if you choose &ldquo;Sign in with Google&rdquo;.
-                Governed by Google&apos;s Privacy Policy.
+                <strong>Google LLC</strong> — OAuth authentication if you choose &ldquo;Sign in with
+                Google&rdquo;. Governed by Google&apos;s Privacy Policy.
               </li>
             </ul>
             <p className="text-slate-600 text-sm mt-3">
-              We do not sell your data. We do not share your health data with any third party unless required by law
-              or with your explicit consent.
+              We do not sell your data. We do not share your health data with any third party unless
+              required by law or with your explicit consent.
             </p>
           </section>
 
@@ -137,12 +136,12 @@ export default async function PrivacyPage({
                 <strong>Rectification</strong> of inaccurate or incomplete data.
               </li>
               <li>
-                <strong>Erasure</strong> (&ldquo;right to be forgotten&rdquo;) — deletion of your account and all
-                associated data, subject to legal retention obligations.
+                <strong>Erasure</strong> (&ldquo;right to be forgotten&rdquo;) — deletion of your
+                account and all associated data, subject to legal retention obligations.
               </li>
               <li>
-                <strong>Portability</strong> — receive your check-in and profile data in a structured,
-                machine-readable format (JSON or CSV).
+                <strong>Portability</strong> — receive your check-in and profile data in a
+                structured, machine-readable format (JSON or CSV).
               </li>
               <li>
                 <strong>Restriction</strong> of processing while a dispute is under review.
@@ -151,8 +150,9 @@ export default async function PrivacyPage({
                 <strong>Withdraw consent</strong> at any time without affecting prior processing.
               </li>
               <li>
-                <strong>Lodge a complaint</strong> with the Swiss Federal Data Protection and Information
-                Commissioner (FDPIC) or, for EU residents, your local supervisory authority.
+                <strong>Lodge a complaint</strong> with the Swiss Federal Data Protection and
+                Information Commissioner (FDPIC) or, for EU residents, your local supervisory
+                authority.
               </li>
             </ul>
             <p className="text-slate-600 text-sm mt-4">
@@ -168,8 +168,8 @@ export default async function PrivacyPage({
           <section className="mb-10">
             <h2 className="text-xl font-semibold text-slate-900 mb-3">7. Cookies</h2>
             <p className="text-slate-600 text-sm leading-relaxed">
-              We use a single session cookie to keep you logged in. No tracking or advertising cookies are set. We do
-              not use Google Analytics or similar tracking tools.
+              We use a single session cookie to keep you logged in. No tracking or advertising
+              cookies are set. We do not use Google Analytics or similar tracking tools.
             </p>
           </section>
 
@@ -178,11 +178,11 @@ export default async function PrivacyPage({
             <h2 className="text-xl font-semibold text-slate-900 mb-3">8. Legal Compliance</h2>
             <p className="text-slate-600 text-sm leading-relaxed">
               This policy complies with the{" "}
-              <strong>Swiss Federal Act on Data Protection (nFADP / revDSG)</strong>, in force since 1 September 2023,
-              and with the{" "}
-              <strong>EU General Data Protection Regulation (GDPR)</strong> where applicable to EU residents. As a
-              health portal processing special-category data, we apply the highest level of data protection
-              obligations.
+              <strong>Swiss Federal Act on Data Protection (nFADP / revDSG)</strong>, in force since
+              1 September 2023, and with the{" "}
+              <strong>EU General Data Protection Regulation (GDPR)</strong> where applicable to EU
+              residents. As a health portal processing special-category data, we apply the highest
+              level of data protection obligations.
             </p>
           </section>
 
@@ -190,9 +190,9 @@ export default async function PrivacyPage({
           <section className="mb-10">
             <h2 className="text-xl font-semibold text-slate-900 mb-3">9. Changes to This Policy</h2>
             <p className="text-slate-600 text-sm leading-relaxed">
-              We may update this policy as our services evolve or legal requirements change. Material changes will be
-              communicated by email to registered users at least 14 days before they take effect. The current version
-              is always available at this URL.
+              We may update this policy as our services evolve or legal requirements change.
+              Material changes will be communicated by email to registered users at least 14 days
+              before they take effect. The current version is always available at this URL.
             </p>
           </section>
         </div>
@@ -200,5 +200,5 @@ export default async function PrivacyPage({
 
       <MarketingFooter />
     </div>
-  )
+  );
 }

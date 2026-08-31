@@ -1,30 +1,40 @@
-"use client"
+"use client";
 
-import { useTranslations } from "next-intl"
-import { ACTIVITY_LEVELS, PEM_SEVERITY_SCALE, CHIP_SELECTED, CHIP_UNSELECTED, COMPACT_LABEL_CLS } from "@/lib/constants"
+import { useTranslations } from "next-intl";
+import {
+  ACTIVITY_LEVELS,
+  PEM_SEVERITY_SCALE,
+  CHIP_SELECTED,
+  CHIP_UNSELECTED,
+  COMPACT_LABEL_CLS,
+} from "@/lib/constants";
 
 interface Props {
-  activityLevel: string | null
-  setActivityLevel: (v: string | null) => void
-  pemFlag: boolean
-  setPemFlag: (v: boolean) => void
-  pemSeverity: number
-  setPemSeverity: (v: number) => void
+  activityLevel: string | null;
+  setActivityLevel: (v: string | null) => void;
+  pemFlag: boolean;
+  setPemFlag: (v: boolean) => void;
+  pemSeverity: number;
+  setPemSeverity: (v: number) => void;
 }
 
 export function EditActivityPemSection({
-  activityLevel, setActivityLevel,
-  pemFlag, setPemFlag,
-  pemSeverity, setPemSeverity,
+  activityLevel,
+  setActivityLevel,
+  pemFlag,
+  setPemFlag,
+  pemSeverity,
+  setPemSeverity,
 }: Props) {
-  const t = useTranslations("portal.checkIns")
-  const tCheckIn = useTranslations("portal.checkIn")
+  const t = useTranslations("portal.checkIns");
+  const tCheckIn = useTranslations("portal.checkIn");
 
   return (
     <>
       <div>
         <p className={`${COMPACT_LABEL_CLS} mb-2`}>
-          {t("editActivityLabel")} <span className="text-slate-400 font-normal normal-case">{t("editOptional")}</span>
+          {t("editActivityLabel")}{" "}
+          <span className="text-slate-400 font-normal normal-case">{t("editOptional")}</span>
         </p>
         <div className="flex gap-2 flex-wrap">
           {ACTIVITY_LEVELS.map((lvl) => (
@@ -37,7 +47,9 @@ export function EditActivityPemSection({
               }`}
             >
               <span className="text-lg">{lvl.emoji}</span>
-              <span className="text-xs text-slate-600">{tCheckIn(lvl.labelKey as Parameters<typeof tCheckIn>[0])}</span>
+              <span className="text-xs text-slate-600">
+                {tCheckIn(lvl.labelKey as Parameters<typeof tCheckIn>[0])}
+              </span>
             </button>
           ))}
         </div>
@@ -56,7 +68,9 @@ export function EditActivityPemSection({
         </label>
         {pemFlag && (
           <div className="mt-3">
-            <p className="text-xs text-slate-500 mb-1">{t("editPemSeverityLabel")}: {pemSeverity}/{PEM_SEVERITY_SCALE.max}</p>
+            <p className="text-xs text-slate-500 mb-1">
+              {t("editPemSeverityLabel")}: {pemSeverity}/{PEM_SEVERITY_SCALE.max}
+            </p>
             <input
               type="range"
               min={PEM_SEVERITY_SCALE.min}
@@ -69,5 +83,5 @@ export function EditActivityPemSection({
         )}
       </div>
     </>
-  )
+  );
 }

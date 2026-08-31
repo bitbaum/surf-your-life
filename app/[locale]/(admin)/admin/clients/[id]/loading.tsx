@@ -1,4 +1,4 @@
-import { Card } from "@/components/ui/card"
+import { Card } from "@/components/ui/card";
 
 export default function ClientDetailLoading() {
   return (
@@ -20,5 +20,5 @@ export default function ClientDetailLoading() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

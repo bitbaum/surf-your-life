@@ -1,7 +1,7 @@
 interface PageHeaderProps {
-  title: string
-  description?: string
-  action?: React.ReactNode
+  title: string;
+  description?: string;
+  action?: React.ReactNode;
 }
 
 export function PageHeader({ title, description, action }: PageHeaderProps) {
@@ -13,5 +13,5 @@ export function PageHeader({ title, description, action }: PageHeaderProps) {
       </div>
       {action && <div className="flex-shrink-0">{action}</div>}
     </div>
-  )
+  );
 }

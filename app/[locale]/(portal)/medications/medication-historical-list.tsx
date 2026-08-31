@@ -1,21 +1,21 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useTranslations } from "next-intl"
-import { ChevronDown, ChevronUp, Trash2 } from "lucide-react"
-import type { MedicationEntry } from "@/lib/db/schema"
+import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { ChevronDown, ChevronUp, Trash2 } from "lucide-react";
+import type { MedicationEntry } from "@/lib/db/schema";
 
 interface Props {
-  medications: MedicationEntry[]
-  deleting: string | null
-  onDelete: (id: string) => void
+  medications: MedicationEntry[];
+  deleting: string | null;
+  onDelete: (id: string) => void;
 }
 
 export function MedicationHistoricalList({ medications, deleting, onDelete }: Props) {
-  const t = useTranslations("portal.medications")
-  const [expanded, setExpanded] = useState(false)
+  const t = useTranslations("portal.medications");
+  const [expanded, setExpanded] = useState(false);
 
-  if (medications.length === 0) return null
+  if (medications.length === 0) return null;
 
   return (
     <div>
@@ -30,12 +30,19 @@ export function MedicationHistoricalList({ medications, deleting, onDelete }: Pr
       {expanded && (
         <div className="flex flex-col gap-2 mt-3">
           {medications.map((med) => (
-            <div key={med.id} className="flex items-start gap-3 p-3 rounded-xl border border-slate-100 bg-slate-50 opacity-60">
+            <div
+              key={med.id}
+              className="flex items-start gap-3 p-3 rounded-xl border border-slate-100 bg-slate-50 opacity-60"
+            >
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-slate-700">{med.medicationName}</p>
                 <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-0.5">
                   {med.dose && <span className="text-xs text-slate-500">{med.dose}</span>}
-                  {med.startDate && <span className="text-xs text-slate-400">{med.startDate} → {med.endDate}</span>}
+                  {med.startDate && (
+                    <span className="text-xs text-slate-400">
+                      {med.startDate} → {med.endDate}
+                    </span>
+                  )}
                 </div>
               </div>
               <button
@@ -50,5 +57,5 @@ export function MedicationHistoricalList({ medications, deleting, onDelete }: Pr
         </div>
       )}
     </div>
-  )
+  );
 }

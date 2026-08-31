@@ -1,36 +1,52 @@
-import { getTranslations } from "next-intl/server"
-import { Button } from "@/components/ui/button"
-import { Link } from "@/i18n/navigation"
-import { ProgressBar } from "@/components/ui/progress-bar"
-import { CheckCircle2 } from "lucide-react"
-import type { ReturnNudge } from "@/lib/domain/check-in"
+import { getTranslations } from "next-intl/server";
+import { Button } from "@/components/ui/button";
+import { Link } from "@/i18n/navigation";
+import { ProgressBar } from "@/components/ui/progress-bar";
+import { CheckCircle2 } from "lucide-react";
+import type { ReturnNudge } from "@/lib/domain/check-in";
 
 interface Props {
-  milestone: string | null
-  isOnboarded: boolean
-  completionPct: number
-  checkedInToday: boolean
-  streak: number
-  lastEnergy: number | null
-  returnNudge: ReturnNudge | null
+  milestone: string | null;
+  isOnboarded: boolean;
+  completionPct: number;
+  checkedInToday: boolean;
+  streak: number;
+  lastEnergy: number | null;
+  returnNudge: ReturnNudge | null;
 }
 
-export async function DashboardBanners({ milestone, isOnboarded, completionPct, checkedInToday, streak, lastEnergy, returnNudge }: Props) {
-  const t = await getTranslations("portal.dashboard")
+export async function DashboardBanners({
+  milestone,
+  isOnboarded,
+  completionPct,
+  checkedInToday,
+  streak,
+  lastEnergy,
+  returnNudge,
+}: Props) {
+  const t = await getTranslations("portal.dashboard");
 
   const readyTitle =
-    returnNudge?.kind === "streak-keep" ? t("nudgeStreakKeepTitle", { count: returnNudge.streak })
-    : returnNudge?.kind === "yesterday" ? t("nudgeYesterdayTitle")
-    : returnNudge?.kind === "gap" ? t("nudgeGapTitle", { count: returnNudge.days })
-    : returnNudge?.kind === "long-gap" ? t("nudgeLongGapTitle")
-    : t("readyTitle")
+    returnNudge?.kind === "streak-keep"
+      ? t("nudgeStreakKeepTitle", { count: returnNudge.streak })
+      : returnNudge?.kind === "yesterday"
+        ? t("nudgeYesterdayTitle")
+        : returnNudge?.kind === "gap"
+          ? t("nudgeGapTitle", { count: returnNudge.days })
+          : returnNudge?.kind === "long-gap"
+            ? t("nudgeLongGapTitle")
+            : t("readyTitle");
 
   const readySubtitle =
-    returnNudge?.kind === "streak-keep" ? t("nudgeStreakKeepSubtitle")
-    : returnNudge?.kind === "yesterday" ? t("nudgeYesterdaySubtitle")
-    : returnNudge?.kind === "gap" ? t("nudgeGapSubtitle")
-    : returnNudge?.kind === "long-gap" ? t("nudgeLongGapSubtitle")
-    : t("readySubtitle")
+    returnNudge?.kind === "streak-keep"
+      ? t("nudgeStreakKeepSubtitle")
+      : returnNudge?.kind === "yesterday"
+        ? t("nudgeYesterdaySubtitle")
+        : returnNudge?.kind === "gap"
+          ? t("nudgeGapSubtitle")
+          : returnNudge?.kind === "long-gap"
+            ? t("nudgeLongGapSubtitle")
+            : t("readySubtitle");
 
   return (
     <>
@@ -95,5 +111,5 @@ export async function DashboardBanners({ milestone, isOnboarded, completionPct, 
         </div>
       )}
     </>
-  )
+  );
 }

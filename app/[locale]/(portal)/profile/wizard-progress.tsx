@@ -1,19 +1,26 @@
-"use client"
+"use client";
 
-import { ProgressBar } from "@/components/ui/progress-bar"
-import { Check, CheckCircle } from "lucide-react"
-import { PROFILE_WIZARD_STEPS } from "@/lib/constants"
+import { ProgressBar } from "@/components/ui/progress-bar";
+import { Check, CheckCircle } from "lucide-react";
+import { PROFILE_WIZARD_STEPS } from "@/lib/constants";
 
 interface Props {
-  step: number
-  totalSteps: number
-  pct: number
-  saved: boolean
-  stepTitles: string[]
-  stepsCompleted: boolean[]
+  step: number;
+  totalSteps: number;
+  pct: number;
+  saved: boolean;
+  stepTitles: string[];
+  stepsCompleted: boolean[];
 }
 
-export function WizardProgress({ step, totalSteps, pct, saved, stepTitles, stepsCompleted }: Props) {
+export function WizardProgress({
+  step,
+  totalSteps,
+  pct,
+  saved,
+  stepTitles,
+  stepsCompleted,
+}: Props) {
   return (
     <div className="sticky top-0 z-10 bg-white rounded-xl border border-slate-200 p-4 shadow-sm space-y-2">
       <div className="flex items-center justify-between">
@@ -28,8 +35,8 @@ export function WizardProgress({ step, totalSteps, pct, saved, stepTitles, steps
       <ProgressBar value={pct} />
       <div className="flex items-center gap-1 pt-1">
         {PROFILE_WIZARD_STEPS.map((_, i) => {
-          const done = stepsCompleted[i]
-          const active = i === step
+          const done = stepsCompleted[i];
+          const active = i === step;
           return (
             <div key={i} className="flex-1 flex flex-col items-center gap-1">
               <div
@@ -37,8 +44,8 @@ export function WizardProgress({ step, totalSteps, pct, saved, stepTitles, steps
                   done
                     ? "bg-teal-500 text-white"
                     : active
-                    ? "bg-teal-100 text-teal-700 ring-2 ring-teal-500"
-                    : "bg-slate-100 text-slate-400"
+                      ? "bg-teal-100 text-teal-700 ring-2 ring-teal-500"
+                      : "bg-slate-100 text-slate-400"
                 }`}
               >
                 {done ? <Check className="w-3 h-3" /> : i + 1}
@@ -51,9 +58,9 @@ export function WizardProgress({ step, totalSteps, pct, saved, stepTitles, steps
                 {stepTitles[i]}
               </span>
             </div>
-          )
+          );
         })}
       </div>
     </div>
-  )
+  );
 }

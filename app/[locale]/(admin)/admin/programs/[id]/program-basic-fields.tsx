@@ -1,32 +1,39 @@
-"use client"
+"use client";
 
-import { useTranslations } from "next-intl"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Select } from "@/components/ui/select"
-import { MAIN_CONCERNS, FIELD_MAX_TITLE, FIELD_MAX_LONG, PROGRAM_DURATION_WEEKS_MAX } from "@/lib/constants"
+import { useTranslations } from "next-intl";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select } from "@/components/ui/select";
+import {
+  MAIN_CONCERNS,
+  FIELD_MAX_TITLE,
+  FIELD_MAX_LONG,
+  PROGRAM_DURATION_WEEKS_MAX,
+} from "@/lib/constants";
 
 interface FormState {
-  title: string
-  description: string
-  durationWeeks: string
-  targetConcern: string
-  isTemplate: boolean
+  title: string;
+  description: string;
+  durationWeeks: string;
+  targetConcern: string;
+  isTemplate: boolean;
 }
 
 interface Props {
-  form: FormState
-  onChange: (field: string, value: string | boolean) => void
+  form: FormState;
+  onChange: (field: string, value: string | boolean) => void;
 }
 
 export function ProgramBasicFields({ form, onChange }: Props) {
-  const t = useTranslations("admin.programs")
-  const tConcerns = useTranslations("concerns")
+  const t = useTranslations("admin.programs");
+  const tConcerns = useTranslations("concerns");
 
   return (
     <>
       <div className="flex flex-col gap-1.5">
-        <label htmlFor="edit-title" className="text-sm font-medium text-slate-700">{t("fieldTitle")} *</label>
+        <label htmlFor="edit-title" className="text-sm font-medium text-slate-700">
+          {t("fieldTitle")} *
+        </label>
         <Input
           id="edit-title"
           value={form.title}
@@ -47,7 +54,9 @@ export function ProgramBasicFields({ form, onChange }: Props) {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="edit-duration" className="text-sm font-medium text-slate-700">{t("fieldDuration")}</label>
+          <label htmlFor="edit-duration" className="text-sm font-medium text-slate-700">
+            {t("fieldDuration")}
+          </label>
           <Input
             id="edit-duration"
             type="number"
@@ -66,7 +75,9 @@ export function ProgramBasicFields({ form, onChange }: Props) {
         >
           <option value="">{t("fieldTargetConcernAny")}</option>
           {MAIN_CONCERNS.map((c) => (
-            <option key={c} value={c}>{tConcerns(c as Parameters<typeof tConcerns>[0])}</option>
+            <option key={c} value={c}>
+              {tConcerns(c as Parameters<typeof tConcerns>[0])}
+            </option>
           ))}
         </Select>
       </div>
@@ -81,5 +92,5 @@ export function ProgramBasicFields({ form, onChange }: Props) {
         <span className="text-sm text-slate-700">{t("fieldIsTemplate")}</span>
       </label>
     </>
-  )
+  );
 }

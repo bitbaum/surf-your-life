@@ -1,14 +1,14 @@
-import * as React from "react"
-import { cn } from "@/lib/utils"
+import * as React from "react";
+import { cn } from "@/lib/utils";
 
 export interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
-  label?: string
-  error?: string
+  label?: string;
+  error?: string;
 }
 
 const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
   ({ className, label, error, id, children, ...props }, ref) => {
-    const selectId = id ?? label?.toLowerCase().replace(/\s+/g, "-")
+    const selectId = id ?? label?.toLowerCase().replace(/\s+/g, "-");
     const select = (
       <select
         id={selectId}
@@ -17,16 +17,16 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
           "focus:outline-none focus:ring-2 focus:ring-brand-ring focus:border-transparent",
           "disabled:cursor-not-allowed disabled:opacity-50 min-h-[44px]",
           error && "border-error-ring focus:ring-error-ring",
-          className
+          className,
         )}
         ref={ref}
         {...props}
       >
         {children}
       </select>
-    )
+    );
 
-    if (!label) return select
+    if (!label) return select;
 
     return (
       <div className="flex flex-col gap-1.5">
@@ -36,9 +36,9 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
         {select}
         {error && <p className="text-xs text-error">{error}</p>}
       </div>
-    )
-  }
-)
-Select.displayName = "Select"
+    );
+  },
+);
+Select.displayName = "Select";
 
-export { Select }
+export { Select };

@@ -1,35 +1,45 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useTranslations } from "next-intl"
-import { useRouter } from "@/i18n/navigation"
-import { useAiForm } from "@fleet/ai-forms/react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Textarea } from "@/components/ui/textarea"
-import { ENERGY_SCALE, PEM_SEVERITY_SCALE, SYMPTOM_SCALE, FIELD_MAX_JOURNAL } from "@/lib/constants"
-import { toast } from "sonner"
-import { AiFormBar } from "@/components/ui/ai-form-bar"
-import { CHECK_IN_FORM } from "@/lib/config/ai-forms"
-import { MoodCard } from "./mood-card"
-import { EnergyCard } from "./energy-card"
-import { ActivityPemCard } from "./activity-pem-card"
-import { SleepCard } from "./sleep-card"
-import { SymptomsCard } from "./symptoms-card"
-import { PageHeader } from "@/components/ui/page-header"
+import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
+import { useAiForm } from "@fleet/ai-forms/react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  ENERGY_SCALE,
+  PEM_SEVERITY_SCALE,
+  SYMPTOM_SCALE,
+  FIELD_MAX_JOURNAL,
+} from "@/lib/constants";
+import { toast } from "sonner";
+import { AiFormBar } from "@/components/ui/ai-form-bar";
+import { CHECK_IN_FORM } from "@/lib/config/ai-forms";
+import { MoodCard } from "./mood-card";
+import { EnergyCard } from "./energy-card";
+import { ActivityPemCard } from "./activity-pem-card";
+import { SleepCard } from "./sleep-card";
+import { SymptomsCard } from "./symptoms-card";
+import { PageHeader } from "@/components/ui/page-header";
 
 /** Symptom fields, in the order the card renders them. */
-const SYMPTOM_FIELDS = ["symptomFatigue", "symptomBrainFog", "symptomPain", "symptomStress"] as const
+const SYMPTOM_FIELDS = [
+  "symptomFatigue",
+  "symptomBrainFog",
+  "symptomPain",
+  "symptomStress",
+] as const;
 
 /** Read a number out of the shared store, falling back to the slider default. */
-const num = (value: unknown, fallback: number) => (typeof value === "number" ? value : fallback)
+const num = (value: unknown, fallback: number) => (typeof value === "number" ? value : fallback);
 
 export default function CheckInPage() {
-  const t = useTranslations("portal.checkIn")
-  const router = useRouter()
+  const t = useTranslations("portal.checkIn");
+  const router = useRouter();
 
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string>("")
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string>("");
 
   // One store, written by both the person and the assistant — that is what lets
   // a follow-up ("actually the pain was more like an 8") revise what is already
@@ -50,28 +60,28 @@ export default function CheckInPage() {
       // assistant scored a symptom, open it — otherwise it writes values into a
       // section nobody can see.
       if (SYMPTOM_FIELDS.some((field) => changed.includes(field))) {
-        form.setValue("trackSymptoms", true)
+        form.setValue("trackSymptoms", true);
       }
     },
-  })
+  });
 
-  const v = form.values
-  const activityLevel = (v.activityLevel as string) || null
-  const trackSymptoms = v.trackSymptoms === true
-  const showPem = activityLevel === "moderate" || activityLevel === "active"
+  const v = form.values;
+  const activityLevel = (v.activityLevel as string) || null;
+  const trackSymptoms = v.trackSymptoms === true;
+  const showPem = activityLevel === "moderate" || activityLevel === "active";
 
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    const mood = String(v.mood ?? "")
+    e.preventDefault();
+    const mood = String(v.mood ?? "");
     if (!mood) {
-      setError(t("errorMoodRequired"))
-      return
+      setError(t("errorMoodRequired"));
+      return;
     }
-    setLoading(true)
-    setError("")
+    setLoading(true);
+    setError("");
 
-    const pemFlag = v.pemFlag === true
-    const journalEntry = String(v.journalEntry ?? "").trim()
+    const pemFlag = v.pemFlag === true;
+    const journalEntry = String(v.journalEntry ?? "").trim();
 
     try {
       const res = await fetch("/api/check-in", {
@@ -85,34 +95,35 @@ export default function CheckInPage() {
           activityLevel,
           pemFlag: showPem ? pemFlag : false,
           pemSeverity: showPem && pemFlag ? num(v.pemSeverity, PEM_SEVERITY_SCALE.default) : null,
-          orthostaticSymptoms: typeof v.orthostaticSymptoms === "boolean" ? v.orthostaticSymptoms : null,
+          orthostaticSymptoms:
+            typeof v.orthostaticSymptoms === "boolean" ? v.orthostaticSymptoms : null,
           journalEntry: journalEntry || null,
           symptomFatigue: trackSymptoms ? num(v.symptomFatigue, SYMPTOM_SCALE.default) : null,
           symptomBrainFog: trackSymptoms ? num(v.symptomBrainFog, SYMPTOM_SCALE.default) : null,
           symptomPain: trackSymptoms ? num(v.symptomPain, SYMPTOM_SCALE.default) : null,
           stressLevel: trackSymptoms ? num(v.symptomStress, SYMPTOM_SCALE.default) : null,
         }),
-      })
+      });
 
       if (!res.ok) {
         if (res.status === 409) {
-          toast.info(t("alreadyDoneBody"))
-          router.push("/dashboard")
+          toast.info(t("alreadyDoneBody"));
+          router.push("/dashboard");
         } else {
-          setError(t("error"))
-          toast.error(t("error"))
+          setError(t("error"));
+          toast.error(t("error"));
         }
-        return
+        return;
       }
 
-      toast.success(t("submitSuccess"))
-      router.push("/dashboard")
-      router.refresh()
+      toast.success(t("submitSuccess"));
+      router.push("/dashboard");
+      router.refresh();
     } catch {
-      setError(t("error"))
-      toast.error(t("error"))
+      setError(t("error"));
+      toast.error(t("error"));
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
@@ -127,10 +138,7 @@ export default function CheckInPage() {
           refinePlaceholder={t("aiRefinePlaceholder")}
         />
 
-        <MoodCard
-          value={String(v.mood ?? "")}
-          onChange={(mood) => form.setValue("mood", mood)}
-        />
+        <MoodCard value={String(v.mood ?? "")} onChange={(mood) => form.setValue("mood", mood)} />
         <EnergyCard
           value={num(v.energyLevel, ENERGY_SCALE.default)}
           onChange={(energy) => form.setValue("energyLevel", energy)}
@@ -190,7 +198,7 @@ export default function CheckInPage() {
               symptomBrainFog: next.brainFog,
               symptomPain: next.pain,
               symptomStress: next.stress,
-            })
+            });
           }}
         />
 
@@ -201,5 +209,5 @@ export default function CheckInPage() {
         </Button>
       </form>
     </div>
-  )
+  );
 }

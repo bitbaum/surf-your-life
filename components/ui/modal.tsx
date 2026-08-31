@@ -1,15 +1,15 @@
-"use client"
+"use client";
 
-import { X } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { X } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface ModalProps {
-  title: string
-  onClose: () => void
-  size?: "md" | "lg"
-  scrollable?: boolean
-  children: React.ReactNode
-  closeLabel?: string
+  title: string;
+  onClose: () => void;
+  size?: "md" | "lg";
+  scrollable?: boolean;
+  children: React.ReactNode;
+  closeLabel?: string;
 }
 
 export function Modal({
@@ -26,7 +26,7 @@ export function Modal({
         className={cn(
           "bg-surface rounded-card shadow-overlay w-full flex flex-col",
           size === "lg" ? "max-w-lg" : "max-w-md",
-          scrollable && "max-h-[90vh]"
+          scrollable && "max-h-[90vh]",
         )}
       >
         <div className="flex items-center justify-between p-6 border-b border-border flex-none">
@@ -42,5 +42,5 @@ export function Modal({
         <div className={cn("p-6", scrollable && "overflow-y-auto")}>{children}</div>
       </div>
     </div>
-  )
+  );
 }

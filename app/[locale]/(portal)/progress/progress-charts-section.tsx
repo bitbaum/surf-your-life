@@ -1,42 +1,46 @@
-import { getTranslations } from "next-intl/server"
-import { WellnessTrendChart } from "@/components/ui/wellness-trend-chart"
-import { SymptomsChart } from "@/components/ui/symptoms-chart"
-import { SleepChart } from "@/components/ui/sleep-chart"
-import { FunctionalAssessmentsChart } from "@/components/ui/functional-assessments-chart"
-import { ChartCard } from "@/components/ui/chart-card"
+import { getTranslations } from "next-intl/server";
+import { WellnessTrendChart } from "@/components/ui/wellness-trend-chart";
+import { SymptomsChart } from "@/components/ui/symptoms-chart";
+import { SleepChart } from "@/components/ui/sleep-chart";
+import { FunctionalAssessmentsChart } from "@/components/ui/functional-assessments-chart";
+import { ChartCard } from "@/components/ui/chart-card";
 
 type CheckInPoint = {
-  createdAt: Date
-  mood: string
-  energyLevel: number
-  sleepHours: number | null
-  symptomFatigue: number | null
-  symptomBrainFog: number | null
-  symptomPain: number | null
-  stressLevel: number | null
-}
+  createdAt: Date;
+  mood: string;
+  energyLevel: number;
+  sleepHours: number | null;
+  symptomFatigue: number | null;
+  symptomBrainFog: number | null;
+  symptomPain: number | null;
+  stressLevel: number | null;
+};
 
 type AssessmentPoint = {
-  assessedAt: Date
-  overallCapacity: number
-  cognitiveCapacity: number | null
-  physicalCapacity: number | null
-  emotionalCapacity: number | null
-  socialCapacity: number | null
-}
+  assessedAt: Date;
+  overallCapacity: number;
+  cognitiveCapacity: number | null;
+  physicalCapacity: number | null;
+  emotionalCapacity: number | null;
+  socialCapacity: number | null;
+};
 
 interface Props {
-  checkIns: CheckInPoint[]
-  assessments: AssessmentPoint[]
+  checkIns: CheckInPoint[];
+  assessments: AssessmentPoint[];
 }
 
 export async function ProgressChartsSection({ checkIns, assessments }: Props) {
-  const t = await getTranslations("portal.progress")
+  const t = await getTranslations("portal.progress");
 
   const hasSymptomData = checkIns.some(
-    (c) => c.symptomFatigue != null || c.symptomBrainFog != null || c.symptomPain != null || c.stressLevel != null
-  )
-  const sleepCount = checkIns.filter((c) => c.sleepHours != null).length
+    (c) =>
+      c.symptomFatigue != null ||
+      c.symptomBrainFog != null ||
+      c.symptomPain != null ||
+      c.stressLevel != null,
+  );
+  const sleepCount = checkIns.filter((c) => c.sleepHours != null).length;
 
   return (
     <>
@@ -80,12 +84,9 @@ export async function ProgressChartsSection({ checkIns, assessments }: Props) {
 
       {sleepCount >= 2 && (
         <ChartCard title={t("sleepChartTitle")} subtitle={t("sleepChartSubtitle")}>
-          <SleepChart
-            data={checkIns}
-            formatHours={(n) => t("sleepHoursTooltip", { n })}
-          />
+          <SleepChart data={checkIns} formatHours={(n) => t("sleepHoursTooltip", { n })} />
         </ChartCard>
       )}
     </>
-  )
+  );
 }

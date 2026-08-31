@@ -1,17 +1,17 @@
-import { getTranslations } from "next-intl/server"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Link } from "@/i18n/navigation"
-import { AlertTriangle } from "lucide-react"
-import { AlertList, type Alert } from "./alert-list"
+import { getTranslations } from "next-intl/server";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Link } from "@/i18n/navigation";
+import { AlertTriangle } from "lucide-react";
+import { AlertList, type Alert } from "./alert-list";
 
 interface Props {
-  count: number
-  alerts: Alert[]
+  count: number;
+  alerts: Alert[];
 }
 
 export async function AlertsPreviewCard({ count, alerts }: Props) {
-  if (count === 0) return null
-  const t = await getTranslations("admin.dashboard")
+  if (count === 0) return null;
+  const t = await getTranslations("admin.dashboard");
 
   return (
     <Card className="mb-6 border-red-200">
@@ -30,5 +30,5 @@ export async function AlertsPreviewCard({ count, alerts }: Props) {
         <AlertList alerts={alerts} />
       </CardContent>
     </Card>
-  )
+  );
 }

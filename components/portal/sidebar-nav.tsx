@@ -1,20 +1,28 @@
-"use client"
+"use client";
 
-import { usePathname, Link } from "@/i18n/navigation"
-import { useTranslations } from "next-intl"
-import { cn } from "@/lib/utils"
+import { usePathname, Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
+import { cn } from "@/lib/utils";
 import {
-  ClipboardList, LayoutDashboard, History, Activity, TrendingUp,
-  Pill, Sparkles, BookOpen, Bot, MessageSquare, CalendarPlus, FileText,
-} from "lucide-react"
-import { NavBadge } from "@/components/ui/nav-badge"
+  ClipboardList,
+  LayoutDashboard,
+  History,
+  Activity,
+  TrendingUp,
+  Pill,
+  Sparkles,
+  BookOpen,
+  Bot,
+  MessageSquare,
+  CalendarPlus,
+  FileText,
+} from "lucide-react";
+import { NavBadge } from "@/components/ui/nav-badge";
 
 const NAV_GROUPS = [
   {
     labelKey: "groupToday" as const,
-    items: [
-      { href: "/dashboard", labelKey: "dashboard" as const, icon: LayoutDashboard },
-    ],
+    items: [{ href: "/dashboard", labelKey: "dashboard" as const, icon: LayoutDashboard }],
   },
   {
     labelKey: "groupTrack" as const,
@@ -36,19 +44,19 @@ const NAV_GROUPS = [
       { href: "/documents", labelKey: "documents" as const, icon: FileText },
     ],
   },
-]
+];
 
 interface Props {
-  onClose: () => void
-  unreadThreads?: number
+  onClose: () => void;
+  unreadThreads?: number;
 }
 
 export function PortalSidebarNav({ onClose, unreadThreads = 0 }: Props) {
-  const t = useTranslations("sidebar")
-  const pathname = usePathname()
+  const t = useTranslations("sidebar");
+  const pathname = usePathname();
 
   const isActive = (href: string) =>
-    pathname === href || (href !== "/dashboard" && pathname.startsWith(href))
+    pathname === href || (href !== "/dashboard" && pathname.startsWith(href));
 
   const navLink = (href: string, label: string, Icon: React.ElementType, badge = 0) => (
     <Link
@@ -59,14 +67,14 @@ export function PortalSidebarNav({ onClose, unreadThreads = 0 }: Props) {
         "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
         isActive(href)
           ? "bg-teal-50 text-teal-700"
-          : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+          : "text-slate-600 hover:bg-slate-50 hover:text-slate-900",
       )}
     >
       <Icon className="w-4 h-4" />
       {label}
       <NavBadge count={badge} />
     </Link>
-  )
+  );
 
   return (
     <nav className="flex flex-col flex-1 gap-4">
@@ -75,7 +83,9 @@ export function PortalSidebarNav({ onClose, unreadThreads = 0 }: Props) {
         onClick={onClose}
         className={cn(
           "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold transition-colors",
-          isActive("/check-in") ? "bg-teal-600 text-white" : "bg-teal-600 text-white hover:bg-teal-700"
+          isActive("/check-in")
+            ? "bg-teal-600 text-white"
+            : "bg-teal-600 text-white hover:bg-teal-700",
         )}
       >
         <ClipboardList className="w-4 h-4" />
@@ -88,10 +98,12 @@ export function PortalSidebarNav({ onClose, unreadThreads = 0 }: Props) {
             {t(group.labelKey)}
           </p>
           <div className="flex flex-col gap-0.5">
-            {group.items.map(({ href, labelKey, icon }) => navLink(href, t(labelKey), icon, href === "/messages" ? unreadThreads : 0))}
+            {group.items.map(({ href, labelKey, icon }) =>
+              navLink(href, t(labelKey), icon, href === "/messages" ? unreadThreads : 0),
+            )}
           </div>
         </div>
       ))}
     </nav>
-  )
+  );
 }

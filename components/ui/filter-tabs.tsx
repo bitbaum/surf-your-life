@@ -1,15 +1,15 @@
-import { Link } from "@/i18n/navigation"
-import { cn } from "@/lib/utils"
+import { Link } from "@/i18n/navigation";
+import { cn } from "@/lib/utils";
 
 interface FilterTab<T extends string> {
-  value: T
-  label: string
+  value: T;
+  label: string;
 }
 
 interface FilterTabsProps<T extends string> {
-  tabs: FilterTab<T>[]
-  active: T
-  href: (value: T) => string
+  tabs: FilterTab<T>[];
+  active: T;
+  href: (value: T) => string;
 }
 
 export function FilterTabs<T extends string>({ tabs, active, href }: FilterTabsProps<T>) {
@@ -23,12 +23,12 @@ export function FilterTabs<T extends string>({ tabs, active, href }: FilterTabsP
             "px-4 py-1.5 rounded-element text-sm font-medium transition-colors border",
             active === value
               ? "bg-brand text-white border-brand"
-              : "bg-surface text-ink-muted border-border hover:bg-surface-subtle"
+              : "bg-surface text-ink-muted border-border hover:bg-surface-subtle",
           )}
         >
           {label}
         </Link>
       ))}
     </div>
-  )
+  );
 }

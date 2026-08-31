@@ -23,11 +23,7 @@
       "cta": "Programm starten",
       "ctaSecondary": "Methode ansehen"
     },
-    "trust": [
-      "Psychiatrisch geführt",
-      "Biologie-first-Methodik",
-      "Zollikerstrasse 183"
-    ],
+    "trust": ["Psychiatrisch geführt", "Biologie-first-Methodik", "Zollikerstrasse 183"],
     "proof": [
       "230 m² Performance-Raum",
       "Psychiatrisch geführt",
@@ -1283,15 +1279,7 @@
         "afternoon": "Nachmittag",
         "flexible": "Flexibel"
       },
-      "dayNames": [
-        "Mo",
-        "Di",
-        "Mi",
-        "Do",
-        "Fr",
-        "Sa",
-        "So"
-      ],
+      "dayNames": ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"],
       "viewAll": "Alle Buchungen anzeigen"
     },
     "users": {

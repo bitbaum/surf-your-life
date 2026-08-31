@@ -1,44 +1,44 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useTranslations } from "next-intl"
-import { Link } from "@/i18n/navigation"
-import { MarketingNav } from "@/components/marketing/nav"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { CheckCircle, Waves } from "lucide-react"
+import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
+import { MarketingNav } from "@/components/marketing/nav";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { CheckCircle, Waves } from "lucide-react";
 
 export default function ContactPage() {
-  const t = useTranslations("contact")
-  const [form, setForm] = useState({ name: "", email: "", message: "" })
-  const [loading, setLoading] = useState(false)
-  const [sent, setSent] = useState(false)
-  const [error, setError] = useState("")
+  const t = useTranslations("contact");
+  const [form, setForm] = useState({ name: "", email: "", message: "" });
+  const [loading, setLoading] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [error, setError] = useState("");
 
   function set(k: keyof typeof form, v: string) {
-    setForm((p) => ({ ...p, [k]: v }))
+    setForm((p) => ({ ...p, [k]: v }));
   }
 
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    setLoading(true)
-    setError("")
+    e.preventDefault();
+    setLoading(true);
+    setError("");
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
-      })
+      });
       if (!res.ok) {
-        setError(t("error"))
-        return
+        setError(t("error"));
+        return;
       }
-      setSent(true)
+      setSent(true);
     } catch {
-      setError(t("error"))
+      setError(t("error"));
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
@@ -59,7 +59,9 @@ export default function ContactPage() {
                 <Button className="w-full">{t("createAccount")}</Button>
               </Link>
               <Link href="/">
-                <Button variant="outline" className="w-full">{t("backHome")}</Button>
+                <Button variant="outline" className="w-full">
+                  {t("backHome")}
+                </Button>
               </Link>
             </div>
           </div>
@@ -93,7 +95,8 @@ export default function ContactPage() {
               />
               <div>
                 <label className="text-sm font-medium text-slate-700 block mb-1.5">
-                  {t("message")} <span className="text-slate-400 font-normal">{t("messageOptional")}</span>
+                  {t("message")}{" "}
+                  <span className="text-slate-400 font-normal">{t("messageOptional")}</span>
                 </label>
                 <Textarea
                   value={form.message}
@@ -112,5 +115,5 @@ export default function ContactPage() {
         )}
       </div>
     </div>
-  )
+  );
 }

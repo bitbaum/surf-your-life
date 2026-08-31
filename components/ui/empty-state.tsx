@@ -1,12 +1,12 @@
-import { cn } from "@/lib/utils"
-import type { ReactNode } from "react"
+import { cn } from "@/lib/utils";
+import type { ReactNode } from "react";
 
 interface EmptyStateProps {
-  message: string
-  description?: string
-  icon?: ReactNode
-  action?: ReactNode
-  className?: string
+  message: string;
+  description?: string;
+  icon?: ReactNode;
+  action?: ReactNode;
+  className?: string;
 }
 
 export function EmptyState({ message, description, icon, action, className }: EmptyStateProps) {
@@ -17,5 +17,5 @@ export function EmptyState({ message, description, icon, action, className }: Em
       {description && <p className="text-sm text-ink-faint">{description}</p>}
       {action && <div className="mt-1">{action}</div>}
     </div>
-  )
+  );
 }

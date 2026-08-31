@@ -1,33 +1,33 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { formatDate } from "@/lib/utils"
-import { SLEEP_CHART_MAX_HOURS } from "@/lib/constants"
+import { useState } from "react";
+import { formatDate } from "@/lib/utils";
+import { SLEEP_CHART_MAX_HOURS } from "@/lib/constants";
 
 interface DataPoint {
-  createdAt: Date
-  sleepHours: number | null
+  createdAt: Date;
+  sleepHours: number | null;
 }
 
 interface Props {
-  data: DataPoint[]
+  data: DataPoint[];
   /** Localized tooltip formatter, e.g. `(n) => t("sleepHoursTooltip", { n })`. */
-  formatHours: (n: number) => string
+  formatHours: (n: number) => string;
 }
 
 export function SleepChart({ data, formatHours }: Props) {
-  const [tooltip, setTooltip] = useState<{ index: number } | null>(null)
+  const [tooltip, setTooltip] = useState<{ index: number } | null>(null);
 
-  const filtered = data.filter((d) => d.sleepHours != null)
+  const filtered = data.filter((d) => d.sleepHours != null);
 
-  if (filtered.length < 2) return null
+  if (filtered.length < 2) return null;
 
   return (
     <div className="flex items-end gap-1.5 h-16 relative">
       {filtered.map((ci, i) => {
-        const hours = Math.min(ci.sleepHours!, SLEEP_CHART_MAX_HOURS)
-        const pct = (hours / SLEEP_CHART_MAX_HOURS) * 100
-        const isHovered = tooltip?.index === i
+        const hours = Math.min(ci.sleepHours!, SLEEP_CHART_MAX_HOURS);
+        const pct = (hours / SLEEP_CHART_MAX_HOURS) * 100;
+        const isHovered = tooltip?.index === i;
 
         return (
           <div
@@ -48,8 +48,8 @@ export function SleepChart({ data, formatHours }: Props) {
               </div>
             )}
           </div>
-        )
+        );
       })}
     </div>
-  )
+  );
 }

@@ -1,20 +1,20 @@
-"use client"
+"use client";
 
-import { useTranslations } from "next-intl"
-import type { Document } from "@/lib/db/schema"
-import { NoteRow } from "./session-note-row"
+import { useTranslations } from "next-intl";
+import type { Document } from "@/lib/db/schema";
+import { NoteRow } from "./session-note-row";
 
-export type DocWithAuthor = Document & { author: { name: string | null } | null }
+export type DocWithAuthor = Document & { author: { name: string | null } | null };
 
 interface Props {
-  docs: DocWithAuthor[]
-  deleteError: string
-  onDelete: (id: string) => void
-  onEdit: (id: string, title: string, content: string) => Promise<void>
+  docs: DocWithAuthor[];
+  deleteError: string;
+  onDelete: (id: string) => void;
+  onEdit: (id: string, title: string, content: string) => Promise<void>;
 }
 
 export function SessionNotesList({ docs, deleteError, onDelete, onEdit }: Props) {
-  const t = useTranslations("admin.clients.sessionNotes")
+  const t = useTranslations("admin.clients.sessionNotes");
 
   return (
     <>
@@ -29,5 +29,5 @@ export function SessionNotesList({ docs, deleteError, onDelete, onEdit }: Props)
         </div>
       )}
     </>
-  )
+  );
 }

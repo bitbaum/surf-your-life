@@ -1,34 +1,34 @@
-import { notFound } from "next/navigation"
-import { db } from "@/lib/db"
-import { programs, programEnrollments, users } from "@/lib/db/schema"
-import { eq, desc } from "drizzle-orm"
-import { ADMIN_ENROLLMENTS_MAX } from "@/lib/constants"
-import { computeCurrentProgramWeek } from "@/lib/domain/check-in"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Link } from "@/i18n/navigation"
-import { formatDate } from "@/lib/utils"
-import { getTranslations, setRequestLocale } from "next-intl/server"
-import { EnrollmentStatus } from "./enrollment-status"
-import { EditProgramForm } from "./edit-program-form"
-import { EmptyState } from "@/components/ui/empty-state"
-import { Users } from "lucide-react"
-import type { ProgramPhase } from "@/lib/domain/program"
+import { notFound } from "next/navigation";
+import { db } from "@/lib/db";
+import { programs, programEnrollments, users } from "@/lib/db/schema";
+import { eq, desc } from "drizzle-orm";
+import { ADMIN_ENROLLMENTS_MAX } from "@/lib/constants";
+import { computeCurrentProgramWeek } from "@/lib/domain/check-in";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Link } from "@/i18n/navigation";
+import { formatDate } from "@/lib/utils";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { EnrollmentStatus } from "./enrollment-status";
+import { EditProgramForm } from "./edit-program-form";
+import { EmptyState } from "@/components/ui/empty-state";
+import { Users } from "lucide-react";
+import type { ProgramPhase } from "@/lib/domain/program";
 
 export default async function ProgramDetailPage({
   params,
 }: {
-  params: Promise<{ locale: string; id: string }>
+  params: Promise<{ locale: string; id: string }>;
 }) {
-  const { locale, id } = await params
-  setRequestLocale(locale)
-  const t = await getTranslations("admin.programs")
+  const { locale, id } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations("admin.programs");
 
-  const nowMs = Date.now() // eslint-disable-line react-hooks/purity -- server component
+  const nowMs = Date.now(); // eslint-disable-line react-hooks/purity -- server component
 
   const program = await db.query.programs.findFirst({
     where: eq(programs.id, id),
-  })
-  if (!program) notFound()
+  });
+  if (!program) notFound();
 
   const enrollments = await db
     .select({
@@ -45,7 +45,7 @@ export default async function ProgramDetailPage({
     .innerJoin(users, eq(users.id, programEnrollments.clientId))
     .where(eq(programEnrollments.programId, id))
     .orderBy(desc(programEnrollments.createdAt))
-    .limit(ADMIN_ENROLLMENTS_MAX)
+    .limit(ADMIN_ENROLLMENTS_MAX);
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -72,7 +72,14 @@ export default async function ProgramDetailPage({
           {enrollments.length === 0 ? (
             <EmptyState
               message={t("noEnrollments")}
-              action={<Link href="/admin/clients" className="text-sm font-medium text-teal-600 hover:text-teal-700 transition-colors">{t("viewClients")} →</Link>}
+              action={
+                <Link
+                  href="/admin/clients"
+                  className="text-sm font-medium text-teal-600 hover:text-teal-700 transition-colors"
+                >
+                  {t("viewClients")} →
+                </Link>
+              }
               className="py-6"
             />
           ) : (
@@ -93,22 +100,24 @@ export default async function ProgramDetailPage({
                       )}
                       <span>{t("enrolledOn", { date: formatDate(e.createdAt) })}</span>
                       {(() => {
-                        if (!e.startDate || !program.durationWeeks || e.status !== "active") return null
-                        const week = computeCurrentProgramWeek(e.startDate, new Date(nowMs))
-                        if (week < 1 || week > program.durationWeeks) return null
-                        const phases = program.phaseConfig as ProgramPhase[] | null
-                        const phase = phases?.filter((p) => p.week <= week)?.sort((a, b) => b.week - a.week)[0] ?? null
+                        if (!e.startDate || !program.durationWeeks || e.status !== "active")
+                          return null;
+                        const week = computeCurrentProgramWeek(e.startDate, new Date(nowMs));
+                        if (week < 1 || week > program.durationWeeks) return null;
+                        const phases = program.phaseConfig as ProgramPhase[] | null;
+                        const phase =
+                          phases
+                            ?.filter((p) => p.week <= week)
+                            ?.sort((a, b) => b.week - a.week)[0] ?? null;
                         return (
                           <span className="font-medium text-teal-600">
                             {t("weekProgress", { current: week, total: program.durationWeeks })}
                             {phase?.title && ` · ${phase.title}`}
                           </span>
-                        )
+                        );
                       })()}
                     </div>
-                    {e.notes && (
-                      <p className="text-xs text-slate-500 mt-1.5 italic">{e.notes}</p>
-                    )}
+                    {e.notes && <p className="text-xs text-slate-500 mt-1.5 italic">{e.notes}</p>}
                   </div>
                   <EnrollmentStatus enrollmentId={e.id} currentStatus={e.status} />
                 </div>
@@ -118,5 +127,5 @@ export default async function ProgramDetailPage({
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

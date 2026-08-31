@@ -1,7 +1,7 @@
-import { sql, and, eq, isNull, ne, type SQL } from "drizzle-orm"
-import { threadMessages, threads, users } from "./schema"
-import { CLIENT_ROLE } from "@/lib/domain/auth"
-import { db } from "./index"
+import { sql, and, eq, isNull, ne, type SQL } from "drizzle-orm";
+import { threadMessages, threads, users } from "./schema";
+import { CLIENT_ROLE } from "@/lib/domain/auth";
+import { db } from "./index";
 
 /**
  * SQL EXISTS fragment: the thread has at least one unread message authored by
@@ -17,7 +17,7 @@ export function unreadFromClientExists(): SQL<unknown> {
     WHERE ${threadMessages.threadId} = ${threads.id}
       AND ${threadMessages.readAt} IS NULL
       AND ${users.role} = ${CLIENT_ROLE}
-  )`
+  )`;
 }
 
 /**
@@ -32,9 +32,9 @@ export async function markThreadAsReadFor(threadId: string, userId: string): Pro
       and(
         eq(threadMessages.threadId, threadId),
         isNull(threadMessages.readAt),
-        ne(threadMessages.senderId, userId)
-      )
-    )
+        ne(threadMessages.senderId, userId),
+      ),
+    );
 }
 
 /**
@@ -50,5 +50,5 @@ export function unreadFromOthersExists(userId: string): SQL<unknown> {
     WHERE ${threadMessages.threadId} = ${threads.id}
       AND ${threadMessages.senderId} != ${userId}
       AND ${threadMessages.readAt} IS NULL
-  )`
+  )`;
 }

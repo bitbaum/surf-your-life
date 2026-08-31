@@ -1,44 +1,43 @@
-import { db } from "@/lib/db"
-import { bookings } from "@/lib/db/schema"
-import { and, gte, lte, ne } from "drizzle-orm"
-import { getTranslations, setRequestLocale } from "next-intl/server"
-import { Link } from "@/i18n/navigation"
-import { PageHeader } from "@/components/ui/page-header"
-import { formatDate, localDateString, addDaysISO } from "@/lib/utils"
+import { db } from "@/lib/db";
+import { bookings } from "@/lib/db/schema";
+import { and, gte, lte, ne } from "drizzle-orm";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
+import { PageHeader } from "@/components/ui/page-header";
+import { formatDate, localDateString, addDaysISO } from "@/lib/utils";
 
 // Returns the Monday of the ISO week containing `isoDate` as a "YYYY-MM-DD".
 // Day-of-week is intrinsic to a calendar date, so UTC-anchoring is fine here.
 function startOfWeekStr(isoDate: string): string {
-  const [y, m, d] = isoDate.split("-").map(Number)
-  const day = new Date(Date.UTC(y, m - 1, d)).getUTCDay()
-  const diff = day === 0 ? -6 : 1 - day // Mon = 1
-  return addDaysISO(isoDate, diff)
+  const [y, m, d] = isoDate.split("-").map(Number);
+  const day = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
+  const diff = day === 0 ? -6 : 1 - day; // Mon = 1
+  return addDaysISO(isoDate, diff);
 }
-
 
 const STATUS_STYLES: Record<string, string> = {
   pending: "bg-amber-50 border-amber-200 text-amber-900",
   confirmed: "bg-teal-50 border-teal-200 text-teal-900",
   cancelled: "bg-slate-100 border-slate-200 text-slate-400 line-through",
-}
+};
 
 export default async function BookingCalendarPage({
   params,
   searchParams,
 }: {
-  params: Promise<{ locale: string }>
-  searchParams: Promise<{ week?: string }>
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ week?: string }>;
 }) {
-  const { locale } = await params
-  setRequestLocale(locale)
-  const t = await getTranslations("admin.bookings")
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations("admin.bookings");
 
-  const { week: weekParam } = await searchParams
+  const { week: weekParam } = await searchParams;
   // Anchor at clinic-local today so "this week" matches the admin's wall clock,
   // not UTC. `weekParam` is already a "YYYY-MM-DD" from the prev/next/today links.
-  const todayISO = localDateString(new Date())
-  const weekStart = startOfWeekStr(weekParam ?? todayISO)
-  const weekEnd = addDaysISO(weekStart, 6)
+  const todayISO = localDateString(new Date());
+  const weekStart = startOfWeekStr(weekParam ?? todayISO);
+  const weekEnd = addDaysISO(weekStart, 6);
 
   const weekBookings = await db.query.bookings.findMany({
     where: and(
@@ -48,23 +47,23 @@ export default async function BookingCalendarPage({
     ),
     with: { user: true, service: true },
     orderBy: (b, { asc }) => [asc(b.preferredDate)],
-  })
+  });
 
   // Group by date
-  const byDate = new Map<string, typeof weekBookings>()
+  const byDate = new Map<string, typeof weekBookings>();
   for (let i = 0; i < 7; i++) {
-    byDate.set(addDaysISO(weekStart, i), [])
+    byDate.set(addDaysISO(weekStart, i), []);
   }
   for (const b of weekBookings) {
     if (b.preferredDate) {
-      byDate.get(b.preferredDate)?.push(b)
+      byDate.get(b.preferredDate)?.push(b);
     }
   }
 
-  const prevWeek = addDaysISO(weekStart, -7)
-  const nextWeek = addDaysISO(weekStart, 7)
+  const prevWeek = addDaysISO(weekStart, -7);
+  const nextWeek = addDaysISO(weekStart, 7);
 
-  const DAY_NAMES = t.raw("dayNames") as string[]
+  const DAY_NAMES = t.raw("dayNames") as string[];
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -103,15 +102,13 @@ export default async function BookingCalendarPage({
       {/* 7-column week grid */}
       <div className="grid grid-cols-7 gap-2">
         {Array.from(byDate.entries()).map(([dateStr, dayBookings], i) => {
-          const isToday = dateStr === todayISO
+          const isToday = dateStr === todayISO;
           return (
             <div key={dateStr} className="flex flex-col min-h-32">
               {/* Day header */}
               <div
                 className={`text-center py-2 rounded-t-lg text-xs font-semibold mb-1 ${
-                  isToday
-                    ? "bg-teal-600 text-white"
-                    : "bg-slate-100 text-slate-500"
+                  isToday ? "bg-teal-600 text-white" : "bg-slate-100 text-slate-500"
                 }`}
               >
                 <div>{DAY_NAMES[i]}</div>
@@ -143,7 +140,7 @@ export default async function BookingCalendarPage({
                 )}
               </div>
             </div>
-          )
+          );
         })}
       </div>
 
@@ -159,5 +156,5 @@ export default async function BookingCalendarPage({
         </span>
       </div>
     </div>
-  )
+  );
 }

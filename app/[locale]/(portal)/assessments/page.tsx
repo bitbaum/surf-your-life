@@ -1,36 +1,35 @@
-import { auth } from "@/lib/auth"
-import { redirect } from "next/navigation"
-import { db } from "@/lib/db"
-import { functionalAssessments } from "@/lib/db/schema"
-import { eq, desc, count } from "drizzle-orm"
-import { PAGINATION_DEFAULT, ASSESSMENT_DIMENSIONS } from "@/lib/constants"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ProgressBar } from "@/components/ui/progress-bar"
-import { Pagination } from "@/components/ui/pagination"
-import { getTranslations, setRequestLocale } from "next-intl/server"
-import { formatDate, computeTotalPages, parsePagination } from "@/lib/utils"
-import { PageHeader } from "@/components/ui/page-header"
-import { AssessmentsClient } from "./assessments-client"
-import { EmptyStateCard } from "@/components/ui/empty-state-card"
-
+import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
+import { db } from "@/lib/db";
+import { functionalAssessments } from "@/lib/db/schema";
+import { eq, desc, count } from "drizzle-orm";
+import { PAGINATION_DEFAULT, ASSESSMENT_DIMENSIONS } from "@/lib/constants";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ProgressBar } from "@/components/ui/progress-bar";
+import { Pagination } from "@/components/ui/pagination";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { formatDate, computeTotalPages, parsePagination } from "@/lib/utils";
+import { PageHeader } from "@/components/ui/page-header";
+import { AssessmentsClient } from "./assessments-client";
+import { EmptyStateCard } from "@/components/ui/empty-state-card";
 
 export default async function AssessmentsPage({
   params,
   searchParams,
 }: {
-  params: Promise<{ locale: string }>
-  searchParams: Promise<{ page?: string }>
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ page?: string }>;
 }) {
-  const { locale } = await params
-  setRequestLocale(locale)
-  const t = await getTranslations("portal.assessments")
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations("portal.assessments");
 
-  const session = await auth()
-  if (!session?.user?.id) redirect("/login")
+  const session = await auth();
+  if (!session?.user?.id) redirect("/login");
 
-  const { page: pageParam } = await searchParams
-  const { page, offset } = parsePagination(pageParam)
-  const whereClause = eq(functionalAssessments.userId, session.user.id)
+  const { page: pageParam } = await searchParams;
+  const { page, offset } = parsePagination(pageParam);
+  const whereClause = eq(functionalAssessments.userId, session.user.id);
 
   const [history, totalResult] = await Promise.all([
     db.query.functionalAssessments.findMany({
@@ -40,10 +39,10 @@ export default async function AssessmentsPage({
       offset,
     }),
     db.select({ value: count() }).from(functionalAssessments).where(whereClause),
-  ])
+  ]);
 
-  const total = totalResult[0]?.value ?? 0
-  const totalPages = computeTotalPages(total, PAGINATION_DEFAULT)
+  const total = totalResult[0]?.value ?? 0;
+  const totalPages = computeTotalPages(total, PAGINATION_DEFAULT);
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -58,14 +57,17 @@ export default async function AssessmentsPage({
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-base">{formatDate(a.assessedAt)}</CardTitle>
-                  <span className="text-2xl font-bold text-teal-700">{a.overallCapacity}<span className="text-sm font-normal text-slate-400">/10</span></span>
+                  <span className="text-2xl font-bold text-teal-700">
+                    {a.overallCapacity}
+                    <span className="text-sm font-normal text-slate-400">/10</span>
+                  </span>
                 </div>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
                   {ASSESSMENT_DIMENSIONS.slice(1).map(({ key: dim }) => {
-                    const val = a[dim]
-                    if (val == null) return null
+                    const val = a[dim];
+                    if (val == null) return null;
                     return (
                       <div key={dim} className="flex items-center justify-between">
                         <span className="text-slate-500">{t(dim as Parameters<typeof t>[0])}</span>
@@ -74,10 +76,12 @@ export default async function AssessmentsPage({
                           <span className="font-medium text-slate-700 w-6 text-right">{val}</span>
                         </div>
                       </div>
-                    )
+                    );
                   })}
                 </div>
-                {a.notes && <p className="text-xs text-slate-500 mt-3 leading-relaxed">{a.notes}</p>}
+                {a.notes && (
+                  <p className="text-xs text-slate-500 mt-3 leading-relaxed">{a.notes}</p>
+                )}
               </CardContent>
             </Card>
           ))}
@@ -88,5 +92,5 @@ export default async function AssessmentsPage({
 
       <Pagination page={page} totalPages={totalPages} pageLink={(p) => `/assessments?page=${p}`} />
     </div>
-  )
+  );
 }

@@ -1,9 +1,9 @@
-"use client"
-import { useTranslations } from "next-intl"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { QUALITY_SCALE, HEIGHT_CM, WEIGHT_KG } from "@/lib/constants"
-import type { FormState } from "../profile-form.helpers"
+"use client";
+import { useTranslations } from "next-intl";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { QUALITY_SCALE, HEIGHT_CM, WEIGHT_KG } from "@/lib/constants";
+import type { FormState } from "../profile-form.helpers";
 
 function SliderField({
   label,
@@ -11,10 +11,10 @@ function SliderField({
   value,
   onChange,
 }: {
-  label: string
-  hint?: string
-  value: number
-  onChange: (v: number) => void
+  label: string;
+  hint?: string;
+  value: number;
+  onChange: (v: number) => void;
 }) {
   return (
     <div>
@@ -36,17 +36,17 @@ function SliderField({
         <span className="text-lg font-bold text-teal-700 w-6 text-center">{value}</span>
       </div>
     </div>
-  )
+  );
 }
 
 export function StepLifestyle({
   form,
   onChange,
 }: {
-  form: FormState
-  onChange: <K extends keyof FormState>(key: K, val: FormState[K]) => void
+  form: FormState;
+  onChange: <K extends keyof FormState>(key: K, val: FormState[K]) => void;
 }) {
-  const t = useTranslations("portal.profile")
+  const t = useTranslations("portal.profile");
 
   return (
     <div className="flex flex-col gap-5">
@@ -106,5 +106,5 @@ export function StepLifestyle({
         onChange={(v) => onChange("socialSupport", v)}
       />
     </div>
-  )
+  );
 }

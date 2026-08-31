@@ -1,34 +1,34 @@
-import { db } from "@/lib/db"
-import { assignments } from "@/lib/db/schema"
-import { and, eq } from "drizzle-orm"
-import { z } from "zod"
-import { created, parseBody, requireStaffAuth } from "@/lib/api"
+import { db } from "@/lib/db";
+import { assignments } from "@/lib/db/schema";
+import { and, eq } from "drizzle-orm";
+import { z } from "zod";
+import { created, parseBody, requireStaffAuth } from "@/lib/api";
 
 const assignSchema = z.object({
   clientId: z.string().uuid(),
   practitionerId: z.string().uuid(),
-})
+});
 
 export async function POST(req: Request) {
-  const authResult = await requireStaffAuth()
-  if (!authResult.ok) return authResult.response
+  const authResult = await requireStaffAuth();
+  if (!authResult.ok) return authResult.response;
 
-  const result = await parseBody(req, assignSchema)
-  if (!result.ok) return result.response
+  const result = await parseBody(req, assignSchema);
+  if (!result.ok) return result.response;
 
-  const { clientId, practitionerId } = result.data
+  const { clientId, practitionerId } = result.data;
 
   // Deactivate any existing active assignment for this client
   await db
     .update(assignments)
     .set({ active: false })
-    .where(and(eq(assignments.clientId, clientId), eq(assignments.active, true)))
+    .where(and(eq(assignments.clientId, clientId), eq(assignments.active, true)));
 
   // Create new assignment
   const [assignment] = await db
     .insert(assignments)
     .values({ clientId, practitionerId })
-    .returning({ id: assignments.id })
+    .returning({ id: assignments.id });
 
-  return created({ id: assignment.id })
+  return created({ id: assignment.id });
 }

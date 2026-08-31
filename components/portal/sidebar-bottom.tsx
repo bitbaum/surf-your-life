@@ -1,23 +1,23 @@
-"use client"
+"use client";
 
-import { Link } from "@/i18n/navigation"
-import { useTranslations } from "next-intl"
-import { signOut } from "next-auth/react"
-import { User, Settings, ShieldCheck, LogOut } from "lucide-react"
-import { LocaleSwitcher } from "@/components/ui/locale-switcher"
+import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
+import { signOut } from "next-auth/react";
+import { User, Settings, ShieldCheck, LogOut } from "lucide-react";
+import { LocaleSwitcher } from "@/components/ui/locale-switcher";
 
 const BOTTOM_ITEMS = [
   { href: "/profile", labelKey: "profile" as const, icon: User },
   { href: "/settings", labelKey: "settings" as const, icon: Settings },
-]
+];
 
 interface Props {
-  isAdminUser: boolean
-  onClose: () => void
+  isAdminUser: boolean;
+  onClose: () => void;
 }
 
 export function PortalSidebarBottom({ isAdminUser, onClose }: Props) {
-  const t = useTranslations("sidebar")
+  const t = useTranslations("sidebar");
 
   return (
     <div className="flex flex-col gap-1 pt-4 border-t border-slate-100">
@@ -55,5 +55,5 @@ export function PortalSidebarBottom({ isAdminUser, onClose }: Props) {
         </button>
       </div>
     </div>
-  )
+  );
 }

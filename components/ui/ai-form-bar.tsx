@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 /**
  * AiFormBar — the one control for AI form assistance.
@@ -16,35 +16,35 @@
  * semantic tokens from globals.css, not raw palette colours.
  */
 
-import { useState } from "react"
-import { useTranslations } from "next-intl"
-import { Sparkles, Loader2, Undo2 } from "lucide-react"
-import type { UseAiForm } from "@fleet/ai-forms/react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Textarea } from "@/components/ui/textarea"
-import { FIELD_MAX_MEDIUM } from "@/lib/constants"
+import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { Sparkles, Loader2, Undo2 } from "lucide-react";
+import type { UseAiForm } from "@fleet/ai-forms/react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
+import { FIELD_MAX_MEDIUM } from "@/lib/constants";
 
 interface Props {
-  form: UseAiForm
+  form: UseAiForm;
   /** What to describe, shown while the form is still empty. */
-  fillPlaceholder: string
+  fillPlaceholder: string;
   /** What to change, shown once the form has content. */
-  refinePlaceholder: string
+  refinePlaceholder: string;
 }
 
 export function AiFormBar({ form, fillPlaceholder, refinePlaceholder }: Props) {
-  const t = useTranslations("aiForm")
-  const [instruction, setInstruction] = useState("")
+  const t = useTranslations("aiForm");
+  const [instruction, setInstruction] = useState("");
 
-  const isRefining = !form.isEmpty
+  const isRefining = !form.isEmpty;
 
   async function submit() {
-    const text = instruction.trim()
-    if (!text || form.busy) return
-    const result = await form.ask(text)
+    const text = instruction.trim();
+    if (!text || form.busy) return;
+    const result = await form.ask(text);
     // Keep the text on failure so it can be edited rather than retyped.
-    if (result.ok) setInstruction("")
+    if (result.ok) setInstruction("");
   }
 
   return (
@@ -71,8 +71,8 @@ export function AiFormBar({ form, fillPlaceholder, refinePlaceholder }: Props) {
           maxLength={FIELD_MAX_MEDIUM}
           onKeyDown={(e) => {
             if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
-              e.preventDefault()
-              void submit()
+              e.preventDefault();
+              void submit();
             }
           }}
         />
@@ -100,7 +100,13 @@ export function AiFormBar({ form, fillPlaceholder, refinePlaceholder }: Props) {
 
           {/* An AI edit that cannot be taken back is one nobody can safely try. */}
           {form.canUndo && (
-            <Button type="button" size="sm" variant="ghost" onClick={form.undo} disabled={form.busy}>
+            <Button
+              type="button"
+              size="sm"
+              variant="ghost"
+              onClick={form.undo}
+              disabled={form.busy}
+            >
               <Undo2 className="w-3.5 h-3.5" />
               {t("undo")}
             </Button>
@@ -114,5 +120,5 @@ export function AiFormBar({ form, fillPlaceholder, refinePlaceholder }: Props) {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

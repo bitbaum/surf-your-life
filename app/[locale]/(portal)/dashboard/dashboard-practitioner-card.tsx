@@ -1,13 +1,13 @@
-import { getTranslations } from "next-intl/server"
-import { db } from "@/lib/db"
-import { assignments, users } from "@/lib/db/schema"
-import { eq, and } from "drizzle-orm"
-import { Card, CardContent } from "@/components/ui/card"
-import { Link } from "@/i18n/navigation"
-import { UserCircle } from "lucide-react"
+import { getTranslations } from "next-intl/server";
+import { db } from "@/lib/db";
+import { assignments, users } from "@/lib/db/schema";
+import { eq, and } from "drizzle-orm";
+import { Card, CardContent } from "@/components/ui/card";
+import { Link } from "@/i18n/navigation";
+import { UserCircle } from "lucide-react";
 
 export async function DashboardPractitionerCard({ userId }: { userId: string }) {
-  const t = await getTranslations("portal.dashboard")
+  const t = await getTranslations("portal.dashboard");
 
   const assignment = await db
     .select({ practitionerName: users.name })
@@ -15,9 +15,9 @@ export async function DashboardPractitionerCard({ userId }: { userId: string }) 
     .innerJoin(users, eq(users.id, assignments.practitionerId))
     .where(and(eq(assignments.clientId, userId), eq(assignments.active, true)))
     .limit(1)
-    .then((rows) => rows[0] ?? null)
+    .then((rows) => rows[0] ?? null);
 
-  if (!assignment) return null
+  if (!assignment) return null;
 
   return (
     <Card className="mb-6 border-slate-200 bg-white">
@@ -30,14 +30,11 @@ export async function DashboardPractitionerCard({ userId }: { userId: string }) 
             <p className="text-xs text-slate-400">{t("yourPractitioner")}</p>
             <p className="text-sm font-semibold text-slate-800">{assignment.practitionerName}</p>
           </div>
-          <Link
-            href="/messages"
-            className="flex-shrink-0 text-xs text-teal-600 hover:underline"
-          >
+          <Link href="/messages" className="flex-shrink-0 text-xs text-teal-600 hover:underline">
             {t("yourPractitionerLink")}
           </Link>
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

@@ -10,12 +10,12 @@ import {
   pgEnum,
   index,
   primaryKey,
-} from "drizzle-orm/pg-core"
-import { relations } from "drizzle-orm"
+} from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
 
 // ─── Enums ────────────────────────────────────────────────────────────────────
 
-export const roleEnum = pgEnum("role", ["client", "practitioner", "admin"])
+export const roleEnum = pgEnum("role", ["client", "practitioner", "admin"]);
 
 export const checkInMoodEnum = pgEnum("check_in_mood", [
   "very_low",
@@ -23,16 +23,16 @@ export const checkInMoodEnum = pgEnum("check_in_mood", [
   "neutral",
   "good",
   "excellent",
-])
+]);
 
 export const documentTypeEnum = pgEnum("document_type", [
   "assessment",
   "session_note",
   "report",
   "upload",
-])
+]);
 
-export const leadStatusEnum = pgEnum("lead_status", ["new", "contacted", "dismissed"])
+export const leadStatusEnum = pgEnum("lead_status", ["new", "contacted", "dismissed"]);
 
 export const mainConcernEnum = pgEnum("main_concern_type", [
   "burnout",
@@ -40,11 +40,11 @@ export const mainConcernEnum = pgEnum("main_concern_type", [
   "midlife_reinvention",
   "general_wellbeing",
   "other",
-])
+]);
 
-export const programStatusEnum = pgEnum("program_status", ["active", "completed", "paused"])
+export const programStatusEnum = pgEnum("program_status", ["active", "completed", "paused"]);
 
-export const activityLevelEnum = pgEnum("activity_level", ["rest", "light", "moderate", "active"])
+export const activityLevelEnum = pgEnum("activity_level", ["rest", "light", "moderate", "active"]);
 
 export const alertTypeEnum = pgEnum("alert_type", [
   "energy_decline",
@@ -55,9 +55,9 @@ export const alertTypeEnum = pgEnum("alert_type", [
   "stress_spike",
   "orthostatic_intolerance",
   "technique_adherence_decline",
-])
+]);
 
-export const alertSeverityEnum = pgEnum("alert_severity", ["low", "medium", "high"])
+export const alertSeverityEnum = pgEnum("alert_severity", ["low", "medium", "high"]);
 
 export const techniqueCategoryEnum = pgEnum("technique_category", [
   "breathwork",
@@ -67,9 +67,13 @@ export const techniqueCategoryEnum = pgEnum("technique_category", [
   "pacing",
   "sleep",
   "social",
-])
+]);
 
-export const techniqueDifficultyEnum = pgEnum("technique_difficulty", ["easy", "moderate", "challenging"])
+export const techniqueDifficultyEnum = pgEnum("technique_difficulty", [
+  "easy",
+  "moderate",
+  "challenging",
+]);
 
 // ─── Auth tables (Auth.js v5 compatible) ──────────────────────────────────────
 
@@ -86,8 +90,8 @@ export const users = pgTable(
     createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
   },
-  (table) => [index("users_role_idx").on(table.role)]
-)
+  (table) => [index("users_role_idx").on(table.role)],
+);
 
 export const accounts = pgTable(
   "accounts",
@@ -106,8 +110,8 @@ export const accounts = pgTable(
     idToken: text("id_token"),
     sessionState: text("session_state"),
   },
-  (table) => [primaryKey({ columns: [table.provider, table.providerAccountId] })]
-)
+  (table) => [primaryKey({ columns: [table.provider, table.providerAccountId] })],
+);
 
 export const sessions = pgTable("sessions", {
   sessionToken: text("session_token").primaryKey(),
@@ -115,7 +119,7 @@ export const sessions = pgTable("sessions", {
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   expires: timestamp("expires", { mode: "date" }).notNull(),
-})
+});
 
 export const verificationTokens = pgTable(
   "verification_tokens",
@@ -124,8 +128,8 @@ export const verificationTokens = pgTable(
     token: text("token").notNull(),
     expires: timestamp("expires", { mode: "date" }).notNull(),
   },
-  (table) => [primaryKey({ columns: [table.identifier, table.token] })]
-)
+  (table) => [primaryKey({ columns: [table.identifier, table.token] })],
+);
 
 // ─── Client Profiles ──────────────────────────────────────────────────────────
 
@@ -164,7 +168,7 @@ export const profiles = pgTable("profiles", {
   // Embedding for semantic search over profile context
   embedding: vector("embedding", { dimensions: 1536 }),
   updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
-})
+});
 
 // ─── Check-ins ────────────────────────────────────────────────────────────────
 
@@ -204,8 +208,8 @@ export const checkIns = pgTable(
     practitionerNoteAt: timestamp("practitioner_note_at", { mode: "date" }),
     createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
   },
-  (table) => [index("check_ins_user_idx").on(table.userId)]
-)
+  (table) => [index("check_ins_user_idx").on(table.userId)],
+);
 
 // ─── Documents (assessments, session notes, reports) ─────────────────────────
 
@@ -228,8 +232,8 @@ export const documents = pgTable(
   (table) => [
     index("documents_user_idx").on(table.userId),
     index("documents_type_idx").on(table.type),
-  ]
-)
+  ],
+);
 
 // ─── Practitioner assignments ─────────────────────────────────────────────────
 
@@ -246,8 +250,8 @@ export const assignments = pgTable(
     assignedAt: timestamp("assigned_at", { mode: "date" }).defaultNow().notNull(),
     active: boolean("active").default(true).notNull(),
   },
-  (table) => [index("assignments_client_id_idx").on(table.clientId)]
-)
+  (table) => [index("assignments_client_id_idx").on(table.clientId)],
+);
 
 // ─── Leads (marketing intake) ─────────────────────────────────────────────────
 
@@ -262,13 +266,13 @@ export const leads = pgTable(
     status: leadStatusEnum("status").notNull().default("new"),
     createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
   },
-  (table) => [index("leads_email_idx").on(table.email)]
-)
+  (table) => [index("leads_email_idx").on(table.email)],
+);
 
 // ─── Services & Bookings ──────────────────────────────────────────────────────
 
-export const serviceCategoryEnum = pgEnum("service_category", ["machine", "space", "consultation"])
-export const bookingStatusEnum = pgEnum("booking_status", ["pending", "confirmed", "cancelled"])
+export const serviceCategoryEnum = pgEnum("service_category", ["machine", "space", "consultation"]);
+export const bookingStatusEnum = pgEnum("booking_status", ["pending", "confirmed", "cancelled"]);
 
 export const services = pgTable("services", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -278,7 +282,7 @@ export const services = pgTable("services", {
   durationMinutes: integer("duration_minutes"),
   available: boolean("available").default(true).notNull(),
   sortOrder: integer("sort_order").default(0).notNull(),
-})
+});
 
 export const bookings = pgTable(
   "bookings",
@@ -299,8 +303,8 @@ export const bookings = pgTable(
   (table) => [
     index("bookings_user_idx").on(table.userId),
     index("bookings_status_idx").on(table.status),
-  ]
-)
+  ],
+);
 
 // ─── Password reset tokens ────────────────────────────────────────────────────
 
@@ -313,7 +317,7 @@ export const passwordResetTokens = pgTable("password_reset_tokens", {
   expiresAt: timestamp("expires_at", { mode: "date" }).notNull(),
   usedAt: timestamp("used_at", { mode: "date" }),
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
-})
+});
 
 // ─── Messaging ────────────────────────────────────────────────────────────────
 
@@ -321,20 +325,26 @@ export const threads = pgTable(
   "threads",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    clientId: uuid("client_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    clientId: uuid("client_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
     subject: text("subject"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
-  (table) => [index("threads_client_id_idx").on(table.clientId)]
-)
+  (table) => [index("threads_client_id_idx").on(table.clientId)],
+);
 
 export const threadMessages = pgTable(
   "thread_messages",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    threadId: uuid("thread_id").notNull().references(() => threads.id, { onDelete: "cascade" }),
-    senderId: uuid("sender_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    threadId: uuid("thread_id")
+      .notNull()
+      .references(() => threads.id, { onDelete: "cascade" }),
+    senderId: uuid("sender_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
     body: text("body").notNull(),
     readAt: timestamp("read_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
@@ -342,8 +352,8 @@ export const threadMessages = pgTable(
   (table) => [
     index("thread_messages_thread_id_idx").on(table.threadId),
     index("thread_messages_sender_id_idx").on(table.senderId),
-  ]
-)
+  ],
+);
 
 // ─── Programs ─────────────────────────────────────────────────────────────────
 
@@ -359,14 +369,18 @@ export const programs = pgTable("programs", {
   createdBy: uuid("created_by").references(() => users.id),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
-})
+});
 
 export const programEnrollments = pgTable(
   "program_enrollments",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    clientId: uuid("client_id").notNull().references(() => users.id, { onDelete: "cascade" }),
-    programId: uuid("program_id").notNull().references(() => programs.id, { onDelete: "cascade" }),
+    clientId: uuid("client_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    programId: uuid("program_id")
+      .notNull()
+      .references(() => programs.id, { onDelete: "cascade" }),
     status: programStatusEnum("status").notNull().default("active"),
     startDate: timestamp("start_date", { withTimezone: true }),
     notes: text("notes"),
@@ -375,8 +389,8 @@ export const programEnrollments = pgTable(
   (table) => [
     index("program_enrollments_client_id_idx").on(table.clientId),
     index("program_enrollments_program_id_idx").on(table.programId),
-  ]
-)
+  ],
+);
 
 // ─── Functional Assessments (monthly capacity evaluations) ───────────────────
 
@@ -396,8 +410,8 @@ export const functionalAssessments = pgTable(
     notes: text("notes"),
     createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
   },
-  (table) => [index("functional_assessments_user_idx").on(table.userId)]
-)
+  (table) => [index("functional_assessments_user_idx").on(table.userId)],
+);
 
 // ─── Medication Log ───────────────────────────────────────────────────────────
 
@@ -417,8 +431,8 @@ export const medicationLog = pgTable(
     createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
   },
-  (table) => [index("medication_log_user_idx").on(table.userId)]
-)
+  (table) => [index("medication_log_user_idx").on(table.userId)],
+);
 
 // ─── Client Alerts (rule-based clinical signals for practitioners) ────────────
 
@@ -441,8 +455,8 @@ export const clientAlerts = pgTable(
   (table) => [
     index("client_alerts_client_id_idx").on(table.clientId),
     index("client_alerts_resolved_idx").on(table.isResolved),
-  ]
-)
+  ],
+);
 
 // ─── AI Chat ─────────────────────────────────────────────────────────────────
 
@@ -461,8 +475,8 @@ export const aiMessages = pgTable(
   (table) => [
     index("ai_messages_user_id_idx").on(table.userId),
     index("ai_messages_created_at_idx").on(table.createdAt),
-  ]
-)
+  ],
+);
 
 // ─── Techniques (therapeutic technique library + assignment + tracking) ───────
 
@@ -485,8 +499,8 @@ export const techniques = pgTable(
   (table) => [
     index("techniques_category_idx").on(table.category),
     index("techniques_active_idx").on(table.isActive),
-  ]
-)
+  ],
+);
 
 export const techniqueAssignments = pgTable(
   "technique_assignments",
@@ -515,8 +529,8 @@ export const techniqueAssignments = pgTable(
   (table) => [
     index("technique_assignments_client_idx").on(table.clientId),
     index("technique_assignments_technique_idx").on(table.techniqueId),
-  ]
-)
+  ],
+);
 
 export const techniqueLogs = pgTable(
   "technique_logs",
@@ -538,8 +552,8 @@ export const techniqueLogs = pgTable(
     index("technique_logs_user_idx").on(table.userId),
     index("technique_logs_assignment_idx").on(table.assignmentId),
     index("technique_logs_date_idx").on(table.date),
-  ]
-)
+  ],
+);
 
 // ─── Relations ────────────────────────────────────────────────────────────────
 
@@ -559,114 +573,120 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   aiMessages: many(aiMessages),
   techniqueAssignments: many(techniqueAssignments),
   techniqueLogs: many(techniqueLogs),
-}))
+}));
 
 export const servicesRelations = relations(services, ({ many }) => ({
   bookings: many(bookings),
-}))
+}));
 
 export const bookingsRelations = relations(bookings, ({ one }) => ({
   user: one(users, { fields: [bookings.userId], references: [users.id] }),
   service: one(services, { fields: [bookings.serviceId], references: [services.id] }),
-}))
+}));
 
 export const profilesRelations = relations(profiles, ({ one }) => ({
   user: one(users, { fields: [profiles.userId], references: [users.id] }),
-}))
+}));
 
 export const checkInsRelations = relations(checkIns, ({ one }) => ({
   user: one(users, { fields: [checkIns.userId], references: [users.id] }),
-}))
+}));
 
 export const documentsRelations = relations(documents, ({ one }) => ({
   user: one(users, { fields: [documents.userId], references: [users.id] }),
   author: one(users, { fields: [documents.authorId], references: [users.id] }),
-}))
+}));
 
 export const threadsRelations = relations(threads, ({ one, many }) => ({
   client: one(users, { fields: [threads.clientId], references: [users.id] }),
   messages: many(threadMessages),
-}))
+}));
 
 export const threadMessagesRelations = relations(threadMessages, ({ one }) => ({
   thread: one(threads, { fields: [threadMessages.threadId], references: [threads.id] }),
   sender: one(users, { fields: [threadMessages.senderId], references: [users.id] }),
-}))
+}));
 
 export const programsRelations = relations(programs, ({ one, many }) => ({
   createdByUser: one(users, { fields: [programs.createdBy], references: [users.id] }),
   enrollments: many(programEnrollments),
-}))
+}));
 
 export const programEnrollmentsRelations = relations(programEnrollments, ({ one }) => ({
   client: one(users, { fields: [programEnrollments.clientId], references: [users.id] }),
   program: one(programs, { fields: [programEnrollments.programId], references: [programs.id] }),
-}))
+}));
 
 export const functionalAssessmentsRelations = relations(functionalAssessments, ({ one }) => ({
   user: one(users, { fields: [functionalAssessments.userId], references: [users.id] }),
-}))
+}));
 
 export const medicationLogRelations = relations(medicationLog, ({ one }) => ({
   user: one(users, { fields: [medicationLog.userId], references: [users.id] }),
-}))
+}));
 
 export const clientAlertsRelations = relations(clientAlerts, ({ one }) => ({
   client: one(users, { fields: [clientAlerts.clientId], references: [users.id] }),
   checkIn: one(checkIns, { fields: [clientAlerts.checkInId], references: [checkIns.id] }),
-}))
+}));
 
 export const aiMessagesRelations = relations(aiMessages, ({ one }) => ({
   user: one(users, { fields: [aiMessages.userId], references: [users.id] }),
-}))
+}));
 
 export const techniquesRelations = relations(techniques, ({ one, many }) => ({
   createdByUser: one(users, { fields: [techniques.createdBy], references: [users.id] }),
   assignments: many(techniqueAssignments),
-}))
+}));
 
 export const techniqueAssignmentsRelations = relations(techniqueAssignments, ({ one, many }) => ({
-  technique: one(techniques, { fields: [techniqueAssignments.techniqueId], references: [techniques.id] }),
+  technique: one(techniques, {
+    fields: [techniqueAssignments.techniqueId],
+    references: [techniques.id],
+  }),
   client: one(users, { fields: [techniqueAssignments.clientId], references: [users.id] }),
   assignedByUser: one(users, { fields: [techniqueAssignments.assignedBy], references: [users.id] }),
   logs: many(techniqueLogs),
-}))
+}));
 
 export const techniqueLogsRelations = relations(techniqueLogs, ({ one }) => ({
   user: one(users, { fields: [techniqueLogs.userId], references: [users.id] }),
-  assignment: one(techniqueAssignments, { fields: [techniqueLogs.assignmentId], references: [techniqueAssignments.id] }),
-}))
+  assignment: one(techniqueAssignments, {
+    fields: [techniqueLogs.assignmentId],
+    references: [techniqueAssignments.id],
+  }),
+}));
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-export type User = typeof users.$inferSelect
-export type NewUser = typeof users.$inferInsert
-export type Profile = typeof profiles.$inferSelect
-export type CheckIn = typeof checkIns.$inferSelect
-export type Document = typeof documents.$inferSelect
-export type Lead = typeof leads.$inferSelect
-export type LeadStatus = (typeof leadStatusEnum.enumValues)[number]
-export type Service = typeof services.$inferSelect
-export type Booking = typeof bookings.$inferSelect
-export type Role = (typeof roleEnum.enumValues)[number]
-export type Thread = typeof threads.$inferSelect
-export type ThreadMessage = typeof threadMessages.$inferSelect
-export type Program = typeof programs.$inferSelect
-export type ProgramEnrollment = typeof programEnrollments.$inferSelect
-export type MainConcern = (typeof mainConcernEnum.enumValues)[number]
-export type ProgramStatus = (typeof programStatusEnum.enumValues)[number]
-export type ActivityLevel = (typeof activityLevelEnum.enumValues)[number]
-export type AlertType = (typeof alertTypeEnum.enumValues)[number]
-export type AlertSeverity = (typeof alertSeverityEnum.enumValues)[number]
-export type FunctionalAssessment = typeof functionalAssessments.$inferSelect
-export type MedicationEntry = typeof medicationLog.$inferSelect
-export type ClientAlert = typeof clientAlerts.$inferSelect
-export type AiMessage = typeof aiMessages.$inferSelect
-export type Technique = typeof techniques.$inferSelect
-export type NewTechnique = typeof techniques.$inferInsert
-export type TechniqueCategory = (typeof techniqueCategoryEnum.enumValues)[number]
-export type TechniqueDifficulty = (typeof techniqueDifficultyEnum.enumValues)[number]
-export type TechniqueAssignment = typeof techniqueAssignments.$inferSelect
-export type NewTechniqueAssignment = typeof techniqueAssignments.$inferInsert
-export type TechniqueLog = typeof techniqueLogs.$inferSelect
-export type NewTechniqueLog = typeof techniqueLogs.$inferInsert
+export type User = typeof users.$inferSelect;
+export type NewUser = typeof users.$inferInsert;
+export type Profile = typeof profiles.$inferSelect;
+export type CheckIn = typeof checkIns.$inferSelect;
+export type Document = typeof documents.$inferSelect;
+export type Lead = typeof leads.$inferSelect;
+export type LeadStatus = (typeof leadStatusEnum.enumValues)[number];
+export type Service = typeof services.$inferSelect;
+export type Booking = typeof bookings.$inferSelect;
+export type Role = (typeof roleEnum.enumValues)[number];
+export type Thread = typeof threads.$inferSelect;
+export type ThreadMessage = typeof threadMessages.$inferSelect;
+export type Program = typeof programs.$inferSelect;
+export type ProgramEnrollment = typeof programEnrollments.$inferSelect;
+export type MainConcern = (typeof mainConcernEnum.enumValues)[number];
+export type ProgramStatus = (typeof programStatusEnum.enumValues)[number];
+export type ActivityLevel = (typeof activityLevelEnum.enumValues)[number];
+export type AlertType = (typeof alertTypeEnum.enumValues)[number];
+export type AlertSeverity = (typeof alertSeverityEnum.enumValues)[number];
+export type FunctionalAssessment = typeof functionalAssessments.$inferSelect;
+export type MedicationEntry = typeof medicationLog.$inferSelect;
+export type ClientAlert = typeof clientAlerts.$inferSelect;
+export type AiMessage = typeof aiMessages.$inferSelect;
+export type Technique = typeof techniques.$inferSelect;
+export type NewTechnique = typeof techniques.$inferInsert;
+export type TechniqueCategory = (typeof techniqueCategoryEnum.enumValues)[number];
+export type TechniqueDifficulty = (typeof techniqueDifficultyEnum.enumValues)[number];
+export type TechniqueAssignment = typeof techniqueAssignments.$inferSelect;
+export type NewTechniqueAssignment = typeof techniqueAssignments.$inferInsert;
+export type TechniqueLog = typeof techniqueLogs.$inferSelect;
+export type NewTechniqueLog = typeof techniqueLogs.$inferInsert;

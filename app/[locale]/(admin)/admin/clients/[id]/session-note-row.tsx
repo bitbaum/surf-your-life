@@ -1,51 +1,51 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useTranslations } from "next-intl"
-import { Trash2, ChevronDown, ChevronUp, Pencil, X, Check } from "lucide-react"
-import { formatDate } from "@/lib/utils"
-import { Textarea } from "@/components/ui/textarea"
-import { Input } from "@/components/ui/input"
-import { DOC_TYPE_I18N_KEYS, DOC_TYPE_BADGE_CLASSES, FIELD_MAX_TITLE } from "@/lib/constants"
-import type { DocWithAuthor } from "./session-notes-list"
+import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { Trash2, ChevronDown, ChevronUp, Pencil, X, Check } from "lucide-react";
+import { formatDate } from "@/lib/utils";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { DOC_TYPE_I18N_KEYS, DOC_TYPE_BADGE_CLASSES, FIELD_MAX_TITLE } from "@/lib/constants";
+import type { DocWithAuthor } from "./session-notes-list";
 
 interface Props {
-  doc: DocWithAuthor
-  onDelete: (id: string) => void
-  onEdit: (id: string, title: string, content: string) => Promise<void>
+  doc: DocWithAuthor;
+  onDelete: (id: string) => void;
+  onEdit: (id: string, title: string, content: string) => Promise<void>;
 }
 
 export function NoteRow({ doc, onDelete, onEdit }: Props) {
-  const t = useTranslations("admin.clients.sessionNotes")
-  const [expanded, setExpanded] = useState(false)
-  const [editing, setEditing] = useState(false)
-  const [editTitle, setEditTitle] = useState(doc.title)
-  const [editContent, setEditContent] = useState(doc.content ?? "")
-  const [saving, setSaving] = useState(false)
-  const [editError, setEditError] = useState("")
+  const t = useTranslations("admin.clients.sessionNotes");
+  const [expanded, setExpanded] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [editTitle, setEditTitle] = useState(doc.title);
+  const [editContent, setEditContent] = useState(doc.content ?? "");
+  const [saving, setSaving] = useState(false);
+  const [editError, setEditError] = useState("");
 
-  const typeLabel = t(DOC_TYPE_I18N_KEYS[doc.type] ?? "typeSessionNote")
-  const isLong = (doc.content?.length ?? 0) > 120 || (doc.content?.split("\n").length ?? 0) > 2
+  const typeLabel = t(DOC_TYPE_I18N_KEYS[doc.type] ?? "typeSessionNote");
+  const isLong = (doc.content?.length ?? 0) > 120 || (doc.content?.split("\n").length ?? 0) > 2;
 
   async function handleSave() {
-    if (!editContent.trim()) return
-    setSaving(true)
-    setEditError("")
+    if (!editContent.trim()) return;
+    setSaving(true);
+    setEditError("");
     try {
-      await onEdit(doc.id, editTitle.trim(), editContent.trim())
-      setEditing(false)
+      await onEdit(doc.id, editTitle.trim(), editContent.trim());
+      setEditing(false);
     } catch {
-      setEditError(t("error"))
+      setEditError(t("error"));
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
   }
 
   function handleCancelEdit() {
-    setEditTitle(doc.title)
-    setEditContent(doc.content ?? "")
-    setEditError("")
-    setEditing(false)
+    setEditTitle(doc.title);
+    setEditContent(doc.content ?? "");
+    setEditError("");
+    setEditing(false);
   }
 
   if (editing) {
@@ -58,7 +58,13 @@ export function NoteRow({ doc, onDelete, onEdit }: Props) {
           maxLength={FIELD_MAX_TITLE}
           className="text-sm"
         />
-        <Textarea value={editContent} onChange={(e) => setEditContent(e.target.value)} rows={4} required autoFocus />
+        <Textarea
+          value={editContent}
+          onChange={(e) => setEditContent(e.target.value)}
+          rows={4}
+          required
+          autoFocus
+        />
         {editError && <p className="text-xs text-red-600">{editError}</p>}
         <div className="flex items-center gap-2">
           <button
@@ -79,7 +85,7 @@ export function NoteRow({ doc, onDelete, onEdit }: Props) {
           </button>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -91,23 +97,36 @@ export function NoteRow({ doc, onDelete, onEdit }: Props) {
           style={{ cursor: isLong ? "pointer" : "default" }}
         >
           <div className="flex items-center gap-2 mb-0.5">
-            <span className={`text-xs px-2 py-0.5 rounded-full border font-medium flex-shrink-0 ${DOC_TYPE_BADGE_CLASSES[doc.type] ?? DOC_TYPE_BADGE_CLASSES.session_note}`}>
+            <span
+              className={`text-xs px-2 py-0.5 rounded-full border font-medium flex-shrink-0 ${DOC_TYPE_BADGE_CLASSES[doc.type] ?? DOC_TYPE_BADGE_CLASSES.session_note}`}
+            >
               {typeLabel}
             </span>
             <span className="text-xs text-slate-400">{formatDate(doc.createdAt)}</span>
-            {doc.author?.name && <span className="text-xs text-slate-400">· {doc.author.name}</span>}
-            {doc.updatedAt > doc.createdAt && <span className="text-xs text-slate-300 italic">{t("edited")}</span>}
+            {doc.author?.name && (
+              <span className="text-xs text-slate-400">· {doc.author.name}</span>
+            )}
+            {doc.updatedAt > doc.createdAt && (
+              <span className="text-xs text-slate-300 italic">{t("edited")}</span>
+            )}
           </div>
           <p className="text-sm font-medium text-slate-800">{doc.title}</p>
-          <p className={`text-sm text-slate-600 mt-0.5 leading-relaxed whitespace-pre-wrap ${expanded ? "" : "line-clamp-2"}`}>
+          <p
+            className={`text-sm text-slate-600 mt-0.5 leading-relaxed whitespace-pre-wrap ${expanded ? "" : "line-clamp-2"}`}
+          >
             {doc.content}
           </p>
           {isLong && (
             <span className="flex items-center gap-0.5 text-xs text-teal-600 mt-1">
-              {expanded
-                ? <><ChevronUp className="w-3 h-3" /> {t("showLess")}</>
-                : <><ChevronDown className="w-3 h-3" /> {t("showMore")}</>
-              }
+              {expanded ? (
+                <>
+                  <ChevronUp className="w-3 h-3" /> {t("showLess")}
+                </>
+              ) : (
+                <>
+                  <ChevronDown className="w-3 h-3" /> {t("showMore")}
+                </>
+              )}
             </span>
           )}
         </button>
@@ -129,5 +148,5 @@ export function NoteRow({ doc, onDelete, onEdit }: Props) {
         </div>
       </div>
     </div>
-  )
+  );
 }

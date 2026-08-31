@@ -1,5 +1,5 @@
-import type { Metadata } from "next"
-import { SITE_URL, BRAND_NAME } from "@/lib/constants"
+import type { Metadata } from "next";
+import { SITE_URL, BRAND_NAME } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: {
@@ -14,8 +14,8 @@ export const metadata: Metadata = {
     type: "website",
   },
   metadataBase: new URL(SITE_URL),
-}
+};
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return children
+  return children;
 }

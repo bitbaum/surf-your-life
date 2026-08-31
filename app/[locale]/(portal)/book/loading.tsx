@@ -1,4 +1,4 @@
-import { Card } from "@/components/ui/card"
+import { Card } from "@/components/ui/card";
 
 export default function BookLoading() {
   return (
@@ -12,5 +12,5 @@ export default function BookLoading() {
       </div>
       <Card className="p-6 h-48" />
     </div>
-  )
+  );
 }

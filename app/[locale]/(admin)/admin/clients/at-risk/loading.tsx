@@ -1,4 +1,4 @@
-import { Card } from "@/components/ui/card"
+import { Card } from "@/components/ui/card";
 
 export default function AtRiskLoading() {
   return (
@@ -11,5 +11,5 @@ export default function AtRiskLoading() {
         ))}
       </Card>
     </div>
-  )
+  );
 }

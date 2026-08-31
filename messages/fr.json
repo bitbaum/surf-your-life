@@ -23,11 +23,7 @@
       "cta": "Démarrer votre programme",
       "ctaSecondary": "Voir la méthode"
     },
-    "trust": [
-      "Guidé par la psychiatrie",
-      "Méthodologie biologie d'abord",
-      "Zollikerstrasse 183"
-    ],
+    "trust": ["Guidé par la psychiatrie", "Méthodologie biologie d'abord", "Zollikerstrasse 183"],
     "proof": [
       "230 m² d'espace performance",
       "Guidé par la psychiatrie",
@@ -1301,15 +1297,7 @@
         "afternoon": "Après-midi",
         "flexible": "Flexible"
       },
-      "dayNames": [
-        "Lun",
-        "Mar",
-        "Mer",
-        "Jeu",
-        "Ven",
-        "Sam",
-        "Dim"
-      ],
+      "dayNames": ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"],
       "viewAll": "Voir toutes les réservations"
     },
     "programs": {

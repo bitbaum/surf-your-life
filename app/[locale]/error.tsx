@@ -1,17 +1,17 @@
-"use client"
+"use client";
 
-import { useEffect } from "react"
-import { useTranslations } from "next-intl"
-import * as Sentry from "@sentry/nextjs"
-import { Button } from "@/components/ui/button"
+import { useEffect } from "react";
+import { useTranslations } from "next-intl";
+import * as Sentry from "@sentry/nextjs";
+import { Button } from "@/components/ui/button";
 
 export default function GlobalError({ error, reset }: { error: Error; reset: () => void }) {
-  const t = useTranslations("common")
+  const t = useTranslations("common");
 
   useEffect(() => {
-    console.error(error)
-    Sentry.captureException(error)
-  }, [error])
+    console.error(error);
+    Sentry.captureException(error);
+  }, [error]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50 px-6">
@@ -21,5 +21,5 @@ export default function GlobalError({ error, reset }: { error: Error; reset: () 
         <Button onClick={reset}>{t("tryAgain")}</Button>
       </div>
     </div>
-  )
+  );
 }

@@ -1,28 +1,37 @@
-"use client"
+"use client";
 
-import { useTranslations } from "next-intl"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { ACTIVITY_LEVELS, PEM_SEVERITY_SCALE, CHIP_SELECTED, CHIP_UNSELECTED } from "@/lib/constants"
+import { useTranslations } from "next-intl";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  ACTIVITY_LEVELS,
+  PEM_SEVERITY_SCALE,
+  CHIP_SELECTED,
+  CHIP_UNSELECTED,
+} from "@/lib/constants";
 
 interface Props {
-  activityLevel: string | null
-  setActivityLevel: (v: string) => void
-  pemFlag: boolean
-  setPemFlag: (v: boolean) => void
-  pemSeverity: number
-  setPemSeverity: (v: number) => void
-  orthostaticSymptoms: boolean | null
-  setOrthostaticSymptoms: (v: boolean | null) => void
+  activityLevel: string | null;
+  setActivityLevel: (v: string) => void;
+  pemFlag: boolean;
+  setPemFlag: (v: boolean) => void;
+  pemSeverity: number;
+  setPemSeverity: (v: number) => void;
+  orthostaticSymptoms: boolean | null;
+  setOrthostaticSymptoms: (v: boolean | null) => void;
 }
 
 export function ActivityPemCard({
-  activityLevel, setActivityLevel,
-  pemFlag, setPemFlag,
-  pemSeverity, setPemSeverity,
-  orthostaticSymptoms, setOrthostaticSymptoms,
+  activityLevel,
+  setActivityLevel,
+  pemFlag,
+  setPemFlag,
+  pemSeverity,
+  setPemSeverity,
+  orthostaticSymptoms,
+  setOrthostaticSymptoms,
 }: Props) {
-  const t = useTranslations("portal.checkIn")
-  const showPem = activityLevel === "moderate" || activityLevel === "active"
+  const t = useTranslations("portal.checkIn");
+  const showPem = activityLevel === "moderate" || activityLevel === "active";
 
   return (
     <Card>
@@ -37,17 +46,17 @@ export function ActivityPemCard({
               key={level.value}
               type="button"
               onClick={() => {
-                setActivityLevel(level.value)
-                if (level.value === "rest" || level.value === "light") setPemFlag(false)
+                setActivityLevel(level.value);
+                if (level.value === "rest" || level.value === "light") setPemFlag(false);
               }}
               className={`flex flex-col items-center gap-1 p-3 rounded-xl border-2 transition-all ${
-                activityLevel === level.value
-                  ? CHIP_SELECTED
-                  : CHIP_UNSELECTED
+                activityLevel === level.value ? CHIP_SELECTED : CHIP_UNSELECTED
               }`}
             >
               <span className="text-2xl">{level.emoji}</span>
-              <span className="text-xs text-slate-600">{t(level.labelKey as Parameters<typeof t>[0])}</span>
+              <span className="text-xs text-slate-600">
+                {t(level.labelKey as Parameters<typeof t>[0])}
+              </span>
             </button>
           ))}
         </div>
@@ -68,7 +77,9 @@ export function ActivityPemCard({
             {pemFlag && (
               <div className="mt-4">
                 <div className="flex items-center justify-between mb-2">
-                  <label className="text-sm font-medium text-slate-700">{t("pemSeverityLabel")}</label>
+                  <label className="text-sm font-medium text-slate-700">
+                    {t("pemSeverityLabel")}
+                  </label>
                   <span className="text-sm font-bold text-red-600">{pemSeverity}</span>
                 </div>
                 <div className="flex items-center gap-4">
@@ -113,5 +124,5 @@ export function ActivityPemCard({
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

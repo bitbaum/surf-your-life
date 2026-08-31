@@ -1,39 +1,82 @@
-import { notFound } from "next/navigation"
-import { db } from "@/lib/db"
-import { users, checkIns, programs, programEnrollments, medicationLog, functionalAssessments, techniqueAssignments, techniques, assignments, techniqueLogs, clientAlerts } from "@/lib/db/schema"
-import { eq, desc, isNull, and, count, inArray, gte, asc } from "drizzle-orm"
-import { formatDate, localDateString, addDaysISO } from "@/lib/utils"
-import { Link } from "@/i18n/navigation"
-import { PAGINATION_DEFAULT, SERVICES_MAX_LIMIT, CLIENT_ASSIGNMENTS_MAX, ADMIN_DASHBOARD_ALERTS_PREVIEW, CLIENT_ASSESSMENTS_LIMIT, NINETY_DAYS_MS } from "@/lib/constants"
-import { CLIENT_ROLE, STAFF_ROLES } from "@/lib/domain/auth"
-import { computeAdherenceByAssignment, computeLogsGridByAssignment, computeDailyAdherenceTrend } from "@/lib/domain/techniques"
-import { ResetLinkButton } from "./reset-link-button"
-import { NewThreadButton } from "./new-thread-button"
-import { EnrollProgramButton } from "./enroll-program-button"
-import { SessionPrep } from "./session-prep"
-import { SessionNotes } from "./session-notes"
-import { TechniqueAssignments } from "./technique-assignments"
-import { ClientMedicationsRow } from "./client-medications-row"
-import { ClientEnrollmentCard } from "./client-enrollment-card"
-import { PractitionerAssignmentCard } from "./practitioner-assignment-card"
-import { ClientProfileCard } from "./client-profile-card"
-import { ClientCheckInsCard } from "./client-check-ins-card"
-import { ClientAlertsCard } from "./client-alerts-card"
-import { ClientChartsSection } from "./client-charts-section"
-import { ClientWeeklySnapshot } from "./client-weekly-snapshot"
-import { PageHeader } from "@/components/ui/page-header"
-import { getTranslations, setRequestLocale } from "next-intl/server"
+import { notFound } from "next/navigation";
+import { db } from "@/lib/db";
+import {
+  users,
+  checkIns,
+  programs,
+  programEnrollments,
+  medicationLog,
+  functionalAssessments,
+  techniqueAssignments,
+  techniques,
+  assignments,
+  techniqueLogs,
+  clientAlerts,
+} from "@/lib/db/schema";
+import { eq, desc, isNull, and, count, inArray, gte, asc } from "drizzle-orm";
+import { formatDate, localDateString, addDaysISO } from "@/lib/utils";
+import { Link } from "@/i18n/navigation";
+import {
+  PAGINATION_DEFAULT,
+  SERVICES_MAX_LIMIT,
+  CLIENT_ASSIGNMENTS_MAX,
+  ADMIN_DASHBOARD_ALERTS_PREVIEW,
+  CLIENT_ASSESSMENTS_LIMIT,
+  NINETY_DAYS_MS,
+} from "@/lib/constants";
+import { CLIENT_ROLE, STAFF_ROLES } from "@/lib/domain/auth";
+import {
+  computeAdherenceByAssignment,
+  computeLogsGridByAssignment,
+  computeDailyAdherenceTrend,
+} from "@/lib/domain/techniques";
+import { ResetLinkButton } from "./reset-link-button";
+import { NewThreadButton } from "./new-thread-button";
+import { EnrollProgramButton } from "./enroll-program-button";
+import { SessionPrep } from "./session-prep";
+import { SessionNotes } from "./session-notes";
+import { TechniqueAssignments } from "./technique-assignments";
+import { ClientMedicationsRow } from "./client-medications-row";
+import { ClientEnrollmentCard } from "./client-enrollment-card";
+import { PractitionerAssignmentCard } from "./practitioner-assignment-card";
+import { ClientProfileCard } from "./client-profile-card";
+import { ClientCheckInsCard } from "./client-check-ins-card";
+import { ClientAlertsCard } from "./client-alerts-card";
+import { ClientChartsSection } from "./client-charts-section";
+import { ClientWeeklySnapshot } from "./client-weekly-snapshot";
+import { PageHeader } from "@/components/ui/page-header";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 
-export default async function ClientDetailPage({ params }: { params: Promise<{ locale: string; id: string }> }) {
-  const { locale, id } = await params
-  setRequestLocale(locale)
-  const t = await getTranslations("admin.clients")
+export default async function ClientDetailPage({
+  params,
+}: {
+  params: Promise<{ locale: string; id: string }>;
+}) {
+  const { locale, id } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations("admin.clients");
 
-  const sevenDaysAgo = addDaysISO(localDateString(new Date()), -7)
-  const thirtyDaysAgo = addDaysISO(localDateString(new Date()), -30)
-  const ninetyDaysAgo = new Date(Date.now() - NINETY_DAYS_MS) // eslint-disable-line react-hooks/purity -- server component
+  const sevenDaysAgo = addDaysISO(localDateString(new Date()), -7);
+  const thirtyDaysAgo = addDaysISO(localDateString(new Date()), -30);
+  const ninetyDaysAgo = new Date(Date.now() - NINETY_DAYS_MS); // eslint-disable-line react-hooks/purity -- server component
 
-  const [client, clientCheckIns, checkInCountResult, allPrograms, activeEnrollment, currentMedications, assessments, clientAssignments, allTechniques, currentAssignment, allPractitioners, recentTechniqueLogs, unresolvedAlerts, resolvedAlertCountResult, chartCheckIns] = await Promise.all([
+  const [
+    client,
+    clientCheckIns,
+    checkInCountResult,
+    allPrograms,
+    activeEnrollment,
+    currentMedications,
+    assessments,
+    clientAssignments,
+    allTechniques,
+    currentAssignment,
+    allPractitioners,
+    recentTechniqueLogs,
+    unresolvedAlerts,
+    resolvedAlertCountResult,
+    chartCheckIns,
+  ] = await Promise.all([
     db.query.users.findFirst({
       where: eq(users.id, id),
       with: { profile: true },
@@ -88,10 +131,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
       .from(users)
       .where(inArray(users.role, STAFF_ROLES)),
     db.query.techniqueLogs.findMany({
-      where: and(
-        eq(techniqueLogs.userId, id),
-        gte(techniqueLogs.date, thirtyDaysAgo)
-      ),
+      where: and(eq(techniqueLogs.userId, id), gte(techniqueLogs.date, thirtyDaysAgo)),
       columns: { assignmentId: true, date: true, completedReps: true },
     }),
     db.query.clientAlerts.findMany({
@@ -99,7 +139,9 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
       orderBy: [desc(clientAlerts.createdAt)],
       limit: ADMIN_DASHBOARD_ALERTS_PREVIEW,
     }),
-    db.select({ value: count() }).from(clientAlerts)
+    db
+      .select({ value: count() })
+      .from(clientAlerts)
       .where(and(eq(clientAlerts.clientId, id), eq(clientAlerts.isResolved, true))),
     // 90-day window for charts — gives meaningful trend lines for established clients
     db
@@ -116,17 +158,21 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
       .from(checkIns)
       .where(and(eq(checkIns.userId, id), gte(checkIns.createdAt, ninetyDaysAgo)))
       .orderBy(asc(checkIns.createdAt)),
-  ])
+  ]);
 
-  if (!client || client.role !== CLIENT_ROLE) notFound()
+  if (!client || client.role !== CLIENT_ROLE) notFound();
 
-  const totalCheckIns = checkInCountResult[0]?.count ?? 0
-  const hasAlertHistory = (resolvedAlertCountResult[0]?.value ?? 0) > 0
-  const profile = client.profile
-  const logsFor7d = recentTechniqueLogs.filter((l) => l.date >= sevenDaysAgo)
-  const adherenceByAssignment = computeAdherenceByAssignment(clientAssignments, logsFor7d)
-  const logsGridByAssignment = computeLogsGridByAssignment(logsFor7d)
-  const dailyAdherenceTrend = computeDailyAdherenceTrend(clientAssignments, recentTechniqueLogs, localDateString(new Date()))
+  const totalCheckIns = checkInCountResult[0]?.count ?? 0;
+  const hasAlertHistory = (resolvedAlertCountResult[0]?.value ?? 0) > 0;
+  const profile = client.profile;
+  const logsFor7d = recentTechniqueLogs.filter((l) => l.date >= sevenDaysAgo);
+  const adherenceByAssignment = computeAdherenceByAssignment(clientAssignments, logsFor7d);
+  const logsGridByAssignment = computeLogsGridByAssignment(logsFor7d);
+  const dailyAdherenceTrend = computeDailyAdherenceTrend(
+    clientAssignments,
+    recentTechniqueLogs,
+    localDateString(new Date()),
+  );
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -157,7 +203,11 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
       <div className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <ClientProfileCard profile={profile} />
-          <ClientCheckInsCard clientId={id} checkIns={clientCheckIns} totalCheckIns={totalCheckIns} />
+          <ClientCheckInsCard
+            clientId={id}
+            checkIns={clientCheckIns}
+            totalCheckIns={totalCheckIns}
+          />
         </div>
 
         <ClientWeeklySnapshot clientCheckIns={clientCheckIns} />
@@ -167,7 +217,11 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
         <ClientChartsSection chartCheckIns={chartCheckIns} assessments={assessments} />
 
         {(unresolvedAlerts.length > 0 || hasAlertHistory) && (
-          <ClientAlertsCard initialAlerts={unresolvedAlerts} clientId={id} hasHistory={hasAlertHistory} />
+          <ClientAlertsCard
+            initialAlerts={unresolvedAlerts}
+            clientId={id}
+            hasHistory={hasAlertHistory}
+          />
         )}
 
         <PractitionerAssignmentCard
@@ -192,5 +246,5 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ l
         {activeEnrollment && <ClientEnrollmentCard enrollment={activeEnrollment} />}
       </div>
     </div>
-  )
+  );
 }

@@ -1,48 +1,48 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useTranslations } from "next-intl"
-import { Button } from "@/components/ui/button"
-import { PRACTITIONER_NOTE_MAX_LENGTH } from "@/lib/constants"
-import { formatDate } from "@/lib/utils"
+import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { Button } from "@/components/ui/button";
+import { PRACTITIONER_NOTE_MAX_LENGTH } from "@/lib/constants";
+import { formatDate } from "@/lib/utils";
 
 interface Props {
-  checkInId: string
-  existingNote: string | null
-  existingNoteAt: Date | null
+  checkInId: string;
+  existingNote: string | null;
+  existingNoteAt: Date | null;
 }
 
 export function CheckInNote({ checkInId, existingNote, existingNoteAt }: Props) {
-  const t = useTranslations("admin.clients.checkInNote")
-  const [open, setOpen] = useState(false)
-  const [text, setText] = useState(existingNote ?? "")
-  const [saved, setSaved] = useState(existingNote ?? "")
-  const [savedAt, setSavedAt] = useState(existingNoteAt)
-  const [saving, setSaving] = useState(false)
-  const [error, setError] = useState("")
+  const t = useTranslations("admin.clients.checkInNote");
+  const [open, setOpen] = useState(false);
+  const [text, setText] = useState(existingNote ?? "");
+  const [saved, setSaved] = useState(existingNote ?? "");
+  const [savedAt, setSavedAt] = useState(existingNoteAt);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
   async function handleSave() {
-    if (!text.trim()) return
-    setSaving(true)
-    setError("")
+    if (!text.trim()) return;
+    setSaving(true);
+    setError("");
     try {
       const res = await fetch(`/api/check-in/${checkInId}/note`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ note: text.trim() }),
-      })
-      const data = await res.json()
+      });
+      const data = await res.json();
       if (!res.ok) {
-        setError(data.error ?? t("error"))
-        return
+        setError(data.error ?? t("error"));
+        return;
       }
-      setSaved(text.trim())
-      setSavedAt(new Date())
-      setOpen(false)
+      setSaved(text.trim());
+      setSavedAt(new Date());
+      setOpen(false);
     } catch {
-      setError(t("saving"))
+      setError(t("saving"));
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
   }
 
@@ -57,7 +57,10 @@ export function CheckInNote({ checkInId, existingNote, existingNoteAt }: Props) 
             <p className="text-sm text-teal-900 leading-relaxed">{saved}</p>
           </div>
           <button
-            onClick={() => { setText(saved); setOpen(true) }}
+            onClick={() => {
+              setText(saved);
+              setOpen(true);
+            }}
             className="text-xs text-teal-600 hover:text-teal-800 flex-shrink-0 mt-0.5"
           >
             {t("edit")}
@@ -84,11 +87,16 @@ export function CheckInNote({ checkInId, existingNote, existingNoteAt }: Props) 
             autoFocus
           />
           <div className="flex items-center justify-between mt-1.5">
-            <span className="text-xs text-slate-400">{text.length}/{PRACTITIONER_NOTE_MAX_LENGTH}</span>
+            <span className="text-xs text-slate-400">
+              {text.length}/{PRACTITIONER_NOTE_MAX_LENGTH}
+            </span>
             <div className="flex gap-2">
               {error && <span className="text-xs text-red-500">{error}</span>}
               <button
-                onClick={() => { setOpen(false); setText(saved) }}
+                onClick={() => {
+                  setOpen(false);
+                  setText(saved);
+                }}
                 className="text-xs text-slate-400 hover:text-slate-600"
               >
                 {t("cancel")}
@@ -101,5 +109,5 @@ export function CheckInNote({ checkInId, existingNote, existingNoteAt }: Props) 
         </div>
       )}
     </div>
-  )
+  );
 }

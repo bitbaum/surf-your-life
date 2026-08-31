@@ -1,33 +1,38 @@
-import { getTranslations } from "next-intl/server"
-import { ChartCard } from "@/components/ui/chart-card"
-import { InsightBanner } from "@/components/ui/insight-banner"
-import { Link } from "@/i18n/navigation"
-import { formatDate } from "@/lib/utils"
-import { WellnessTrendChart } from "@/components/ui/wellness-trend-chart"
-import { SleepChart } from "@/components/ui/sleep-chart"
-import { SymptomsChart } from "@/components/ui/symptoms-chart"
+import { getTranslations } from "next-intl/server";
+import { ChartCard } from "@/components/ui/chart-card";
+import { InsightBanner } from "@/components/ui/insight-banner";
+import { Link } from "@/i18n/navigation";
+import { formatDate } from "@/lib/utils";
+import { WellnessTrendChart } from "@/components/ui/wellness-trend-chart";
+import { SleepChart } from "@/components/ui/sleep-chart";
+import { SymptomsChart } from "@/components/ui/symptoms-chart";
 
 type TrendPoint = {
-  createdAt: Date
-  mood: string
-  energyLevel: number
-  sleepHours: number | null
-  symptomFatigue: number | null
-  symptomBrainFog: number | null
-  symptomPain: number | null
-  stressLevel: number | null
-}
+  createdAt: Date;
+  mood: string;
+  energyLevel: number;
+  sleepHours: number | null;
+  symptomFatigue: number | null;
+  symptomBrainFog: number | null;
+  symptomPain: number | null;
+  stressLevel: number | null;
+};
 
 interface Props {
-  trendCheckIns: TrendPoint[]
-  hasSymptomData: boolean
-  insight: string | null
-  hasRecentCheckIns: boolean
+  trendCheckIns: TrendPoint[];
+  hasSymptomData: boolean;
+  insight: string | null;
+  hasRecentCheckIns: boolean;
 }
 
-export async function DashboardCharts({ trendCheckIns, hasSymptomData, insight, hasRecentCheckIns }: Props) {
-  const t = await getTranslations("portal.dashboard")
-  const tCheckIns = await getTranslations("portal.checkIns")
+export async function DashboardCharts({
+  trendCheckIns,
+  hasSymptomData,
+  insight,
+  hasRecentCheckIns,
+}: Props) {
+  const t = await getTranslations("portal.dashboard");
+  const tCheckIns = await getTranslations("portal.checkIns");
 
   return (
     <>
@@ -63,11 +68,7 @@ export async function DashboardCharts({ trendCheckIns, hasSymptomData, insight, 
       )}
 
       {hasSymptomData && trendCheckIns.length >= 2 && (
-        <ChartCard
-          className="mb-6"
-          title={t("symptomsTitle")}
-          subtitle={t("symptomsSubtitle")}
-        >
+        <ChartCard className="mb-6" title={t("symptomsTitle")} subtitle={t("symptomsSubtitle")}>
           <SymptomsChart
             data={trendCheckIns}
             labels={{
@@ -88,11 +89,14 @@ export async function DashboardCharts({ trendCheckIns, hasSymptomData, insight, 
 
       {hasRecentCheckIns && (
         <div className="flex justify-center">
-          <Link href="/check-ins" className="text-sm text-slate-400 hover:text-teal-600 transition-colors">
+          <Link
+            href="/check-ins"
+            className="text-sm text-slate-400 hover:text-teal-600 transition-colors"
+          >
             {t("viewAll")}
           </Link>
         </div>
       )}
     </>
-  )
+  );
 }

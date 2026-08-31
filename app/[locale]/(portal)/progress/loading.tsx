@@ -1,4 +1,4 @@
-import { Card } from "@/components/ui/card"
+import { Card } from "@/components/ui/card";
 
 export default function ProgressLoading() {
   return (
@@ -20,5 +20,5 @@ export default function ProgressLoading() {
         <div className="h-40 bg-slate-100 rounded" />
       </Card>
     </div>
-  )
+  );
 }

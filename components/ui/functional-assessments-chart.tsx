@@ -1,82 +1,92 @@
-"use client"
+"use client";
 
-import { useState, useRef } from "react"
-import { formatDate } from "@/lib/utils"
+import { useState, useRef } from "react";
+import { formatDate } from "@/lib/utils";
 import {
-  CHART_W, CHART_H, CHART_PAD, CHART_PLOT_H,
-  toPath, toX, findClosestIndex, computeDateIndices, tooltipTransform,
-} from "@/lib/chart-utils"
-import { CHART_SVG_COLORS } from "@/lib/constants"
+  CHART_W,
+  CHART_H,
+  CHART_PAD,
+  CHART_PLOT_H,
+  toPath,
+  toX,
+  findClosestIndex,
+  computeDateIndices,
+  tooltipTransform,
+} from "@/lib/chart-utils";
+import { CHART_SVG_COLORS } from "@/lib/constants";
 
 interface DataPoint {
-  assessedAt: Date
-  overallCapacity: number
-  cognitiveCapacity: number | null
-  physicalCapacity: number | null
-  emotionalCapacity: number | null
-  socialCapacity: number | null
+  assessedAt: Date;
+  overallCapacity: number;
+  cognitiveCapacity: number | null;
+  physicalCapacity: number | null;
+  emotionalCapacity: number | null;
+  socialCapacity: number | null;
 }
 
 export interface FunctionalAssessmentsChartLabels {
-  overall: string
-  cognitive: string
-  physical: string
-  emotional: string
-  social: string
+  overall: string;
+  cognitive: string;
+  physical: string;
+  emotional: string;
+  social: string;
 }
 
 interface SeriesDef {
-  key: keyof DataPoint
-  label: string
-  color: string
+  key: keyof DataPoint;
+  label: string;
+  color: string;
 }
 
-const OVERALL_COLOR = CHART_SVG_COLORS.series1
+const OVERALL_COLOR = CHART_SVG_COLORS.series1;
 
 function toY(v: number): number {
-  return CHART_PAD.top + (1 - v / 10) * CHART_PLOT_H
+  return CHART_PAD.top + (1 - v / 10) * CHART_PLOT_H;
 }
 
 interface Props {
-  data: DataPoint[]
-  labels: FunctionalAssessmentsChartLabels
+  data: DataPoint[];
+  labels: FunctionalAssessmentsChartLabels;
 }
 
 export function FunctionalAssessmentsChart({ data, labels }: Props) {
-  const [hovered, setHovered] = useState<number | null>(null)
-  const svgRef = useRef<SVGSVGElement>(null)
+  const [hovered, setHovered] = useState<number | null>(null);
+  const svgRef = useRef<SVGSVGElement>(null);
 
-  if (data.length < 2) return null
+  if (data.length < 2) return null;
 
-  const n = data.length
-  const bottom = CHART_PAD.top + CHART_PLOT_H
+  const n = data.length;
+  const bottom = CHART_PAD.top + CHART_PLOT_H;
 
-  const overallPts: [number, number][] = data.map((d, i) => [toX(i, n), toY(d.overallCapacity)])
+  const overallPts: [number, number][] = data.map((d, i) => [toX(i, n), toY(d.overallCapacity)]);
 
   const allSubSeries: SeriesDef[] = [
     { key: "cognitiveCapacity", label: labels.cognitive, color: "#60a5fa" },
-    { key: "physicalCapacity",  label: labels.physical,  color: "#a78bfa" },
+    { key: "physicalCapacity", label: labels.physical, color: "#a78bfa" },
     { key: "emotionalCapacity", label: labels.emotional, color: "#fb923c" },
-    { key: "socialCapacity",    label: labels.social,    color: "#f472b6" },
-  ]
-  const activeSubSeries = allSubSeries.filter((s) => data.some((d) => d[s.key] != null))
+    { key: "socialCapacity", label: labels.social, color: "#f472b6" },
+  ];
+  const activeSubSeries = allSubSeries.filter((s) => data.some((d) => d[s.key] != null));
 
   const subPts = activeSubSeries.map((s) =>
-    data.map((d, i): [number, number] => [toX(i, n), d[s.key] != null ? toY(d[s.key] as number) : toY(5)])
-  )
+    data.map((d, i): [number, number] => [
+      toX(i, n),
+      d[s.key] != null ? toY(d[s.key] as number) : toY(5),
+    ]),
+  );
 
-  const overallAreaPath = `${toPath(overallPts)} L ${overallPts[n - 1][0].toFixed(1)} ${bottom} L ${overallPts[0][0].toFixed(1)} ${bottom} Z`
-  const dateIndices = computeDateIndices(n)
+  const overallAreaPath = `${toPath(overallPts)} L ${overallPts[n - 1][0].toFixed(1)} ${bottom} L ${overallPts[0][0].toFixed(1)} ${bottom} Z`;
+  const dateIndices = computeDateIndices(n);
 
   function handleMouseMove(e: React.MouseEvent<SVGSVGElement>) {
-    const rect = svgRef.current?.getBoundingClientRect()
-    if (!rect) return
-    const mx = ((e.clientX - rect.left) / rect.width) * CHART_W
-    setHovered(findClosestIndex(overallPts, mx))
+    const rect = svgRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const mx = ((e.clientX - rect.left) / rect.width) * CHART_W;
+    setHovered(findClosestIndex(overallPts, mx));
   }
 
-  const h = hovered
-  const ci = h !== null ? data[h] : null
+  const h = hovered;
+  const ci = h !== null ? data[h] : null;
 
   return (
     <div className="relative select-none">
@@ -87,7 +97,10 @@ export function FunctionalAssessmentsChart({ data, labels }: Props) {
         </span>
         {activeSubSeries.map((s) => (
           <span key={s.key as string} className="flex items-center gap-1.5 text-xs text-ink-faint">
-            <span className="inline-block w-4 h-px rounded-full" style={{ backgroundColor: s.color }} />
+            <span
+              className="inline-block w-4 h-px rounded-full"
+              style={{ backgroundColor: s.color }}
+            />
             {s.label}
           </span>
         ))}
@@ -108,45 +121,107 @@ export function FunctionalAssessmentsChart({ data, labels }: Props) {
         </defs>
 
         {[2.5, 5, 7.5, 10].map((v) => (
-          <line key={v} x1={CHART_PAD.left} y1={toY(v)} x2={CHART_W - CHART_PAD.right} y2={toY(v)} stroke={CHART_SVG_COLORS.grid} strokeWidth="1" />
+          <line
+            key={v}
+            x1={CHART_PAD.left}
+            y1={toY(v)}
+            x2={CHART_W - CHART_PAD.right}
+            y2={toY(v)}
+            stroke={CHART_SVG_COLORS.grid}
+            strokeWidth="1"
+          />
         ))}
 
         {h !== null && (
-          <line x1={overallPts[h][0]} y1={CHART_PAD.top} x2={overallPts[h][0]} y2={bottom} stroke={CHART_SVG_COLORS.crosshair} strokeWidth="1.5" strokeDasharray="4 3" />
+          <line
+            x1={overallPts[h][0]}
+            y1={CHART_PAD.top}
+            x2={overallPts[h][0]}
+            y2={bottom}
+            stroke={CHART_SVG_COLORS.crosshair}
+            strokeWidth="1.5"
+            strokeDasharray="4 3"
+          />
         )}
 
         <path d={overallAreaPath} fill="url(#syl-fa-overall-grad)" />
 
         {activeSubSeries.map((s, si) => (
-          <path key={s.key as string} d={toPath(subPts[si])} fill="none" stroke={s.color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="5 3" />
+          <path
+            key={s.key as string}
+            d={toPath(subPts[si])}
+            fill="none"
+            stroke={s.color}
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeDasharray="5 3"
+          />
         ))}
 
-        <path d={toPath(overallPts)} fill="none" stroke={OVERALL_COLOR} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+        <path
+          d={toPath(overallPts)}
+          fill="none"
+          stroke={OVERALL_COLOR}
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
 
         {overallPts.map(([x, y], i) => (
-          <circle key={i} cx={x} cy={y} r={h === i ? 5 : 3} fill="white" stroke={OVERALL_COLOR} strokeWidth={h === i ? 2 : 1.5} className="transition-all" />
+          <circle
+            key={i}
+            cx={x}
+            cy={y}
+            r={h === i ? 5 : 3}
+            fill="white"
+            stroke={OVERALL_COLOR}
+            strokeWidth={h === i ? 2 : 1.5}
+            className="transition-all"
+          />
         ))}
 
         {dateIndices.map((i) => (
-          <text key={i} x={overallPts[i][0]} y={CHART_H - 6} textAnchor={i === 0 ? "start" : i === n - 1 ? "end" : "middle"} fontSize="11" fill={CHART_SVG_COLORS.axis}>
+          <text
+            key={i}
+            x={overallPts[i][0]}
+            y={CHART_H - 6}
+            textAnchor={i === 0 ? "start" : i === n - 1 ? "end" : "middle"}
+            fontSize="11"
+            fill={CHART_SVG_COLORS.axis}
+          >
             {formatDate(data[i].assessedAt)}
           </text>
         ))}
       </svg>
 
       {ci !== null && h !== null && (
-        <div className="absolute pointer-events-none z-10" style={{ left: `${(overallPts[h][0] / CHART_W) * 100}%`, top: "32px", transform: tooltipTransform(h, n) }}>
+        <div
+          className="absolute pointer-events-none z-10"
+          style={{
+            left: `${(overallPts[h][0] / CHART_W) * 100}%`,
+            top: "32px",
+            transform: tooltipTransform(h, n),
+          }}
+        >
           <div className="bg-surface-overlay text-ink-on-overlay text-xs rounded-card px-3 py-2.5 shadow-xl min-w-[130px]">
-            <p className="text-ink-on-overlay-dim mb-1.5 font-medium">{formatDate(ci.assessedAt)}</p>
-            <p className="text-chart-1-lit font-medium mb-1">{labels.overall}: <span className="text-ink-on-overlay">{ci.overallCapacity}/10</span></p>
-            {activeSubSeries.map((s) => ci[s.key] != null && (
-              <p key={s.key as string} style={{ color: s.color }} className="mb-0.5">
-                {s.label}: <span className="text-white">{ci[s.key] as number}/10</span>
-              </p>
-            ))}
+            <p className="text-ink-on-overlay-dim mb-1.5 font-medium">
+              {formatDate(ci.assessedAt)}
+            </p>
+            <p className="text-chart-1-lit font-medium mb-1">
+              {labels.overall}: <span className="text-ink-on-overlay">{ci.overallCapacity}/10</span>
+            </p>
+            {activeSubSeries.map(
+              (s) =>
+                ci[s.key] != null && (
+                  <p key={s.key as string} style={{ color: s.color }} className="mb-0.5">
+                    {s.label}: <span className="text-white">{ci[s.key] as number}/10</span>
+                  </p>
+                ),
+            )}
           </div>
         </div>
       )}
     </div>
-  )
+  );
 }

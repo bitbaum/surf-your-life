@@ -1,12 +1,12 @@
-import type { Service } from "@/lib/db/schema"
-import { BRAND_NAME, COMPANY_ADDRESS, SITE_URL } from "@/lib/constants"
-import { EMAIL_SUBJECT_INVITE } from "@/lib/email/subjects"
-import { formatEnumValue } from "@/lib/utils"
+import type { Service } from "@/lib/db/schema";
+import { BRAND_NAME, COMPANY_ADDRESS, SITE_URL } from "@/lib/constants";
+import { EMAIL_SUBJECT_INVITE } from "@/lib/email/subjects";
+import { formatEnumValue } from "@/lib/utils";
 
 // ─── Brand colors (single source of truth for all email templates) ─────────────
 
-const EMAIL_BRAND_COLOR = "#0d9488"  // teal-600
-const EMAIL_ADMIN_COLOR = "#1e293b"  // slate-900
+const EMAIL_BRAND_COLOR = "#0d9488"; // teal-600
+const EMAIL_ADMIN_COLOR = "#1e293b"; // slate-900
 
 // ─── Shared shell ─────────────────────────────────────────────────────────────
 
@@ -18,7 +18,7 @@ const SHARED_CSS = `
   .card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin: 16px 0; }
   .label { font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; }
   .value { font-size: 15px; font-weight: 600; color: #0f172a; margin-top: 2px; }
-`
+`;
 
 function emailShell(body: string, extraStyles = ""): string {
   return `<!DOCTYPE html>
@@ -27,36 +27,38 @@ function emailShell(body: string, extraStyles = ""): string {
 <body>
 ${body}
 </body>
-</html>`.trim()
+</html>`.trim();
 }
 
 function emailHeader(title: string, subtitle?: string, bg = EMAIL_BRAND_COLOR): string {
-  const sub = subtitle ? `<p style="margin:4px 0 0;opacity:0.85;font-size:14px;">${subtitle}</p>` : ""
-  return `<div class="header" style="background:${bg}"><h1 style="margin:0;font-size:20px;">${title}</h1>${sub}</div>`
+  const sub = subtitle
+    ? `<p style="margin:4px 0 0;opacity:0.85;font-size:14px;">${subtitle}</p>`
+    : "";
+  return `<div class="header" style="background:${bg}"><h1 style="margin:0;font-size:20px;">${title}</h1>${sub}</div>`;
 }
 
 function emailFooter(marginTop = "32px"): string {
-  return `<p style="font-size:12px;color:#94a3b8;margin-top:${marginTop};">${COMPANY_ADDRESS}</p>`
+  return `<p style="font-size:12px;color:#94a3b8;margin-top:${marginTop};">${COMPANY_ADDRESS}</p>`;
 }
 
 function emailCard(label: string, value: string, extra = ""): string {
-  return `<div class="card"><div class="label">${label}</div><div class="value">${value}</div>${extra}</div>`
+  return `<div class="card"><div class="label">${label}</div><div class="value">${value}</div>${extra}</div>`;
 }
 
 function emailGreeting(name: string | null | undefined): string {
-  return name ? `Hi ${name},` : "Hello,"
+  return name ? `Hi ${name},` : "Hello,";
 }
 
 function emailTimeLabel(time: string | null | undefined): string {
-  return time ? ` (${time})` : ""
+  return time ? ` (${time})` : "";
 }
 
 // ─── Verification email ───────────────────────────────────────────────────────
 
-type VerificationEmailData = { email: string; verifyUrl: string }
+type VerificationEmailData = { email: string; verifyUrl: string };
 
 export function verificationEmail(data: VerificationEmailData): string {
-  const { verifyUrl } = data
+  const { verifyUrl } = data;
   return emailShell(`
   ${emailHeader("Verify your email address", BRAND_NAME)}
   <p>Hello,</p>
@@ -64,15 +66,15 @@ export function verificationEmail(data: VerificationEmailData): string {
   <a href="${verifyUrl}" class="cta">Verify my email</a>
   <p style="margin-top:24px;font-size:13px;color:#64748b;">If you did not create an account, you can safely ignore this email.</p>
   ${emailFooter()}
-`)
+`);
 }
 
 // ─── Password reset ───────────────────────────────────────────────────────────
 
-type PasswordResetEmailData = { resetUrl: string }
+type PasswordResetEmailData = { resetUrl: string };
 
 export function passwordResetEmail(data: PasswordResetEmailData): string {
-  const { resetUrl } = data
+  const { resetUrl } = data;
   return emailShell(`
   ${emailHeader("Reset your password", BRAND_NAME)}
   <p>Hello,</p>
@@ -80,25 +82,25 @@ export function passwordResetEmail(data: PasswordResetEmailData): string {
   <a href="${resetUrl}" class="cta">Reset my password</a>
   <p style="margin-top:24px;font-size:13px;color:#64748b;">If you did not request this, you can safely ignore this email. Your password will not change.</p>
   ${emailFooter()}
-`)
+`);
 }
 
 // ─── Booking request confirmation (to client) ─────────────────────────────────
 
 export type BookingRequestData = {
-  clientName: string | null
-  serviceName: string
-  preferredDate: string | null
-  preferredTime: string | null
-}
+  clientName: string | null;
+  serviceName: string;
+  preferredDate: string | null;
+  preferredTime: string | null;
+};
 
 export function bookingRequestEmail(data: BookingRequestData): string {
-  const { clientName, serviceName, preferredDate, preferredTime } = data
-  const greeting = emailGreeting(clientName)
-  const timeLabel = emailTimeLabel(preferredTime)
+  const { clientName, serviceName, preferredDate, preferredTime } = data;
+  const greeting = emailGreeting(clientName);
+  const timeLabel = emailTimeLabel(preferredTime);
   const dateBlock = preferredDate
     ? emailCard("Preferred date &amp; time", `${preferredDate}${timeLabel}`)
-    : ""
+    : "";
   return emailShell(`
   ${emailHeader("Booking request received", `${BRAND_NAME} Portal`, EMAIL_BRAND_COLOR)}
   <p>${greeting}</p>
@@ -107,17 +109,17 @@ export function bookingRequestEmail(data: BookingRequestData): string {
   ${dateBlock}
   <p style="font-size:13px;color:#64748b;margin-top:16px;">If you have any questions, simply reply to this email.</p>
   ${emailFooter()}
-`)
+`);
 }
 
 // ─── Welcome email ────────────────────────────────────────────────────────────
 
-type WelcomeEmailData = { name: string | null; email: string }
+type WelcomeEmailData = { name: string | null; email: string };
 
 export function welcomeEmail(data: WelcomeEmailData): string {
-  const { name, email } = data
-  const displayName = name ?? email
-  const dashboardUrl = `${SITE_URL}/dashboard`
+  const { name, email } = data;
+  const displayName = name ?? email;
+  const dashboardUrl = `${SITE_URL}/dashboard`;
 
   return emailShell(`
   ${emailHeader(`Welcome to ${BRAND_NAME}`, "Your program starts here")}
@@ -136,18 +138,18 @@ export function welcomeEmail(data: WelcomeEmailData): string {
   <p style="margin-top:24px;font-size:13px;color:#64748b;">If you have any questions, simply reply to this email. We respond within 24 hours.</p>
 
   ${emailFooter()}
-`)
+`);
 }
 
 // ─── Admin new-user alert ─────────────────────────────────────────────────────
 
-type NewUserAlertData = { name: string | null; email: string; createdAt: Date }
+type NewUserAlertData = { name: string | null; email: string; createdAt: Date };
 
 export function newUserAlertEmail(data: NewUserAlertData): string {
-  const { name, email, createdAt } = data
-  const displayName = name ?? "(no name)"
-  const adminUrl = `${SITE_URL}/admin/clients`
-  const joinedAt = createdAt.toISOString().replace("T", " ").slice(0, 16) + " UTC"
+  const { name, email, createdAt } = data;
+  const displayName = name ?? "(no name)";
+  const adminUrl = `${SITE_URL}/admin/clients`;
+  const joinedAt = createdAt.toISOString().replace("T", " ").slice(0, 16) + " UTC";
 
   return emailShell(`
   ${emailHeader("New client registered", undefined, EMAIL_ADMIN_COLOR)}
@@ -157,29 +159,31 @@ export function newUserAlertEmail(data: NewUserAlertData): string {
   ${emailCard("Registered at", joinedAt)}
 
   <a href="${adminUrl}" class="cta">View in admin panel</a>
-`)
+`);
 }
 
 // ─── Booking status ───────────────────────────────────────────────────────────
 
 type BookingStatusData = {
-  clientName: string | null
-  serviceName: string
-  status: "confirmed" | "cancelled"
-  preferredDate: string | null
-  preferredTime: string | null
-}
+  clientName: string | null;
+  serviceName: string;
+  status: "confirmed" | "cancelled";
+  preferredDate: string | null;
+  preferredTime: string | null;
+};
 
 export function bookingStatusEmail(data: BookingStatusData): string {
-  const { clientName, serviceName, status, preferredDate, preferredTime } = data
-  const isConfirmed = status === "confirmed"
-  const headerBg = isConfirmed ? EMAIL_BRAND_COLOR : "#64748b"
-  const headingText = isConfirmed ? "Your booking has been confirmed" : "Your booking has been cancelled"
+  const { clientName, serviceName, status, preferredDate, preferredTime } = data;
+  const isConfirmed = status === "confirmed";
+  const headerBg = isConfirmed ? EMAIL_BRAND_COLOR : "#64748b";
+  const headingText = isConfirmed
+    ? "Your booking has been confirmed"
+    : "Your booking has been cancelled";
   const bodyText = isConfirmed
     ? "Great news — your booking has been confirmed. We look forward to seeing you."
-    : "Your booking has been cancelled. If you have any questions, please contact us."
-  const timeLabel = emailTimeLabel(preferredTime)
-  const greeting = emailGreeting(clientName)
+    : "Your booking has been cancelled. If you have any questions, please contact us.";
+  const timeLabel = emailTimeLabel(preferredTime);
+  const greeting = emailGreeting(clientName);
 
   return emailShell(`
   ${emailHeader(headingText, `${BRAND_NAME} Portal`, headerBg)}
@@ -191,25 +195,26 @@ export function bookingStatusEmail(data: BookingStatusData): string {
   ${preferredDate ? emailCard("Preferred date &amp; time", `${preferredDate}${timeLabel}`) : ""}
 
   ${emailFooter("24px")}
-`)
+`);
 }
 
 // ─── New message notification ─────────────────────────────────────────────────
 
 type NewMessageData = {
-  senderName: string | null
-  senderEmail: string
-  body: string
-  threadSubject: string | null
-  replyUrl: string
-}
+  senderName: string | null;
+  senderEmail: string;
+  body: string;
+  threadSubject: string | null;
+  replyUrl: string;
+};
 
 export function newMessageEmail(data: NewMessageData): string {
-  const { senderName, senderEmail, body, threadSubject, replyUrl } = data
-  const displayName = senderName ?? senderEmail
-  const subjectLine = threadSubject ?? "No subject"
+  const { senderName, senderEmail, body, threadSubject, replyUrl } = data;
+  const displayName = senderName ?? senderEmail;
+  const subjectLine = threadSubject ?? "No subject";
 
-  return emailShell(`
+  return emailShell(
+    `
   ${emailHeader("New Message", `${BRAND_NAME} Portal`)}
 
   <p>You have received a new message.</p>
@@ -225,15 +230,17 @@ export function newMessageEmail(data: NewMessageData): string {
   <a href="${replyUrl}" class="cta">Reply to message</a>
 
   <p style="font-size:12px;color:#94a3b8;margin-top:24px;">You can reply directly from the portal.</p>
-`, `  .message-body { font-size: 14px; line-height: 1.6; color: #334155; margin-top: 6px; white-space: pre-wrap; }`)
+`,
+    `  .message-body { font-size: 14px; line-height: 1.6; color: #334155; margin-top: 6px; white-space: pre-wrap; }`,
+  );
 }
 
 // ─── Lead invite ─────────────────────────────────────────────────────────────
 
-type InviteEmailData = { name: string; registerUrl: string; practitionerName: string }
+type InviteEmailData = { name: string; registerUrl: string; practitionerName: string };
 
 export function inviteEmail(data: InviteEmailData): string {
-  const { name, registerUrl, practitionerName } = data
+  const { name, registerUrl, practitionerName } = data;
   return emailShell(`
   ${emailHeader(EMAIL_SUBJECT_INVITE, `Personal message from ${practitionerName}`)}
   <p>Hi ${name},</p>
@@ -244,25 +251,25 @@ export function inviteEmail(data: InviteEmailData): string {
   <p style="margin-top:24px;font-size:13px;color:#64748b;">If you have any questions before registering, simply reply to this email.</p>
   <p style="margin-top:24px;font-size:13px;color:#64748b;">Looking forward to working with you.</p>
   <p style="font-size:13px;color:#64748b;margin-top:4px;"><strong>${practitionerName}</strong><br>${COMPANY_ADDRESS}</p>
-`)
+`);
 }
 
 // ─── Admin booking notification ───────────────────────────────────────────────
 
 type BookingNotificationData = {
-  clientEmail: string
-  clientName: string | null
-  service: Service
-  preferredDate: string | null
-  preferredTime: string | null
-  notes: string | null
-  bookingId: string
-}
+  clientEmail: string;
+  clientName: string | null;
+  service: Service;
+  preferredDate: string | null;
+  preferredTime: string | null;
+  notes: string | null;
+  bookingId: string;
+};
 
 export function bookingNotificationEmail(data: BookingNotificationData): string {
-  const { clientEmail, clientName, service, preferredDate, preferredTime, notes, bookingId } = data
-  const displayName = clientName ?? clientEmail
-  const timeLabel = emailTimeLabel(preferredTime)
+  const { clientEmail, clientName, service, preferredDate, preferredTime, notes, bookingId } = data;
+  const displayName = clientName ?? clientEmail;
+  const timeLabel = emailTimeLabel(preferredTime);
 
   return emailShell(`
   ${emailHeader("New Booking Request", `${BRAND_NAME} Portal`)}
@@ -277,47 +284,56 @@ export function bookingNotificationEmail(data: BookingNotificationData): string 
   <p style="font-size:13px;color:#64748b;">Booking ID: ${bookingId}</p>
 
   <p>Log in to the admin panel to manage this booking.</p>
-`)
+`);
 }
 
 // ─── Practitioner note email ──────────────────────────────────────────────────
 
 type PractitionerNoteEmailData = {
-  clientName: string
-  checkInDate: Date
-  note: string
-  portalUrl: string
-}
+  clientName: string;
+  checkInDate: Date;
+  note: string;
+  portalUrl: string;
+};
 
 export function practitionerNoteEmail(data: PractitionerNoteEmailData): string {
-  const { clientName, checkInDate, note, portalUrl } = data
-  const dateStr = checkInDate.toLocaleDateString("en-CH", { day: "numeric", month: "long", year: "numeric" })
-  return emailShell(`
+  const { clientName, checkInDate, note, portalUrl } = data;
+  const dateStr = checkInDate.toLocaleDateString("en-CH", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+  return emailShell(
+    `
   ${emailHeader("A note from your practitioner", BRAND_NAME)}
   <p>Hello ${clientName},</p>
   <p>Your practitioner left a note on your check-in from <strong>${dateStr}</strong>:</p>
   <div class="note">${note.replace(/\n/g, "<br>")}</div>
   <a href="${portalUrl}" class="cta">View in portal</a>
   ${emailFooter()}
-`, `  .note { background: #f0fdfa; border-left: 3px solid ${EMAIL_BRAND_COLOR}; padding: 16px; border-radius: 0 8px 8px 0; margin: 20px 0; font-style: italic; color: #134e4a; line-height: 1.6; }`)
+`,
+    `  .note { background: #f0fdfa; border-left: 3px solid ${EMAIL_BRAND_COLOR}; padding: 16px; border-radius: 0 8px 8px 0; margin: 20px 0; font-style: italic; color: #134e4a; line-height: 1.6; }`,
+  );
 }
 
 // ─── Practitioner clinical alert ──────────────────────────────────────────────
 
 export type PractitionerAlertEmailData = {
-  clientName: string
-  clientEmail: string
-  alertTitle: string
-  alertMessage: string
-  severity: "low" | "medium" | "high"
-  adminUrl: string
-}
+  clientName: string;
+  clientEmail: string;
+  alertTitle: string;
+  alertMessage: string;
+  severity: "low" | "medium" | "high";
+  adminUrl: string;
+};
 
 export function practitionerAlertEmail(data: PractitionerAlertEmailData): string {
-  const { clientName, clientEmail, alertTitle, alertMessage, severity, adminUrl } = data
-  const severityColor = severity === "high" ? "#dc2626" : severity === "medium" ? "#d97706" : EMAIL_BRAND_COLOR
-  const severityBg = severity === "high" ? "#fef2f2" : severity === "medium" ? "#fffbeb" : "#f0fdfa"
-  const severityLabel = formatEnumValue(severity)
+  const { clientName, clientEmail, alertTitle, alertMessage, severity, adminUrl } = data;
+  const severityColor =
+    severity === "high" ? "#dc2626" : severity === "medium" ? "#d97706" : EMAIL_BRAND_COLOR;
+  const severityBg =
+    severity === "high" ? "#fef2f2" : severity === "medium" ? "#fffbeb" : "#f0fdfa";
+  const severityLabel = formatEnumValue(severity);
 
   return emailShell(`
   <div class="header" style="background:${EMAIL_ADMIN_COLOR};padding:16px 24px">
@@ -335,44 +351,46 @@ export function practitionerAlertEmail(data: PractitionerAlertEmailData): string
   <a href="${adminUrl}" class="cta">View client in admin panel</a>
 
   ${emailFooter("24px")}
-`)
+`);
 }
 
 // ─── Practitioner weekly digest ───────────────────────────────────────────────
 
 export type PractitionerDigestClientRow = {
-  clientId: string
-  name: string
-  email: string
-  checkInCount: number
-  avgEnergy: number
-  avgMood: string
-  avgSleep: number | null
-  avgStress: number | null
-  pemEpisodes: number
-  alertCount: number
-  aiNarrative: string | null
-}
+  clientId: string;
+  name: string;
+  email: string;
+  checkInCount: number;
+  avgEnergy: number;
+  avgMood: string;
+  avgSleep: number | null;
+  avgStress: number | null;
+  pemEpisodes: number;
+  alertCount: number;
+  aiNarrative: string | null;
+};
 
 export type PractitionerWeeklyDigestData = {
-  weekStart: string
-  weekEnd: string
-  clients: PractitionerDigestClientRow[]
-  adminUrl: string
-}
+  weekStart: string;
+  weekEnd: string;
+  clients: PractitionerDigestClientRow[];
+  adminUrl: string;
+};
 
 export function practitionerWeeklyDigestEmail(data: PractitionerWeeklyDigestData): string {
-  const { weekStart, weekEnd, clients, adminUrl } = data
+  const { weekStart, weekEnd, clients, adminUrl } = data;
 
-  const clientRows = clients.map((c) => {
-    const clientUrl = `${SITE_URL}/admin/clients/${c.clientId}`
-    const alertBadge = c.alertCount > 0
-      ? `<span style="background:#fef2f2;color:#dc2626;border:1px solid #dc2626;border-radius:9999px;padding:1px 8px;font-size:11px;font-weight:600;margin-left:6px;">${c.alertCount} alert${c.alertCount > 1 ? "s" : ""}</span>`
-      : ""
-    const narrative = c.aiNarrative
-      ? `<p style="margin:8px 0 0;font-size:13px;color:#475569;font-style:italic;line-height:1.5;">${c.aiNarrative}</p>`
-      : ""
-    return `
+  const clientRows = clients
+    .map((c) => {
+      const clientUrl = `${SITE_URL}/admin/clients/${c.clientId}`;
+      const alertBadge =
+        c.alertCount > 0
+          ? `<span style="background:#fef2f2;color:#dc2626;border:1px solid #dc2626;border-radius:9999px;padding:1px 8px;font-size:11px;font-weight:600;margin-left:6px;">${c.alertCount} alert${c.alertCount > 1 ? "s" : ""}</span>`
+          : "";
+      const narrative = c.aiNarrative
+        ? `<p style="margin:8px 0 0;font-size:13px;color:#475569;font-style:italic;line-height:1.5;">${c.aiNarrative}</p>`
+        : "";
+      return `
     <div style="border:1px solid #e2e8f0;border-radius:8px;padding:16px;margin:12px 0;">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
         <div>
@@ -389,8 +407,9 @@ export function practitionerWeeklyDigestEmail(data: PractitionerWeeklyDigestData
         </div>
       </div>
       ${narrative}
-    </div>`
-  }).join("")
+    </div>`;
+    })
+    .join("");
 
   return emailShell(`
   ${emailHeader("Weekly client overview", `${weekStart} – ${weekEnd}`, EMAIL_ADMIN_COLOR)}
@@ -402,26 +421,27 @@ export function practitionerWeeklyDigestEmail(data: PractitionerWeeklyDigestData
   <a href="${adminUrl}" class="cta">Open admin panel</a>
 
   ${emailFooter("24px")}
-`)
+`);
 }
 
 // ─── Missed check-in digest (practitioner, sent once per cron run) ───────────
 
 export type MissedCheckInDigestData = {
-  clients: { clientId: string; name: string | null; email: string; daysMissed: number | null }[]
-  adminUrl: string
-}
+  clients: { clientId: string; name: string | null; email: string; daysMissed: number | null }[];
+  adminUrl: string;
+};
 
 export function missedCheckInDigestEmail(data: MissedCheckInDigestData): string {
-  const { clients, adminUrl } = data
+  const { clients, adminUrl } = data;
 
   const rows = clients
     .sort((a, b) => (b.daysMissed ?? 9999) - (a.daysMissed ?? 9999))
     .map((c) => {
-      const label = c.daysMissed != null
-        ? `${c.daysMissed} day${c.daysMissed !== 1 ? "s" : ""} overdue`
-        : "Never checked in"
-      const clientUrl = `${SITE_URL}/admin/clients/${c.clientId}`
+      const label =
+        c.daysMissed != null
+          ? `${c.daysMissed} day${c.daysMissed !== 1 ? "s" : ""} overdue`
+          : "Never checked in";
+      const clientUrl = `${SITE_URL}/admin/clients/${c.clientId}`;
       return `
       <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f1f5f9;">
         <div>
@@ -429,9 +449,9 @@ export function missedCheckInDigestEmail(data: MissedCheckInDigestData): string 
           <div style="font-size:12px;color:#94a3b8;">${c.email}</div>
         </div>
         <span style="font-size:13px;color:#d97706;font-weight:500;">${label}</span>
-      </div>`
+      </div>`;
     })
-    .join("")
+    .join("");
 
   return emailShell(`
   <div class="header" style="background:${EMAIL_ADMIN_COLOR};padding:16px 24px">
@@ -447,23 +467,24 @@ export function missedCheckInDigestEmail(data: MissedCheckInDigestData): string 
   <a href="${adminUrl}" class="cta">Open admin panel</a>
 
   ${emailFooter("24px")}
-`)
+`);
 }
 
 // ─── Daily check-in reminder ──────────────────────────────────────────────────
 
 export type CheckInReminderData = {
-  clientName: string | null
-  portalUrl: string
-  currentStreak: number
-}
+  clientName: string | null;
+  portalUrl: string;
+  currentStreak: number;
+};
 
 export function checkInReminderEmail(data: CheckInReminderData): string {
-  const { clientName, portalUrl, currentStreak } = data
-  const name = clientName ?? "there"
-  const streakMsg = currentStreak > 1
-    ? `You're on a ${currentStreak}-day streak — keep it going!`
-    : "Start your day with a quick check-in."
+  const { clientName, portalUrl, currentStreak } = data;
+  const name = clientName ?? "there";
+  const streakMsg =
+    currentStreak > 1
+      ? `You're on a ${currentStreak}-day streak — keep it going!`
+      : "Start your day with a quick check-in.";
   return emailShell(`
   ${emailHeader("Time for your daily check-in", BRAND_NAME)}
   <p>Hello ${name},</p>
@@ -471,39 +492,54 @@ export function checkInReminderEmail(data: CheckInReminderData): string {
   <a href="${portalUrl}/check-in" class="cta">Check in now</a>
   <p style="margin-top:24px;font-size:13px;color:#64748b;">To turn off reminders, visit <a href="${portalUrl}/settings">Settings</a> in the portal.</p>
   ${emailFooter()}
-`)
+`);
 }
 
 // ─── Weekly client report ─────────────────────────────────────────────────────
 
 export type WeeklyReportData = {
-  clientName: string | null
-  weekStart: string
-  weekEnd: string
-  checkInCount: number
-  avgEnergy: number
-  avgMood: string
-  avgSleep: number | null
-  avgStress: number | null
-  pemEpisodes: number
-  topWin: string | null
-  aiInsight: string | null
-  portalUrl: string
-}
+  clientName: string | null;
+  weekStart: string;
+  weekEnd: string;
+  checkInCount: number;
+  avgEnergy: number;
+  avgMood: string;
+  avgSleep: number | null;
+  avgStress: number | null;
+  pemEpisodes: number;
+  topWin: string | null;
+  aiInsight: string | null;
+  portalUrl: string;
+};
 
 export function weeklyReportEmail(data: WeeklyReportData): string {
-  const { clientName, weekStart, weekEnd, checkInCount, avgEnergy, avgMood, avgSleep, avgStress, pemEpisodes, topWin, aiInsight, portalUrl } = data
-  const name = clientName ?? "there"
-  const pemNote = pemEpisodes > 0
-    ? `<li>⚠️ <strong>${pemEpisodes} PEM episode(s)</strong> this week — discuss pacing with your practitioner</li>`
-    : ""
+  const {
+    clientName,
+    weekStart,
+    weekEnd,
+    checkInCount,
+    avgEnergy,
+    avgMood,
+    avgSleep,
+    avgStress,
+    pemEpisodes,
+    topWin,
+    aiInsight,
+    portalUrl,
+  } = data;
+  const name = clientName ?? "there";
+  const pemNote =
+    pemEpisodes > 0
+      ? `<li>⚠️ <strong>${pemEpisodes} PEM episode(s)</strong> this week — discuss pacing with your practitioner</li>`
+      : "";
   const winNote = topWin
     ? `<div style="margin-top:16px;padding:12px 16px;background:#f0fdf4;border-left:3px solid ${EMAIL_BRAND_COLOR};border-radius:4px;"><p style="margin:0;font-size:14px;color:#065f46;">📝 <strong>From your journal:</strong> ${topWin}</p></div>`
-    : ""
+    : "";
   const insightNote = aiInsight
     ? `<div style="margin-top:16px;padding:12px 16px;background:#f5f3ff;border-left:3px solid #7c3aed;border-radius:4px;"><p style="margin:0 0 6px;font-size:12px;font-weight:600;color:#7c3aed;">✨ Your AI weekly summary</p><p style="margin:0;font-size:14px;color:#4c1d95;line-height:1.6;">${aiInsight}</p></div>`
-    : ""
-  return emailShell(`
+    : "";
+  return emailShell(
+    `
   ${emailHeader("Your weekly summary", `${weekStart} – ${weekEnd}`)}
   <p>Hello ${name}, here's how your week went:</p>
   <div class="stats">
@@ -530,34 +566,43 @@ export function weeklyReportEmail(data: WeeklyReportData): string {
   ${winNote}
   <a href="${portalUrl}/dashboard" class="cta">View full history</a>
   ${emailFooter()}
-`, `  .stats { display: flex; gap: 12px; margin: 20px 0; flex-wrap: wrap; }
+`,
+    `  .stats { display: flex; gap: 12px; margin: 20px 0; flex-wrap: wrap; }
   .stat { flex: 1; min-width: 120px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; text-align: center; }
   .stat-value { font-size: 24px; font-weight: 700; color: ${EMAIL_BRAND_COLOR}; }
-  .stat-label { font-size: 12px; color: #64748b; margin-top: 2px; }`)
+  .stat-label { font-size: 12px; color: #64748b; margin-top: 2px; }`,
+  );
 }
 
 // ─── First check-in notification (to assigned practitioners / admins) ─────────
 
 export type FirstCheckInAlertData = {
-  clientName: string | null
-  clientEmail: string
-  clientId: string
-}
+  clientName: string | null;
+  clientEmail: string;
+  clientId: string;
+};
 
 // ─── Technique adherence decline digest ──────────────────────────────────────
 
 export type TechniqueAdherenceDigestData = {
-  clients: Array<{ clientId: string; name: string | null; email: string; prior7avg: number; recent7avg: number; drop: number }>
-  adminUrl: string
-}
+  clients: Array<{
+    clientId: string;
+    name: string | null;
+    email: string;
+    prior7avg: number;
+    recent7avg: number;
+    drop: number;
+  }>;
+  adminUrl: string;
+};
 
 export function techniqueAdherenceDigestEmail(data: TechniqueAdherenceDigestData): string {
-  const { clients, adminUrl } = data
+  const { clients, adminUrl } = data;
 
   const rows = clients
     .sort((a, b) => b.drop - a.drop)
     .map((c) => {
-      const clientUrl = `${SITE_URL}/admin/clients/${c.clientId}`
+      const clientUrl = `${SITE_URL}/admin/clients/${c.clientId}`;
       return `
       <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f1f5f9;">
         <div>
@@ -565,9 +610,9 @@ export function techniqueAdherenceDigestEmail(data: TechniqueAdherenceDigestData
           <div style="font-size:12px;color:#94a3b8;">${c.email}</div>
         </div>
         <span style="font-size:13px;color:#dc2626;font-weight:500;">${c.prior7avg}% → ${c.recent7avg}% (−${c.drop}%)</span>
-      </div>`
+      </div>`;
     })
-    .join("")
+    .join("");
 
   return emailShell(`
   <div class="header" style="background:${EMAIL_ADMIN_COLOR};padding:16px 24px">
@@ -583,15 +628,15 @@ export function techniqueAdherenceDigestEmail(data: TechniqueAdherenceDigestData
   <a href="${adminUrl}" class="cta">Open admin panel</a>
 
   ${emailFooter("24px")}
-`)
+`);
 }
 
 // ─── First check-in alert ─────────────────────────────────────────────────────
 
 export function firstCheckInAlertEmail(data: FirstCheckInAlertData): string {
-  const { clientName, clientEmail, clientId } = data
-  const displayName = clientName ?? clientEmail
-  const adminUrl = `${SITE_URL}/admin/clients/${clientId}`
+  const { clientName, clientEmail, clientId } = data;
+  const displayName = clientName ?? clientEmail;
+  const adminUrl = `${SITE_URL}/admin/clients/${clientId}`;
 
   return emailShell(`
   <div class="header" style="background:${EMAIL_ADMIN_COLOR};padding:16px 24px">
@@ -607,5 +652,5 @@ export function firstCheckInAlertEmail(data: FirstCheckInAlertData): string {
   <a href="${adminUrl}" class="cta">View client in admin panel</a>
 
   ${emailFooter("24px")}
-`)
+`);
 }

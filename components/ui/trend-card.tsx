@@ -1,61 +1,71 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ArrowDown, ArrowUp, Minus } from "lucide-react"
-import { roundOne } from "@/lib/utils"
-import { getTranslations } from "next-intl/server"
-import type { WeekDelta } from "@/lib/domain/check-in"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ArrowDown, ArrowUp, Minus } from "lucide-react";
+import { roundOne } from "@/lib/utils";
+import { getTranslations } from "next-intl/server";
+import type { WeekDelta } from "@/lib/domain/check-in";
 
 interface Props {
-  delta: WeekDelta
+  delta: WeekDelta;
   /**
    * i18n namespace containing the trend card keys: title, checkInsCount,
    * avgEnergy, pemEpisodes, avgStress, noPriorWindow.
    * Lets the same card serve admin and portal contexts with different copy.
    */
-  namespace: string
+  namespace: string;
 }
 
-type DeltaTone = "good" | "bad" | "neutral"
+type DeltaTone = "good" | "bad" | "neutral";
 
 function deltaTone(value: number, higherIsBetter: boolean): DeltaTone {
-  if (value === 0) return "neutral"
-  const goodDirection = higherIsBetter ? value > 0 : value < 0
-  return goodDirection ? "good" : "bad"
+  if (value === 0) return "neutral";
+  const goodDirection = higherIsBetter ? value > 0 : value < 0;
+  return goodDirection ? "good" : "bad";
 }
 
-function DeltaBadge({ value, higherIsBetter, format }: {
-  value: number | null
-  higherIsBetter: boolean
-  format: (n: number) => string
+function DeltaBadge({
+  value,
+  higherIsBetter,
+  format,
+}: {
+  value: number | null;
+  higherIsBetter: boolean;
+  format: (n: number) => string;
 }) {
   if (value == null) {
-    return <span className="text-xs text-ink-faint">—</span>
+    return <span className="text-xs text-ink-faint">—</span>;
   }
 
-  const tone = deltaTone(value, higherIsBetter)
+  const tone = deltaTone(value, higherIsBetter);
   const colorClass =
-    tone === "good" ? "text-brand-dark bg-brand-subtle"
-    : tone === "bad" ? "text-error bg-error-subtle"
-    : "text-ink-muted bg-surface-muted"
+    tone === "good"
+      ? "text-brand-dark bg-brand-subtle"
+      : tone === "bad"
+        ? "text-error bg-error-subtle"
+        : "text-ink-muted bg-surface-muted";
 
-  const Icon = value === 0 ? Minus : value > 0 ? ArrowUp : ArrowDown
+  const Icon = value === 0 ? Minus : value > 0 ? ArrowUp : ArrowDown;
 
   return (
-    <span className={`inline-flex items-center gap-0.5 text-xs font-medium px-1.5 py-0.5 rounded-full ${colorClass}`}>
+    <span
+      className={`inline-flex items-center gap-0.5 text-xs font-medium px-1.5 py-0.5 rounded-full ${colorClass}`}
+    >
       <Icon className="w-3 h-3" />
       {format(Math.abs(value))}
     </span>
-  )
+  );
 }
 
 export async function TrendCard({ delta, namespace }: Props) {
-  const t = await getTranslations(namespace)
+  const t = await getTranslations(namespace);
 
   // Hide entirely when there's no current-window data — the check-ins card
   // already covers the "no recent activity" case.
-  if (delta.window.count === 0) return null
+  if (delta.window.count === 0) return null;
 
-  const energyValue = delta.window.avgEnergy != null ? `${roundOne(delta.window.avgEnergy)}/10` : "—"
-  const stressValue = delta.window.avgStress != null ? `${roundOne(delta.window.avgStress)}/10` : "—"
+  const energyValue =
+    delta.window.avgEnergy != null ? `${roundOne(delta.window.avgEnergy)}/10` : "—";
+  const stressValue =
+    delta.window.avgStress != null ? `${roundOne(delta.window.avgStress)}/10` : "—";
 
   return (
     <Card>
@@ -100,17 +110,25 @@ export async function TrendCard({ delta, namespace }: Props) {
         )}
       </CardContent>
     </Card>
-  )
+  );
 }
 
-function Stat({ label, value, valueClass, delta, higherIsBetter, hasPriorWindow, format }: {
-  label: string
-  value: string
-  valueClass?: string
-  delta: number | null
-  higherIsBetter: boolean
-  hasPriorWindow: boolean
-  format: (n: number) => string
+function Stat({
+  label,
+  value,
+  valueClass,
+  delta,
+  higherIsBetter,
+  hasPriorWindow,
+  format,
+}: {
+  label: string;
+  value: string;
+  valueClass?: string;
+  delta: number | null;
+  higherIsBetter: boolean;
+  hasPriorWindow: boolean;
+  format: (n: number) => string;
 }) {
   return (
     <div>
@@ -122,5 +140,5 @@ function Stat({ label, value, valueClass, delta, higherIsBetter, hasPriorWindow,
         )}
       </div>
     </div>
-  )
+  );
 }

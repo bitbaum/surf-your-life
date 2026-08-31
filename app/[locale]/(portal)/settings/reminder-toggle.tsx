@@ -1,46 +1,47 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useTranslations } from "next-intl"
-import { toast } from "sonner"
-import { Bell, BellOff } from "lucide-react"
+import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { toast } from "sonner";
+import { Bell, BellOff } from "lucide-react";
 
 interface Props {
-  initialValue: boolean
+  initialValue: boolean;
 }
 
 export function ReminderToggle({ initialValue }: Props) {
-  const t = useTranslations("portal.settings")
-  const [enabled, setEnabled] = useState(initialValue)
-  const [loading, setLoading] = useState(false)
+  const t = useTranslations("portal.settings");
+  const [enabled, setEnabled] = useState(initialValue);
+  const [loading, setLoading] = useState(false);
 
   async function handleToggle() {
-    const next = !enabled
-    setLoading(true)
+    const next = !enabled;
+    setLoading(true);
     try {
       const res = await fetch("/api/settings/notifications", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ receiveReminders: next }),
-      })
-      const json = await res.json()
-      if (!json.success) throw new Error(json.error)
-      setEnabled(next)
-      toast.success(next ? t("remindersEnabled") : t("remindersDisabled"))
+      });
+      const json = await res.json();
+      if (!json.success) throw new Error(json.error);
+      setEnabled(next);
+      toast.success(next ? t("remindersEnabled") : t("remindersDisabled"));
     } catch {
-      toast.error(t("remindersSaveError"))
+      toast.error(t("remindersSaveError"));
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-3">
-        {enabled
-          ? <Bell className="w-4 h-4 text-teal-600" />
-          : <BellOff className="w-4 h-4 text-slate-400" />
-        }
+        {enabled ? (
+          <Bell className="w-4 h-4 text-teal-600" />
+        ) : (
+          <BellOff className="w-4 h-4 text-slate-400" />
+        )}
         <div>
           <p className="text-sm font-medium text-slate-900">{t("remindersDailyLabel")}</p>
           <p className="text-xs text-slate-500">{t("remindersDescription")}</p>
@@ -62,5 +63,5 @@ export function ReminderToggle({ initialValue }: Props) {
         />
       </button>
     </div>
-  )
+  );
 }
