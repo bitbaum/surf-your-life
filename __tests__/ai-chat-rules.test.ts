@@ -1,6 +1,6 @@
 /**
  * Unit tests for the rule-based AI response path in lib/domain/ai-chat.ts.
- * This is the fallback used when ANTHROPIC_API_KEY is not set.
+ * This is the fallback used when no chain provider is configured.
  * ruleBasedResponse is a pure function: no DB, no network.
  */
 import { describe, it, expect, vi } from "vitest";

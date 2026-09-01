@@ -1,10 +1,10 @@
 /**
  * AI chat logic for the client portal.
  *
- * When ANTHROPIC_API_KEY is set: calls Claude with check-in context.
- * When not set: returns a rule-based response grounded in the client's actual data.
+ * When GROQ_API_KEY or OPENROUTER_API_KEY is set: calls the chain with
+ * check-in context. When neither is set: returns a rule-based response
+ * grounded in the client's actual data.
  *
- * To enable AI: set ANTHROPIC_API_KEY in your environment.
  * The generateAiReply function handles both paths — no other changes needed.
  */
 
@@ -29,7 +29,7 @@ import {
 } from "@/lib/constants";
 import { summariseCheckIns, computeCurrentProgramWeek } from "@/lib/domain/check-in";
 export { summariseCheckIns, type CheckInSummaryRow } from "@/lib/domain/check-in";
-import { callClaude } from "@/lib/domain/anthropic";
+import { callLLM } from "@/lib/domain/llm";
 import { semanticCheckInSearch } from "@/lib/domain/embeddings";
 import { localDateString, addDaysISO } from "@/lib/utils";
 import { computeDailyAdherenceTrend } from "@/lib/domain/techniques";
@@ -472,9 +472,9 @@ export function ruleBasedResponse(
   return `Here's a quick snapshot: over your last ${stats.count} check-ins, your average energy is ${stats.avgEnergy.toFixed(1)}/10${sleepSummary}, and you've had ${stats.pemCount} PEM episode${stats.pemCount === 1 ? "" : "s"}. Ask me about any of these in more detail. ${dataNote}`;
 }
 
-// ─── AI call (to be enabled when ANTHROPIC_API_KEY is set) ────────────────────
+// ─── AI call (no-op when no chain provider is configured) ─────────────────────
 
-async function callAnthropicApi(
+async function callChainChat(
   userMessage: string,
   context: BuildContextResult,
   history: { role: "user" | "assistant"; content: string }[],
@@ -548,7 +548,7 @@ ${techniqueLines}
 Current program:
 ${programLine}`;
 
-  return callClaude({
+  return callLLM({
     messages: [...history.slice(-AI_CHAT_CONTEXT_WINDOW), { role: "user", content: userMessage }],
     system: systemPrompt,
     maxTokens: 500,
@@ -572,8 +572,8 @@ export async function generateAiReply(
     activeEnrollment,
   } = context;
 
-  // Try AI first (no-op until ANTHROPIC_API_KEY is set)
-  const aiReply = await callAnthropicApi(userMessage, context, history);
+  // Try AI first (no-op if no chain provider is configured)
+  const aiReply = await callChainChat(userMessage, context, history);
   if (aiReply) return aiReply;
 
   // Fall back to rule-based response grounded in actual data

@@ -1,7 +1,7 @@
 /**
  * Unit tests for the keyword-based check-in parser (lib/domain/check-in-parse.ts).
  * keywordParse is pure: no DB, no network, no mocks needed.
- * This is the fallback path used when ANTHROPIC_API_KEY is not set.
+ * This is the fallback path used when no chain provider is configured.
  */
 import { describe, it, expect } from "vitest";
 import { keywordParse } from "@/lib/domain/check-in-parse";

@@ -11,9 +11,10 @@
  *
  * Why this is hand-written instead of `createFormAssistHandler`: the package's
  * handler owns the request, and this app needs the raw instruction inside
- * `complete` so it can answer from the keyword parser when there is no
- * ANTHROPIC_API_KEY. Owning the request here is what keeps the check-in form
- * working on a deployment with no model at all — the property the previous
+ * `complete` so it can answer from the keyword parser when no chain provider
+ * (GROQ_API_KEY / OPENROUTER_API_KEY) is configured. Owning the request here
+ * is what keeps the check-in form working on a deployment with no model at
+ * all — the property the previous
  * /api/check-in/parse route had and which a straight port would have deleted.
  */
 
@@ -23,7 +24,7 @@ import { runFormAssist, type CompleteFn } from "@fleet/ai-forms";
 import { requireAuth } from "@/lib/api";
 import { AI_FORMS } from "@/lib/config/ai-forms";
 import { API_ERR_INVALID_INPUT, FIELD_MAX_MEDIUM } from "@/lib/constants";
-import { callClaude } from "@/lib/domain/anthropic";
+import { callLLM } from "@/lib/domain/llm";
 import { keywordFallback } from "@/lib/domain/check-in-parse";
 
 const requestSchema = z.object({
@@ -57,7 +58,7 @@ export async function POST(req: Request) {
   }
 
   const complete: CompleteFn = async ({ system, prompt, maxTokens }) => {
-    const text = await callClaude({
+    const text = await callLLM({
       messages: [{ role: "user", content: prompt }],
       system,
       maxTokens,

@@ -26,7 +26,7 @@ const field = (name: string) => {
 
 const writable = CHECK_IN_FORM.fields.filter((f) => !f.aiExcluded).map((f) => f.name);
 
-/** Stands in for the route's `complete` on a deployment with no ANTHROPIC_API_KEY. */
+/** Stands in for the route's `complete` on a deployment with no chain provider configured. */
 const keylessComplete = (instruction: string, intent: "fill" | "refine") => async () =>
   JSON.stringify({ values: keywordFallback(instruction, intent), message: "" });
 

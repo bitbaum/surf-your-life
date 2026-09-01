@@ -1,4 +1,4 @@
-import { callClaude } from "@/lib/domain/anthropic";
+import { callLLM } from "@/lib/domain/llm";
 
 type CheckInRow = {
   createdAt: Date;
@@ -63,5 +63,5 @@ Write a concise clinical narrative (3-5 sentences) summarising:
 
 Be factual, empathetic, and clinically precise. No bullet points — flowing prose only.`;
 
-  return callClaude({ messages: [{ role: "user", content: prompt }], maxTokens: 300 });
+  return callLLM({ messages: [{ role: "user", content: prompt }], maxTokens: 300 });
 }
