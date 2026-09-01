@@ -105,8 +105,7 @@ export const COMPANY_ADDRESS = "Surf Your Life · Zollikerstrasse 183, 8008 Zür
 // "today" matches what the user sees on their wall clock, not UTC.
 export const CLINIC_TZ = "Europe/Zurich";
 
-// AI model identifiers — update here when upgrading models
-export const AI_MODEL_FAST = "claude-haiku-4-5-20251001";
+// Embedding model — chat models come from ai-kit's chain, not from here.
 export const EMBEDDING_MODEL = "text-embedding-3-small";
 export const OPENAI_EMBEDDINGS_URL = "https://api.openai.com/v1/embeddings";
 

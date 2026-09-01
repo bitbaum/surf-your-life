@@ -2,8 +2,8 @@
  * Parse a free-text description of a day into structured check-in fields,
  * using keyword heuristics and no network call at all.
  *
- * This is what /api/ai/form-assist answers with when ANTHROPIC_API_KEY is not
- * set, so the check-in form still fills itself in on a deployment with no
+ * This is what /api/ai/form-assist answers with when no chain provider is
+ * configured, so the check-in form still fills itself in on a deployment with no
  * model. The AI path lives in lib/config/ai-forms.ts — the field list there is
  * the only description of these fields the model ever sees, which is why there
  * is no hand-written extraction prompt duplicating the list below.

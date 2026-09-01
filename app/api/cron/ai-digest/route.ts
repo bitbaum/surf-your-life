@@ -3,7 +3,7 @@
  * Runs every Sunday at 19:00 CET (after weekly-report at 17:00).
  * For each client with ≥3 check-ins in the past 7 days, generates an AI
  * narrative summary and stores it in the most recent check-in's aiInsight field.
- * Gracefully degrades when ANTHROPIC_API_KEY is absent.
+ * Gracefully degrades when no chain provider (GROQ_API_KEY / OPENROUTER_API_KEY) is configured.
  */
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";

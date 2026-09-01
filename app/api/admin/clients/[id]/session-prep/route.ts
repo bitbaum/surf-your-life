@@ -1,7 +1,7 @@
 /**
  * Pre-session AI prep: generates a clinical summary for a practitioner
  * before a session with a specific client.
- * Uses Anthropic API directly (no SDK). Gracefully degrades when key is absent.
+ * Uses the fleet's ai-kit provider chain (Groq -> OpenRouter). Gracefully degrades when no chain provider is configured.
  */
 import { formatEnumValue, roundOne } from "@/lib/utils";
 import { db } from "@/lib/db";
@@ -18,7 +18,7 @@ import {
 } from "@/lib/db/schema";
 import { eq, desc, and, gte, isNull } from "drizzle-orm";
 import type { ProgramPhase } from "@/lib/domain/program";
-import { callClaude } from "@/lib/domain/anthropic";
+import { callLLM } from "@/lib/domain/llm";
 import { localDateString, addDaysISO } from "@/lib/utils";
 import { computeDailyAdherenceTrend } from "@/lib/domain/techniques";
 import { computeCurrentProgramWeek } from "@/lib/domain/check-in";
@@ -140,7 +140,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
     activeEnrollment ?? null,
   );
 
-  const aiSummary = await callClaude({
+  const aiSummary = await callLLM({
     messages: [
       {
         role: "user",

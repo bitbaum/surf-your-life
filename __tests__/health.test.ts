@@ -17,11 +17,15 @@ beforeEach(() => {
 });
 
 describe("GET /api/health", () => {
-  it("returns 200 with { success: true } when the database answers", async () => {
+  it("returns 200 with { success: true } and the LLM chain's health when the database answers", async () => {
     execute.mockResolvedValueOnce([{ "?column?": 1 }]);
     const res = await GET();
     expect(res.status).toBe(200);
-    expect(await res.json()).toEqual({ success: true });
+    const body = await res.json();
+    expect(body.success).toBe(true);
+    // Informational only — asserting shape, not a specific status, since
+    // this must never gate the 200/503 the deploy pipeline checks.
+    expect(body.llm).toMatchObject({ status: expect.any(String) });
   });
 
   it("returns 503 with { success: false } when the database is unreachable", async () => {
