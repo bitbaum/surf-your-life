@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.11.1",
-    "@fleet/ai-forms": "github:bitbaum/ai-forms#v0.1.0",
+    "@fleet/ai-forms": "npm:ai-forms@^0.1.2",
     "@sentry/nextjs": "^10.66.0",
     "@bitbaum/ai-kit": "^0.6.2",
     "bcryptjs": "^3.0.3",
