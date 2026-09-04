@@ -10,7 +10,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 | Task | Command |
 |------|---------|
 | Dev server | `pnpm dev` |
-| **Verify (SSOT check bundle)** | `pnpm verify` → `typecheck` + `lint` + `test` |
+| **Verify (SSOT check bundle)** | `pnpm verify` → `format:check` + `lint` + `typecheck` + `test` |
 | Typecheck only | `pnpm typecheck` (`tsc --noEmit`) |
 | Lint only | `pnpm lint` (`eslint . --max-warnings 0`) |
 | Tests only | `pnpm test` (`vitest run`) |
@@ -40,8 +40,8 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 **Brand (teal — primary interactive color):**
 ```css
---color-brand:         #0d9488;  /* teal-600 — buttons, links, active states */
---color-brand-hover:   #0f766e;  /* teal-700 */
+--color-brand:         #0f766e;  /* teal-700 — buttons, links, active states (teal-600 failed AA contrast) */
+--color-brand-hover:   #115e59;  /* teal-800 */
 --color-brand-subtle:  #f0fdfa;  /* teal-50  — light surface tint */
 --color-brand-muted:   #ccfbf1;  /* teal-100 — stronger tint */
 --color-brand-dim:     #99f6e4;  /* teal-200 — borders on brand surfaces */
@@ -57,7 +57,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 --color-ink:        #0f172a;  /* slate-900 — headings, primary text */
 --color-ink-soft:   #334155;  /* slate-700 — labels, form values */
 --color-ink-muted:  #64748b;  /* slate-500 — secondary text, descriptions */
---color-ink-faint:  #94a3b8;  /* slate-400 — placeholders, metadata */
+--color-ink-faint:  #64748b;  /* slate-500 — placeholders, metadata (slate-400 was unreadable) */
 ```
 
 **Surface (background hierarchy):**

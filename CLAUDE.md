@@ -201,7 +201,7 @@ These will be built in order of user value. Do not add scaffolding for them ahea
 
 ## What IS Built (Updated from "not yet" list)
 
-- **AI chat + embeddings** — `app/[locale]/(portal)/ai-chat/` (client-facing), `lib/domain/ai-chat.ts` (Claude API + rule-based fallback), `lib/domain/embeddings.ts` (OpenAI text-embedding-3-small). Embeddings generated on check-in create/update, document upload, and via cron backfill at `app/api/cron/embed-backfill/`.
+- **AI chat + embeddings** — `app/[locale]/(portal)/ai-chat/` (client-facing), `lib/domain/ai-chat.ts` (ai-kit Groq → OpenRouter chain + rule-based fallback), `lib/domain/embeddings.ts` (OpenAI text-embedding-3-small). Embeddings generated on check-in create/update, document upload, and via cron backfill at `app/api/cron/embed-backfill/`.
 - **Document upload by clients** — `app/[locale]/(portal)/documents/` with `document-upload-form.tsx`; admin side at `app/[locale]/(admin)/admin/clients/[id]/`. API routes at `app/api/portal/documents/` and `app/api/admin/clients/[id]/documents/`.
 - **Practitioner assignment UI** — `practitioner-assignment-card.tsx` on client detail page.
 - **At-risk clients page** — `app/[locale]/(admin)/admin/clients/at-risk/` with SQL HAVING clause for efficient filtering.
@@ -210,7 +210,7 @@ These will be built in order of user value. Do not add scaffolding for them ahea
 
 ## CI/CD
 
-- **GitHub Actions** runs on every PR: `tsc --noEmit` + `eslint --max-warnings 0` + `pnpm test` + `pnpm build` (the build is hermetic — no build-time DB — and gated, so a broken build can't reach `main`)
+- **GitHub Actions** runs on every PR: `pnpm verify` (prettier `format:check` + `eslint --max-warnings 0` + `tsc --noEmit` + `pnpm test`) then `pnpm build` (the build is hermetic — no build-time DB — and gated, so a broken build can't reach `main`)
 - **Self-hosted deploy:** `main` is deployed to the Hetzner box (bitbaum, behind Caddy). The app is built with `output: "standalone"` and runs as a Node process behind the Caddy reverse proxy.
 - **Branch protection:** PRs must pass CI before merge.
 - **Never commit `.env.local` or `.env.selfhost.local`.** All secrets live in the box environment + `.env.example` for documentation.
