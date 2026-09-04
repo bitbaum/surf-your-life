@@ -12,7 +12,7 @@
  * every caller here already treats a null response as "fall back to the
  * non-AI path," not as an error to surface.
  */
-import { freeChain, usableChain, chainFrom, tryChain, createHealthTracker } from "ai-kit";
+import { freeChain, usableChain, chainFrom, tryChain, createHealthTracker } from "@bitbaum/ai-kit";
 
 const health = createHealthTracker({ downAfter: 3 });
 

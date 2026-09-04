@@ -3,6 +3,9 @@ allowBuilds:
   # pnpm requires the exact resolved tarball here, not the bare name — bump
   # this SHA together with the #vX.Y.Z tag in package.json.
   "@fleet/ai-forms@https://codeload.github.com/bitbaum/ai-forms/tar.gz/68087895ab9d46d73d03b91ebf5e648b969ebd76": true
+  # The app itself now uses @bitbaum/ai-kit from npm (prebuilt, no build step).
+  # This entry covers the NESTED git ai-kit that @fleet/ai-forms still pins as
+  # its own dependency — it goes away when ai-forms moves to npm too.
   "ai-kit@https://codeload.github.com/bitbaum/ai-kit/tar.gz/ace11f14d817079ae2bf4cdc010b6daa9faacbec": true
   "@parcel/watcher": true
   "@sentry/cli": true

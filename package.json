@@ -26,7 +26,7 @@
     "@auth/drizzle-adapter": "^1.11.1",
     "@fleet/ai-forms": "github:bitbaum/ai-forms#v0.1.0",
     "@sentry/nextjs": "^10.66.0",
-    "ai-kit": "github:bitbaum/ai-kit#v0.6.2",
+    "@bitbaum/ai-kit": "^0.6.2",
     "bcryptjs": "^3.0.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

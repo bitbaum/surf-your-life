@@ -11,15 +11,15 @@ importers:
       '@auth/drizzle-adapter':
         specifier: ^1.11.1
         version: 1.11.1
+      '@bitbaum/ai-kit':
+        specifier: ^0.6.2
+        version: 0.6.2(react@19.2.4)
       '@fleet/ai-forms':
         specifier: github:bitbaum/ai-forms#v0.1.0
         version: https://codeload.github.com/bitbaum/ai-forms/tar.gz/68087895ab9d46d73d03b91ebf5e648b969ebd76(react@19.2.4)
       '@sentry/nextjs':
         specifier: ^10.66.0
         version: 10.66.0(@opentelemetry/core@2.9.0(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.9.0(@opentelemetry/api@1.9.1))(next@16.2.3(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(webpack@5.108.4(esbuild@0.27.7))
-      ai-kit:
-        specifier: github:bitbaum/ai-kit#v0.6.2
-        version: https://codeload.github.com/bitbaum/ai-kit/tar.gz/ace11f14d817079ae2bf4cdc010b6daa9faacbec(react@19.2.4)
       bcryptjs:
         specifier: ^3.0.3
         version: 3.0.3
@@ -227,6 +227,15 @@ packages:
   '@bcoe/v8-coverage@1.0.2':
     resolution: {integrity: sha512-6zABk/ECA/QYSCQ1NGiVwwbQerUCZ+TQbp64Q3AgmfNvurHH0j8TtXa1qbShXA6qqkpAj4V5W8pP6mLe1mcMqA==}
     engines: {node: '>=18'}
+
+  '@bitbaum/ai-kit@0.6.2':
+    resolution: {integrity: sha512-974ollQp2pugPpsUgdJY/i6r+/v3CEwa3XqmfSdi+vM7w8eMVWufSKQ3mu9QLoEm7b0Gq/mKgLKql3lSawmCfw==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      react: '>=18'
+    peerDependenciesMeta:
+      react:
+        optional: true
 
   '@drizzle-team/brocli@0.10.2':
     resolution: {integrity: sha512-z33Il7l5dKjUgGULTqBsQBQwckHh5AbIuxhdsIxDDiZAzBOrZO6q9ogcWC65kU382AfynTfgNumVcNIjuIua6w==}
@@ -2099,16 +2108,6 @@ packages:
   ai-forms@0.1.2:
     resolution: {integrity: sha512-agadca4pN0iGlZTlNy1Vo2SmnQB+0dNkrQSDE3wCJYeaVxKDs5KaxiwGj5+GL6mVYcI1xZ8pwnT9kL9WcxnBHA==}
     engines: {node: '>=18'}
-    peerDependencies:
-      react: '>=18'
-    peerDependenciesMeta:
-      react:
-        optional: true
-
-  ai-kit@https://codeload.github.com/bitbaum/ai-kit/tar.gz/ace11f14d817079ae2bf4cdc010b6daa9faacbec:
-    resolution: {gitHosted: true, integrity: sha512-WQ963X+XuNATqTSCZqdgsItFgrO3rGc9cn9psLUkdR5BS4hgRpdN55nBXmOZ8j/+811XdcY54OgxTf2gfgMNiw==, tarball: https://codeload.github.com/bitbaum/ai-kit/tar.gz/ace11f14d817079ae2bf4cdc010b6daa9faacbec}
-    version: 0.6.2
-    engines: {node: '>=20'}
     peerDependencies:
       react: '>=18'
     peerDependenciesMeta:
@@ -4303,6 +4302,12 @@ snapshots:
 
   '@bcoe/v8-coverage@1.0.2': {}
 
+  '@bitbaum/ai-kit@0.6.2(react@19.2.4)':
+    dependencies:
+      ai-forms: 0.1.2(react@19.2.4)
+    optionalDependencies:
+      react: 19.2.4
+
   '@drizzle-team/brocli@0.10.2': {}
 
   '@emnapi/core@1.9.2':
@@ -5765,12 +5770,6 @@ snapshots:
       - supports-color
 
   ai-forms@0.1.2(react@19.2.4):
-    optionalDependencies:
-      react: 19.2.4
-
-  ai-kit@https://codeload.github.com/bitbaum/ai-kit/tar.gz/ace11f14d817079ae2bf4cdc010b6daa9faacbec(react@19.2.4):
-    dependencies:
-      ai-forms: 0.1.2(react@19.2.4)
     optionalDependencies:
       react: 19.2.4
 
