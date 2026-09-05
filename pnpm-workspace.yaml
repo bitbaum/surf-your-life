@@ -14,8 +14,15 @@ allowBuilds:
   esbuild: true
   sharp: true
   unrs-resolver: true
-
-# @bitbaum/mail-kit 0.1.0 was published by us today; exempt it from the
-# minimum-release-age supply-chain window (our own package, not third-party).
+# Packages published by us, exempted from the minimum-release-age supply-chain
+# window. The window exists to keep a freshly COMPROMISED third-party release
+# out; a package we published minutes earlier from our own OIDC trusted
+# publisher is not what it guards against.
+#
+# ai-kit is pinned to the exact version on purpose: a bare name exempts every
+# FUTURE version too, which quietly disables the gate for that package forever.
+# (@bitbaum/mail-kit is bare above — worth tightening the same way, separately,
+# rather than editing another PR's line here.)
 minimumReleaseAgeExclude:
   - "@bitbaum/mail-kit"
+  - "@bitbaum/ai-kit@0.7.0"
