@@ -1,12 +1,5 @@
-import { Resend } from "resend";
+import { sendMail, isMailConfigured, fromAddress, conventionalFrom } from "@bitbaum/mail-kit";
 import { BRAND_NAME } from "@/lib/constants";
-
-// Lazy client — instantiated only when RESEND_API_KEY is present at call time
-let _resend: Resend | null = null;
-function getResend(): Resend {
-  if (!_resend) _resend = new Resend(process.env.RESEND_API_KEY);
-  return _resend;
-}
 
 type SendOptions = {
   to: string | string[];
@@ -14,24 +7,29 @@ type SendOptions = {
   html: string;
 };
 
+/**
+ * Transport is @bitbaum/mail-kit — the fleet's one email layer. This module
+ * keeps the app's seam: sendEmail throws on failure (all bare callers attach
+ * .catch), sendEmailSafe/sendEmailFire report instead of throwing.
+ */
 export async function sendEmail({ to, subject, html }: SendOptions) {
-  if (!process.env.RESEND_API_KEY) {
-    // Production must never silently drop mail: with no key there is no
-    // delivery, so fail loudly and let the caller record it. Dev keeps the
-    // console preview so local flows work without a Resend account.
-    if (process.env.NODE_ENV === "production") {
-      throw new Error("RESEND_API_KEY is not set — refusing to silently drop email");
-    }
+  if (!isMailConfigured() && process.env.NODE_ENV !== "production") {
+    // Dev keeps the console preview so local flows work without a mail account.
     console.log(`[email] To: ${to}\nSubject: ${subject}`);
     return;
   }
-  const from = process.env.RESEND_FROM ?? `${BRAND_NAME} <onboarding@resend.dev>`;
-  await getResend().emails.send({
-    from,
-    to: Array.isArray(to) ? to : [to],
+  // Production must never silently drop mail: mail-kit returns an honest
+  // result, and throwing here is what lets every caller's .catch record it —
+  // including API-level failures the old SDK path swallowed.
+  const result = await sendMail({
+    to,
     subject,
     html,
+    from: fromAddress() ?? conventionalFrom(BRAND_NAME),
   });
+  if (!result.sent) {
+    throw new Error(result.error);
+  }
 }
 
 /**

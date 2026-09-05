@@ -4,30 +4,42 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 //
 // The bug this file exists for: every batch sender (daily reminders, weekly
 // reports, practitioner alert digests) sent mail with `.catch(() => {})` and
-// then incremented `sent` unconditionally. A total Resend outage was therefore
-// indistinguishable from a perfect run — the cron returned
+// then incremented `sent` unconditionally. A total provider outage was
+// therefore indistinguishable from a perfect run — the cron returned
 // {"success":true,"sent":40}, logged nothing, and the box scheduler discards
 // the response body anyway (`curl -o /dev/null`). sendEmailSafe is the one
 // place that decides what a failed send does: log it, report it, never throw.
+//
+// The transport is @bitbaum/mail-kit (a fetch to the Resend HTTP API), so the
+// seam mocked here is global fetch — the real mail-kit + adapter code runs.
 
-const { send } = vi.hoisted(() => ({ send: vi.fn() }));
-vi.mock("resend", () => ({
-  Resend: class {
-    emails = { send };
-  },
-}));
+const fetchMock = vi.fn();
+
+const providerAccepts = () =>
+  new Response(JSON.stringify({ id: "sent" }), {
+    status: 200,
+    headers: { "Content-Type": "application/json" },
+  });
+
+const providerFails = (status = 500) =>
+  new Response(JSON.stringify({ message: "rate limited" }), {
+    status,
+    headers: { "Content-Type": "application/json" },
+  });
 
 import { sendEmail, sendEmailSafe, sendEmailFire } from "@/lib/email";
 
 const opts = { to: "client@example.com", subject: "s", html: "<p>h</p>" };
 
 beforeEach(() => {
-  send.mockReset();
-  send.mockResolvedValue({ id: "sent" });
+  fetchMock.mockReset();
+  fetchMock.mockImplementation(async () => providerAccepts());
+  vi.stubGlobal("fetch", fetchMock);
   vi.stubEnv("RESEND_API_KEY", "re_test_key");
 });
 
 afterEach(() => {
+  vi.unstubAllGlobals();
   vi.unstubAllEnvs();
   vi.restoreAllMocks();
 });
@@ -35,11 +47,11 @@ afterEach(() => {
 describe("sendEmailSafe reports the outcome", () => {
   it("returns true when the provider accepts the message", async () => {
     await expect(sendEmailSafe(opts, "tag")).resolves.toBe(true);
-    expect(send).toHaveBeenCalledOnce();
+    expect(fetchMock).toHaveBeenCalledOnce();
   });
 
   it("returns false instead of throwing when the provider fails", async () => {
-    send.mockRejectedValue(new Error("rate limited"));
+    fetchMock.mockImplementation(async () => providerFails());
     const spy = vi.spyOn(console, "error").mockImplementation(() => {});
 
     await expect(sendEmailSafe(opts, "cron-reminders")).resolves.toBe(false);
@@ -53,7 +65,9 @@ describe("sendEmailSafe reports the outcome", () => {
   });
 
   it("does not abort a batch — one bad recipient leaves the rest sendable", async () => {
-    send.mockRejectedValueOnce(new Error("bad address")).mockResolvedValue({ id: "ok" });
+    fetchMock
+      .mockImplementationOnce(async () => providerFails(422))
+      .mockImplementation(async () => providerAccepts());
     vi.spyOn(console, "error").mockImplementation(() => {});
 
     const results = await Promise.all([
@@ -71,7 +85,8 @@ describe("a missing API key fails closed in production", () => {
     vi.stubEnv("NODE_ENV", "production");
 
     await expect(sendEmail(opts)).rejects.toThrow(/RESEND_API_KEY/);
-    expect(send).not.toHaveBeenCalled();
+    // mail-kit refuses before any HTTP call goes out.
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 
   it("is counted as a failed delivery, not a success", async () => {
@@ -89,12 +104,13 @@ describe("a missing API key fails closed in production", () => {
 
     await expect(sendEmail(opts)).resolves.toBeUndefined();
     expect(spy).toHaveBeenCalledOnce();
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 });
 
 describe("sendEmailFire", () => {
   it("logs failures without propagating them to the caller", async () => {
-    send.mockRejectedValue(new Error("boom"));
+    fetchMock.mockImplementation(async () => providerFails());
     const spy = vi.spyOn(console, "error").mockImplementation(() => {});
 
     expect(() => sendEmailFire(opts, "forgot-password")).not.toThrow();

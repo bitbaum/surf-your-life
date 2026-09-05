@@ -14,3 +14,8 @@ allowBuilds:
   esbuild: true
   sharp: true
   unrs-resolver: true
+
+# @bitbaum/mail-kit 0.1.0 was published by us today; exempt it from the
+# minimum-release-age supply-chain window (our own package, not third-party).
+minimumReleaseAgeExclude:
+  - "@bitbaum/mail-kit"
