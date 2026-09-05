@@ -12,11 +12,11 @@ importers:
         specifier: ^1.11.1
         version: 1.11.1
       '@bitbaum/ai-kit':
-        specifier: ^0.6.2
-        version: 0.6.2(react@19.2.4)
+        specifier: ^0.7.0
+        version: 0.7.0(react@19.2.4)
       '@bitbaum/mail-kit':
         specifier: ^0.1.0
-        version: 0.1.0
+        version: 0.1.1
       '@fleet/ai-forms':
         specifier: github:bitbaum/ai-forms#v0.1.0
         version: https://codeload.github.com/bitbaum/ai-forms/tar.gz/68087895ab9d46d73d03b91ebf5e648b969ebd76(react@19.2.4)
@@ -228,8 +228,8 @@ packages:
     resolution: {integrity: sha512-6zABk/ECA/QYSCQ1NGiVwwbQerUCZ+TQbp64Q3AgmfNvurHH0j8TtXa1qbShXA6qqkpAj4V5W8pP6mLe1mcMqA==}
     engines: {node: '>=18'}
 
-  '@bitbaum/ai-kit@0.6.2':
-    resolution: {integrity: sha512-974ollQp2pugPpsUgdJY/i6r+/v3CEwa3XqmfSdi+vM7w8eMVWufSKQ3mu9QLoEm7b0Gq/mKgLKql3lSawmCfw==}
+  '@bitbaum/ai-kit@0.7.0':
+    resolution: {integrity: sha512-QI+DTz8fXSSYVf0MBmiDnsyympirTcAXAEuwS5Y8EGAzzq9Qo5BlocMUk39Iio0xQcgkiCxv1KP6elBqYnCMKA==}
     engines: {node: '>=20'}
     peerDependencies:
       react: '>=18'
@@ -237,8 +237,8 @@ packages:
       react:
         optional: true
 
-  '@bitbaum/mail-kit@0.1.0':
-    resolution: {integrity: sha512-RbFBDANTUEb2/O2duSXIp+lb8y9ycrdbSTPnvoQ8iZOZsfxQZLseKzgCZumN31q7jRbVNHjQRao0envGWsFJ5Q==}
+  '@bitbaum/mail-kit@0.1.1':
+    resolution: {integrity: sha512-3JfaeuwkI+8TVGeSDrr8/esaWkv2d7UAcNg1Xu5HHu6k3cBzuSaLGhuzHp0KlAJgGa2QEQIqtE7W1+PosKFOjw==}
     engines: {node: '>=20'}
 
   '@drizzle-team/brocli@0.10.2':
@@ -4277,13 +4277,13 @@ snapshots:
 
   '@bcoe/v8-coverage@1.0.2': {}
 
-  '@bitbaum/ai-kit@0.6.2(react@19.2.4)':
+  '@bitbaum/ai-kit@0.7.0(react@19.2.4)':
     dependencies:
       ai-forms: 0.1.2(react@19.2.4)
     optionalDependencies:
       react: 19.2.4
 
-  '@bitbaum/mail-kit@0.1.0': {}
+  '@bitbaum/mail-kit@0.1.1': {}
 
   '@drizzle-team/brocli@0.10.2': {}
 
