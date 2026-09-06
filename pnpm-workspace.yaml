@@ -25,4 +25,4 @@ allowBuilds:
 # rather than editing another PR's line here.)
 minimumReleaseAgeExclude:
   - "@bitbaum/mail-kit"
-  - "@bitbaum/ai-kit@0.7.0"
+  - "@bitbaum/ai-kit@0.8.0"
