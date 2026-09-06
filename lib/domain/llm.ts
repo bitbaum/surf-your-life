@@ -26,7 +26,13 @@
  * every caller here already treats a null response as "fall back to the
  * non-AI path," not as an error to surface.
  */
-import { complete, freeChain, usableChain, createHealthTracker } from "@bitbaum/ai-kit";
+import {
+  complete,
+  freeChain,
+  usableChain,
+  createHealthTracker,
+  createAiHealthHandler,
+} from "@bitbaum/ai-kit";
 
 const health = createHealthTracker({ downAfter: 3 });
 
@@ -74,4 +80,34 @@ export async function callLLM({
     // "fall back," matching the contract this replaces.
     return null;
   }
+}
+
+/**
+ * The AI liveness handler, behind `/api/health/ai`.
+ *
+ * WHY THIS EXISTS. `getLLMHealth()` reports what happened the last time this
+ * app happened to call a model. Straight after a deploy that is "unknown", and
+ * "unknown" is what it stays until real traffic arrives — so the one question a
+ * deploy needs answered is exactly the one it cannot answer. Observed on the
+ * 0.7.0 deploy: green CI, both keys present, `/api/health` 200, `llm.status`
+ * "unknown". The only paths that would have produced a real answer were the
+ * admin-authenticated planner and two crons that email real users.
+ *
+ * BUILT LAZILY, ON PURPOSE. Next evaluates module-level code during the BUILD,
+ * where the runtime's provider keys are absent. Constructing the chain up there
+ * would bake in an empty one, and the route would report a dead engine forever
+ * on a deployment whose keys are fine.
+ *
+ * It shares the tracker above, so one probe also answers the next ordinary
+ * `/api/health` poll instead of its knowledge dying with the request.
+ */
+let aiHealth: ((request: Request) => Promise<Response>) | null = null;
+
+export function aiHealthHandler(request: Request): Promise<Response> {
+  aiHealth ??= createAiHealthHandler({
+    chain: usableChain(freeChain("SURF"), process.env),
+    health,
+    secret: process.env.AI_PROBE_SECRET,
+  });
+  return aiHealth(request);
 }
