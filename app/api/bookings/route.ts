@@ -15,6 +15,26 @@ import { created, parseBody, requireAuth } from "@/lib/api";
 import { sendEmail, sendEmailFire } from "@/lib/email";
 import { bookingNotificationEmail, bookingRequestEmail } from "@/lib/email/templates";
 
+/**
+ * Postgres unique-violation (23505) → the index that rejected the row.
+ *
+ * Returns null for anything else, so an unrelated failure keeps propagating
+ * instead of being swallowed as a conflict — a catch that answers 409 to every
+ * error hides outages behind a plausible-looking message.
+ */
+function uniqueViolation(err: unknown): string | null {
+  const e = err as { code?: unknown; constraint?: unknown; cause?: unknown };
+  if (e?.code === "23505") {
+    return typeof e.constraint === "string" ? e.constraint : "";
+  }
+  // Drizzle wraps the driver error; the pg fields live on `cause`.
+  const cause = e?.cause as { code?: unknown; constraint?: unknown } | undefined;
+  if (cause?.code === "23505") {
+    return typeof cause.constraint === "string" ? cause.constraint : "";
+  }
+  return null;
+}
+
 export async function GET() {
   const authResult = await requireAuth();
   if (!authResult.ok) return authResult.response;
@@ -75,16 +95,39 @@ export async function POST(req: Request) {
     }
   }
 
-  const [booking] = await db
-    .insert(bookings)
-    .values({
-      userId: session.user.id,
-      serviceId: result.data.serviceId,
-      preferredDate: result.data.preferredDate,
-      preferredTime: result.data.preferredTime,
-      notes: result.data.notes,
-    })
-    .returning({ id: bookings.id });
+  // The two checks above are reads, and the insert below is a separate
+  // statement — so two concurrent requests can both pass and both write. The
+  // partial unique indexes on `bookings` are what actually settle that race;
+  // this maps their violation back to the same 409 the check would have
+  // returned, so a loser sees "that slot is taken", not a 500.
+  let booking: { id: string } | undefined;
+  try {
+    [booking] = await db
+      .insert(bookings)
+      .values({
+        userId: session.user.id,
+        serviceId: result.data.serviceId,
+        preferredDate: result.data.preferredDate,
+        preferredTime: result.data.preferredTime,
+        notes: result.data.notes,
+      })
+      .returning({ id: bookings.id });
+  } catch (err) {
+    const conflict = uniqueViolation(err);
+    if (conflict === "bookings_one_active_per_slot_idx") {
+      return NextResponse.json({ success: false, error: API_ERR_SLOT_TAKEN }, { status: 409 });
+    }
+    if (conflict === "bookings_one_active_per_user_service_idx") {
+      return NextResponse.json(
+        { success: false, error: API_ERR_BOOKING_DUPLICATE },
+        { status: 409 },
+      );
+    }
+    throw err;
+  }
+  if (!booking) {
+    return NextResponse.json({ success: false, error: API_ERR_SLOT_TAKEN }, { status: 409 });
+  }
 
   // Notify all admins and practitioners — fire-and-forget, never block the response
   const adminUsers = await db

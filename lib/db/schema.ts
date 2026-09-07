@@ -9,9 +9,10 @@ import {
   vector,
   pgEnum,
   index,
+  uniqueIndex,
   primaryKey,
 } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 
 // ─── Enums ────────────────────────────────────────────────────────────────────
 
@@ -303,6 +304,25 @@ export const bookings = pgTable(
   (table) => [
     index("bookings_user_idx").on(table.userId),
     index("bookings_status_idx").on(table.status),
+    // Both 409s in POST /api/bookings were read-then-insert: the route looked
+    // for a conflicting row and then inserted in a separate statement, so two
+    // concurrent requests both saw nothing and both wrote. These indexes make
+    // the database the arbiter, so correctness no longer depends on the check
+    // winning a race it cannot win.
+    //
+    // The predicates mirror ACTIVE_BOOKING_STATUSES exactly — a cancelled
+    // booking must not block a rebooking, which is what the route already
+    // intended.
+    uniqueIndex("bookings_one_active_per_user_service_idx")
+      .on(table.userId, table.serviceId)
+      .where(sql`${table.status} in ('pending', 'confirmed')`),
+    // preferred_date / preferred_time are nullable, and Postgres treats NULLs
+    // as distinct — which is the behaviour we want: a booking with no stated
+    // preference is not competing for a slot, exactly as the route's
+    // `if (date && time)` guard already assumed.
+    uniqueIndex("bookings_one_active_per_slot_idx")
+      .on(table.serviceId, table.preferredDate, table.preferredTime)
+      .where(sql`${table.status} in ('pending', 'confirmed')`),
   ],
 );
 
