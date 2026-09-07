@@ -51,7 +51,13 @@
       "tag": "0006_leads_status",
       "breakpoints": true
     },
-    { "idx": 7, "version": "7", "when": 1776013742005, "tag": "0007_indexes", "breakpoints": true },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1776013742005,
+      "tag": "0007_indexes",
+      "breakpoints": true
+    },
     {
       "idx": 8,
       "version": "7",
@@ -162,6 +168,13 @@
       "version": "7",
       "when": 1776013742021,
       "tag": "0022_technique_adherence_alert_type",
+      "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1776013742022,
+      "tag": "0023_booking_unique_indexes",
       "breakpoints": true
     }
   ]
