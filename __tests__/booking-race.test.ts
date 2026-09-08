@@ -87,12 +87,41 @@ describe("the constraints exist and match the route's own status filter", () => 
     for (const status of ACTIVE_BOOKING_STATUSES) {
       expect(migration).toContain(`'${status}'`);
     }
-    const predicates = migration.match(/WHERE "status" IN \(([^)]*)\)/g) ?? [];
-    expect(predicates).toHaveLength(2);
+    // Every place the migration names the active statuses — the two index
+    // predicates, and the two reconciliation filters that clear the rows
+    // predating them — has to list exactly ACTIVE_BOOKING_STATUSES. If one
+    // drifts, either the index stops covering a status the route still treats
+    // as active, or the cleanup misses rows and the index cannot be built.
+    const predicates = migration.match(/"status" IN \(([^)]*)\)/g) ?? [];
+    expect(predicates.length).toBeGreaterThanOrEqual(2);
     for (const p of predicates) {
       const listed = (p.match(/'[a-z_]+'/g) ?? []).map((s) => s.replaceAll("'", ""));
       expect(listed.sort()).toEqual([...ACTIVE_BOOKING_STATUSES].sort());
     }
+  });
+
+  it("cancels pre-existing duplicates BEFORE creating the indexes", () => {
+    // A unique index cannot be built over rows that already violate it. When
+    // this migration only created the indexes, production held two active
+    // bookings for one (user, service) and the schema step aborted every
+    // deploy for two days — and no follow-up migration could ever fix it,
+    // because the runner stops at the first failure. Order is the fix.
+    const firstIndex = migration.indexOf("CREATE UNIQUE INDEX");
+    const firstCleanup = migration.indexOf('UPDATE "bookings"');
+    expect(firstCleanup).toBeGreaterThan(-1);
+    expect(firstIndex).toBeGreaterThan(-1);
+    expect(firstCleanup).toBeLessThan(firstIndex);
+  });
+
+  it("keeps the earliest active row, matching the route's own rule", () => {
+    // The route 409s the NEW request when an active booking already exists, so
+    // the earliest row is the one that would have survived had the constraint
+    // always held. Ordering by created_at DESC here would cancel the wrong one.
+    expect(migration).toMatch(/ORDER BY "created_at", "id"/);
+    expect(migration).not.toMatch(/ORDER BY "created_at" DESC/);
+    // Cancelled, never deleted — the record stays auditable and reversible.
+    expect(migration).toContain(`SET "status" = 'cancelled'`);
+    expect(migration).not.toMatch(/DELETE\s+FROM\s+"?bookings"?/i);
   });
 
   it("is registered in the migration journal, or it never runs", () => {
