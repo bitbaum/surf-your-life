@@ -1,3 +1,20 @@
+# Security floors for TRANSITIVE dependencies — nothing here is a direct
+# dependency, so bumping our own package.json cannot reach any of them.
+#
+# Each floor is the advisory's patched version, not a range that merely
+# tolerates it: a caret that ALLOWS the fix leaves the lockfile free to sit one
+# patch short, which is exactly how two critical RCEs shipped elsewhere in the
+# fleet unnoticed. Raise the floor, then re-resolve.
+overrides:
+  # critical: email normalizer validates before normalizing; plus an uncaught
+  # getToken() exception. Reached via @auth/drizzle-adapter.
+  "@auth/core": ">=0.41.3"
+  # three separate DoS advisories (exponential expansion, unbounded length,
+  # unbounded intermediates); 5.0.9 is the highest floor of the three.
+  brace-expansion: ">=5.0.9"
+  # unbounded memory growth and a prototype write. Reached via @sentry/nextjs.
+  browserslist: ">=4.28.7"
+
 allowBuilds:
   # Git-hosted, so pnpm runs its `prepare` script to build dist/ on install.
   # pnpm requires the exact resolved tarball here, not the bare name — bump
