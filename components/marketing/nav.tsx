@@ -34,7 +34,7 @@ export function MarketingNav({ isLoggedIn = false }: { isLoggedIn?: boolean }) {
             <span className="font-semibold text-ink text-sm">{BRAND_NAME}</span>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-8">
+          <nav className="hidden lg:flex items-center gap-8">
             {NAV_LINKS.map(({ href, labelKey, anchor }) =>
               anchor ? (
                 <a
@@ -56,7 +56,7 @@ export function MarketingNav({ isLoggedIn = false }: { isLoggedIn?: boolean }) {
             )}
           </nav>
 
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden lg:flex items-center gap-3">
             <LocaleSwitcher direction="down" />
             {isLoggedIn ? (
               <Link href="/dashboard">
@@ -81,7 +81,7 @@ export function MarketingNav({ isLoggedIn = false }: { isLoggedIn?: boolean }) {
           </div>
 
           <button
-            className="md:hidden p-2 rounded-lg hover:bg-surface-muted transition-colors"
+            className="lg:hidden p-2 rounded-lg hover:bg-surface-muted transition-colors"
             onClick={() => setOpen(!open)}
             aria-label={open ? t("close") : t("open")}
           >
@@ -94,7 +94,7 @@ export function MarketingNav({ isLoggedIn = false }: { isLoggedIn?: boolean }) {
         </div>
 
         {open && (
-          <div className="md:hidden border-t border-border-subtle bg-surface px-6 py-5 flex flex-col gap-4">
+          <div className="lg:hidden border-t border-border-subtle bg-surface px-6 py-5 flex flex-col gap-4">
             {NAV_LINKS.map(({ href, labelKey, anchor }) =>
               anchor ? (
                 <a
