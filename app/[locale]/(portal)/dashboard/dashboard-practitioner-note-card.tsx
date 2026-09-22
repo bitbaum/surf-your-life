@@ -5,13 +5,13 @@ import { eq, desc, isNotNull, and, gte } from "drizzle-orm";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";
 import { MessageSquare } from "lucide-react";
-import { formatDate } from "@/lib/utils";
+import { formatDate, msAgo } from "@/lib/utils";
 import { THIRTY_DAYS_MS } from "@/lib/constants";
 
 export async function DashboardPractitionerNoteCard({ userId }: { userId: string }) {
   const t = await getTranslations("portal.dashboard");
 
-  const thirtyDaysAgo = new Date(Date.now() - THIRTY_DAYS_MS); // eslint-disable-line react-hooks/purity -- server component
+  const thirtyDaysAgo = msAgo(THIRTY_DAYS_MS);
 
   const latest = await db.query.checkIns.findFirst({
     where: and(

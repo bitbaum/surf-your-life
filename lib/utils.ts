@@ -127,6 +127,18 @@ export function parsePagination(param: string | undefined): { page: number; offs
   return { page, offset: computeOffset(page, PAGINATION_DEFAULT) };
 }
 
+// Cutoff `ms` milliseconds before now — the "last 7 days" / "last 30 days"
+// bound pages hand to queries and filters.
+//
+// The clock read lives here rather than inline because `Date.now()` in a
+// component body trips react-hooks/purity: a Server Component renders once per
+// request, so the read is deliberate, but the rule cannot tell that apart from
+// a client re-render. One helper outside render keeps the arithmetic in a
+// single place and the pages free of scattered eslint-disable comments.
+export function msAgo(ms: number): Date {
+  return new Date(Date.now() - ms);
+}
+
 export function daysSince(date: Date): number;
 export function daysSince(date: Date | null): number | null;
 export function daysSince(date: Date | null): number | null {

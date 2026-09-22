@@ -6,7 +6,7 @@ import { atRiskHaving } from "@/lib/db/at-risk";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHeader } from "@/components/ui/page-header";
 import { Link } from "@/i18n/navigation";
-import { formatDate, daysSince, displayName } from "@/lib/utils";
+import { formatDate, daysSince, displayName, msAgo } from "@/lib/utils";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import {
   SEVEN_DAYS_MS,
@@ -27,7 +27,7 @@ export default async function AtRiskClientsPage({
   setRequestLocale(locale);
   const t = await getTranslations("admin.clients");
 
-  const sevenDaysAgo = new Date(Date.now() - SEVEN_DAYS_MS);
+  const sevenDaysAgo = msAgo(SEVEN_DAYS_MS);
 
   const atRisk = await db
     .select({

@@ -3,7 +3,7 @@ import { db } from "@/lib/db";
 import { checkIns, users, programEnrollments } from "@/lib/db/schema";
 import { getUserProfile } from "@/lib/db/queries";
 import { eq, desc, asc, and, gte, count, isNotNull } from "drizzle-orm";
-import { localDateString } from "@/lib/utils";
+import { localDateString, msAgo } from "@/lib/utils";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { StatCard } from "@/components/ui/stat-card";
 import { ClipboardList, TrendingUp, Flame } from "lucide-react";
@@ -43,8 +43,7 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
 
   const t = await getTranslations("portal.dashboard");
 
-  const nowMs = Date.now(); // eslint-disable-line react-hooks/purity -- server component
-  const thirtyDaysAgo = new Date(nowMs - THIRTY_DAYS_MS);
+  const thirtyDaysAgo = msAgo(THIRTY_DAYS_MS);
 
   const [
     profile,
@@ -144,7 +143,7 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
       : t("milestoneStreak", { n: milestoneHit.n })
     : null;
 
-  const sevenDaysAgo = new Date(Date.now() - SEVEN_DAYS_MS); // eslint-disable-line react-hooks/purity -- server component
+  const sevenDaysAgo = msAgo(SEVEN_DAYS_MS);
   const weekCheckInCount = trendCheckIns.filter((ci) => ci.createdAt >= sevenDaysAgo).length;
   const insightHit = computeInsight(
     recentCheckIns.slice(0, DASHBOARD_INSIGHT_ENERGY_WINDOW).map((ci) => ci.energyLevel),

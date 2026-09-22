@@ -6,7 +6,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { AlertList } from "./alert-list";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ADMIN_ALERTS_MAX, SEVEN_DAYS_MS } from "@/lib/constants";
-import { buildLastNDayStrings } from "@/lib/utils";
+import { buildLastNDayStrings, msAgo } from "@/lib/utils";
 import { fetchCadenceMap } from "@/lib/db/check-in-cadence";
 
 export default async function AlertsPage({ params }: { params: Promise<{ locale: string }> }) {
@@ -50,7 +50,7 @@ export default async function AlertsPage({ params }: { params: Promise<{ locale:
   // Per-client 7-day cadence so practitioners can triage "is this client
   // otherwise active?" without clicking through.
   const clientIds = [...new Set(rows.map((r) => r.client.id))];
-  const sevenDaysAgo = new Date(Date.now() - SEVEN_DAYS_MS); // eslint-disable-line react-hooks/purity -- server component
+  const sevenDaysAgo = msAgo(SEVEN_DAYS_MS);
   const sparkData = await fetchCadenceMap(clientIds, sevenDaysAgo);
 
   const sparkDays = buildLastNDayStrings(7);
