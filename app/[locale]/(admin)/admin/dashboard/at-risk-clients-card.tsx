@@ -3,11 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";
 import { AlertTriangle } from "lucide-react";
 import {
-  DAY_MS,
   MOOD_EMOJI,
   CLIENT_ENERGY_LOW_THRESHOLD,
   CLIENT_ENERGY_MODERATE_THRESHOLD,
 } from "@/lib/constants";
+import { daysSince } from "@/lib/utils";
 import { db } from "@/lib/db";
 import { checkIns } from "@/lib/db/schema";
 import { inArray, desc } from "drizzle-orm";
@@ -21,10 +21,9 @@ type AtRiskClient = {
 
 interface Props {
   clients: AtRiskClient[];
-  nowMs: number;
 }
 
-export async function AtRiskClientsCard({ clients, nowMs }: Props) {
+export async function AtRiskClientsCard({ clients }: Props) {
   const t = await getTranslations("admin.dashboard");
 
   if (clients.length === 0) return null;
@@ -60,9 +59,7 @@ export async function AtRiskClientsCard({ clients, nowMs }: Props) {
       <CardContent>
         <div className="flex flex-col divide-y divide-slate-100">
           {clients.map((client) => {
-            const daysAgo = client.lastCheckIn
-              ? Math.floor((nowMs - client.lastCheckIn.getTime()) / DAY_MS)
-              : null;
+            const daysAgo = daysSince(client.lastCheckIn);
             const detail = detailMap[client.id];
             const energy = detail?.energyLevel ?? null;
             const energyColor =

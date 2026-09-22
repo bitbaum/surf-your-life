@@ -10,7 +10,7 @@ import { unreadFromClientExists } from "@/lib/db/thread-unread";
 import { CLIENT_ROLE } from "@/lib/domain/auth";
 import { PageHeader } from "@/components/ui/page-header";
 import { Link } from "@/i18n/navigation";
-import { computeTotalPages, parsePagination } from "@/lib/utils";
+import { computeTotalPages, parsePagination, msAgo } from "@/lib/utils";
 import { PAGINATION_DEFAULT, SEVEN_DAYS_MS, MAIN_CONCERNS } from "@/lib/constants";
 import { ClientSearch } from "./client-search";
 import { ClientsCard, type SortOption } from "./clients-card";
@@ -73,7 +73,7 @@ export default async function ClientsPage({
     : undefined;
 
   const roleFilter = eq(users.role, CLIENT_ROLE);
-  const staleCutoff = new Date(Date.now() - SEVEN_DAYS_MS);
+  const staleCutoff = msAgo(SEVEN_DAYS_MS);
   const fourteenDaysAgo = new Date(staleCutoff.getTime() - SEVEN_DAYS_MS);
 
   // "Needs attention" = stale 7+ days (or never checked in) OR has any unresolved alert.

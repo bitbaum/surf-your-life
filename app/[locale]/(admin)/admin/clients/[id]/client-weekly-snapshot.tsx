@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import type { checkIns } from "@/lib/db/schema";
-import { localDateString, buildLastNDayStrings } from "@/lib/utils";
+import { localDateString, buildLastNDayStrings, msAgo } from "@/lib/utils";
 import { SEVEN_DAYS_MS, DASHBOARD_INSIGHT_ENERGY_WINDOW } from "@/lib/constants";
 import { computeWeekDelta, computeInsight, isComparativeInsight } from "@/lib/domain/check-in";
 import { InsightBanner } from "@/components/ui/insight-banner";
@@ -24,7 +24,7 @@ export async function ClientWeeklySnapshot({ clientCheckIns }: { clientCheckIns:
   );
   const sparkCount = sparkDays.filter((d) => sparkCheckedIn.has(d)).length;
 
-  const sevenDaysAgoMs = Date.now() - SEVEN_DAYS_MS; // eslint-disable-line react-hooks/purity -- server component
+  const sevenDaysAgoMs = msAgo(SEVEN_DAYS_MS).getTime();
   const weekCheckInCount = clientCheckIns.filter(
     (ci) => ci.createdAt.getTime() >= sevenDaysAgoMs,
   ).length;

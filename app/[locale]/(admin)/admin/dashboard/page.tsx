@@ -22,6 +22,7 @@ import {
   CLINIC_TZ,
 } from "@/lib/constants";
 import { CLIENT_ROLE } from "@/lib/domain/auth";
+import { msAgo } from "@/lib/utils";
 import { fetchCadenceMap } from "@/lib/db/check-in-cadence";
 import { atRiskHaving } from "@/lib/db/at-risk";
 import { getUnresolvedAlertCount } from "@/components/admin/unread-count";
@@ -40,9 +41,8 @@ export default async function AdminDashboardPage({
   setRequestLocale(locale);
   const t = await getTranslations("admin.dashboard");
 
-  const nowMs = Date.now();
-  const thirtyDaysAgo = new Date(nowMs - THIRTY_DAYS_MS);
-  const sevenDaysAgo = new Date(nowMs - SEVEN_DAYS_MS);
+  const thirtyDaysAgo = msAgo(THIRTY_DAYS_MS);
+  const sevenDaysAgo = msAgo(SEVEN_DAYS_MS);
 
   const todayInClinicTz = sql`(${checkIns.createdAt} AT TIME ZONE ${CLINIC_TZ})::date = (NOW() AT TIME ZONE ${CLINIC_TZ})::date`;
 
@@ -240,7 +240,7 @@ export default async function AdminDashboardPage({
 
       <ClinicPulseCard data={clinicPulseData} />
       <LatestInsightsCard insights={latestInsights} cadence={cadenceMap} />
-      <AtRiskClientsCard clients={atRiskClients} nowMs={nowMs} />
+      <AtRiskClientsCard clients={atRiskClients} />
       <RecentClientsCard clients={recentClients} cadence={cadenceMap} />
     </div>
   );

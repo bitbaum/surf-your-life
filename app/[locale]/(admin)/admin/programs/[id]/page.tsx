@@ -23,7 +23,7 @@ export default async function ProgramDetailPage({
   setRequestLocale(locale);
   const t = await getTranslations("admin.programs");
 
-  const nowMs = Date.now(); // eslint-disable-line react-hooks/purity -- server component
+  const now = new Date();
 
   const program = await db.query.programs.findFirst({
     where: eq(programs.id, id),
@@ -102,7 +102,7 @@ export default async function ProgramDetailPage({
                       {(() => {
                         if (!e.startDate || !program.durationWeeks || e.status !== "active")
                           return null;
-                        const week = computeCurrentProgramWeek(e.startDate, new Date(nowMs));
+                        const week = computeCurrentProgramWeek(e.startDate, now);
                         if (week < 1 || week > program.durationWeeks) return null;
                         const phases = program.phaseConfig as ProgramPhase[] | null;
                         const phase =

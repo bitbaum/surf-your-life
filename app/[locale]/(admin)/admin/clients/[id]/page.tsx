@@ -14,7 +14,7 @@ import {
   clientAlerts,
 } from "@/lib/db/schema";
 import { eq, desc, isNull, and, count, inArray, gte, asc } from "drizzle-orm";
-import { formatDate, localDateString, addDaysISO } from "@/lib/utils";
+import { formatDate, localDateString, addDaysISO, msAgo } from "@/lib/utils";
 import { Link } from "@/i18n/navigation";
 import {
   PAGINATION_DEFAULT,
@@ -58,7 +58,7 @@ export default async function ClientDetailPage({
 
   const sevenDaysAgo = addDaysISO(localDateString(new Date()), -7);
   const thirtyDaysAgo = addDaysISO(localDateString(new Date()), -30);
-  const ninetyDaysAgo = new Date(Date.now() - NINETY_DAYS_MS); // eslint-disable-line react-hooks/purity -- server component
+  const ninetyDaysAgo = msAgo(NINETY_DAYS_MS);
 
   const [
     client,
