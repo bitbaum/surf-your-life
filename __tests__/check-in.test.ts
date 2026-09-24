@@ -125,7 +125,7 @@ describe("computeStreak", () => {
 
   // ─── DST safety ──────────────────────────────────────────────────────────
   // European DST 2026: spring-forward 2026-03-29, fall-back 2026-10-25.
-  // Tests run with TZ=Europe/Zurich (set in vitest.config.ts) so the local
+  // Tests run with TZ=Europe/Zurich (set in vitest.config.mts) so the local
   // calendar in these dates corresponds to actual DST transitions.
 
   it("DST-safe: counts a 3-day streak that spans spring-forward", () => {

@@ -158,7 +158,7 @@ describe("buildLastNDayStrings", () => {
 });
 
 // ─── dayKey ──────────────────────────────────────────────────────────────────
-// Tests run with TZ=Europe/Zurich (vitest.config.ts) so local-day semantics
+// Tests run with TZ=Europe/Zurich (vitest.config.mts) so local-day semantics
 // reflect actual user experience.
 
 describe("dayKey", () => {
