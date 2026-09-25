@@ -30,6 +30,7 @@ import {
   computeLogsGridByAssignment,
   computeDailyAdherenceTrend,
 } from "@/lib/domain/techniques";
+import { getLatestSessionPrep } from "@/lib/domain/session-prep";
 import { ResetLinkButton } from "./reset-link-button";
 import { NewThreadButton } from "./new-thread-button";
 import { EnrollProgramButton } from "./enroll-program-button";
@@ -77,6 +78,7 @@ export default async function ClientDetailPage({
     unresolvedAlerts,
     resolvedAlertCountResult,
     chartCheckIns,
+    latestSessionPrep,
   ] = await Promise.all([
     db.query.users.findFirst({
       where: eq(users.id, id),
@@ -159,6 +161,8 @@ export default async function ClientDetailPage({
       .from(checkIns)
       .where(and(eq(checkIns.userId, id), gte(checkIns.createdAt, ninetyDaysAgo)))
       .orderBy(asc(checkIns.createdAt)),
+    // Stored prep only — generating one spends the free AI pool and is a click.
+    getLatestSessionPrep(id),
   ]);
 
   if (!client || client.role !== CLIENT_ROLE) notFound();
@@ -213,7 +217,7 @@ export default async function ClientDetailPage({
 
         <ClientWeeklySnapshot clientCheckIns={clientCheckIns} />
 
-        <SessionPrep clientId={id} />
+        <SessionPrep clientId={id} initialPrep={latestSessionPrep} />
 
         <WeeklyDigest clientId={id} />
 

@@ -370,6 +370,8 @@ export const AI_DIGEST_MIN_CHECKINS = 3; // minimum check-ins in window to gener
 // On-demand digests spend the shared free AI pool, so each staff member gets a
 // handful per 15-minute window (lib/rate-limit.ts) — enough to retry, not to loop.
 export const AI_DIGEST_RATE_LIMIT = 5;
+// Session prep spends the same pool on the same terms: a click, per staff member.
+export const SESSION_PREP_RATE_LIMIT = AI_DIGEST_RATE_LIMIT;
 
 // Document type → i18n key mapping (namespace: admin.clients.sessionNotes)
 export const DOC_TYPE_I18N_KEYS: Record<string, string> = {

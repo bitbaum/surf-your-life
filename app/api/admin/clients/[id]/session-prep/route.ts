@@ -2,11 +2,18 @@
  * Pre-session AI prep: generates a clinical summary for a practitioner
  * before a session with a specific client.
  * Uses the fleet's ai-kit provider chain (Groq -> OpenRouter). Gracefully degrades when no chain provider is configured.
+ *
+ * POST only, staff only, rate-limited per practitioner: it spends the shared
+ * free AI pool, so it runs when someone clicks "Prepare session notes" — never
+ * on page load. The result is stored (session_preps) and the client page shows
+ * the latest one from the database without calling the model.
  */
+import { NextResponse } from "next/server";
 import { formatEnumValue, roundOne } from "@/lib/utils";
 import { db } from "@/lib/db";
 import {
   users,
+  sessionPreps,
   checkIns,
   clientAlerts,
   techniqueAssignments,
@@ -16,6 +23,7 @@ import {
   medicationLog,
   programEnrollments,
 } from "@/lib/db/schema";
+import type { SessionPrepStats } from "@/lib/db/schema";
 import { eq, desc, and, gte, isNull } from "drizzle-orm";
 import type { ProgramPhase } from "@/lib/domain/program";
 import { callLLM } from "@/lib/domain/llm";
@@ -28,12 +36,28 @@ import {
   SESSION_PREP_ENERGY_AVG_WINDOW,
   SESSION_PREP_NOTES_LIMIT,
   CLINICAL_TEXT_EXCERPT_MAX,
+  SESSION_PREP_RATE_LIMIT,
+  API_ERR_RATE_LIMITED,
 } from "@/lib/constants";
+import { CLIENT_ROLE } from "@/lib/domain/auth";
+import { checkRateLimit } from "@/lib/rate-limit";
 import { notFound, okData, requireStaffAuth } from "@/lib/api";
 
-export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function POST(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const authResult = await requireStaffAuth();
   if (!authResult.ok) return authResult.response;
+
+  // Keyed on the signed-in user, like the digest: the budget is per person.
+  const { ok, retryAfterSecs } = checkRateLimit(
+    `session-prep:${authResult.session.user.id}`,
+    SESSION_PREP_RATE_LIMIT,
+  );
+  if (!ok) {
+    return NextResponse.json(
+      { success: false, error: API_ERR_RATE_LIMITED },
+      { status: 429, headers: { "Retry-After": String(retryAfterSecs) } },
+    );
+  }
 
   const { id: clientId } = await params;
 
@@ -52,7 +76,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
     activeEnrollment,
   ] = await Promise.all([
     db.query.users.findFirst({
-      where: eq(users.id, clientId),
+      where: and(eq(users.id, clientId), eq(users.role, CLIENT_ROLE)),
       with: { profile: true },
       columns: { id: true, name: true, email: true },
     }),
@@ -186,7 +210,7 @@ Write in a professional, clinical tone. Be specific and actionable.`,
           ? "down"
           : "stable";
 
-  const stats = {
+  const stats: SessionPrepStats = {
     alertCount: activeAlerts.length,
     highAlertCount: activeAlerts.filter((a) => a.severity === "high").length,
     pemCount: recentCheckIns.filter((ci) => ci.pemFlag).length,
@@ -198,7 +222,23 @@ Write in a professional, clinical tone. Be specific and actionable.`,
     techniqueStreak,
   };
 
-  return okData({ summary, aiGenerated: aiSummary !== null, stats });
+  const [prep] = await db
+    .insert(sessionPreps)
+    .values({
+      clientId,
+      authorId: authResult.session.user.id,
+      summary,
+      aiGenerated: aiSummary !== null,
+      stats,
+    })
+    .returning({
+      summary: sessionPreps.summary,
+      aiGenerated: sessionPreps.aiGenerated,
+      stats: sessionPreps.stats,
+      createdAt: sessionPreps.createdAt,
+    });
+
+  return okData(prep);
 }
 
 function buildClinicalContext(
