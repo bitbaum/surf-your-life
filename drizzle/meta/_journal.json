@@ -176,6 +176,13 @@
       "when": 1776013742022,
       "tag": "0023_booking_unique_indexes",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1776013742023,
+      "tag": "0024_session_preps",
+      "breakpoints": true
     }
   ]
 }

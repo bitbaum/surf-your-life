@@ -498,6 +498,41 @@ export const aiMessages = pgTable(
   ],
 );
 
+// ─── Session prep (practitioner-only pre-session briefing) ───────────────────
+//
+// Generating one spends the shared free AI pool, so it happens only when a
+// practitioner clicks, and the result is kept here so the next page load shows
+// it instead of generating again. Deliberately NOT a `documents` row: clients
+// can list their own documents, and this is a clinical note about them.
+
+export type SessionPrepStats = {
+  alertCount: number;
+  highAlertCount: number;
+  pemCount: number;
+  latestEnergy: number | null;
+  avgEnergy: number | null;
+  energyDirection: "up" | "down" | "stable";
+  checkInCount: number;
+  techniqueAdherence: number | null;
+  techniqueStreak: number;
+};
+
+export const sessionPreps = pgTable(
+  "session_preps",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    clientId: uuid("client_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    authorId: uuid("author_id").references(() => users.id, { onDelete: "set null" }),
+    summary: text("summary").notNull(),
+    aiGenerated: boolean("ai_generated").notNull(),
+    stats: jsonb("stats").$type<SessionPrepStats>().notNull(),
+    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+  },
+  (table) => [index("session_preps_client_created_idx").on(table.clientId, table.createdAt)],
+);
+
 // ─── Techniques (therapeutic technique library + assignment + tracking) ───────
 
 export const techniques = pgTable(
