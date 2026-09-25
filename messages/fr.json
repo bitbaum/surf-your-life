@@ -1191,6 +1191,16 @@
         "statsCheckIns": "Check-ins analysés",
         "statsTechniqueAdherence": "Adhérence aux techniques"
       },
+      "weeklyDigest": {
+        "title": "Synthèse hebdomadaire",
+        "description": "Rédige un court résumé IA des check-ins de cette personne sur les 7 derniers jours (au moins {min} nécessaires) et l'enregistre sur son dernier check-in, où elle peut aussi le voir. Il n'est généré que lorsque vous cliquez — rien ne s'exécute automatiquement.",
+        "generate": "Générer la synthèse de la semaine",
+        "generating": "Génération…",
+        "notEnough": "Seulement {count} check-ins sur les 7 derniers jours — il en faut au moins {min} pour une synthèse.",
+        "unavailable": "Le service IA est indisponible pour le moment. Rien n'a été enregistré ; veuillez réessayer plus tard.",
+        "rateLimited": "Vous avez généré plusieurs synthèses au cours des 15 dernières minutes. Veuillez patienter quelques minutes.",
+        "error": "Impossible de générer la synthèse. Veuillez réessayer."
+      },
       "sessionNotes": {
         "title": "Notes de séance",
         "addNote": "Ajouter une note",

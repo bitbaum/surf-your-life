@@ -1169,6 +1169,16 @@
         "statsCheckIns": "Check-ins reviewed",
         "statsTechniqueAdherence": "Technique adherence"
       },
+      "weeklyDigest": {
+        "title": "Weekly digest",
+        "description": "Writes a short AI summary of this client's last 7 days of check-ins (needs at least {min}) and saves it on their latest check-in, where the client can also see it. It only runs when you click — nothing is generated automatically.",
+        "generate": "Generate this week's digest",
+        "generating": "Generating…",
+        "notEnough": "Only {count} check-ins in the last 7 days — at least {min} are needed for a digest.",
+        "unavailable": "The AI service is unavailable right now. Nothing was saved; please try again later.",
+        "rateLimited": "You have generated several digests in the last 15 minutes. Please wait a few minutes and try again.",
+        "error": "Failed to generate the digest. Please try again."
+      },
       "sessionNotes": {
         "title": "Session Notes",
         "addNote": "Add note",
