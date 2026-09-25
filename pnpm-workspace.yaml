@@ -14,6 +14,13 @@ overrides:
   brace-expansion: ">=5.0.9"
   # unbounded memory growth and a prototype write. Reached via @sentry/nextjs.
   browserslist: ">=4.28.7"
+  # dev server answers cross-origin requests, letting any website read its
+  # responses. drizzle-kit's legacy @esbuild-kit loader pins ~0.18; move it to
+  # the 0.25 line drizzle-kit itself already uses.
+  "esbuild@<0.25.0": "^0.25.0"
+  # dev server serves arbitrary files on Windows. Reached via tsx (~0.27) under
+  # drizzle-kit and vite, and via @sentry/nextjs's webpack chain.
+  "esbuild@>=0.27.0 <0.28.1": ">=0.28.1"
 
 allowBuilds:
   # Git-hosted, so pnpm runs its `prepare` script to build dist/ on install.
