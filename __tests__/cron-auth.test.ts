@@ -7,7 +7,7 @@ import { verifyCronAuth } from "@/lib/auth/cron";
 // `Bearer ${process.env.CRON_SECRET}`, which is the literal string
 // "Bearer undefined" when the variable is unset — so a missing secret
 // authorized anyone sending that header. verifyCronAuth guards the reminders,
-// weekly-report, ai-digest, and embed-backfill routes; none should run for an
+// weekly-report and embed-backfill routes; none should run for an
 // unauthenticated caller.
 
 const req = (authorization?: string) =>

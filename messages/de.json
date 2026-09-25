@@ -1173,6 +1173,16 @@
         "statsCheckIns": "Check-ins analysiert",
         "statsTechniqueAdherence": "Techniktreue"
       },
+      "weeklyDigest": {
+        "title": "Wochenzusammenfassung",
+        "description": "Erstellt eine kurze KI-Zusammenfassung der Check-ins dieser Person aus den letzten 7 Tagen (mindestens {min} nötig) und speichert sie beim neuesten Check-in, wo die Person sie ebenfalls sieht. Sie wird nur erstellt, wenn Sie klicken – nichts läuft automatisch.",
+        "generate": "Zusammenfassung dieser Woche erstellen",
+        "generating": "Wird erstellt…",
+        "notEnough": "Nur {count} Check-ins in den letzten 7 Tagen – für eine Zusammenfassung sind mindestens {min} nötig.",
+        "unavailable": "Der KI-Dienst ist gerade nicht verfügbar. Es wurde nichts gespeichert; bitte später erneut versuchen.",
+        "rateLimited": "Sie haben in den letzten 15 Minuten mehrere Zusammenfassungen erstellt. Bitte warten Sie einige Minuten.",
+        "error": "Die Zusammenfassung konnte nicht erstellt werden. Bitte erneut versuchen."
+      },
       "sessionNotes": {
         "title": "Sitzungsnotizen",
         "addNote": "Notiz hinzufügen",

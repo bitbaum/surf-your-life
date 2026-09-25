@@ -201,7 +201,7 @@ These will be built in order of user value. Do not add scaffolding for them ahea
 
 ## What IS Built (Updated from "not yet" list)
 
-- **AI chat + embeddings** — `app/[locale]/(portal)/ai-chat/` (client-facing), `lib/domain/ai-chat.ts` (ai-kit Groq → OpenRouter chain + rule-based fallback), `lib/domain/embeddings.ts` (OpenAI text-embedding-3-small). Embeddings generated on check-in create/update, document upload, and via cron backfill at `app/api/cron/embed-backfill/`.
+- **AI chat + embeddings** — `app/[locale]/(portal)/ai-chat/` (client-facing), `lib/domain/ai-chat.ts` (ai-kit Groq → OpenRouter chain + rule-based fallback), `lib/domain/embeddings.ts` (OpenAI text-embedding-3-small). Embeddings generated on check-in create/update, document upload, and via cron backfill at `app/api/cron/embed-backfill/` (paid OpenAI key only — never a free-tier provider).
 - **Document upload by clients** — `app/[locale]/(portal)/documents/` with `document-upload-form.tsx`; admin side at `app/[locale]/(admin)/admin/clients/[id]/`. API routes at `app/api/portal/documents/` and `app/api/admin/clients/[id]/documents/`.
 - **Practitioner assignment UI** — `practitioner-assignment-card.tsx` on client detail page.
 - **At-risk clients page** — `app/[locale]/(admin)/admin/clients/at-risk/` with SQL HAVING clause for efficient filtering.
@@ -223,8 +223,17 @@ The `/api/cron/*` routes are triggered by the box scheduler (systemd timers / cr
 |------|-----------------|------|
 | `/api/cron/reminders` | `0 18 * * *` | Daily, 18:00 |
 | `/api/cron/weekly-report` | `0 17 * * 0` | Sundays, 17:00 |
-| `/api/cron/ai-digest` | `0 19 * * 0` | Sundays, 19:00 |
 | `/api/cron/embed-backfill` | `0 3 * * *` | Daily, 03:00 |
+
+**No scheduled job may call a model on the free tier.** The free AI keys are one
+pool shared by the box's apps; an unattended job drains it without anyone asking.
+The weekly AI digest used to be a Sunday cron (`/api/cron/ai-digest`); it is now
+the on-demand "Generate this week's digest" action on the admin client page
+(`POST /api/admin/clients/[id]/digest`, staff only, rate-limited per user).
+`__tests__/cron-no-llm.test.ts` fails if any `app/api/cron/**` route reaches
+`lib/domain/llm` or ai-kit's `complete`/`freeChain`, directly or transitively.
+`embed-backfill` is allowed only because it needs `OPENAI_API_KEY` (unset, so it
+spends nothing) — it must never be pointed at a free-tier provider.
 
 ## Deploy Workflow
 

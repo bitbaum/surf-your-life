@@ -1,4 +1,8 @@
+import { and, desc, eq, gte } from "drizzle-orm";
+import { db } from "@/lib/db";
+import { checkIns } from "@/lib/db/schema";
 import { callLLM } from "@/lib/domain/llm";
+import { AI_DIGEST_MIN_CHECKINS, SEVEN_DAYS_MS } from "@/lib/constants";
 
 type CheckInRow = {
   createdAt: Date;
@@ -22,7 +26,7 @@ type CheckInRow = {
 
 /**
  * Generate a clinical AI narrative for a client's weekly check-in data.
- * Returns null when the API key is absent or the Claude call fails.
+ * Returns null when no provider is configured or every provider refused.
  */
 export async function generateWeeklyDigest(
   clientName: string,
@@ -64,4 +68,44 @@ Write a concise clinical narrative (3-5 sentences) summarising:
 Be factual, empathetic, and clinically precise. No bullet points — flowing prose only.`;
 
   return callLLM({ messages: [{ role: "user", content: prompt }], maxTokens: 300 });
+}
+
+export type ClientDigestResult =
+  | { status: "generated"; digest: string; checkInCount: number }
+  | { status: "not_enough_check_ins"; checkInCount: number }
+  | { status: "unavailable"; checkInCount: number };
+
+/**
+ * On-demand weekly digest for ONE client, triggered by a staff member.
+ *
+ * This used to be a Sunday cron over every client. It spent the shared free AI
+ * pool (one key set across the box's apps) with nobody asking for the result,
+ * so it was removed: a model is only called here because a person clicked.
+ * `__tests__/cron-no-llm.test.ts` keeps it that way.
+ *
+ * The digest is stored on the client's most recent check-in (`aiInsight`), which
+ * is where the client dashboard and the weekly report email already read it.
+ */
+export async function generateClientDigest(
+  clientId: string,
+  clientName: string,
+): Promise<ClientDigestResult> {
+  const weekCheckIns = await db.query.checkIns.findMany({
+    where: and(
+      eq(checkIns.userId, clientId),
+      gte(checkIns.createdAt, new Date(Date.now() - SEVEN_DAYS_MS)),
+    ),
+    orderBy: [desc(checkIns.createdAt)],
+  });
+  const checkInCount = weekCheckIns.length;
+
+  if (checkInCount < AI_DIGEST_MIN_CHECKINS) {
+    return { status: "not_enough_check_ins", checkInCount };
+  }
+
+  const digest = await generateWeeklyDigest(clientName, weekCheckIns);
+  if (!digest) return { status: "unavailable", checkInCount };
+
+  await db.update(checkIns).set({ aiInsight: digest }).where(eq(checkIns.id, weekCheckIns[0].id));
+  return { status: "generated", digest, checkInCount };
 }

@@ -34,6 +34,7 @@ import { ResetLinkButton } from "./reset-link-button";
 import { NewThreadButton } from "./new-thread-button";
 import { EnrollProgramButton } from "./enroll-program-button";
 import { SessionPrep } from "./session-prep";
+import { WeeklyDigest } from "./weekly-digest";
 import { SessionNotes } from "./session-notes";
 import { TechniqueAssignments } from "./technique-assignments";
 import { ClientMedicationsRow } from "./client-medications-row";
@@ -213,6 +214,8 @@ export default async function ClientDetailPage({
         <ClientWeeklySnapshot clientCheckIns={clientCheckIns} />
 
         <SessionPrep clientId={id} />
+
+        <WeeklyDigest clientId={id} />
 
         <ClientChartsSection chartCheckIns={chartCheckIns} assessments={assessments} />
 

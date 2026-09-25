@@ -8,6 +8,10 @@
  * only two signals that exist — which is exactly how it ran nightly against a
  * database where every single row was un-embedded, answered 200, and said
  * "fully caught up" every time.
+ *
+ * It spends nothing today because OPENAI_API_KEY is unset. NEVER point it at a
+ * free-tier provider: an unattended job must not draw on the free AI pool the
+ * box's apps share (see docs in CLAUDE.md "Scheduled jobs").
  */
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
