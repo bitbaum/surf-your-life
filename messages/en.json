@@ -1533,6 +1533,12 @@
     "next": "Next →",
     "pageOf": "Page {page} of {total}"
   },
+  "notFound": {
+    "title": "Page not found",
+    "description": "The page you're looking for doesn't exist or has been moved.",
+    "home": "Go home",
+    "dashboard": "Dashboard"
+  },
   "ui": {
     "switchLanguage": "Switch language"
   },

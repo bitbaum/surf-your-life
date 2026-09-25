@@ -1537,6 +1537,12 @@
     "next": "Weiter →",
     "pageOf": "Seite {page} von {total}"
   },
+  "notFound": {
+    "title": "Seite nicht gefunden",
+    "description": "Die gesuchte Seite existiert nicht oder wurde verschoben.",
+    "home": "Zur Startseite",
+    "dashboard": "Dashboard"
+  },
   "ui": {
     "switchLanguage": "Sprache wechseln"
   },

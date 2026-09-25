@@ -1,23 +1,26 @@
-import { Link } from "@/i18n/navigation";
-import { Waves } from "lucide-react";
+import Link from "next/link";
+import "./globals.css";
 
-export default function NotFound() {
+/**
+ * Last-resort 404 for a path outside every locale. It renders under the ROOT
+ * layout, which has no <html>, no locale and no intl provider — so this page
+ * brings its own document and must not use next-intl (doing so threw and turned
+ * every such 404 into a 500). Unknown localized paths get the translated page
+ * via app/[locale]/[...rest]; unknown API paths get JSON via app/api/[...path].
+ */
+export default function RootNotFound() {
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center justify-center px-6 text-center">
-      <div className="w-12 h-12 rounded-xl bg-teal-600 flex items-center justify-center mb-8">
-        <Waves className="w-6 h-6 text-white" />
-      </div>
-      <h1 className="text-6xl font-bold text-slate-900 mb-4">404</h1>
-      <p className="text-xl text-slate-500 mb-2">Page not found</p>
-      <p className="text-slate-400 mb-10 max-w-sm">
-        The page you&apos;re looking for doesn&apos;t exist or has been moved.
-      </p>
-      <Link
-        href="/"
-        className="inline-flex items-center justify-center h-10 px-4 py-2 rounded-lg bg-teal-600 text-white text-sm font-medium hover:bg-teal-700 transition-colors"
-      >
-        Go home
-      </Link>
-    </div>
+    <html lang="de">
+      <body className="min-h-screen bg-surface flex flex-col items-center justify-center px-6 text-center">
+        <h1 className="text-6xl font-bold text-ink mb-4">404</h1>
+        <p className="text-xl text-ink-muted mb-10">Seite nicht gefunden · Page not found</p>
+        <Link
+          href="/"
+          className="inline-flex items-center justify-center min-h-11 px-4 rounded-lg bg-brand text-ink-on-overlay text-sm font-medium hover:bg-brand-hover transition-colors"
+        >
+          Startseite · Home
+        </Link>
+      </body>
+    </html>
   );
 }
