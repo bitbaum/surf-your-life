@@ -19,6 +19,13 @@ const NAV_LINKS = [
   { href: "/contact", labelKey: "contact", anchor: false },
 ] as const;
 
+// 44x44 is the fleet's touch floor (nav contract rule 3). The hit area grows,
+// the text does not: min-h/min-w on the link itself, gap trimmed to pay for it.
+const DESKTOP_LINK =
+  "inline-flex min-h-11 min-w-11 items-center justify-center text-sm text-ink-muted hover:text-ink transition-colors";
+const MOBILE_LINK =
+  "flex min-h-11 items-center text-sm text-ink-soft hover:text-brand transition-colors";
+
 export function MarketingNav({ isLoggedIn = false }: { isLoggedIn?: boolean }) {
   const t = useTranslations("nav");
   const [open, setOpen] = useState(false);
@@ -34,22 +41,14 @@ export function MarketingNav({ isLoggedIn = false }: { isLoggedIn?: boolean }) {
             <span className="font-semibold text-ink text-sm">{BRAND_NAME}</span>
           </Link>
 
-          <nav className="hidden lg:flex items-center gap-8">
+          <nav className="hidden lg:flex items-center gap-6">
             {NAV_LINKS.map(({ href, labelKey, anchor }) =>
               anchor ? (
-                <a
-                  key={href}
-                  href={href}
-                  className="text-sm text-ink-muted hover:text-ink transition-colors"
-                >
+                <a key={href} href={href} className={DESKTOP_LINK}>
                   {t(labelKey)}
                 </a>
               ) : (
-                <Link
-                  key={href}
-                  href={href}
-                  className="text-sm text-ink-muted hover:text-ink transition-colors"
-                >
+                <Link key={href} href={href} className={DESKTOP_LINK}>
                   {t(labelKey)}
                 </Link>
               ),
@@ -81,8 +80,9 @@ export function MarketingNav({ isLoggedIn = false }: { isLoggedIn?: boolean }) {
           </div>
 
           <button
-            className="lg:hidden p-2 rounded-lg hover:bg-surface-muted transition-colors"
+            className="lg:hidden inline-flex h-11 w-11 items-center justify-center rounded-lg hover:bg-surface-muted transition-colors"
             onClick={() => setOpen(!open)}
+            aria-expanded={open}
             aria-label={open ? t("close") : t("open")}
           >
             {open ? (
@@ -94,24 +94,14 @@ export function MarketingNav({ isLoggedIn = false }: { isLoggedIn?: boolean }) {
         </div>
 
         {open && (
-          <div className="lg:hidden border-t border-border-subtle bg-surface px-6 py-5 flex flex-col gap-4">
+          <div className="lg:hidden border-t border-border-subtle bg-surface px-6 py-3 flex flex-col gap-1">
             {NAV_LINKS.map(({ href, labelKey, anchor }) =>
               anchor ? (
-                <a
-                  key={href}
-                  href={href}
-                  onClick={() => setOpen(false)}
-                  className="text-sm text-ink-soft py-1 hover:text-brand transition-colors"
-                >
+                <a key={href} href={href} onClick={() => setOpen(false)} className={MOBILE_LINK}>
                   {t(labelKey)}
                 </a>
               ) : (
-                <Link
-                  key={href}
-                  href={href}
-                  onClick={() => setOpen(false)}
-                  className="text-sm text-ink-soft py-1 hover:text-brand transition-colors"
-                >
+                <Link key={href} href={href} onClick={() => setOpen(false)} className={MOBILE_LINK}>
                   {t(labelKey)}
                 </Link>
               ),
