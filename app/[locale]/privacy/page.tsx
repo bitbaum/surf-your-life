@@ -54,7 +54,7 @@ export default async function PrivacyPage({ params }: { params: Promise<{ locale
             <ul className="list-disc pl-5 text-slate-600 text-sm space-y-2">
               <li>
                 <strong>Account information:</strong> name, email address, and (optionally) a
-                profile photo when you register via OrangeCat, Google or email/password.
+                profile photo when you register via OrangeCat or with email and password.
               </li>
               <li>
                 <strong>Health tracking data:</strong> mood ratings, energy levels, sleep duration,
@@ -113,17 +113,18 @@ export default async function PrivacyPage({ params }: { params: Promise<{ locale
                 OrangeCat&rdquo;.
               </li>
               <li>
-                <strong>Google LLC</strong> — OAuth authentication if you choose &ldquo;Sign in with
-                Google&rdquo;. Governed by Google&apos;s Privacy Policy.
-              </li>
-              <li>
-                <strong>Resend</strong> (USA) — delivery of account, booking and message emails.
+                <strong>Resend</strong> (USA) — delivery of every email the portal sends: account,
+                booking and reminder emails, and also emails that carry health data — your weekly
+                report (check-in averages, a journal excerpt and the latest AI summary), your
+                practitioner&apos;s notes on your check-ins, the text of portal messages, and
+                clinical alerts about you sent to your practitioner.
               </li>
               <li>
                 <strong>Groq and OpenRouter</strong> (USA) — AI language models behind the AI
-                assistant and the summaries practitioners request. When one of these features is
-                used, the relevant check-in and program data is sent to the model to produce the
-                answer.
+                assistant, the AI help on the check-in form, and the summaries practitioners
+                request. When one of these features is used, what you typed and the relevant
+                check-in and program data are sent to the model to produce the answer. OpenRouter
+                passes each request on to the model host it selects, which may be outside the USA.
               </li>
             </ul>
             <p className="text-slate-600 text-sm mt-3">
