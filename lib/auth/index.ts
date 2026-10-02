@@ -7,15 +7,24 @@ import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { users } from "@/lib/db/schema";
 import { loginSchema, resolveRole, CLIENT_ROLE, type AppRole } from "@/lib/domain/auth";
+import { emailEarnsPromotion, orangecatClient, orangecatProvider } from "./provider";
+import { withOrangecatIdentity } from "./orangecat-identity";
+import { orangecatUserStore } from "./orangecat-store";
+
+// Absent (not broken) until the box has ORANGECAT_OAUTH_CLIENT_ID/_SECRET.
+const orangecat = orangecatClient();
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  adapter: DrizzleAdapter(db),
+  adapter: withOrangecatIdentity(DrizzleAdapter(db), orangecatUserStore),
   session: { strategy: "jwt" },
   pages: {
     signIn: "/login",
     error: "/login",
   },
   providers: [
+    // Identity only — no OrangeCat token refresh in jwt(): rotation breaks
+    // inside page renders. The session lives on this app's own JWT.
+    ...(orangecat ? [orangecatProvider(orangecat.clientId, orangecat.clientSecret)] : []),
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
@@ -51,7 +60,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
       if (user) {
         token.id = user.id;
         token.emailVerified = (user as { emailVerified?: Date | null }).emailVerified ?? null;
@@ -60,8 +69,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         // actually configured. If it's not set, trust the DB role as-is so that
         // manually-assigned admin accounts don't get silently downgraded to client.
         const existingRole = (user as { role?: string }).role ?? CLIENT_ROLE;
+        // Never for an OrangeCat sign-in (see emailEarnsPromotion).
         const adminEmailsConfigured = (process.env.ADMIN_EMAILS ?? "").trim().length > 0;
-        if (adminEmailsConfigured) {
+        if (adminEmailsConfigured && emailEarnsPromotion(account?.provider)) {
           const correctRole = resolveRole(user.email ?? "");
           if (correctRole !== existingRole && user.id) {
             await db.update(users).set({ role: correctRole }).where(eq(users.id, user.id));

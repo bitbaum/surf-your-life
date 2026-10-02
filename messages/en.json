@@ -237,6 +237,11 @@
       "noAccount": "Don't have an account?",
       "getStarted": "Get started",
       "or": "or",
+      "orangecat": "Sign in with OrangeCat",
+      "orangecatHint": "Google, GitHub or email — one account for every OrangeCat app",
+      "otherWays": "Sign in with email and password or Google",
+      "errorAccountExists": "This email address already has an account here. Sign in with your password or Google below.",
+      "errorOAuth": "Sign-in did not complete. Please try again.",
       "errorInvalid": "Invalid email or password",
       "errorGeneric": "Something went wrong"
     },
@@ -251,6 +256,9 @@
       "hasAccount": "Already have an account?",
       "signIn": "Sign in",
       "or": "or",
+      "orangecat": "Create an account with OrangeCat",
+      "orangecatHint": "Google, GitHub or email",
+      "otherWays": "Register with email and password instead",
       "errorExists": "An account with this email already exists",
       "errorGeneric": "Registration failed"
     },

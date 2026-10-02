@@ -87,11 +87,18 @@ export const users = pgTable(
     emailVerified: timestamp("email_verified", { mode: "date" }),
     image: text("image"),
     password: text("password"), // null for OAuth users
+    // OIDC `sub` (OrangeCat actor id) of a "Sign in with OrangeCat" user — the
+    // identity key for those users. Never matched by email; see
+    // lib/auth/orangecat-identity.ts.
+    orangecatSub: text("orangecat_sub"),
     role: roleEnum("role").notNull().default("client"),
     createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
   },
-  (table) => [index("users_role_idx").on(table.role)],
+  (table) => [
+    index("users_role_idx").on(table.role),
+    uniqueIndex("users_orangecat_sub_unique").on(table.orangecatSub),
+  ],
 );
 
 export const accounts = pgTable(

@@ -30,7 +30,10 @@ export async function POST(req: Request) {
   // Look up user — always return 200 to prevent email enumeration
   const user = await db.query.users.findFirst({ where: eq(users.email, email) });
 
-  if (user) {
+  // A "Sign in with OrangeCat" user has no password here and must not get one
+  // by email: that address came from OrangeCat unverified, so a reset link
+  // would let its real owner and the OrangeCat account share one account.
+  if (user && !user.orangecatSub) {
     const token = randomBytes(32).toString("hex");
     const expiresAt = new Date(Date.now() + HOUR_MS);
 
