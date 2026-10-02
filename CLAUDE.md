@@ -141,8 +141,8 @@ Show what the user needs now. Reveal complexity as they're ready.
 3. Client detail → profile summary + check-in history. AI insights when implemented.
 
 **Auth:**
-1. Primary path: Google OAuth (one click)
-2. Secondary: email/password (below the fold)
+1. Primary path: "Sign in with OrangeCat" (OIDC; OrangeCat itself offers Google, GitHub, email). Users are keyed on `users.orangecat_sub`, never matched by email — see `lib/auth/orangecat-identity.ts`.
+2. Secondary, behind a disclosure: email/password and the app's own Google button (kept for existing accounts).
 
 ### Maintainability
 

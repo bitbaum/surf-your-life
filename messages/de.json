@@ -241,6 +241,11 @@
       "noAccount": "Noch kein Konto?",
       "getStarted": "Jetzt starten",
       "or": "oder",
+      "orangecat": "Mit OrangeCat anmelden",
+      "orangecatHint": "Google, GitHub oder E-Mail – ein Konto für alle OrangeCat-Apps",
+      "otherWays": "Mit E-Mail und Passwort oder Google anmelden",
+      "errorAccountExists": "Für diese E-Mail-Adresse besteht hier bereits ein Konto. Melden Sie sich unten mit Ihrem Passwort oder mit Google an.",
+      "errorOAuth": "Die Anmeldung wurde nicht abgeschlossen. Bitte versuchen Sie es erneut.",
       "errorInvalid": "Ungültige E-Mail oder falsches Passwort",
       "errorGeneric": "Ein Fehler ist aufgetreten"
     },
@@ -255,6 +260,9 @@
       "hasAccount": "Bereits ein Konto vorhanden?",
       "signIn": "Anmelden",
       "or": "oder",
+      "orangecat": "Konto mit OrangeCat erstellen",
+      "orangecatHint": "Google, GitHub oder E-Mail",
+      "otherWays": "Stattdessen mit E-Mail und Passwort registrieren",
       "errorExists": "Ein Konto mit dieser E-Mail-Adresse existiert bereits",
       "errorGeneric": "Registrierung fehlgeschlagen"
     },

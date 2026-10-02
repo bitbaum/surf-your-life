@@ -1,0 +1,128 @@
+"use client";
+
+import { Suspense, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { signIn } from "next-auth/react";
+import { useTranslations } from "next-intl";
+import { useRouter, Link } from "@/i18n/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { GoogleButton } from "@/components/auth/google-button";
+import { OrangecatButton } from "@/components/auth/orangecat-button";
+import { OtherWaysDisclosure } from "@/components/auth/other-ways-disclosure";
+import { PasswordStrength } from "@/components/ui/password-strength";
+import { PASSWORD_MIN_LENGTH } from "@/lib/constants";
+
+function RegisterForm({ orangecatEnabled }: { orangecatEnabled: boolean }) {
+  const t = useTranslations("auth.register");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const prefillEmail = searchParams.get("email") ?? "";
+  const [form, setForm] = useState({ email: prefillEmail, password: "" });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  function set(key: string, value: string) {
+    setForm((prev) => ({ ...prev, [key]: value }));
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error ?? t("errorGeneric"));
+        return;
+      }
+      const signInRes = await signIn("credentials", {
+        email: form.email,
+        password: form.password,
+        redirect: false,
+      });
+      if (signInRes?.error) {
+        setError(t("errorGeneric"));
+        return;
+      }
+      router.push("/profile");
+      router.refresh();
+    } catch {
+      setError(t("errorGeneric"));
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <>
+      {orangecatEnabled && (
+        <OrangecatButton label={t("orangecat")} hint={t("orangecatHint")} callbackUrl="/profile" />
+      )}
+
+      <OtherWaysDisclosure
+        summary={t("otherWays")}
+        defaultOpen={!orangecatEnabled || prefillEmail !== ""}
+      >
+        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+          <Input
+            label={t("email")}
+            type="email"
+            value={form.email}
+            onChange={(e) => set("email", e.target.value)}
+            placeholder="you@example.com"
+            required
+          />
+          <div>
+            <Input
+              label={t("password")}
+              type="password"
+              value={form.password}
+              onChange={(e) => set("password", e.target.value)}
+              placeholder={t("passwordPlaceholder")}
+              required
+              minLength={PASSWORD_MIN_LENGTH}
+            />
+            <PasswordStrength password={form.password} />
+          </div>
+          {error && <p className="text-sm text-red-600">{error}</p>}
+          <Button type="submit" disabled={loading} className="w-full mt-1">
+            {loading ? t("loading") : t("submit")}
+          </Button>
+        </form>
+        <GoogleButton />
+      </OtherWaysDisclosure>
+
+      <p className="text-center text-sm text-slate-500">
+        {t("hasAccount")}{" "}
+        <Link href="/login" className="text-teal-600 hover:underline font-medium">
+          {t("signIn")}
+        </Link>
+      </p>
+    </>
+  );
+}
+
+export function RegisterPage({ orangecatEnabled }: { orangecatEnabled: boolean }) {
+  const t = useTranslations("auth.register");
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{t("title")}</CardTitle>
+        <CardDescription>{t("subtitle")}</CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-4">
+        <Suspense>
+          <RegisterForm orangecatEnabled={orangecatEnabled} />
+        </Suspense>
+      </CardContent>
+    </Card>
+  );
+}
