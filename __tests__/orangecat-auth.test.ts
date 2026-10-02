@@ -3,6 +3,8 @@ import type { Adapter, AdapterAccount, AdapterUser } from "next-auth/adapters";
 import {
   ORANGECAT_PROVIDER_ID,
   emailEarnsPromotion,
+  googleClient,
+  isGoogleEnabled,
   isOrangecatEnabled,
   orangecatClient,
   orangecatProfile,
@@ -70,6 +72,21 @@ describe("orangecatClient", () => {
         ORANGECAT_OAUTH_CLIENT_SECRET: "s",
       } as unknown as NodeJS.ProcessEnv),
     ).toEqual({ clientId: "surf-your-life", clientSecret: "s" });
+  });
+});
+
+describe("googleClient", () => {
+  // Production has no GOOGLE_* keys; a mounted provider sent visitors to Google
+  // with client_id=undefined. No pair, no provider, no button.
+  it("is absent unless both the id and the secret are set", () => {
+    expect(isGoogleEnabled({} as unknown as NodeJS.ProcessEnv)).toBe(false);
+    expect(isGoogleEnabled({ GOOGLE_CLIENT_ID: "id" } as unknown as NodeJS.ProcessEnv)).toBe(false);
+    expect(
+      googleClient({
+        GOOGLE_CLIENT_ID: "id",
+        GOOGLE_CLIENT_SECRET: "s",
+      } as unknown as NodeJS.ProcessEnv),
+    ).toEqual({ clientId: "id", clientSecret: "s" });
   });
 });
 

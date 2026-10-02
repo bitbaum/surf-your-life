@@ -14,7 +14,13 @@ import { OtherWaysDisclosure } from "@/components/auth/other-ways-disclosure";
 import { PasswordStrength } from "@/components/ui/password-strength";
 import { PASSWORD_MIN_LENGTH } from "@/lib/constants";
 
-function RegisterForm({ orangecatEnabled }: { orangecatEnabled: boolean }) {
+function RegisterForm({
+  orangecatEnabled,
+  googleEnabled,
+}: {
+  orangecatEnabled: boolean;
+  googleEnabled: boolean;
+}) {
   const t = useTranslations("auth.register");
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -96,7 +102,7 @@ function RegisterForm({ orangecatEnabled }: { orangecatEnabled: boolean }) {
             {loading ? t("loading") : t("submit")}
           </Button>
         </form>
-        <GoogleButton />
+        {googleEnabled && <GoogleButton />}
       </OtherWaysDisclosure>
 
       <p className="text-center text-sm text-slate-500">
@@ -109,7 +115,13 @@ function RegisterForm({ orangecatEnabled }: { orangecatEnabled: boolean }) {
   );
 }
 
-export function RegisterPage({ orangecatEnabled }: { orangecatEnabled: boolean }) {
+export function RegisterPage({
+  orangecatEnabled,
+  googleEnabled,
+}: {
+  orangecatEnabled: boolean;
+  googleEnabled: boolean;
+}) {
   const t = useTranslations("auth.register");
 
   return (
@@ -120,7 +132,7 @@ export function RegisterPage({ orangecatEnabled }: { orangecatEnabled: boolean }
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <Suspense>
-          <RegisterForm orangecatEnabled={orangecatEnabled} />
+          <RegisterForm orangecatEnabled={orangecatEnabled} googleEnabled={googleEnabled} />
         </Suspense>
       </CardContent>
     </Card>
