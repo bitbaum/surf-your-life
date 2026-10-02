@@ -8,7 +8,7 @@ get the visibility they need to intervene early, run evidence-based programs, an
 
 - **Next.js 16** (App Router, Server Components) · TypeScript strict
 - **PostgreSQL** (self-hosted) + **Drizzle ORM** + **pgvector**
-- **Auth.js v5** (Google OAuth + email/password)
+- **Auth.js v5** (Sign in with OrangeCat, Google OAuth, email/password)
 - **Tailwind v4** · **next-intl** (de / en / fr)
 - Self-hosted on Hetzner (behind Caddy)
 

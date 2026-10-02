@@ -2,6 +2,7 @@ import { setRequestLocale } from "next-intl/server";
 import { MarketingNav } from "@/components/marketing/nav";
 import { MarketingFooter } from "@/components/marketing/footer";
 import { auth } from "@/lib/auth";
+import { Link } from "@/i18n/navigation";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -23,8 +24,8 @@ export default async function PrivacyPage({ params }: { params: Promise<{ locale
         <div className="max-w-3xl mx-auto">
           <h1 className="text-3xl font-bold text-slate-900 mb-2">Privacy Policy</h1>
           <p className="text-slate-500 mb-10">
-            Last updated: April 2026 · Applies to surf-your-life.ch and the Surf Your Life client
-            portal
+            Last updated: October 2026 · Applies to surf-your-life.orangecat.ch and the Surf Your
+            Life client portal
           </p>
 
           {/* 1 — Data Controller */}
@@ -41,10 +42,6 @@ export default async function PrivacyPage({ params }: { params: Promise<{ locale
               Zollikerstrasse 183
               <br />
               8008 Zürich, Switzerland
-              <br />
-              <a href="mailto:privacy@surf-your-life.ch" className="text-teal-600 hover:underline">
-                privacy@surf-your-life.ch
-              </a>
             </address>
           </section>
 
@@ -57,7 +54,7 @@ export default async function PrivacyPage({ params }: { params: Promise<{ locale
             <ul className="list-disc pl-5 text-slate-600 text-sm space-y-2">
               <li>
                 <strong>Account information:</strong> name, email address, and (optionally) a
-                profile photo when you register via Google OAuth or email/password.
+                profile photo when you register via OrangeCat, Google or email/password.
               </li>
               <li>
                 <strong>Health tracking data:</strong> mood ratings, energy levels, sleep duration,
@@ -109,16 +106,29 @@ export default async function PrivacyPage({ params }: { params: Promise<{ locale
             <ul className="list-disc pl-5 text-slate-600 text-sm space-y-2">
               <li>
                 <strong>Hetzner Online GmbH</strong> (Germany, EU) — application and database
-                hosting (self-hosted PostgreSQL). Data is processed within the EU/EEA.
+                hosting (self-hosted PostgreSQL). Hosting stays within the EU/EEA.
+              </li>
+              <li>
+                <strong>OrangeCat</strong> — sign-in if you choose &ldquo;Sign in with
+                OrangeCat&rdquo;.
               </li>
               <li>
                 <strong>Google LLC</strong> — OAuth authentication if you choose &ldquo;Sign in with
                 Google&rdquo;. Governed by Google&apos;s Privacy Policy.
               </li>
+              <li>
+                <strong>Resend</strong> (USA) — delivery of account, booking and message emails.
+              </li>
+              <li>
+                <strong>Groq and OpenRouter</strong> (USA) — AI language models behind the AI
+                assistant and the summaries practitioners request. When one of these features is
+                used, the relevant check-in and program data is sent to the model to produce the
+                answer.
+              </li>
             </ul>
             <p className="text-slate-600 text-sm mt-3">
-              We do not sell your data. We do not share your health data with any third party unless
-              required by law or with your explicit consent.
+              We do not sell your data. Beyond the processors listed above, we do not share your
+              health data with any third party unless required by law or with your explicit consent.
             </p>
           </section>
 
@@ -156,10 +166,10 @@ export default async function PrivacyPage({ params }: { params: Promise<{ locale
               </li>
             </ul>
             <p className="text-slate-600 text-sm mt-4">
-              To exercise any of these rights, contact us at{" "}
-              <a href="mailto:privacy@surf-your-life.ch" className="text-teal-600 hover:underline">
-                privacy@surf-your-life.ch
-              </a>
+              To exercise any of these rights, write to us through the{" "}
+              <Link href="/contact" className="text-teal-600 hover:underline">
+                contact form
+              </Link>
               . We will respond within 30 days.
             </p>
           </section>
@@ -168,8 +178,9 @@ export default async function PrivacyPage({ params }: { params: Promise<{ locale
           <section className="mb-10">
             <h2 className="text-xl font-semibold text-slate-900 mb-3">7. Cookies</h2>
             <p className="text-slate-600 text-sm leading-relaxed">
-              We use a single session cookie to keep you logged in. No tracking or advertising
-              cookies are set. We do not use Google Analytics or similar tracking tools.
+              We set only functional cookies: to keep you signed in, to secure the sign-in flow, and
+              to remember your language. No tracking or advertising cookies are set. We do not use
+              Google Analytics or similar tracking tools.
             </p>
           </section>
 
