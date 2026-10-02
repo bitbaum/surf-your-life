@@ -243,8 +243,8 @@
       "or": "ou",
       "orangecat": "Se connecter avec OrangeCat",
       "orangecatHint": "Google, GitHub ou e-mail — un seul compte pour toutes les apps OrangeCat",
-      "otherWays": "Se connecter avec e-mail et mot de passe ou Google",
-      "errorAccountExists": "Un compte existe déjà ici pour cette adresse e-mail. Connectez-vous ci-dessous avec votre mot de passe ou Google.",
+      "otherWays": "Se connecter avec e-mail et mot de passe",
+      "errorAccountExists": "Un compte existe déjà ici pour cette adresse e-mail. Connectez-vous ci-dessous avec votre mot de passe.",
       "errorOAuth": "La connexion n’a pas abouti. Veuillez réessayer.",
       "errorInvalid": "E-mail ou mot de passe invalide",
       "errorGeneric": "Une erreur s'est produite"

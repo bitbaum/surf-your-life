@@ -239,8 +239,8 @@
       "or": "or",
       "orangecat": "Sign in with OrangeCat",
       "orangecatHint": "Google, GitHub or email — one account for every OrangeCat app",
-      "otherWays": "Sign in with email and password or Google",
-      "errorAccountExists": "This email address already has an account here. Sign in with your password or Google below.",
+      "otherWays": "Sign in with email and password",
+      "errorAccountExists": "This email address already has an account here. Sign in with your password below.",
       "errorOAuth": "Sign-in did not complete. Please try again.",
       "errorInvalid": "Invalid email or password",
       "errorGeneric": "Something went wrong"

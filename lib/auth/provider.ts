@@ -40,6 +40,24 @@ export function isOrangecatEnabled(env: NodeJS.ProcessEnv = process.env): boolea
   return orangecatClient(env) !== null;
 }
 
+/**
+ * The app's own Google OAuth pair, or null when unset. Production has no
+ * GOOGLE_* keys, and mounting the provider anyway sent visitors to Google with
+ * `client_id=undefined` — so the provider and its button exist only when both
+ * are set. Google via OrangeCat is unaffected.
+ */
+export function googleClient(
+  env: NodeJS.ProcessEnv = process.env,
+): { clientId: string; clientSecret: string } | null {
+  const clientId = env.GOOGLE_CLIENT_ID;
+  const clientSecret = env.GOOGLE_CLIENT_SECRET;
+  return clientId && clientSecret ? { clientId, clientSecret } : null;
+}
+
+export function isGoogleEnabled(env: NodeJS.ProcessEnv = process.env): boolean {
+  return googleClient(env) !== null;
+}
+
 export interface OrangecatClaims {
   sub?: string;
   name?: string | null;
