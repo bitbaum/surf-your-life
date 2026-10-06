@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { mayReceivePasswordReset } from "@bitbaum/accountkit/orangecat";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { users, passwordResetTokens } from "@/lib/db/schema";
@@ -33,7 +34,15 @@ export async function POST(req: Request) {
   // A "Sign in with OrangeCat" user has no password here and must not get one
   // by email: that address came from OrangeCat unverified, so a reset link
   // would let its real owner and the OrangeCat account share one account.
-  if (user && !user.orangecatSub) {
+  // A placeholder address receives nothing; a password of your own you may reset.
+  if (
+    user &&
+    mayReceivePasswordReset({
+      email: user.email,
+      hasPassword: Boolean(user.password),
+      orangecatLinked: Boolean(user.orangecatSub),
+    })
+  ) {
     const token = randomBytes(32).toString("hex");
     const expiresAt = new Date(Date.now() + HOUR_MS);
 
