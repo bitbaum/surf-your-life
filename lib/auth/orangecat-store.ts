@@ -2,7 +2,7 @@ import { and, eq, isNull, or, sql } from "drizzle-orm";
 import type { AdapterUser } from "next-auth/adapters";
 import { db } from "@/lib/db";
 import { users } from "@/lib/db/schema";
-import type { OrangecatUserStore } from "./orangecat-identity";
+import type { OrangecatUserStore } from "@bitbaum/accountkit/orangecat";
 
 type UserRow = typeof users.$inferSelect;
 
@@ -14,7 +14,7 @@ function toAdapterUser(row: UserRow | undefined): AdapterUser | null {
 }
 
 /** users.orangecat_sub is the only thing an OrangeCat sign-in resolves on. */
-export const orangecatUserStore: OrangecatUserStore = {
+export const orangecatUserStore: OrangecatUserStore<AdapterUser> = {
   async findBySub(sub) {
     return toAdapterUser(await db.query.users.findFirst({ where: eq(users.orangecatSub, sub) }));
   },

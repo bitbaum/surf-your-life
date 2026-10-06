@@ -89,7 +89,7 @@ export const users = pgTable(
     password: text("password"), // null for OAuth users
     // OIDC `sub` (OrangeCat actor id) of a "Sign in with OrangeCat" user — the
     // identity key for those users. Never matched by email; see
-    // lib/auth/orangecat-identity.ts.
+    // @bitbaum/accountkit/orangecat (withOrangecatIdentity).
     orangecatSub: text("orangecat_sub"),
     role: roleEnum("role").notNull().default("client"),
     createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
