@@ -27,6 +27,7 @@
     "@bitbaum/accountkit": "github:bitbaum/accountkit#v0.2.1",
     "@bitbaum/ai-kit": "^1.11.0",
     "@bitbaum/mail-kit": "^0.1.1",
+    "@bitbaum/whenkit": "github:bitbaum/whenkit#v0.3.2",
     "@fleet/ai-forms": "github:bitbaum/ai-forms#v0.1.0",
     "@sentry/nextjs": "^10.75.0",
     "bcryptjs": "^3.0.3",

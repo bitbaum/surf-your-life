@@ -130,3 +130,10 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* @bitbaum/whenkit (date fields) takes its focus and error colours from the
+   app's own tokens, so a date field rings teal like every other input. */
+:root {
+  --wk-accent: var(--color-brand-ring, #14b8a6);
+  --wk-danger: var(--color-error-ring, #f87171);
+}
