@@ -27,6 +27,9 @@ importers:
       '@bitbaum/mail-kit':
         specifier: ^0.1.1
         version: 0.1.1
+      '@bitbaum/whenkit':
+        specifier: github:bitbaum/whenkit#v0.3.2
+        version: https://codeload.github.com/bitbaum/whenkit/tar.gz/f5e0a24208187091c2ca792008cdd7695a19910f(react@19.3.0)
       '@fleet/ai-forms':
         specifier: github:bitbaum/ai-forms#v0.1.0
         version: https://codeload.github.com/bitbaum/ai-forms/tar.gz/68087895ab9d46d73d03b91ebf5e648b969ebd76(react@19.3.0)
@@ -238,6 +241,13 @@ packages:
   '@bitbaum/mail-kit@0.1.1':
     resolution: {integrity: sha512-3JfaeuwkI+8TVGeSDrr8/esaWkv2d7UAcNg1Xu5HHu6k3cBzuSaLGhuzHp0KlAJgGa2QEQIqtE7W1+PosKFOjw==}
     engines: {node: '>=20'}
+
+  '@bitbaum/whenkit@https://codeload.github.com/bitbaum/whenkit/tar.gz/f5e0a24208187091c2ca792008cdd7695a19910f':
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/bitbaum/whenkit/tar.gz/f5e0a24208187091c2ca792008cdd7695a19910f}
+    version: 0.3.2
+    engines: {node: '>=20'}
+    peerDependencies:
+      react: '>=18'
 
   '@cacheable/memory@2.2.0':
     resolution: {integrity: sha512-CTLKqLItRCEixEAewD3/j9DB3/o96gpTPD4eJ1v+DGOlxZRZncRQkGYqqnAGCscYd6RNeXfGeiuCphsPtqyIfQ==}
@@ -4179,6 +4189,10 @@ snapshots:
       react: 19.3.0
 
   '@bitbaum/mail-kit@0.1.1': {}
+
+  '@bitbaum/whenkit@https://codeload.github.com/bitbaum/whenkit/tar.gz/f5e0a24208187091c2ca792008cdd7695a19910f(react@19.3.0)':
+    dependencies:
+      react: 19.3.0
 
   '@cacheable/memory@2.2.0':
     dependencies:
