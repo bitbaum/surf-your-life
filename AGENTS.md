@@ -25,7 +25,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 ## Design System
 
-**Tailwind v4 — no `tailwind.config.ts`.** All tokens are defined in `app/globals.css` using the `@theme inline` directive. Tailwind reads CSS vars directly; no separate config file exists or is needed.
+**Tailwind v4 — there is no `tailwind.config.ts`.** All tokens are defined in `app/globals.css` using the `@theme inline` directive. Tailwind reads CSS vars directly; no separate config file exists or is needed.
 
 **Token file:** `app/globals.css` — this is the only SSOT for all design decisions.
 
