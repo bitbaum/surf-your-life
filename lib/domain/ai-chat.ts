@@ -1,3 +1,4 @@
+import { RICH_ANSWERS_INSTRUCTION } from "@bitbaum/chatkit";
 /**
  * AI chat logic for the client portal.
  *
@@ -550,8 +551,8 @@ ${programLine}`;
 
   return callLLM({
     messages: [...history.slice(-AI_CHAT_CONTEXT_WINDOW), { role: "user", content: userMessage }],
-    system: systemPrompt,
-    maxTokens: 500,
+    system: `${systemPrompt}\n\n${RICH_ANSWERS_INSTRUCTION}`,
+    maxTokens: 1600,
   });
 }
 

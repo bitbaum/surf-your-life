@@ -30,8 +30,8 @@ export function ChatInterface({ initialMessages }: Props) {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  async function handleSend() {
-    const content = input.trim();
+  async function submitContent(text: string) {
+    const content = text.trim();
     if (!content || sending) return;
 
     setInput("");
@@ -75,6 +75,10 @@ export function ChatInterface({ initialMessages }: Props) {
     }
   }
 
+  function handleSend() {
+    return submitContent(input);
+  }
+
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -89,6 +93,9 @@ export function ChatInterface({ initialMessages }: Props) {
         sending={sending}
         bottomRef={bottomRef}
         onSuggestion={setInput}
+        onReply={(text) => {
+          void submitContent(text);
+        }}
       />
 
       {error && <p className="text-sm text-red-600 mb-2">{error}</p>}
