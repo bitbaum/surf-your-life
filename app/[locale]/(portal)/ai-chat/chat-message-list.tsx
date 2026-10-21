@@ -1,5 +1,6 @@
 "use client";
 
+import { Markdown } from "@bitbaum/chatkit/react";
 import { useTranslations } from "next-intl";
 import type { Message } from "./chat-interface";
 
@@ -8,9 +9,10 @@ type Props = {
   sending: boolean;
   bottomRef: React.RefObject<HTMLDivElement | null>;
   onSuggestion: (text: string) => void;
+  onReply: (text: string) => void;
 };
 
-export function ChatMessageList({ messages, sending, bottomRef, onSuggestion }: Props) {
+export function ChatMessageList({ messages, sending, bottomRef, onSuggestion, onReply }: Props) {
   const t = useTranslations("portal.aiChat");
 
   return (
@@ -55,7 +57,14 @@ export function ChatMessageList({ messages, sending, bottomRef, onSuggestion }: 
                 : "bg-slate-100 text-slate-800 rounded-tl-sm"
             }`}
           >
-            {msg.content}
+            {msg.role === "user" ? (
+              msg.content
+            ) : (
+              <Markdown
+                text={msg.content}
+                onReply={!sending && msg === messages.at(-1) ? onReply : undefined}
+              />
+            )}
           </div>
         </div>
       ))}
