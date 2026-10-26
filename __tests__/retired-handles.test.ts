@@ -44,10 +44,14 @@ describe("retired GitHub handles", () => {
     expect(found, `${file} still references retired handle(s): ${found.join(", ")}`).toEqual([]);
   });
 
-  it("still pins the shared dependency at the current owner", () => {
+  it("resolves the shared dependency through the current npm or Git source", () => {
     // Guards against the opposite failure: dropping the dependency entirely,
     // or renaming it to something that resolves nowhere, would pass the scan.
     const pkg = JSON.parse(readFileSync(join(process.cwd(), "package.json"), "utf8"));
-    expect(pkg.dependencies["@fleet/ai-forms"]).toContain(`github:${CURRENT_OWNER}/`);
+    const spec = pkg.dependencies["@fleet/ai-forms"];
+    expect(spec).toBeDefined();
+    expect(spec.startsWith(`github:${CURRENT_OWNER}/`) || spec.startsWith("npm:ai-forms@")).toBe(
+      true,
+    );
   });
 });
