@@ -44,10 +44,15 @@ describe("retired GitHub handles", () => {
     expect(found, `${file} still references retired handle(s): ${found.join(", ")}`).toEqual([]);
   });
 
-  it("still pins the shared dependency at the current owner", () => {
+  it("uses the canonical shared forms package source", () => {
     // Guards against the opposite failure: dropping the dependency entirely,
     // or renaming it to something that resolves nowhere, would pass the scan.
     const pkg = JSON.parse(readFileSync(join(process.cwd(), "package.json"), "utf8"));
-    expect(pkg.dependencies["@fleet/ai-forms"]).toContain(`github:${CURRENT_OWNER}/`);
+    // The verified npm release uses the legacy alias for compatibility. A
+    // registry install has no GitHub owner in its specifier; custom Git
+    // installs must still resolve to the current owner and exact repository.
+    expect(pkg.dependencies["@fleet/ai-forms"]).toMatch(
+      new RegExp(`^(?:github:${CURRENT_OWNER}/ai-forms#|npm:ai-forms@)`),
+    );
   });
 });
