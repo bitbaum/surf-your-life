@@ -84,5 +84,8 @@ export default auth((req) => {
 });
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  // The public build receipt must bypass both authentication and locale redirects.
+  matcher: [
+    "/((?!api|_next/static|_next/image|favicon.ico|\\.well-known/fleet-release\\.json$).*)",
+  ],
 };
