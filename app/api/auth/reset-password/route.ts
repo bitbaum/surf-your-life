@@ -8,6 +8,7 @@ import { checkRateLimit, ipKey } from "@/lib/rate-limit";
 import {
   API_ERR_RATE_LIMITED,
   BCRYPT_SALT_ROUNDS,
+  PASSWORD_MAX_LENGTH,
   PASSWORD_MIN_LENGTH,
   API_ERR_INVALID_TOKEN,
 } from "@/lib/constants";
@@ -15,7 +16,7 @@ import { parseBody, ok } from "@/lib/api";
 
 const schema = z.object({
   token: z.string().min(1),
-  password: z.string().min(PASSWORD_MIN_LENGTH),
+  password: z.string().min(PASSWORD_MIN_LENGTH).max(PASSWORD_MAX_LENGTH),
 });
 
 export async function POST(req: Request) {

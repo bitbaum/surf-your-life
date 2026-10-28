@@ -112,8 +112,13 @@ export const OPENAI_EMBEDDINGS_URL = "https://api.openai.com/v1/embeddings";
 // Practitioner note on check-ins
 export const PRACTITIONER_NOTE_MAX_LENGTH = 1000;
 
-// Authentication constraints
-export const PASSWORD_MIN_LENGTH = 8;
+// Authentication constraints. The password rule (non-empty, at most 128) is
+// decided in @bitbaum/accountkit, never here: no local number, no strength
+// meter, no hint text.
+export {
+  MAX_PASSWORD_LENGTH as PASSWORD_MAX_LENGTH,
+  MIN_PASSWORD_LENGTH as PASSWORD_MIN_LENGTH,
+} from "@bitbaum/accountkit/auth/password";
 export const BCRYPT_SALT_ROUNDS = 12;
 
 // Standard API error message strings — used in all route handlers for consistent responses

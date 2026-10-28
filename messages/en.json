@@ -250,7 +250,6 @@
       "subtitle": "Begin your program — takes 2 minutes",
       "email": "Email",
       "password": "Password",
-      "passwordPlaceholder": "At least 8 characters",
       "submit": "Create account",
       "loading": "Creating account…",
       "hasAccount": "Already have an account?",
@@ -310,13 +309,7 @@
     "unverifiedBanner": "Please verify your email address.",
     "resendVerification": "Resend verification email",
     "resendSent": "Verification email sent",
-    "dismiss": "Dismiss",
-    "passwordStrength": {
-      "weak": "Weak",
-      "fair": "Fair",
-      "good": "Good",
-      "strong": "Strong"
-    }
+    "dismiss": "Dismiss"
   },
   "contact": {
     "title": "Get in touch",
