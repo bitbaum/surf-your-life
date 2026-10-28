@@ -254,7 +254,6 @@
       "subtitle": "Beginnen Sie Ihr Programm – dauert 2 Minuten",
       "email": "E-Mail",
       "password": "Passwort",
-      "passwordPlaceholder": "Mindestens 8 Zeichen",
       "submit": "Konto erstellen",
       "loading": "Konto wird erstellt…",
       "hasAccount": "Bereits ein Konto vorhanden?",
@@ -314,13 +313,7 @@
     "unverifiedBanner": "Bitte verifizieren Sie Ihre E-Mail-Adresse.",
     "resendVerification": "Bestätigungs-E-Mail erneut senden",
     "resendSent": "Bestätigungs-E-Mail gesendet",
-    "dismiss": "Schließen",
-    "passwordStrength": {
-      "weak": "Schwach",
-      "fair": "Ausreichend",
-      "good": "Gut",
-      "strong": "Stark"
-    }
+    "dismiss": "Schließen"
   },
   "contact": {
     "title": "Kontakt aufnehmen",

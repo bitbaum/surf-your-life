@@ -88,13 +88,12 @@ describe("loginSchema", () => {
     expect(result.success).toBe(false);
   });
 
-  it(`rejects password shorter than ${PASSWORD_MIN_LENGTH} characters`, () => {
-    const short = "a".repeat(PASSWORD_MIN_LENGTH - 1);
-    const result = loginSchema.safeParse({ email: "user@example.com", password: short });
+  it("rejects an empty password", () => {
+    const result = loginSchema.safeParse({ email: "user@example.com", password: "" });
     expect(result.success).toBe(false);
   });
 
-  it(`accepts password exactly ${PASSWORD_MIN_LENGTH} characters`, () => {
+  it("accepts a one-character password (the one bitbaum rule)", () => {
     const exact = "a".repeat(PASSWORD_MIN_LENGTH);
     const result = loginSchema.safeParse({ email: "user@example.com", password: exact });
     expect(result.success).toBe(true);

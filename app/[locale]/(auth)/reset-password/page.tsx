@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { CheckCircle } from "lucide-react";
-import { PASSWORD_MIN_LENGTH } from "@/lib/constants";
 
 function ResetForm() {
   const t = useTranslations("auth.resetPassword");
@@ -99,7 +98,6 @@ function ResetForm() {
             onChange={(e) => setPassword(e.target.value)}
             placeholder="••••••••"
             required
-            minLength={PASSWORD_MIN_LENGTH}
           />
           <Input
             label={t("confirmPassword")}

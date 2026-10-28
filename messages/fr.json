@@ -254,7 +254,6 @@
       "subtitle": "Commencez votre programme — 2 minutes suffisent",
       "email": "E-mail",
       "password": "Mot de passe",
-      "passwordPlaceholder": "Au moins 8 caractères",
       "submit": "Créer un compte",
       "loading": "Création du compte…",
       "hasAccount": "Vous avez déjà un compte?",
@@ -314,13 +313,7 @@
     "unverifiedBanner": "Veuillez vérifier votre adresse e-mail.",
     "resendVerification": "Renvoyer l'e-mail de vérification",
     "resendSent": "E-mail de vérification envoyé",
-    "dismiss": "Fermer",
-    "passwordStrength": {
-      "weak": "Faible",
-      "fair": "Passable",
-      "good": "Bien",
-      "strong": "Fort"
-    }
+    "dismiss": "Fermer"
   },
   "contact": {
     "title": "Prendre contact",
