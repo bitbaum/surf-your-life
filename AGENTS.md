@@ -129,6 +129,13 @@ both set (`lib/auth/google.ts`); production sets neither, so it is hidden there.
   upload and the `embed-backfill` cron.
 - Client AI chat is `lib/domain/ai-chat.ts` on ai-kit's chain with a
   rule-based fallback.
+- **No client data reaches a model or the embedding API without that client's
+  consent.** `hasAiConsent` (`lib/domain/ai-consent.ts`, table
+  `ai_consent_events`, append-only) is checked server-side on every AI path —
+  assistant, check-in form help, session prep, weekly digest, embeddings and the
+  backfill — and the client's consent governs even when staff start it. Without
+  it a path takes its non-AI fallback or says AI is off.
+  `__tests__/ai-consent-gates.test.ts`.
 
 ## Scheduled jobs
 

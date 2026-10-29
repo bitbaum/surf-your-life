@@ -31,6 +31,7 @@ import {
   computeDailyAdherenceTrend,
 } from "@/lib/domain/techniques";
 import { getLatestSessionPrep } from "@/lib/domain/session-prep";
+import { hasAiConsent } from "@/lib/domain/ai-consent";
 import { ResetLinkButton } from "./reset-link-button";
 import { NewThreadButton } from "./new-thread-button";
 import { EnrollProgramButton } from "./enroll-program-button";
@@ -79,6 +80,7 @@ export default async function ClientDetailPage({
     resolvedAlertCountResult,
     chartCheckIns,
     latestSessionPrep,
+    clientAiConsent,
   ] = await Promise.all([
     db.query.users.findFirst({
       where: eq(users.id, id),
@@ -163,6 +165,8 @@ export default async function ClientDetailPage({
       .orderBy(asc(checkIns.createdAt)),
     // Stored prep only — generating one spends the free AI pool and is a click.
     getLatestSessionPrep(id),
+    // The client's own decision governs every AI feature on this page.
+    hasAiConsent(id),
   ]);
 
   if (!client || client.role !== CLIENT_ROLE) notFound();
@@ -217,9 +221,9 @@ export default async function ClientDetailPage({
 
         <ClientWeeklySnapshot clientCheckIns={clientCheckIns} />
 
-        <SessionPrep clientId={id} initialPrep={latestSessionPrep} />
+        <SessionPrep clientId={id} initialPrep={latestSessionPrep} aiAllowed={clientAiConsent} />
 
-        <WeeklyDigest clientId={id} />
+        <WeeklyDigest clientId={id} aiAllowed={clientAiConsent} />
 
         <ClientChartsSection chartCheckIns={chartCheckIns} assessments={assessments} />
 

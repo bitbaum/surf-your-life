@@ -24,6 +24,9 @@ vi.mock("@/lib/db", () => ({
   },
 }));
 
+// Consent is granted here; what happens without it is __tests__/ai-consent-gates.test.ts.
+vi.mock("@/lib/domain/ai-consent", () => ({ hasAiConsent: async () => true }));
+
 import { embedCheckIn, embedDocument } from "@/lib/domain/embeddings";
 
 const CHECK_IN = {

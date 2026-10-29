@@ -849,6 +849,31 @@
       "typeAssessment": "Évaluation",
       "typeReport": "Rapport",
       "typeUpload": "Votre dépôt"
+    },
+    "aiConsent": {
+      "title": "Autoriser les fonctions d’IA ?",
+      "intro": "Certaines fonctions de ce portail utilisent des modèles d’IA exploités par des entreprises aux États-Unis. Elles n’utilisent vos données que si vous l’autorisez. Vous décidez une fois ici, et vous pouvez changer d’avis à tout moment dans les paramètres.",
+      "what": "<b>Ce qui est envoyé :</b> les données de santé dont une fonction a besoin — vos check-ins avec votre journal, vos médicaments, vos évaluations fonctionnelles, vos techniques et votre programme, et ce que vous écrivez à l’assistant ou dans le formulaire de check-in. Les résumés lancés par votre praticien contiennent en plus votre nom, votre préoccupation principale et vos objectifs, les alertes cliniques ouvertes et des extraits des notes de séance. La recherche sémantique indexe aussi les documents que votre praticien ajoute à votre dossier. Votre adresse e-mail n’est pas envoyée.",
+      "who": "<b>À qui, et où :</b> à Groq, aux États-Unis. Si Groq ne peut pas répondre, à OpenRouter, aux États-Unis, qui transmet la requête à l’entreprise qui héberge le modèle qu’il choisit — cette entreprise peut se trouver hors des États-Unis. Uniquement si le cabinet a activé la recherche sémantique : à OpenAI, aux États-Unis.",
+      "why": "<b>Pourquoi :</b> pour rédiger les réponses de l’assistant, remplir le formulaire de check-in à partir de ce que vous écrivez, rédiger la préparation de séance et la synthèse hebdomadaire de votre praticien, et trouver les check-ins les plus pertinents pour votre question (recherche sémantique).",
+      "details": "Exactement ce que reçoit chaque prestataire",
+      "notNowHeading": "Si vous choisissez « Pas maintenant »",
+      "notNowBody": "Le portail reste entièrement utilisable. L’assistant répond avec des règles simples tirées de vos propres check-ins, le formulaire de check-in se remplit à partir de mots-clés, et votre praticien reçoit des résumés de séance faits sans IA et aucune synthèse hebdomadaire par IA. Rien vous concernant n’est envoyé à Groq, OpenRouter ou OpenAI.",
+      "change": "Vous pouvez changer d’avis à tout moment dans les <settings>paramètres</settings>. Un retrait prend effet immédiatement. Plus d’informations dans notre <privacy>politique de confidentialité</privacy>, sections 3 et 6.",
+      "allow": "Autoriser l’IA",
+      "decline": "Pas maintenant",
+      "saving": "Enregistrement…",
+      "saveError": "Votre choix n’a pas pu être enregistré. Veuillez réessayer.",
+      "settingsTitle": "Fonctions d’IA",
+      "statusGranted": "L’IA est activée. Vous l’avez autorisée le {date}.",
+      "statusOff": "L’IA est désactivée. Rien vous concernant n’est envoyé à un prestataire d’IA, et le portail fonctionne sans elle.",
+      "withdraw": "Retirer mon consentement",
+      "withdrawHint": "Prend effet immédiatement et supprime l’index de recherche calculé à partir de vos données. Les traitements antérieurs à votre retrait ne sont pas affectés.",
+      "withdrawn": "L’IA est désactivée. Plus rien vous concernant ne sera envoyé.",
+      "review": "Consulter et autoriser l’IA",
+      "chatOff": "L’IA est désactivée pour vous. Les réponses viennent de règles simples appliquées à vos propres check-ins ; rien n’est envoyé à un prestataire d’IA.",
+      "formOff": "L’IA est désactivée pour vous. Le formulaire est rempli à partir de mots-clés de votre texte ; rien n’est envoyé à un prestataire d’IA.",
+      "turnOn": "Activer l’IA"
     }
   },
   "sidebar": {
@@ -1193,7 +1218,8 @@
         "statsHighAlerts": "({count} critiques)",
         "statsPem": "Épisodes SPE",
         "statsCheckIns": "Check-ins analysés",
-        "statsTechniqueAdherence": "Adhérence aux techniques"
+        "statsTechniqueAdherence": "Adhérence aux techniques",
+        "noConsentNote": "Préparé sans IA — le client n’a pas autorisé l’IA."
       },
       "weeklyDigest": {
         "title": "Synthèse hebdomadaire",
@@ -1203,7 +1229,8 @@
         "notEnough": "Seulement {count} check-ins sur les 7 derniers jours — il en faut au moins {min} pour une synthèse.",
         "unavailable": "Le service IA est indisponible pour le moment. Rien n'a été enregistré ; veuillez réessayer plus tard.",
         "rateLimited": "Vous avez généré plusieurs synthèses au cours des 15 dernières minutes. Veuillez patienter quelques minutes.",
-        "error": "Impossible de générer la synthèse. Veuillez réessayer."
+        "error": "Impossible de générer la synthèse. Veuillez réessayer.",
+        "noConsent": "Le client n’a pas autorisé l’IA, aucune synthèse ne peut donc être rédigée. Rien n’a été envoyé."
       },
       "sessionNotes": {
         "title": "Notes de séance",
@@ -1254,7 +1281,8 @@
       "allPractitioners": "Tous",
       "myClients": "Les miens",
       "unassigned": "Non attribué",
-      "clearSearch": "Effacer la recherche"
+      "clearSearch": "Effacer la recherche",
+      "aiConsentOff": "Ce client n’a pas autorisé l’IA. Rien le concernant n’est envoyé à un prestataire d’IA."
     },
     "leads": {
       "statusNew": "Nouveau",
@@ -1588,7 +1616,8 @@
         "analytics": "Améliorer notre service grâce à des analyses anonymisées et agrégées.",
         "legal": "Respecter nos obligations légales selon le droit suisse et européen."
       },
-      "basis": "La base légale du traitement des données de santé est votre consentement explicite (art. 6, par. 1, let. a et art. 9, par. 2, let. a RGPD ; art. 31 nLPD). Vous pouvez retirer votre consentement à tout moment — voir la section 7."
+      "basis": "La base légale du traitement des données de santé est votre consentement explicite (art. 6, par. 1, let. a et art. 9, par. 2, let. a RGPD ; art. 31 nLPD). Vous pouvez retirer votre consentement à tout moment — voir la section 7.",
+      "aiConsent": "<b>Fonctions d’IA :</b> avant qu’une fonction d’IA de la section 6 n’utilise vos données, le portail vous demande une fois votre consentement explicite pour les envoyer à Groq et à OpenRouter aux États-Unis et, si la recherche sémantique est activée, à OpenAI aux États-Unis. Votre réponse est enregistrée avec sa date et son heure. Si vous choisissez « Pas maintenant », les fonctions d’IA restent désactivées pour vous — y compris les résumés lancés par votre praticien —, rien vous concernant n’est envoyé à ces prestataires, et le portail fonctionne sans elles. Vous pouvez autoriser l’IA ou retirer votre consentement à tout moment dans les paramètres de votre compte. Un retrait est lui aussi enregistré avec sa date et son heure, prend effet immédiatement et supprime l’index de recherche calculé à partir de vos données ; les traitements antérieurs ne sont pas affectés."
     },
     "retention": {
       "heading": "4. Conservation des données",
@@ -1627,7 +1656,7 @@
         "data": "<b>Données envoyées :</b> le texte de chaque check-in lorsque vous l’enregistrez ou le modifiez — ou par une tâche quotidienne s’il n’a pas encore été indexé — avec tous ses scores ainsi que votre journal, vos réussites, difficultés et notes ; le titre et le texte des documents que votre praticien ajoute à votre dossier ; et chaque question que vous posez à l’assistant IA.",
         "purpose": "<b>Finalité :</b> calculer un index numérique de ce texte (un « embedding »), enregistré dans notre base de données et utilisé uniquement pour la recherche."
       },
-      "choice": "Vous décidez d’utiliser ou non l’assistant IA et l’aide IA du formulaire de check-in. Les résumés sont lancés par votre praticien ; si vous n’en voulez pas, dites-le-lui ou écrivez-nous via le <contact>formulaire de contact</contact>.",
+      "choice": "Chacune des fonctions ci-dessus ne fonctionne que si vous avez autorisé l’IA (section 3), que vous la lanciez vous-même ou que votre praticien la lance. Sans votre consentement, l’assistant et le formulaire de check-in fonctionnent sans IA, et votre praticien reçoit des résumés de séance faits sans IA et aucune synthèse hebdomadaire. Vous pouvez modifier votre choix à tout moment dans les paramètres de votre compte, ou nous écrire via le <contact>formulaire de contact</contact>.",
       "noSale": "Nous ne vendons pas vos données. Au-delà des prestataires des sections 5 et 6, nous ne communiquons pas vos données de santé à des tiers, sauf obligation légale ou consentement explicite de votre part."
     },
     "rights": {

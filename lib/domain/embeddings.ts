@@ -2,7 +2,8 @@
  * Embedding generation via OpenAI text-embedding-3-small (1536 dims).
  *
  * Gracefully degrades when OPENAI_API_KEY is absent — never blocks critical
- * paths. "Degrades gracefully" must not mean "degrades invisibly": every
+ * paths. Nothing is sent for a client without AI consent (lib/domain/ai-consent):
+ * every entry point below checks the owner's consent before the request. "Degrades gracefully" must not mean "degrades invisibly": every
  * failure here is logged and every write outcome is reported to the caller,
  * because the box scheduler discards cron response bodies and a swallowed
  * failure has nowhere else to surface.
@@ -17,6 +18,7 @@ import {
   EMBEDDING_MODEL,
   OPENAI_EMBEDDINGS_URL,
 } from "@/lib/constants";
+import { hasAiConsent } from "@/lib/domain/ai-consent";
 
 async function generateEmbedding(text: string, tag = "embeddings"): Promise<number[] | null> {
   const apiKey = process.env.OPENAI_API_KEY;
@@ -117,6 +119,7 @@ export async function embedCheckIn(checkInId: string): Promise<boolean> {
     const row = await db.query.checkIns.findFirst({
       where: eq(checkIns.id, checkInId),
       columns: {
+        userId: true,
         mood: true,
         energyLevel: true,
         sleepHours: true,
@@ -139,6 +142,8 @@ export async function embedCheckIn(checkInId: string): Promise<boolean> {
       console.error(`[embed-check-in] ${checkInId} not found`);
       return false;
     }
+    // No consent, no request to OpenAI. Not an error: the client said no.
+    if (!(await hasAiConsent(row.userId))) return false;
 
     const text = checkInToText(row);
     if (!text) {
@@ -170,7 +175,7 @@ export async function embedDocument(documentId: string): Promise<boolean> {
   try {
     const row = await db.query.documents.findFirst({
       where: eq(documents.id, documentId),
-      columns: { title: true, content: true, type: true },
+      columns: { userId: true, title: true, content: true, type: true },
     });
     // A document with no extracted content has nothing to embed. That is a
     // real terminal state, not a transient error: it will never succeed on a
@@ -179,6 +184,8 @@ export async function embedDocument(documentId: string): Promise<boolean> {
       console.error(`[embed-document] ${documentId} ${row ? "has no content" : "not found"}`);
       return false;
     }
+    // A practitioner may add the document, but it is the client's data.
+    if (!(await hasAiConsent(row.userId))) return false;
 
     const text = [row.title, row.content].filter(Boolean).join("\n\n");
     const embedding = await generateEmbedding(text, "embed-document");
@@ -228,6 +235,8 @@ export async function semanticCheckInSearch(
     }[]
   | null
 > {
+  // The question itself would go to OpenAI, so it needs consent too.
+  if (!(await hasAiConsent(userId))) return null;
   const queryEmbedding = await generateEmbedding(query);
   if (!queryEmbedding) return null;
 

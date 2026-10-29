@@ -845,6 +845,31 @@
       "typeAssessment": "Assessment",
       "typeReport": "Report",
       "typeUpload": "Your upload"
+    },
+    "aiConsent": {
+      "title": "Allow AI features?",
+      "intro": "Some features of this portal use AI models run by companies in the USA. They use your data only if you allow it. You decide once here, and you can change it at any time in Settings.",
+      "what": "<b>What is sent:</b> the health data a feature needs — your check-ins with your journal, your medications, your functional assessments, your techniques and program, and what you type into the assistant or the check-in form. Summaries your practitioner starts also include your name, your main concern and goals, open clinical alerts and excerpts of session notes. Semantic search also indexes the documents your practitioner adds to your file. Your email address is not sent.",
+      "who": "<b>To whom, and where:</b> Groq in the USA. When Groq cannot answer, OpenRouter in the USA, which passes the request on to the company that hosts the model it selects — that company may be outside the USA. Only if the clinic has switched on semantic search: OpenAI in the USA.",
+      "why": "<b>Why:</b> to write the assistant’s replies, fill in the check-in form from what you write, write your practitioner’s session preparation and weekly digest, and find the check-ins most relevant to your question (semantic search).",
+      "details": "Exactly what each provider receives",
+      "notNowHeading": "If you choose “Not now”",
+      "notNowBody": "The portal stays fully usable. The assistant answers with simple rules from your own check-ins, the check-in form fills in from keywords, and your practitioner gets session summaries made without AI and no weekly AI digest. Nothing about you is sent to Groq, OpenRouter or OpenAI.",
+      "change": "You can change your mind at any time in <settings>Settings</settings>. Withdrawing takes effect immediately. More in our <privacy>privacy policy</privacy>, sections 3 and 6.",
+      "allow": "Allow AI",
+      "decline": "Not now",
+      "saving": "Saving…",
+      "saveError": "Your choice could not be saved. Please try again.",
+      "settingsTitle": "AI features",
+      "statusGranted": "AI is on. You allowed it on {date}.",
+      "statusOff": "AI is off. Nothing about you is sent to an AI provider, and the portal works without it.",
+      "withdraw": "Withdraw consent",
+      "withdrawHint": "Takes effect immediately and deletes the search index computed from your data. Processing before your withdrawal is not affected.",
+      "withdrawn": "AI is now off. Nothing more about you will be sent.",
+      "review": "Review and allow AI",
+      "chatOff": "AI is off for you. Answers come from simple rules applied to your own check-ins; nothing is sent to an AI provider.",
+      "formOff": "AI is off for you. The form is filled in from keywords in what you write; nothing is sent to an AI provider.",
+      "turnOn": "Turn on AI"
     }
   },
   "sidebar": {
@@ -1171,7 +1196,8 @@
         "statsHighAlerts": "({count} high)",
         "statsPem": "PEM episodes",
         "statsCheckIns": "Check-ins reviewed",
-        "statsTechniqueAdherence": "Technique adherence"
+        "statsTechniqueAdherence": "Technique adherence",
+        "noConsentNote": "Prepared without AI — the client has not allowed AI."
       },
       "weeklyDigest": {
         "title": "Weekly digest",
@@ -1181,7 +1207,8 @@
         "notEnough": "Only {count} check-ins in the last 7 days — at least {min} are needed for a digest.",
         "unavailable": "The AI service is unavailable right now. Nothing was saved; please try again later.",
         "rateLimited": "You have generated several digests in the last 15 minutes. Please wait a few minutes and try again.",
-        "error": "Failed to generate the digest. Please try again."
+        "error": "Failed to generate the digest. Please try again.",
+        "noConsent": "The client has not allowed AI, so no digest can be written. Nothing was sent."
       },
       "sessionNotes": {
         "title": "Session Notes",
@@ -1232,7 +1259,8 @@
       "allPractitioners": "All",
       "myClients": "Mine",
       "unassigned": "Unassigned",
-      "clearSearch": "Clear search"
+      "clearSearch": "Clear search",
+      "aiConsentOff": "This client has not allowed AI. Nothing about them is sent to an AI provider."
     },
     "leads": {
       "statusNew": "New",
@@ -1584,7 +1612,8 @@
         "analytics": "Improving our service through anonymised, aggregated analytics.",
         "legal": "Complying with legal obligations under Swiss and EU law."
       },
-      "basis": "The legal basis for processing health data is your explicit consent (Art. 6(1)(a) and Art. 9(2)(a) GDPR; Art. 31 nFADP). You may withdraw consent at any time — see section 7."
+      "basis": "The legal basis for processing health data is your explicit consent (Art. 6(1)(a) and Art. 9(2)(a) GDPR; Art. 31 nFADP). You may withdraw consent at any time — see section 7.",
+      "aiConsent": "<b>AI features:</b> before any AI feature in section 6 uses your data, the portal asks you once for your explicit consent to send it to Groq and OpenRouter in the USA and, if semantic search is switched on, to OpenAI in the USA. Your answer is recorded with its date and time. If you choose “Not now”, the AI features stay off for you — including the summaries your practitioner starts — nothing about you is sent to these providers, and the portal works without them. You can allow AI or withdraw your consent at any time in your account settings. A withdrawal is also recorded with its date and time, takes effect immediately and deletes the search index computed from your data; processing before it is not affected."
     },
     "retention": {
       "heading": "4. Data retention",
@@ -1623,7 +1652,7 @@
         "data": "<b>Data sent:</b> the text of each check-in when you save or edit it — or by a daily job, if it has not been indexed yet — with all its scores and your journal, wins, challenges and notes; the title and text of documents your practitioner adds to your file; and each question you send the AI assistant.",
         "purpose": "<b>Purpose:</b> to compute a numeric index of that text (an “embedding”), which is stored in our database and used only for search."
       },
-      "choice": "You decide whether to use the AI assistant and the AI help on the check-in form. Practitioner summaries are started by your practitioner; if you do not want them, tell your practitioner or write to us through the <contact>contact form</contact>.",
+      "choice": "Every feature above runs only if you have allowed AI (section 3), whether you start it or your practitioner does. Without your consent, the assistant and the check-in form work without AI, and your practitioner gets session summaries made without AI and no weekly digest. You can change your choice at any time in your account settings, or write to us through the <contact>contact form</contact>.",
       "noSale": "We do not sell your data. Beyond the processors in sections 5 and 6, we do not share your health data with any third party unless required by law or with your explicit consent."
     },
     "rights": {

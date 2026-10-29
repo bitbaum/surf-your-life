@@ -13,8 +13,16 @@ import type { ClientDigestResult } from "@/lib/domain/digest";
  * Practitioner-triggered weekly digest. Deliberately NOT generated on page load:
  * it spends the shared free AI pool, so it runs only when someone clicks.
  */
-export function WeeklyDigest({ clientId }: { clientId: string }) {
+export function WeeklyDigest({
+  clientId,
+  aiAllowed,
+}: {
+  clientId: string;
+  /** The client's AI consent. There is no digest without AI, so none without it. */
+  aiAllowed: boolean;
+}) {
   const t = useTranslations("admin.clients.weeklyDigest");
+  const tClients = useTranslations("admin.clients");
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<ClientDigestResult | null>(null);
@@ -50,7 +58,13 @@ export function WeeklyDigest({ clientId }: { clientId: string }) {
         <p className="text-sm text-ink-muted">
           {t("description", { min: AI_DIGEST_MIN_CHECKINS })}
         </p>
-        <Button variant="outline" onClick={handleGenerate} disabled={loading} className="min-h-11">
+        {!aiAllowed && <p className="text-sm text-ink-muted">{tClients("aiConsentOff")}</p>}
+        <Button
+          variant="outline"
+          onClick={handleGenerate}
+          disabled={loading || !aiAllowed}
+          className="min-h-11"
+        >
           {loading ? (
             <Loader2 className="w-4 h-4 animate-spin" aria-hidden />
           ) : (
@@ -72,6 +86,9 @@ export function WeeklyDigest({ clientId }: { clientId: string }) {
           <p className="text-sm text-ink-muted">
             {t("notEnough", { count: result.checkInCount, min: AI_DIGEST_MIN_CHECKINS })}
           </p>
+        )}
+        {result?.status === "no_consent" && (
+          <p className="text-sm text-ink-muted">{t("noConsent")}</p>
         )}
         {result?.status === "unavailable" && (
           <p className="text-sm text-ink-muted">{t("unavailable")}</p>

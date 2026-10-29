@@ -26,6 +26,7 @@ import { AI_FORMS } from "@/lib/config/ai-forms";
 import { API_ERR_INVALID_INPUT, FIELD_MAX_MEDIUM } from "@/lib/constants";
 import { callLLM } from "@/lib/domain/llm";
 import { keywordFallback } from "@/lib/domain/check-in-parse";
+import { hasAiConsent } from "@/lib/domain/ai-consent";
 
 const requestSchema = z.object({
   target: z.string().min(1).max(64),
@@ -57,7 +58,17 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: `Unknown form "${targetKey}".` }, { status: 404 });
   }
 
+  // Every form here holds the signed-in client's own data, so their consent
+  // decides. Without it the model is never called; the keyword parser answers.
+  const aiAllowed = await hasAiConsent(authResult.session.user.id);
+
   const complete: CompleteFn = async ({ system, prompt, maxTokens }) => {
+    if (!aiAllowed) {
+      return JSON.stringify({
+        values: keywordFallback(instruction, intent),
+        message: "Filled in from keywords — AI is off for your account, so check each answer.",
+      });
+    }
     const text = await callLLM({
       messages: [{ role: "user", content: prompt }],
       system,

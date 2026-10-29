@@ -1,7 +1,9 @@
 /**
  * Pre-session AI prep: generates a clinical summary for a practitioner
  * before a session with a specific client.
- * Uses the fleet's ai-kit provider chain (Groq -> OpenRouter). Gracefully degrades when no chain provider is configured.
+ * Uses the fleet's ai-kit provider chain (Groq -> OpenRouter) only when the
+ * client has given AI consent; otherwise, or when no chain provider is
+ * configured, the summary is rule-based.
  *
  * POST only, staff only, rate-limited per practitioner: it spends the shared
  * free AI pool, so it runs when someone clicks "Prepare session notes" — never
@@ -27,6 +29,7 @@ import type { SessionPrepStats } from "@/lib/db/schema";
 import { eq, desc, and, gte, isNull } from "drizzle-orm";
 import type { ProgramPhase } from "@/lib/domain/program";
 import { callLLM } from "@/lib/domain/llm";
+import { hasAiConsent } from "@/lib/domain/ai-consent";
 import { localDateString, addDaysISO } from "@/lib/utils";
 import { computeDailyAdherenceTrend } from "@/lib/domain/techniques";
 import { computeCurrentProgramWeek } from "@/lib/domain/check-in";
@@ -164,24 +167,10 @@ export async function POST(_req: Request, { params }: { params: Promise<{ id: st
     activeEnrollment ?? null,
   );
 
-  const aiSummary = await callLLM({
-    messages: [
-      {
-        role: "user",
-        content: `You are a clinical assistant helping a burnout/Long COVID practitioner prepare for a session.
-Based on the following client data, write a concise pre-session summary (3-5 sentences) covering:
-1. Current trend (improving / stable / declining)
-2. Key signals to address today
-3. One specific recommendation for this session
-
-Client data:
-${context}
-
-Write in a professional, clinical tone. Be specific and actionable.`,
-      },
-    ],
-    maxTokens: 600,
-  });
+  // The data is the client's, so the CLIENT's consent decides — not the
+  // practitioner's click. Without it the summary is rule-based; no model call.
+  const aiAllowed = await hasAiConsent(clientId);
+  const aiSummary = aiAllowed ? await prepareAiSummary(context) : null;
 
   const summary = aiSummary ?? buildRuleBasedSummary(client, recentCheckIns, activeAlerts);
 
@@ -239,6 +228,27 @@ Write in a professional, clinical tone. Be specific and actionable.`,
     });
 
   return okData(prep);
+}
+
+function prepareAiSummary(context: string): Promise<string | null> {
+  return callLLM({
+    messages: [
+      {
+        role: "user",
+        content: `You are a clinical assistant helping a burnout/Long COVID practitioner prepare for a session.
+Based on the following client data, write a concise pre-session summary (3-5 sentences) covering:
+1. Current trend (improving / stable / declining)
+2. Key signals to address today
+3. One specific recommendation for this session
+
+Client data:
+${context}
+
+Write in a professional, clinical tone. Be specific and actionable.`,
+      },
+    ],
+    maxTokens: 600,
+  });
 }
 
 function buildClinicalContext(

@@ -22,6 +22,8 @@ import { ActivityPemCard } from "./activity-pem-card";
 import { SleepCard } from "./sleep-card";
 import { SymptomsCard } from "./symptoms-card";
 import { PageHeader } from "@/components/ui/page-header";
+import { useAiConsent } from "@/components/portal/ai-consent/context";
+import { AiOffNotice } from "@/components/portal/ai-consent/off-notice";
 
 /** Symptom fields, in the order the card renders them. */
 const SYMPTOM_FIELDS = [
@@ -36,6 +38,8 @@ const num = (value: unknown, fallback: number) => (typeof value === "number" ? v
 
 export default function CheckInPage() {
   const t = useTranslations("portal.checkIn");
+  const tConsent = useTranslations("portal.aiConsent");
+  const aiAllowed = useAiConsent() === "granted";
   const router = useRouter();
 
   const [loading, setLoading] = useState(false);
@@ -132,6 +136,15 @@ export default function CheckInPage() {
       <PageHeader title={t("title")} description={t("subtitle")} />
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+        {/* Without consent the bar still works: the server fills the form from
+            keywords and never calls a model. This says so, and how to change it. */}
+        {!aiAllowed && (
+          <AiOffNotice
+            message={tConsent("formOff")}
+            actionLabel={tConsent("turnOn")}
+            from="/check-in"
+          />
+        )}
         <AiFormBar
           form={form}
           fillPlaceholder={t("aiFillPlaceholder")}

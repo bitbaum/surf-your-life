@@ -17,11 +17,15 @@ import { SessionPrepStats } from "./session-prep-stats";
 export function SessionPrep({
   clientId,
   initialPrep,
+  aiAllowed,
 }: {
   clientId: string;
   initialPrep: SessionPrepView | null;
+  /** The client's AI consent. Without it the server prepares notes without AI. */
+  aiAllowed: boolean;
 }) {
   const t = useTranslations("admin.clients.sessionPrep");
+  const tClients = useTranslations("admin.clients");
   const [loading, setLoading] = useState(false);
   const [prep, setPrep] = useState<SessionPrepView | null>(initialPrep);
   const [error, setError] = useState("");
@@ -51,6 +55,7 @@ export function SessionPrep({
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
+        {!aiAllowed && <p className="text-sm text-ink-muted">{tClients("aiConsentOff")}</p>}
         {!prep && <p className="text-sm text-ink-muted">{t("description")}</p>}
         {prep && (
           <div>
@@ -58,7 +63,7 @@ export function SessionPrep({
             <p className="text-sm text-ink-soft leading-relaxed">{prep.summary}</p>
             <p className="text-xs text-ink-faint mt-2">
               {t("preparedOn", { date: formatDate(prep.createdAt) })}
-              {!prep.aiGenerated && ` · ${t("ruleBasedNote")}`}
+              {!prep.aiGenerated && ` · ${aiAllowed ? t("ruleBasedNote") : t("noConsentNote")}`}
             </p>
           </div>
         )}

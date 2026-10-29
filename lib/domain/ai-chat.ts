@@ -2,9 +2,9 @@ import { RICH_ANSWERS_INSTRUCTION } from "@bitbaum/chatkit";
 /**
  * AI chat logic for the client portal.
  *
- * When GROQ_API_KEY or OPENROUTER_API_KEY is set: calls the chain with
- * check-in context. When neither is set: returns a rule-based response
- * grounded in the client's actual data.
+ * When the client has given AI consent and GROQ_API_KEY or OPENROUTER_API_KEY
+ * is set: calls the chain with check-in context. Otherwise (no consent, or no
+ * key): returns a rule-based response grounded in the client's actual data.
  *
  * The generateAiReply function handles both paths — no other changes needed.
  */
@@ -32,6 +32,7 @@ import { summariseCheckIns, computeCurrentProgramWeek } from "@/lib/domain/check
 export { summariseCheckIns, type CheckInSummaryRow } from "@/lib/domain/check-in";
 import { callLLM } from "@/lib/domain/llm";
 import { semanticCheckInSearch } from "@/lib/domain/embeddings";
+import { hasAiConsent } from "@/lib/domain/ai-consent";
 import { localDateString, addDaysISO } from "@/lib/utils";
 import { computeDailyAdherenceTrend } from "@/lib/domain/techniques";
 import type { ProgramPhase } from "@/lib/domain/program";
@@ -563,7 +564,10 @@ export async function generateAiReply(
   userMessage: string,
   history: { role: "user" | "assistant"; content: string }[],
 ): Promise<string> {
-  const context = await buildContext(userId, userMessage);
+  // Without the client's AI consent nothing leaves the portal: no semantic
+  // search over the question, no model call — only the rule-based reply below.
+  const aiAllowed = await hasAiConsent(userId);
+  const context = await buildContext(userId, aiAllowed ? userMessage : undefined);
   const {
     recent,
     medications,
@@ -574,7 +578,7 @@ export async function generateAiReply(
   } = context;
 
   // Try AI first (no-op if no chain provider is configured)
-  const aiReply = await callChainChat(userMessage, context, history);
+  const aiReply = aiAllowed ? await callChainChat(userMessage, context, history) : null;
   if (aiReply) return aiReply;
 
   // Fall back to rule-based response grounded in actual data

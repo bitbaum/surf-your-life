@@ -33,3 +33,26 @@ describe.each(routing.locales)("privacy policy (%s)", (locale) => {
     expect(ai.basis).toBeTruthy();
   });
 });
+
+// Section 3 describes the consent step, and the consent screen names the same
+// vendors: a vendor added to AI_PROCESSORS without both fails here.
+describe.each(routing.locales)("AI consent step (%s)", (locale) => {
+  const messages = JSON.parse(
+    readFileSync(resolve(process.cwd(), "messages", `${locale}.json`), "utf8"),
+  ) as {
+    privacy: { purpose: { aiConsent?: string } };
+    portal: { aiConsent: { who: string } };
+  };
+  const vendors = [...AI_PROCESSORS.map((id) => (id === "groq" ? "Groq" : "OpenRouter")), "OpenAI"];
+
+  it("section 3 describes the consent step and names every AI vendor", () => {
+    const text = messages.privacy.purpose.aiConsent ?? "";
+    for (const vendor of vendors) expect(text).toContain(vendor);
+  });
+
+  it("the consent screen names every AI vendor and the USA", () => {
+    const who = messages.portal.aiConsent.who;
+    for (const vendor of vendors) expect(who).toContain(vendor);
+    expect(who).toMatch(/USA|États-Unis/);
+  });
+});

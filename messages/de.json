@@ -849,6 +849,31 @@
       "typeAssessment": "Assessment",
       "typeReport": "Bericht",
       "typeUpload": "Ihr Upload"
+    },
+    "aiConsent": {
+      "title": "KI-Funktionen erlauben?",
+      "intro": "Einige Funktionen dieses Portals nutzen KI-Modelle von Unternehmen in den USA. Sie verwenden Ihre Daten nur, wenn Sie es erlauben. Sie entscheiden hier einmal und können es jederzeit in den Einstellungen ändern.",
+      "what": "<b>Was übermittelt wird:</b> die Gesundheitsdaten, die eine Funktion braucht — Ihre Check-ins mit Ihrem Tagebuch, Ihre Medikamente, Ihre Funktionseinschätzungen, Ihre Übungen und Ihr Programm sowie das, was Sie dem Assistenten oder dem Check-in-Formular schreiben. Zusammenfassungen, die Ihre Therapeutin oder Ihr Therapeut startet, enthalten zusätzlich Ihren Namen, Ihr Hauptanliegen und Ihre Ziele, offene klinische Hinweise und Auszüge aus Sitzungsnotizen. Die semantische Suche erfasst auch die Dokumente, die Ihre Therapeutin oder Ihr Therapeut Ihrer Akte hinzufügt. Ihre E-Mail-Adresse wird nicht übermittelt.",
+      "who": "<b>An wen und wohin:</b> an Groq in den USA. Wenn Groq nicht antworten kann, an OpenRouter in den USA, das die Anfrage an das Unternehmen weiterleitet, das das gewählte Modell betreibt — dieses kann ausserhalb der USA sein. Nur wenn die Praxis die semantische Suche eingeschaltet hat: an OpenAI in den USA.",
+      "why": "<b>Wozu:</b> um die Antworten des Assistenten zu verfassen, das Check-in-Formular aus Ihrem Text auszufüllen, die Sitzungsvorbereitung und die Wochenzusammenfassung für Ihre Therapeutin oder Ihren Therapeuten zu schreiben und die Check-ins zu finden, die am besten zu Ihrer Frage passen (semantische Suche).",
+      "details": "Genau, was jeder Anbieter erhält",
+      "notNowHeading": "Wenn Sie „Jetzt nicht“ wählen",
+      "notNowBody": "Das Portal bleibt voll nutzbar. Der Assistent antwortet mit einfachen Regeln aus Ihren eigenen Check-ins, das Check-in-Formular wird anhand von Stichwörtern ausgefüllt, und Ihre Therapeutin oder Ihr Therapeut erhält Sitzungszusammenfassungen ohne KI und keine KI-Wochenzusammenfassung. Nichts über Sie wird an Groq, OpenRouter oder OpenAI gesendet.",
+      "change": "Sie können Ihre Entscheidung jederzeit in den <settings>Einstellungen</settings> ändern. Ein Widerruf wirkt sofort. Mehr dazu in unserer <privacy>Datenschutzerklärung</privacy>, Abschnitte 3 und 6.",
+      "allow": "KI erlauben",
+      "decline": "Jetzt nicht",
+      "saving": "Wird gespeichert…",
+      "saveError": "Ihre Entscheidung konnte nicht gespeichert werden. Bitte versuchen Sie es erneut.",
+      "settingsTitle": "KI-Funktionen",
+      "statusGranted": "KI ist eingeschaltet. Sie haben sie am {date} erlaubt.",
+      "statusOff": "KI ist ausgeschaltet. Nichts über Sie wird an einen KI-Anbieter gesendet, und das Portal funktioniert ohne sie.",
+      "withdraw": "Einwilligung widerrufen",
+      "withdrawHint": "Wirkt sofort und löscht den Suchindex, der aus Ihren Daten berechnet wurde. Die Bearbeitung vor Ihrem Widerruf bleibt davon unberührt.",
+      "withdrawn": "KI ist jetzt ausgeschaltet. Es wird nichts mehr über Sie gesendet.",
+      "review": "Prüfen und KI erlauben",
+      "chatOff": "KI ist für Sie ausgeschaltet. Die Antworten entstehen aus einfachen Regeln, angewendet auf Ihre eigenen Check-ins; nichts wird an einen KI-Anbieter gesendet.",
+      "formOff": "KI ist für Sie ausgeschaltet. Das Formular wird anhand von Stichwörtern in Ihrem Text ausgefüllt; nichts wird an einen KI-Anbieter gesendet.",
+      "turnOn": "KI einschalten"
     }
   },
   "sidebar": {
@@ -1175,7 +1200,8 @@
         "statsHighAlerts": "({count} kritisch)",
         "statsPem": "PEM-Episoden",
         "statsCheckIns": "Check-ins analysiert",
-        "statsTechniqueAdherence": "Techniktreue"
+        "statsTechniqueAdherence": "Techniktreue",
+        "noConsentNote": "Ohne KI erstellt — KI wurde von der Klientin oder dem Klienten nicht erlaubt."
       },
       "weeklyDigest": {
         "title": "Wochenzusammenfassung",
@@ -1185,7 +1211,8 @@
         "notEnough": "Nur {count} Check-ins in den letzten 7 Tagen – für eine Zusammenfassung sind mindestens {min} nötig.",
         "unavailable": "Der KI-Dienst ist gerade nicht verfügbar. Es wurde nichts gespeichert; bitte später erneut versuchen.",
         "rateLimited": "Sie haben in den letzten 15 Minuten mehrere Zusammenfassungen erstellt. Bitte warten Sie einige Minuten.",
-        "error": "Die Zusammenfassung konnte nicht erstellt werden. Bitte erneut versuchen."
+        "error": "Die Zusammenfassung konnte nicht erstellt werden. Bitte erneut versuchen.",
+        "noConsent": "KI wurde von der Klientin oder dem Klienten nicht erlaubt, daher kann keine Zusammenfassung geschrieben werden. Es wurde nichts gesendet."
       },
       "sessionNotes": {
         "title": "Sitzungsnotizen",
@@ -1236,7 +1263,8 @@
       "allPractitioners": "Alle",
       "myClients": "Meine",
       "unassigned": "Nicht zugewiesen",
-      "clearSearch": "Suche löschen"
+      "clearSearch": "Suche löschen",
+      "aiConsentOff": "Diese Klientin oder dieser Klient hat KI nicht erlaubt. Nichts über sie oder ihn wird an einen KI-Anbieter gesendet."
     },
     "leads": {
       "statusNew": "Neu",
@@ -1588,7 +1616,8 @@
         "analytics": "Verbesserung unseres Angebots durch anonymisierte, zusammengefasste Auswertungen.",
         "legal": "Erfüllung gesetzlicher Pflichten nach schweizerischem und EU-Recht."
       },
-      "basis": "Rechtsgrundlage für die Bearbeitung von Gesundheitsdaten ist Ihre ausdrückliche Einwilligung (Art. 6 Abs. 1 lit. a und Art. 9 Abs. 2 lit. a DSGVO; Art. 31 revDSG). Sie können Ihre Einwilligung jederzeit widerrufen — siehe Abschnitt 7."
+      "basis": "Rechtsgrundlage für die Bearbeitung von Gesundheitsdaten ist Ihre ausdrückliche Einwilligung (Art. 6 Abs. 1 lit. a und Art. 9 Abs. 2 lit. a DSGVO; Art. 31 revDSG). Sie können Ihre Einwilligung jederzeit widerrufen — siehe Abschnitt 7.",
+      "aiConsent": "<b>KI-Funktionen:</b> Bevor eine KI-Funktion aus Abschnitt 6 Ihre Daten verwendet, fragt Sie das Portal einmal ausdrücklich um Ihre Einwilligung, sie an Groq und OpenRouter in den USA und — wenn die semantische Suche eingeschaltet ist — an OpenAI in den USA zu senden. Ihre Antwort wird mit Datum und Uhrzeit festgehalten. Wählen Sie „Jetzt nicht“, bleiben die KI-Funktionen für Sie ausgeschaltet — auch die Zusammenfassungen, die Ihre Therapeutin oder Ihr Therapeut startet —, nichts über Sie wird an diese Anbieter gesendet, und das Portal funktioniert ohne sie. Sie können KI jederzeit in Ihren Kontoeinstellungen erlauben oder Ihre Einwilligung widerrufen. Auch ein Widerruf wird mit Datum und Uhrzeit festgehalten, wirkt sofort und löscht den Suchindex, der aus Ihren Daten berechnet wurde; die Bearbeitung davor bleibt unberührt."
     },
     "retention": {
       "heading": "4. Aufbewahrung",
@@ -1627,7 +1656,7 @@
         "data": "<b>Übermittelte Daten:</b> der Text jedes Check-ins, wenn Sie ihn speichern oder bearbeiten — oder durch einen täglichen Auftrag, falls er noch nicht erfasst ist — mit allen Werten sowie Ihrem Tagebuch, Ihren Erfolgen, Herausforderungen und Notizen; Titel und Text der Dokumente, die Ihre Therapeutin oder Ihr Therapeut Ihrer Akte hinzufügt; und jede Frage, die Sie dem KI-Assistenten stellen.",
         "purpose": "<b>Zweck:</b> aus diesem Text einen numerischen Index (ein „Embedding“) berechnen, der in unserer Datenbank gespeichert und nur für die Suche verwendet wird."
       },
-      "choice": "Ob Sie den KI-Assistenten und die KI-Hilfe im Check-in-Formular nutzen, entscheiden Sie selbst. Zusammenfassungen startet Ihre Therapeutin oder Ihr Therapeut; wenn Sie keine möchten, sagen Sie es ihr oder ihm oder schreiben Sie uns über das <contact>Kontaktformular</contact>.",
+      "choice": "Jede der oben genannten Funktionen läuft nur, wenn Sie KI erlaubt haben (Abschnitt 3) — egal ob Sie sie starten oder Ihre Therapeutin oder Ihr Therapeut. Ohne Ihre Einwilligung funktionieren der Assistent und das Check-in-Formular ohne KI, und Ihre Therapeutin oder Ihr Therapeut erhält Sitzungszusammenfassungen ohne KI und keine Wochenzusammenfassung. Sie können Ihre Entscheidung jederzeit in Ihren Kontoeinstellungen ändern oder uns über das <contact>Kontaktformular</contact> schreiben.",
       "noSale": "Wir verkaufen Ihre Daten nicht. Über die Anbieter in den Abschnitten 5 und 6 hinaus geben wir Ihre Gesundheitsdaten nicht an Dritte weiter, ausser wenn das Gesetz es verlangt oder Sie ausdrücklich einwilligen."
     },
     "rights": {
