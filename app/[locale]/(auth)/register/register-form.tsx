@@ -11,8 +11,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { GoogleButton } from "@/components/auth/google-button";
 import { OrangecatButton } from "@/components/auth/orangecat-button";
 import { OtherWaysDisclosure } from "@/components/auth/other-ways-disclosure";
-import { PasswordStrength } from "@/components/ui/password-strength";
-import { PASSWORD_MIN_LENGTH } from "@/lib/constants";
 
 function RegisterForm({
   orangecatEnabled,
@@ -91,11 +89,8 @@ function RegisterForm({
               type="password"
               value={form.password}
               onChange={(e) => set("password", e.target.value)}
-              placeholder={t("passwordPlaceholder")}
               required
-              minLength={PASSWORD_MIN_LENGTH}
             />
-            <PasswordStrength password={form.password} />
           </div>
           {error && <p className="text-sm text-red-600">{error}</p>}
           <Button type="submit" disabled={loading} className="w-full mt-1">

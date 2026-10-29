@@ -36,4 +36,4 @@ pnpm db:studio    # drizzle studio
 
 ## Project layout
 
-See [`CLAUDE.md`](./CLAUDE.md) for architecture, design-system tokens, and engineering conventions.
+See [`AGENTS.md`](./AGENTS.md) for architecture, design-system tokens, and engineering conventions.

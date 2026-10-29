@@ -36,6 +36,25 @@ import {
 
 const health = createHealthTracker({ downAfter: 3 });
 
+/**
+ * The model vendors this app may send data to. Every one of them is named in
+ * the privacy policy (`messages/*.json`, `privacy.ai`), because the requests
+ * carry clients' health data. ai-kit's `freeChain` also knows other vendors
+ * (Google, today) and would use them as soon as their key appeared in the box
+ * env — which is shared across apps — so the chain is pinned here. Adding a
+ * vendor is a privacy-policy change first. `__tests__/llm-processors.test.ts`.
+ */
+export const AI_PROCESSORS = ["groq", "openrouter"] as const;
+
+/** The chain, limited to the vendors the privacy policy discloses. */
+export function disclosedChain(env: NodeJS.ProcessEnv = process.env) {
+  const allowed: readonly string[] = AI_PROCESSORS;
+  return usableChain(
+    freeChain("SURF").filter((provider) => allowed.includes(provider.id)),
+    env,
+  );
+}
+
 export function getLLMHealth() {
   return health.getHealth();
 }
@@ -59,7 +78,7 @@ export async function callLLM({
   system,
   maxTokens = 500,
 }: CallOptions): Promise<string | null> {
-  const chain = usableChain(freeChain("SURF"), process.env);
+  const chain = disclosedChain();
   if (chain.length === 0) return null;
 
   try {
@@ -105,7 +124,7 @@ let aiHealth: ((request: Request) => Promise<Response>) | null = null;
 
 export function aiHealthHandler(request: Request): Promise<Response> {
   aiHealth ??= createAiHealthHandler({
-    chain: usableChain(freeChain("SURF"), process.env),
+    chain: disclosedChain(),
     health,
     secret: process.env.AI_PROBE_SECRET,
   });

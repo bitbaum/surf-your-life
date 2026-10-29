@@ -1,20 +1,59 @@
-import { setRequestLocale } from "next-intl/server";
+import type { ReactNode } from "react";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { MarketingNav } from "@/components/marketing/nav";
 import { MarketingFooter } from "@/components/marketing/footer";
 import { auth } from "@/lib/auth";
 import { Link } from "@/i18n/navigation";
 import type { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "Privacy Policy",
-  description:
-    "How Surf Your Life collects, processes, and protects your personal and health data. Swiss nFADP and EU GDPR compliant.",
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "privacy" });
+  return { title: t("metaTitle"), description: t("metaDescription") };
+}
+
+// Rich-text tags the policy messages may use.
+const tags = {
+  b: (chunks: ReactNode) => <strong>{chunks}</strong>,
+  contact: (chunks: ReactNode) => (
+    <Link href="/contact" className="text-teal-600 hover:underline">
+      {chunks}
+    </Link>
+  ),
 };
+
+function Section({ heading, children }: { heading: string; children: ReactNode }) {
+  return (
+    <section className="mb-10">
+      <h2 className="text-xl font-semibold text-slate-900 mb-3">{heading}</h2>
+      {children}
+    </section>
+  );
+}
+
+function Bullets({ items }: { items: ReactNode[] }) {
+  return (
+    <ul className="list-disc pl-5 text-slate-600 text-sm space-y-2">
+      {items.map((item, i) => (
+        <li key={i}>{item}</li>
+      ))}
+    </ul>
+  );
+}
+
+const PROSE = "text-slate-600 text-sm leading-relaxed";
 
 export default async function PrivacyPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
+  const t = await getTranslations("privacy");
   const session = await auth();
+  const rich = (key: string) => t.rich(key, tags);
+  const list = (prefix: string, keys: string[]) => keys.map((k) => rich(`${prefix}.${k}`));
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
@@ -22,191 +61,107 @@ export default async function PrivacyPage({ params }: { params: Promise<{ locale
 
       <main className="flex-1 py-16 px-6">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-3xl font-bold text-slate-900 mb-2">Privacy Policy</h1>
-          <p className="text-slate-500 mb-10">
-            Last updated: October 2026 · Applies to surf-your-life.orangecat.ch and the Surf Your
-            Life client portal
-          </p>
+          <h1 className="text-3xl font-bold text-slate-900 mb-2">{t("title")}</h1>
+          <p className="text-slate-500 mb-10">{t("updated")}</p>
 
-          {/* 1 — Data Controller */}
-          <section className="mb-10">
-            <h2 className="text-xl font-semibold text-slate-900 mb-3">1. Data Controller</h2>
-            <p className="text-slate-600 text-sm leading-relaxed">
-              The data controller responsible for your personal information is:
-            </p>
+          <Section heading={t("controller.heading")}>
+            <p className={PROSE}>{t("controller.intro")}</p>
             <address className="not-italic text-slate-700 text-sm mt-3 pl-4 border-l-2 border-teal-200">
               <strong>Surf Your Life</strong>
               <br />
-              Dr. Manu (Medical Director)
+              {t("controller.director")}
               <br />
               Zollikerstrasse 183
               <br />
-              8008 Zürich, Switzerland
+              8008 Zürich, {t("controller.country")}
             </address>
-          </section>
+          </Section>
 
-          {/* 2 — Data Collected */}
-          <section className="mb-10">
-            <h2 className="text-xl font-semibold text-slate-900 mb-3">2. Data We Collect</h2>
-            <p className="text-slate-600 text-sm leading-relaxed mb-3">
-              We collect only what is necessary to deliver our service:
-            </p>
-            <ul className="list-disc pl-5 text-slate-600 text-sm space-y-2">
-              <li>
-                <strong>Account information:</strong> name, email address, and (optionally) a
-                profile photo when you register via OrangeCat or with email and password.
-              </li>
-              <li>
-                <strong>Health tracking data:</strong> mood ratings, energy levels, sleep duration,
-                and free-text reflections you enter during check-ins.
-              </li>
-              <li>
-                <strong>Contact information:</strong> messages sent through the contact form or the
-                in-portal messaging feature.
-              </li>
-              <li>
-                <strong>Technical data:</strong> IP address, browser type, and access logs —
-                collected automatically by our hosting infrastructure (Hetzner, Germany) for
-                security and performance purposes.
-              </li>
-            </ul>
-          </section>
+          <Section heading={t("collected.heading")}>
+            <p className={`${PROSE} mb-3`}>{t("collected.intro")}</p>
+            <Bullets
+              items={list("collected.items", ["account", "health", "contact", "technical"])}
+            />
+          </Section>
 
-          {/* 3 — Purpose */}
-          <section className="mb-10">
-            <h2 className="text-xl font-semibold text-slate-900 mb-3">3. Purpose of Processing</h2>
-            <ul className="list-disc pl-5 text-slate-600 text-sm space-y-2">
-              <li>Providing and personalising the client portal and health tracking features.</li>
-              <li>Enabling practitioners to review your progress and provide clinical guidance.</li>
-              <li>Communicating with you about your program and appointments.</li>
-              <li>Improving our service through anonymised, aggregated analytics.</li>
-              <li>Complying with legal obligations under Swiss and EU law.</li>
-            </ul>
-            <p className="text-slate-600 text-sm mt-3">
-              The legal basis for processing health data is your explicit consent (Art. 6(1)(a) and
-              Art. 9(2)(a) GDPR; Art. 31 nFADP). You may withdraw consent at any time — see Section
-              6.
-            </p>
-          </section>
+          <Section heading={t("purpose.heading")}>
+            <Bullets
+              items={list("purpose.items", [
+                "portal",
+                "practitioners",
+                "communication",
+                "analytics",
+                "legal",
+              ])}
+            />
+            <p className={`${PROSE} mt-3`}>{t("purpose.basis")}</p>
+          </Section>
 
-          {/* 4 — Retention */}
-          <section className="mb-10">
-            <h2 className="text-xl font-semibold text-slate-900 mb-3">4. Data Retention</h2>
-            <p className="text-slate-600 text-sm leading-relaxed">
-              We retain your data for as long as your account is active and for a maximum of 5 years
-              after account closure, unless a longer retention period is required by applicable law
-              (e.g., Swiss medical record obligations). Check-in data and health records may be
-              subject to a 10-year retention minimum under Swiss health legislation.
-            </p>
-          </section>
+          <Section heading={t("retention.heading")}>
+            <p className={PROSE}>{t("retention.body")}</p>
+          </Section>
 
-          {/* 5 — Third Parties */}
-          <section className="mb-10">
-            <h2 className="text-xl font-semibold text-slate-900 mb-3">5. Third-Party Processors</h2>
-            <ul className="list-disc pl-5 text-slate-600 text-sm space-y-2">
-              <li>
-                <strong>Hetzner Online GmbH</strong> (Germany, EU) — application and database
-                hosting (self-hosted PostgreSQL). Hosting stays within the EU/EEA.
-              </li>
-              <li>
-                <strong>OrangeCat</strong> — sign-in if you choose &ldquo;Sign in with
-                OrangeCat&rdquo;.
-              </li>
-              <li>
-                <strong>Resend</strong> (USA) — delivery of every email the portal sends: account,
-                booking and reminder emails, and also emails that carry health data — your weekly
-                report (check-in averages, a journal excerpt and the latest AI summary), your
-                practitioner&apos;s notes on your check-ins, the text of portal messages, and
-                clinical alerts about you sent to your practitioner.
-              </li>
-              <li>
-                <strong>Groq and OpenRouter</strong> (USA) — AI language models behind the AI
-                assistant, the AI help on the check-in form, and the summaries practitioners
-                request. When one of these features is used, what you typed and the relevant
-                check-in and program data are sent to the model to produce the answer. OpenRouter
-                passes each request on to the model host it selects, which may be outside the USA.
-              </li>
-            </ul>
-            <p className="text-slate-600 text-sm mt-3">
-              We do not sell your data. Beyond the processors listed above, we do not share your
-              health data with any third party unless required by law or with your explicit consent.
-            </p>
-          </section>
+          <Section heading={t("processors.heading")}>
+            <p className={`${PROSE} mb-3`}>{t("processors.intro")}</p>
+            <Bullets items={list("processors", ["hetzner", "orangecat", "resend"])} />
+          </Section>
 
-          {/* 6 — Your Rights */}
-          <section className="mb-10">
-            <h2 className="text-xl font-semibold text-slate-900 mb-3">6. Your Rights</h2>
-            <p className="text-slate-600 text-sm leading-relaxed mb-3">
-              Under Swiss nFADP and EU GDPR you have the right to:
-            </p>
-            <ul className="list-disc pl-5 text-slate-600 text-sm space-y-2">
-              <li>
-                <strong>Access</strong> a copy of all personal data we hold about you.
-              </li>
-              <li>
-                <strong>Rectification</strong> of inaccurate or incomplete data.
-              </li>
-              <li>
-                <strong>Erasure</strong> (&ldquo;right to be forgotten&rdquo;) — deletion of your
-                account and all associated data, subject to legal retention obligations.
-              </li>
-              <li>
-                <strong>Portability</strong> — receive your check-in and profile data in a
-                structured, machine-readable format (JSON or CSV).
-              </li>
-              <li>
-                <strong>Restriction</strong> of processing while a dispute is under review.
-              </li>
-              <li>
-                <strong>Withdraw consent</strong> at any time without affecting prior processing.
-              </li>
-              <li>
-                <strong>Lodge a complaint</strong> with the Swiss Federal Data Protection and
-                Information Commissioner (FDPIC) or, for EU residents, your local supervisory
-                authority.
-              </li>
-            </ul>
-            <p className="text-slate-600 text-sm mt-4">
-              To exercise any of these rights, write to us through the{" "}
-              <Link href="/contact" className="text-teal-600 hover:underline">
-                contact form
-              </Link>
-              . We will respond within 30 days.
-            </p>
-          </section>
+          <Section heading={t("ai.heading")}>
+            <p className={`${PROSE} mb-4`}>{t("ai.intro")}</p>
 
-          {/* 7 — Cookies */}
-          <section className="mb-10">
-            <h2 className="text-xl font-semibold text-slate-900 mb-3">7. Cookies</h2>
-            <p className="text-slate-600 text-sm leading-relaxed">
-              We set only functional cookies: to keep you signed in, to secure the sign-in flow, and
-              to remember your language. No tracking or advertising cookies are set. We do not use
-              Google Analytics or similar tracking tools.
-            </p>
-          </section>
+            <h3 className="font-semibold text-slate-900 mb-2">{t("ai.groq.name")}</h3>
+            <div className={`${PROSE} space-y-2 mb-6`}>
+              <p>{rich("ai.groq.role")}</p>
+              <p>{rich("ai.groq.data")}</p>
+              <Bullets items={list("ai.groq", ["chat", "form", "summaries"])} />
+              <p>{t("ai.groq.notSent")}</p>
+              <p>{rich("ai.groq.purpose")}</p>
+              <p>{rich("ai.basis")}</p>
+            </div>
 
-          {/* 8 — Compliance */}
-          <section className="mb-10">
-            <h2 className="text-xl font-semibold text-slate-900 mb-3">8. Legal Compliance</h2>
-            <p className="text-slate-600 text-sm leading-relaxed">
-              This policy complies with the{" "}
-              <strong>Swiss Federal Act on Data Protection (nFADP / revDSG)</strong>, in force since
-              1 September 2023, and with the{" "}
-              <strong>EU General Data Protection Regulation (GDPR)</strong> where applicable to EU
-              residents. As a health portal processing special-category data, we apply the highest
-              level of data protection obligations.
-            </p>
-          </section>
+            {(["openrouter", "openai"] as const).map((id) => (
+              <div key={id} className="mb-6">
+                <h3 className="font-semibold text-slate-900 mb-2">{t(`ai.${id}.name`)}</h3>
+                <div className={`${PROSE} space-y-2`}>
+                  <p>{rich(`ai.${id}.role`)}</p>
+                  <p>{rich(`ai.${id}.data`)}</p>
+                  <p>{rich(`ai.${id}.purpose`)}</p>
+                  <p>{rich("ai.basis")}</p>
+                </div>
+              </div>
+            ))}
 
-          {/* 9 — Changes */}
-          <section className="mb-10">
-            <h2 className="text-xl font-semibold text-slate-900 mb-3">9. Changes to This Policy</h2>
-            <p className="text-slate-600 text-sm leading-relaxed">
-              We may update this policy as our services evolve or legal requirements change.
-              Material changes will be communicated by email to registered users at least 14 days
-              before they take effect. The current version is always available at this URL.
-            </p>
-          </section>
+            <p className={`${PROSE} mb-3`}>{rich("ai.choice")}</p>
+            <p className={PROSE}>{t("ai.noSale")}</p>
+          </Section>
+
+          <Section heading={t("rights.heading")}>
+            <p className={`${PROSE} mb-3`}>{t("rights.intro")}</p>
+            <Bullets
+              items={list("rights.items", [
+                "access",
+                "rectification",
+                "erasure",
+                "portability",
+                "restriction",
+                "withdraw",
+                "complaint",
+              ])}
+            />
+            <p className={`${PROSE} mt-4`}>{rich("rights.exercise")}</p>
+          </Section>
+
+          <Section heading={t("cookies.heading")}>
+            <p className={PROSE}>{t("cookies.body")}</p>
+          </Section>
+
+          <Section heading={t("compliance.heading")}>
+            <p className={PROSE}>{rich("compliance.body")}</p>
+          </Section>
+
+          <Section heading={t("changes.heading")}>
+            <p className={PROSE}>{t("changes.body")}</p>
+          </Section>
         </div>
       </main>
 

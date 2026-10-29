@@ -48,5 +48,9 @@ allowBuilds:
 # (@bitbaum/mail-kit is bare above — worth tightening the same way, separately,
 # rather than editing another PR's line here.)
 minimumReleaseAgeExclude:
+  - "@bitbaum/chatkit"
   - "@bitbaum/mail-kit"
   - "@bitbaum/ai-kit"
+  - "@bitbaum/accountkit"
+  - "@bitbaum/whenkit@0.3.3"
+  - limitkit@0.2.1

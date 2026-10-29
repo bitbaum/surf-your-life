@@ -4,9 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { PasswordStrength } from "@/components/ui/password-strength";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { PASSWORD_MIN_LENGTH } from "@/lib/constants";
 
 export function SecurityForm() {
   const t = useTranslations("auth.changePassword");
@@ -78,9 +76,7 @@ export function SecurityForm() {
               value={form.newPassword}
               onChange={(e) => set("newPassword", e.target.value)}
               required
-              minLength={PASSWORD_MIN_LENGTH}
             />
-            <PasswordStrength password={form.newPassword} />
           </div>
           <Input
             label={t("confirm")}
@@ -88,7 +84,6 @@ export function SecurityForm() {
             value={form.confirmPassword}
             onChange={(e) => set("confirmPassword", e.target.value)}
             required
-            minLength={PASSWORD_MIN_LENGTH}
           />
           {error && <p className="text-sm text-red-600">{error}</p>}
           {success && <p className="text-sm text-teal-600">{t("success")}</p>}

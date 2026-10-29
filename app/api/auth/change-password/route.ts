@@ -8,6 +8,7 @@ import { checkRateLimit, ipKey } from "@/lib/rate-limit";
 import {
   API_ERR_RATE_LIMITED,
   BCRYPT_SALT_ROUNDS,
+  PASSWORD_MAX_LENGTH,
   PASSWORD_MIN_LENGTH,
   API_ERR_NO_PASSWORD_AUTH,
   API_ERR_WRONG_PASSWORD,
@@ -16,7 +17,7 @@ import { parseBody, requireAuth, ok } from "@/lib/api";
 
 const changePasswordSchema = z.object({
   currentPassword: z.string().min(1),
-  newPassword: z.string().min(PASSWORD_MIN_LENGTH),
+  newPassword: z.string().min(PASSWORD_MIN_LENGTH).max(PASSWORD_MAX_LENGTH),
 });
 
 export async function POST(req: Request) {

@@ -7,8 +7,13 @@ import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { users } from "@/lib/db/schema";
 import { loginSchema, resolveRole, CLIENT_ROLE, type AppRole } from "@/lib/domain/auth";
-import { emailEarnsPromotion, googleClient, orangecatClient, orangecatProvider } from "./provider";
-import { withOrangecatIdentity } from "./orangecat-identity";
+import {
+  emailEarnsPromotion,
+  orangecatClient,
+  orangecatProvider,
+  withOrangecatIdentity,
+} from "@bitbaum/accountkit/orangecat";
+import { googleClient } from "./google";
 import { orangecatUserStore } from "./orangecat-store";
 
 // Absent (not broken) until the box has ORANGECAT_OAUTH_CLIENT_ID/_SECRET.
@@ -26,7 +31,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
     // Identity only — no OrangeCat token refresh in jwt(): rotation breaks
     // inside page renders. The session lives on this app's own JWT.
-    ...(orangecat ? [orangecatProvider(orangecat.clientId, orangecat.clientSecret)] : []),
+    ...(orangecat ? [orangecatProvider(orangecat)] : []),
     ...(google ? [Google({ clientId: google.clientId, clientSecret: google.clientSecret })] : []),
     Credentials({
       async authorize(credentials) {

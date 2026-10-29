@@ -250,7 +250,6 @@
       "subtitle": "Begin your program — takes 2 minutes",
       "email": "Email",
       "password": "Password",
-      "passwordPlaceholder": "At least 8 characters",
       "submit": "Create account",
       "loading": "Creating account…",
       "hasAccount": "Already have an account?",
@@ -310,13 +309,7 @@
     "unverifiedBanner": "Please verify your email address.",
     "resendVerification": "Resend verification email",
     "resendSent": "Verification email sent",
-    "dismiss": "Dismiss",
-    "passwordStrength": {
-      "weak": "Weak",
-      "fair": "Fair",
-      "good": "Good",
-      "strong": "Strong"
-    }
+    "dismiss": "Dismiss"
   },
   "contact": {
     "title": "Get in touch",
@@ -1560,5 +1553,104 @@
     "working": "Working…",
     "undo": "Undo",
     "changedFields": "{count, plural, one {# field updated} other {# fields updated}}"
+  },
+  "privacy": {
+    "metaTitle": "Privacy Policy",
+    "metaDescription": "How Surf Your Life collects, processes and protects your personal and health data, and which providers receive it.",
+    "title": "Privacy Policy",
+    "updated": "Last updated: October 2026 · Applies to surf-your-life.orangecat.ch and the Surf Your Life client portal",
+    "controller": {
+      "heading": "1. Data controller",
+      "intro": "The data controller responsible for your personal information is:",
+      "director": "Dr. Manu (Medical Director)",
+      "country": "Switzerland"
+    },
+    "collected": {
+      "heading": "2. Data we collect",
+      "intro": "We collect only what is necessary to deliver our service:",
+      "items": {
+        "account": "<b>Account information:</b> name, email address and, optionally, a profile photo when you register via OrangeCat or with email and password.",
+        "health": "<b>Health data:</b> what you enter in the portal — check-ins (mood, energy, sleep, activity, symptom scores, journal, wins and challenges), medications, functional assessments and technique logs — and what your practitioner and the portal record about you, such as session notes, documents and clinical alerts.",
+        "contact": "<b>Contact information:</b> messages sent through the contact form or the in-portal messaging feature.",
+        "technical": "<b>Technical data:</b> IP address, browser type and access logs — collected automatically by our hosting infrastructure (Hetzner, Germany) for security and performance purposes."
+      }
+    },
+    "purpose": {
+      "heading": "3. Purpose of processing",
+      "items": {
+        "portal": "Providing and personalising the client portal and health tracking features.",
+        "practitioners": "Enabling practitioners to review your progress and provide clinical guidance.",
+        "communication": "Communicating with you about your program and appointments.",
+        "analytics": "Improving our service through anonymised, aggregated analytics.",
+        "legal": "Complying with legal obligations under Swiss and EU law."
+      },
+      "basis": "The legal basis for processing health data is your explicit consent (Art. 6(1)(a) and Art. 9(2)(a) GDPR; Art. 31 nFADP). You may withdraw consent at any time — see section 7."
+    },
+    "retention": {
+      "heading": "4. Data retention",
+      "body": "We retain your data for as long as your account is active and for a maximum of 5 years after account closure, unless a longer retention period is required by applicable law (e.g. Swiss medical record obligations). Check-in data and health records may be subject to a 10-year retention minimum under Swiss health legislation."
+    },
+    "processors": {
+      "heading": "5. Processors",
+      "intro": "These providers process data on our behalf:",
+      "hetzner": "<b>Hetzner Online GmbH</b> (Germany, EU) — application and database hosting (self-hosted PostgreSQL). Hosting stays within the EU/EEA.",
+      "orangecat": "<b>OrangeCat</b> — sign-in, if you choose “Sign in with OrangeCat”. OrangeCat also serves the feedback button on our public pages (never inside the portal) and receives what you send through it.",
+      "resend": "<b>Resend</b> (USA) — delivery of every email the portal sends: account, booking and reminder emails, and also emails that carry health data — your weekly report (check-in averages, a journal excerpt and the latest AI summary), your practitioner’s notes on your check-ins, the text of portal messages, and clinical alerts about you sent to your practitioner."
+    },
+    "ai": {
+      "heading": "6. AI processors in the USA",
+      "intro": "Some portal features use AI language models run by providers in the USA. These requests carry health data. For each provider: what is sent, why, and on what basis.",
+      "basis": "<b>Legal basis:</b> your explicit consent (section 3), which also covers the transfer to the USA. We name no other safeguard for this transfer, such as standard contractual clauses.",
+      "groq": {
+        "name": "Groq (USA)",
+        "role": "<b>Role:</b> runs the AI language model behind the features below. Every request goes to Groq first.",
+        "data": "<b>Data sent</b>, only when one of these features is used:",
+        "chat": "<b>AI assistant</b> (started by you): your question and up to the last 10 messages of the conversation; your last 10 check-ins (date, mood, energy, sleep hours and quality, activity, post-exertional malaise and its severity, fatigue, brain fog, pain, stress, dizziness on standing, and the first 100 characters of your journal); your current medications (name, dose, frequency); your latest functional assessment scores; your assigned techniques with their 14-day adherence; and your program, week and phase.",
+        "form": "<b>AI help on the check-in form</b> (started by you): what you type into it, your earlier messages in that exchange, and the answers already on the form.",
+        "summaries": "<b>Practitioner summaries</b> — session preparation and the weekly digest (started by your practitioner): your name; your main concern and goals; current medications; your latest functional assessment with its notes; program, week and phase; assigned techniques and adherence; your recent check-ins, including your journal (shortened), wins, challenges and notes; open clinical alerts; and excerpts of recent session notes.",
+        "notSent": "Your email address is not sent. No scheduled job sends anything to Groq or OpenRouter.",
+        "purpose": "<b>Purpose:</b> to write the assistant’s reply, fill in the check-in form, or write the summary. Summaries are stored in the portal; the weekly digest is also shown on your dashboard and included in your weekly report email."
+      },
+      "openrouter": {
+        "name": "OpenRouter (USA)",
+        "role": "<b>Role:</b> fallback. A request goes to OpenRouter only when Groq cannot answer it. OpenRouter passes each request on to the company that hosts the model it selects, which may be outside the USA.",
+        "data": "<b>Data sent:</b> the same as for Groq above, for the same features.",
+        "purpose": "<b>Purpose:</b> the same as for Groq."
+      },
+      "openai": {
+        "name": "OpenAI (USA) — only if semantic search is switched on",
+        "role": "<b>Role:</b> semantic search, which lets the AI assistant find the check-ins most relevant to your question. It runs only when the clinic has configured an OpenAI key; without one, nothing is sent to OpenAI and the assistant uses your most recent check-ins instead.",
+        "data": "<b>Data sent:</b> the text of each check-in when you save or edit it — or by a daily job, if it has not been indexed yet — with all its scores and your journal, wins, challenges and notes; the title and text of documents your practitioner adds to your file; and each question you send the AI assistant.",
+        "purpose": "<b>Purpose:</b> to compute a numeric index of that text (an “embedding”), which is stored in our database and used only for search."
+      },
+      "choice": "You decide whether to use the AI assistant and the AI help on the check-in form. Practitioner summaries are started by your practitioner; if you do not want them, tell your practitioner or write to us through the <contact>contact form</contact>.",
+      "noSale": "We do not sell your data. Beyond the processors in sections 5 and 6, we do not share your health data with any third party unless required by law or with your explicit consent."
+    },
+    "rights": {
+      "heading": "7. Your rights",
+      "intro": "Under Swiss nFADP and EU GDPR you have the right to:",
+      "items": {
+        "access": "<b>Access</b> a copy of all personal data we hold about you.",
+        "rectification": "<b>Rectification</b> of inaccurate or incomplete data.",
+        "erasure": "<b>Erasure</b> (“right to be forgotten”) — deletion of your account and all associated data, subject to legal retention obligations.",
+        "portability": "<b>Portability</b> — receive your check-in and profile data in a structured, machine-readable format (JSON or CSV).",
+        "restriction": "<b>Restriction</b> of processing while a dispute is under review.",
+        "withdraw": "<b>Withdraw consent</b> at any time without affecting prior processing.",
+        "complaint": "<b>Lodge a complaint</b> with the Swiss Federal Data Protection and Information Commissioner (FDPIC) or, for EU residents, your local supervisory authority."
+      },
+      "exercise": "To exercise any of these rights, write to us through the <contact>contact form</contact>. We will respond within 30 days."
+    },
+    "cookies": {
+      "heading": "8. Cookies",
+      "body": "We set only functional cookies: to keep you signed in, to secure the sign-in flow, and to remember your language. No tracking or advertising cookies are set. We do not use Google Analytics or similar tracking tools."
+    },
+    "compliance": {
+      "heading": "9. Legal compliance",
+      "body": "This policy complies with the <b>Swiss Federal Act on Data Protection (nFADP / revDSG)</b>, in force since 1 September 2023, and with the <b>EU General Data Protection Regulation (GDPR)</b> where applicable to EU residents. As a health portal processing special-category data, we apply the highest level of data protection obligations."
+    },
+    "changes": {
+      "heading": "10. Changes to this policy",
+      "body": "We may update this policy as our services evolve or legal requirements change. Material changes will be communicated by email to registered users at least 14 days before they take effect. The current version is always available at this URL."
+    }
   }
 }
