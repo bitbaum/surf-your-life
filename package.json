@@ -25,7 +25,7 @@
   "dependencies": {
     "@auth/drizzle-adapter": "^1.11.3",
     "@bitbaum/accountkit": "^0.9.1",
-    "@bitbaum/ai-kit": "^1.21.4",
+    "@bitbaum/ai-kit": "^1.21.5",
     "@bitbaum/mail-kit": "^0.2.0",
     "@bitbaum/whenkit": "^0.3.3",
     "@fleet/ai-forms": "npm:ai-forms@^0.1.3",
