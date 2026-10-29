@@ -2,6 +2,7 @@ import { and, desc, eq, gte } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { checkIns } from "@/lib/db/schema";
 import { callLLM } from "@/lib/domain/llm";
+import { hasAiConsent } from "@/lib/domain/ai-consent";
 import { AI_DIGEST_MIN_CHECKINS, SEVEN_DAYS_MS } from "@/lib/constants";
 
 type CheckInRow = {
@@ -73,7 +74,8 @@ Be factual, empathetic, and clinically precise. No bullet points — flowing pro
 export type ClientDigestResult =
   | { status: "generated"; digest: string; checkInCount: number }
   | { status: "not_enough_check_ins"; checkInCount: number }
-  | { status: "unavailable"; checkInCount: number };
+  | { status: "unavailable"; checkInCount: number }
+  | { status: "no_consent" };
 
 /**
  * On-demand weekly digest for ONE client, triggered by a staff member.
@@ -90,6 +92,10 @@ export async function generateClientDigest(
   clientId: string,
   clientName: string,
 ): Promise<ClientDigestResult> {
+  // The digest is written from the client's data, so the client's consent
+  // governs. There is no non-AI digest; say so instead of calling the model.
+  if (!(await hasAiConsent(clientId))) return { status: "no_consent" };
+
   const weekCheckIns = await db.query.checkIns.findMany({
     where: and(
       eq(checkIns.userId, clientId),

@@ -505,6 +505,35 @@ export const aiMessages = pgTable(
   ],
 );
 
+// ─── AI consent (append-only record of each client's decision) ───────────────
+//
+// No AI feature may use a client's data until this client has said yes. Every
+// answer is a new row, never an update: the latest row is the current state,
+// and the earlier ones are the timestamped evidence of what was agreed and
+// withdrawn, and when. `declined` is "Not now" on the one-time prompt — it
+// means the same as no row for the gate, but stops the prompt being shown again.
+
+export const aiConsentActionEnum = pgEnum("ai_consent_action", [
+  "granted",
+  "declined",
+  "withdrawn",
+]);
+
+export const aiConsentEvents = pgTable(
+  "ai_consent_events",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    action: aiConsentActionEnum("action").notNull(),
+    // Which wording of the consent screen the client answered.
+    policyVersion: text("policy_version").notNull(),
+    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+  },
+  (table) => [index("ai_consent_events_user_created_idx").on(table.userId, table.createdAt)],
+);
+
 // ─── Session prep (practitioner-only pre-session briefing) ───────────────────
 //
 // Generating one spends the shared free AI pool, so it happens only when a
@@ -633,6 +662,7 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   medicationLog: many(medicationLog),
   alerts: many(clientAlerts),
   aiMessages: many(aiMessages),
+  aiConsentEvents: many(aiConsentEvents),
   techniqueAssignments: many(techniqueAssignments),
   techniqueLogs: many(techniqueLogs),
 }));
@@ -694,6 +724,10 @@ export const clientAlertsRelations = relations(clientAlerts, ({ one }) => ({
 
 export const aiMessagesRelations = relations(aiMessages, ({ one }) => ({
   user: one(users, { fields: [aiMessages.userId], references: [users.id] }),
+}));
+
+export const aiConsentEventsRelations = relations(aiConsentEvents, ({ one }) => ({
+  user: one(users, { fields: [aiConsentEvents.userId], references: [users.id] }),
 }));
 
 export const techniquesRelations = relations(techniques, ({ one, many }) => ({

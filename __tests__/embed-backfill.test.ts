@@ -13,6 +13,7 @@ const embedCheckIn = vi.fn();
 const embedDocument = vi.fn();
 const selectRows = vi.fn();
 const countRows = vi.fn();
+const whereArgs: unknown[] = [];
 
 vi.mock("@/lib/auth/cron", () => ({ verifyCronAuth: () => null }));
 vi.mock("@/lib/domain/embeddings", () => ({
@@ -26,7 +27,8 @@ vi.mock("@/lib/db", () => ({
   db: {
     select: (shape: Record<string, unknown>) => ({
       from: (table: unknown) => {
-        const where = () => {
+        const where = (condition: unknown) => {
+          whereArgs.push(condition);
           const rowsFor = "n" in shape ? countRows : selectRows;
           const result = rowsFor(table);
           return Object.assign(Promise.resolve(result), { limit: () => Promise.resolve(result) });
@@ -48,6 +50,7 @@ beforeEach(() => {
   embedDocument.mockReset().mockResolvedValue(true);
   selectRows.mockReset().mockReturnValue([]);
   countRows.mockReset().mockReturnValue([{ n: 0 }]);
+  whereArgs.length = 0;
   vi.spyOn(console, "error").mockImplementation(() => {});
 });
 
@@ -112,5 +115,19 @@ describe("GET /api/cron/embed-backfill", () => {
     expect(body.checkInsEmbedded).toBe(1);
     expect(body.remainingCheckIns).toBe(0);
     expect(body.checkInsFailed).toBeUndefined();
+  });
+
+  it("only selects and counts rows of clients whose latest decision is AI consent", async () => {
+    const { PgDialect } = await import("drizzle-orm/pg-core");
+    const dialect = new PgDialect();
+    await GET(req);
+
+    // Four queries: two batches, two remaining counts — every one filtered.
+    expect(whereArgs).toHaveLength(4);
+    for (const condition of whereArgs) {
+      const { sql } = dialect.sqlToQuery(condition as Parameters<typeof dialect.sqlToQuery>[0]);
+      expect(sql).toContain("ai_consent_events");
+      expect(sql).toContain("'granted'");
+    }
   });
 });

@@ -9,6 +9,9 @@ import { ReminderToggle } from "./reminder-toggle";
 import { db } from "@/lib/db";
 import { profiles } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
+import { CLIENT_ROLE } from "@/lib/domain/auth";
+import { getAiConsent } from "@/lib/domain/ai-consent";
+import { AiConsentSettingsCard } from "@/components/portal/ai-consent/settings-card";
 
 export default async function SettingsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -19,10 +22,14 @@ export default async function SettingsPage({ params }: { params: Promise<{ local
 
   const t = await getTranslations("portal.settings");
 
-  const profile = await db.query.profiles.findFirst({
-    where: eq(profiles.userId, session.user.id),
-    columns: { receiveReminders: true },
-  });
+  const isClient = session.user.role === CLIENT_ROLE;
+  const [profile, aiConsent] = await Promise.all([
+    db.query.profiles.findFirst({
+      where: eq(profiles.userId, session.user.id),
+      columns: { receiveReminders: true },
+    }),
+    isClient ? getAiConsent(session.user.id) : null,
+  ]);
   // Default to true if no profile exists yet (new users haven't completed onboarding)
   const receiveReminders = profile?.receiveReminders ?? true;
 
@@ -39,6 +46,10 @@ export default async function SettingsPage({ params }: { params: Promise<{ local
           <ReminderToggle initialValue={receiveReminders} />
         </CardContent>
       </Card>
+
+      {aiConsent && (
+        <AiConsentSettingsCard state={aiConsent.state} decidedAt={aiConsent.decidedAt} />
+      )}
 
       {/* Export */}
       <Card>

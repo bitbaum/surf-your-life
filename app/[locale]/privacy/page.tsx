@@ -95,6 +95,9 @@ export default async function PrivacyPage({ params }: { params: Promise<{ locale
               ])}
             />
             <p className={`${PROSE} mt-3`}>{t("purpose.basis")}</p>
+            <p id="ai-consent" className={`${PROSE} mt-3`}>
+              {rich("purpose.aiConsent")}
+            </p>
           </Section>
 
           <Section heading={t("retention.heading")}>

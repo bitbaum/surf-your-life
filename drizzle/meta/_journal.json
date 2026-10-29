@@ -190,6 +190,13 @@
       "when": 1776013742024,
       "tag": "0025_users_orangecat_sub",
       "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "7",
+      "when": 1776013742025,
+      "tag": "0026_ai_consent",
+      "breakpoints": true
     }
   ]
 }

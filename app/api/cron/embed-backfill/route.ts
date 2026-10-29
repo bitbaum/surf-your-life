@@ -1,5 +1,6 @@
 /**
- * Cron job: backfill embeddings for check-ins and documents that don't have one.
+ * Cron job: backfill embeddings for check-ins and documents that don't have one,
+ * for clients who have given AI consent (lib/domain/ai-consent) — no one else.
  * Runs daily; once all records are embedded it becomes a no-op.
  * Processes up to EMBED_BACKFILL_BATCH records per table per run to avoid timeouts.
  *
@@ -16,15 +17,25 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { checkIns, documents } from "@/lib/db/schema";
-import { count, isNull } from "drizzle-orm";
+import { and, count, isNull, sql } from "drizzle-orm";
 import { embedCheckIn, embedDocument } from "@/lib/domain/embeddings";
+import { usersWithAiConsent } from "@/lib/domain/ai-consent";
 import { verifyCronAuth } from "@/lib/auth/cron";
 import { EMBED_BACKFILL_BATCH } from "@/lib/constants";
 
+// Only rows whose owner has given AI consent are work for this job. Everyone
+// else's rows are not pending — they must never be sent — so they are left out
+// of both the batch and the remaining count. embedCheckIn / embedDocument check
+// consent again per row, in case it was withdrawn while the batch ran.
+const pendingCheckIns = () =>
+  and(isNull(checkIns.embedding), sql`${checkIns.userId} in ${usersWithAiConsent}`);
+const pendingDocuments = () =>
+  and(isNull(documents.embedding), sql`${documents.userId} in ${usersWithAiConsent}`);
+
 /** Rows still lacking an embedding — the ground truth, not batch arithmetic. */
 async function countUnembedded() {
-  const [ci] = await db.select({ n: count() }).from(checkIns).where(isNull(checkIns.embedding));
-  const [doc] = await db.select({ n: count() }).from(documents).where(isNull(documents.embedding));
+  const [ci] = await db.select({ n: count() }).from(checkIns).where(pendingCheckIns());
+  const [doc] = await db.select({ n: count() }).from(documents).where(pendingDocuments());
   return { checkIns: ci?.n ?? 0, documents: doc?.n ?? 0 };
 }
 
@@ -51,13 +62,13 @@ export async function GET(req: Request) {
   const unembeddedCheckIns = await db
     .select({ id: checkIns.id })
     .from(checkIns)
-    .where(isNull(checkIns.embedding))
+    .where(pendingCheckIns())
     .limit(EMBED_BACKFILL_BATCH);
 
   const unembeddedDocs = await db
     .select({ id: documents.id })
     .from(documents)
-    .where(isNull(documents.embedding))
+    .where(pendingDocuments())
     .limit(EMBED_BACKFILL_BATCH);
 
   // Sequential, to avoid hammering the OpenAI rate limit. embedCheckIn and
