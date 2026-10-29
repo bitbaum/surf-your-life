@@ -243,8 +243,8 @@
       "or": "oder",
       "orangecat": "Mit OrangeCat anmelden",
       "orangecatHint": "Google, GitHub oder E-Mail – ein Konto für alle OrangeCat-Apps",
-      "otherWays": "Mit E-Mail und Passwort oder Google anmelden",
-      "errorAccountExists": "Für diese E-Mail-Adresse besteht hier bereits ein Konto. Melden Sie sich unten mit Ihrem Passwort oder mit Google an.",
+      "otherWays": "Mit E-Mail und Passwort anmelden",
+      "errorAccountExists": "Für diese E-Mail-Adresse besteht hier bereits ein Konto. Melden Sie sich unten mit Ihrem Passwort an.",
       "errorOAuth": "Die Anmeldung wurde nicht abgeschlossen. Bitte versuchen Sie es erneut.",
       "errorInvalid": "Ungültige E-Mail oder falsches Passwort",
       "errorGeneric": "Ein Fehler ist aufgetreten"
@@ -1557,5 +1557,104 @@
     "working": "Einen Moment…",
     "undo": "Rückgängig",
     "changedFields": "{count, plural, one {# Feld aktualisiert} other {# Felder aktualisiert}}"
+  },
+  "privacy": {
+    "metaTitle": "Datenschutzerklärung",
+    "metaDescription": "Wie Surf Your Life Ihre Personen- und Gesundheitsdaten erhebt, bearbeitet und schützt, und welche Anbieter sie erhalten.",
+    "title": "Datenschutzerklärung",
+    "updated": "Stand: Oktober 2026 · Gilt für surf-your-life.orangecat.ch und das Surf Your Life Klientenportal",
+    "controller": {
+      "heading": "1. Verantwortliche Stelle",
+      "intro": "Verantwortlich für die Bearbeitung Ihrer Personendaten ist:",
+      "director": "Dr. Manu (Ärztliche Leitung)",
+      "country": "Schweiz"
+    },
+    "collected": {
+      "heading": "2. Welche Daten wir erheben",
+      "intro": "Wir erheben nur, was für unser Angebot nötig ist:",
+      "items": {
+        "account": "<b>Kontodaten:</b> Name, E-Mail-Adresse und, freiwillig, ein Profilbild, wenn Sie sich über OrangeCat oder mit E-Mail und Passwort registrieren.",
+        "health": "<b>Gesundheitsdaten:</b> was Sie im Portal erfassen — Check-ins (Stimmung, Energie, Schlaf, Aktivität, Symptomwerte, Tagebuch, Erfolge und Herausforderungen), Medikamente, Funktionseinschätzungen und Übungsprotokolle — sowie was Ihre Therapeutin oder Ihr Therapeut und das Portal über Sie festhalten, etwa Sitzungsnotizen, Dokumente und klinische Hinweise.",
+        "contact": "<b>Kontaktdaten:</b> Nachrichten, die Sie über das Kontaktformular oder die Nachrichtenfunktion im Portal senden.",
+        "technical": "<b>Technische Daten:</b> IP-Adresse, Browsertyp und Zugriffsprotokolle — automatisch von unserer Hosting-Infrastruktur (Hetzner, Deutschland) zu Sicherheits- und Leistungszwecken erfasst."
+      }
+    },
+    "purpose": {
+      "heading": "3. Zweck der Bearbeitung",
+      "items": {
+        "portal": "Bereitstellung und Personalisierung des Klientenportals und der Funktionen zur Gesundheitsverfolgung.",
+        "practitioners": "Damit Ihre Therapeutin oder Ihr Therapeut Ihren Verlauf sehen und Sie klinisch begleiten kann.",
+        "communication": "Kommunikation mit Ihnen über Ihr Programm und Ihre Termine.",
+        "analytics": "Verbesserung unseres Angebots durch anonymisierte, zusammengefasste Auswertungen.",
+        "legal": "Erfüllung gesetzlicher Pflichten nach schweizerischem und EU-Recht."
+      },
+      "basis": "Rechtsgrundlage für die Bearbeitung von Gesundheitsdaten ist Ihre ausdrückliche Einwilligung (Art. 6 Abs. 1 lit. a und Art. 9 Abs. 2 lit. a DSGVO; Art. 31 revDSG). Sie können Ihre Einwilligung jederzeit widerrufen — siehe Abschnitt 7."
+    },
+    "retention": {
+      "heading": "4. Aufbewahrung",
+      "body": "Wir bewahren Ihre Daten auf, solange Ihr Konto aktiv ist, und höchstens 5 Jahre nach der Schliessung des Kontos, sofern das anwendbare Recht keine längere Frist verlangt (z. B. Aufbewahrungspflichten für Patientendokumentationen in der Schweiz). Für Check-in-Daten und Gesundheitsakten kann nach schweizerischem Gesundheitsrecht eine Mindestaufbewahrung von 10 Jahren gelten."
+    },
+    "processors": {
+      "heading": "5. Auftragsbearbeiter",
+      "intro": "Diese Anbieter bearbeiten Daten in unserem Auftrag:",
+      "hetzner": "<b>Hetzner Online GmbH</b> (Deutschland, EU) — Hosting der Anwendung und der Datenbank (selbst betriebenes PostgreSQL). Das Hosting bleibt im EU/EWR-Raum.",
+      "orangecat": "<b>OrangeCat</b> — Anmeldung, wenn Sie „Mit OrangeCat anmelden“ wählen. OrangeCat stellt ausserdem die Feedback-Schaltfläche auf unseren öffentlichen Seiten bereit (nie im Portal) und erhält, was Sie darüber senden.",
+      "resend": "<b>Resend</b> (USA) — Versand aller E-Mails des Portals: Konto-, Buchungs- und Erinnerungs-E-Mails sowie E-Mails mit Gesundheitsdaten — Ihr Wochenbericht (Check-in-Durchschnitte, ein Auszug aus Ihrem Tagebuch und die neueste KI-Zusammenfassung), die Notizen Ihrer Therapeutin oder Ihres Therapeuten zu Ihren Check-ins, der Text von Portal-Nachrichten und klinische Hinweise über Sie, die an Ihre Therapeutin oder Ihren Therapeuten gehen."
+    },
+    "ai": {
+      "heading": "6. KI-Anbieter in den USA",
+      "intro": "Einige Funktionen des Portals nutzen KI-Sprachmodelle von Anbietern in den USA. Diese Anfragen enthalten Gesundheitsdaten. Für jeden Anbieter: was übermittelt wird, wozu und auf welcher Grundlage.",
+      "basis": "<b>Rechtsgrundlage:</b> Ihre ausdrückliche Einwilligung (Abschnitt 3), die auch die Übermittlung in die USA umfasst. Weitere Garantien für diese Übermittlung, etwa Standardvertragsklauseln, nennen wir nicht.",
+      "groq": {
+        "name": "Groq (USA)",
+        "role": "<b>Rolle:</b> betreibt das KI-Sprachmodell hinter den unten genannten Funktionen. Jede Anfrage geht zuerst an Groq.",
+        "data": "<b>Übermittelte Daten</b>, nur wenn eine dieser Funktionen genutzt wird:",
+        "chat": "<b>KI-Assistent</b> (von Ihnen gestartet): Ihre Frage und bis zu den letzten 10 Nachrichten des Gesprächs; Ihre letzten 10 Check-ins (Datum, Stimmung, Energie, Schlafdauer und -qualität, Aktivität, Belastungsintoleranz (PEM) und deren Schwere, Erschöpfung, Konzentrationsstörung (Brain Fog), Schmerzen, Stress, Schwindel beim Aufstehen und die ersten 100 Zeichen Ihres Tagebuchs); Ihre aktuellen Medikamente (Name, Dosis, Häufigkeit); die Werte Ihrer letzten Funktionseinschätzung; Ihre zugewiesenen Übungen mit der Umsetzung der letzten 14 Tage; sowie Ihr Programm, die Woche und die Phase.",
+        "form": "<b>KI-Hilfe im Check-in-Formular</b> (von Ihnen gestartet): was Sie dort eingeben, Ihre früheren Nachrichten in diesem Austausch und die Antworten, die bereits im Formular stehen.",
+        "summaries": "<b>Zusammenfassungen für Ihre Therapeutin oder Ihren Therapeuten</b> — Sitzungsvorbereitung und Wochenzusammenfassung (von ihr oder ihm gestartet): Ihr Name; Ihr Hauptanliegen und Ihre Ziele; aktuelle Medikamente; Ihre letzte Funktionseinschätzung mit Notizen; Programm, Woche und Phase; zugewiesene Übungen und deren Umsetzung; Ihre letzten Check-ins, einschliesslich Tagebuch (gekürzt), Erfolgen, Herausforderungen und Notizen; offene klinische Hinweise; und Auszüge aus den letzten Sitzungsnotizen.",
+        "notSent": "Ihre E-Mail-Adresse wird nicht übermittelt. Kein zeitgesteuerter Auftrag sendet etwas an Groq oder OpenRouter.",
+        "purpose": "<b>Zweck:</b> die Antwort des Assistenten verfassen, das Check-in-Formular ausfüllen oder die Zusammenfassung schreiben. Zusammenfassungen werden im Portal gespeichert; die Wochenzusammenfassung erscheint ausserdem auf Ihrem Dashboard und in Ihrem wöchentlichen Bericht per E-Mail."
+      },
+      "openrouter": {
+        "name": "OpenRouter (USA)",
+        "role": "<b>Rolle:</b> Ausweichlösung. Eine Anfrage geht nur an OpenRouter, wenn Groq sie nicht beantworten kann. OpenRouter leitet jede Anfrage an das Unternehmen weiter, das das jeweils gewählte Modell betreibt; dieses kann ausserhalb der USA sein.",
+        "data": "<b>Übermittelte Daten:</b> dieselben wie bei Groq oben, für dieselben Funktionen.",
+        "purpose": "<b>Zweck:</b> derselbe wie bei Groq."
+      },
+      "openai": {
+        "name": "OpenAI (USA) — nur wenn die semantische Suche eingeschaltet ist",
+        "role": "<b>Rolle:</b> semantische Suche, mit der der KI-Assistent die Check-ins findet, die zu Ihrer Frage am besten passen. Sie läuft nur, wenn die Praxis einen OpenAI-Schlüssel hinterlegt hat; ohne ihn wird nichts an OpenAI gesendet, und der Assistent nutzt stattdessen Ihre neuesten Check-ins.",
+        "data": "<b>Übermittelte Daten:</b> der Text jedes Check-ins, wenn Sie ihn speichern oder bearbeiten — oder durch einen täglichen Auftrag, falls er noch nicht erfasst ist — mit allen Werten sowie Ihrem Tagebuch, Ihren Erfolgen, Herausforderungen und Notizen; Titel und Text der Dokumente, die Ihre Therapeutin oder Ihr Therapeut Ihrer Akte hinzufügt; und jede Frage, die Sie dem KI-Assistenten stellen.",
+        "purpose": "<b>Zweck:</b> aus diesem Text einen numerischen Index (ein „Embedding“) berechnen, der in unserer Datenbank gespeichert und nur für die Suche verwendet wird."
+      },
+      "choice": "Ob Sie den KI-Assistenten und die KI-Hilfe im Check-in-Formular nutzen, entscheiden Sie selbst. Zusammenfassungen startet Ihre Therapeutin oder Ihr Therapeut; wenn Sie keine möchten, sagen Sie es ihr oder ihm oder schreiben Sie uns über das <contact>Kontaktformular</contact>.",
+      "noSale": "Wir verkaufen Ihre Daten nicht. Über die Anbieter in den Abschnitten 5 und 6 hinaus geben wir Ihre Gesundheitsdaten nicht an Dritte weiter, ausser wenn das Gesetz es verlangt oder Sie ausdrücklich einwilligen."
+    },
+    "rights": {
+      "heading": "7. Ihre Rechte",
+      "intro": "Nach dem revDSG und der DSGVO haben Sie das Recht auf:",
+      "items": {
+        "access": "<b>Auskunft</b> — eine Kopie aller Personendaten, die wir über Sie haben.",
+        "rectification": "<b>Berichtigung</b> unrichtiger oder unvollständiger Daten.",
+        "erasure": "<b>Löschung</b> („Recht auf Vergessenwerden“) — Löschung Ihres Kontos und aller zugehörigen Daten, vorbehaltlich gesetzlicher Aufbewahrungspflichten.",
+        "portability": "<b>Datenübertragbarkeit</b> — Ihre Check-in- und Profildaten in einem strukturierten, maschinenlesbaren Format (JSON oder CSV) erhalten.",
+        "restriction": "<b>Einschränkung</b> der Bearbeitung, solange eine Streitfrage geprüft wird.",
+        "withdraw": "<b>Widerruf der Einwilligung</b> jederzeit, ohne dass die bisherige Bearbeitung berührt wird.",
+        "complaint": "<b>Beschwerde</b> beim Eidgenössischen Datenschutz- und Öffentlichkeitsbeauftragten (EDÖB) oder, für Personen in der EU, bei Ihrer zuständigen Aufsichtsbehörde."
+      },
+      "exercise": "Um eines dieser Rechte auszuüben, schreiben Sie uns über das <contact>Kontaktformular</contact>. Wir antworten innert 30 Tagen."
+    },
+    "cookies": {
+      "heading": "8. Cookies",
+      "body": "Wir setzen nur funktionale Cookies: damit Sie angemeldet bleiben, um den Anmeldevorgang abzusichern und um Ihre Sprache zu speichern. Es werden keine Tracking- oder Werbe-Cookies gesetzt. Wir verwenden weder Google Analytics noch ähnliche Tracking-Werkzeuge."
+    },
+    "compliance": {
+      "heading": "9. Rechtliche Grundlagen",
+      "body": "Diese Erklärung entspricht dem <b>Bundesgesetz über den Datenschutz (revDSG)</b>, in Kraft seit dem 1. September 2023, und der <b>Datenschutz-Grundverordnung der EU (DSGVO)</b>, soweit sie für Personen in der EU gilt. Als Gesundheitsportal, das besonders schützenswerte Daten bearbeitet, wenden wir das höchste Schutzniveau an."
+    },
+    "changes": {
+      "heading": "10. Änderungen dieser Erklärung",
+      "body": "Wir können diese Erklärung anpassen, wenn sich unser Angebot oder die rechtlichen Anforderungen ändern. Wesentliche Änderungen teilen wir registrierten Nutzerinnen und Nutzern mindestens 14 Tage vor Inkrafttreten per E-Mail mit. Die aktuelle Fassung ist immer unter dieser Adresse verfügbar."
+    }
   }
 }

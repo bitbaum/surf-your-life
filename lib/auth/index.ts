@@ -13,10 +13,13 @@ import {
   orangecatProvider,
   withOrangecatIdentity,
 } from "@bitbaum/accountkit/orangecat";
+import { googleClient } from "./google";
 import { orangecatUserStore } from "./orangecat-store";
 
 // Absent (not broken) until the box has ORANGECAT_OAUTH_CLIENT_ID/_SECRET.
 const orangecat = orangecatClient();
+// Absent until the box has GOOGLE_CLIENT_ID/_SECRET (it has neither today).
+const google = googleClient();
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: withOrangecatIdentity(DrizzleAdapter(db), orangecatUserStore),
@@ -29,10 +32,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     // Identity only — no OrangeCat token refresh in jwt(): rotation breaks
     // inside page renders. The session lives on this app's own JWT.
     ...(orangecat ? [orangecatProvider(orangecat)] : []),
-    Google({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    }),
+    ...(google ? [Google({ clientId: google.clientId, clientSecret: google.clientSecret })] : []),
     Credentials({
       async authorize(credentials) {
         const parsed = loginSchema.safeParse(credentials);

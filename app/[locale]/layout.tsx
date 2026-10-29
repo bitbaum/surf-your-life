@@ -49,12 +49,15 @@ export default async function LocaleLayout({
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
-  const messages = await getMessages();
+  // The privacy policy renders on the server only; keep its long text out of
+  // the client payload of every other page.
+  const clientMessages = { ...(await getMessages()) };
+  delete clientMessages.privacy;
 
   return (
     <html lang={locale} className={`${geist.className} h-full antialiased`}>
       <body className="min-h-full">
-        <NextIntlClientProvider messages={messages}>
+        <NextIntlClientProvider messages={clientMessages}>
           {children}
           <Toaster richColors position="top-right" />
           <FeedbackWidget />

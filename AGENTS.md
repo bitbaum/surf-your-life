@@ -113,8 +113,9 @@ proxy.ts           → route protection only
 
 "Sign in with OrangeCat" (OIDC) is the primary path. Users are keyed on
 `users.orangecat_sub`, never matched by email (`lib/auth/orangecat-store.ts`).
-Email/password and the app's own Google button sit behind a disclosure for
-existing accounts.
+Email/password sits behind a disclosure for existing accounts, with the app's
+own Google button only when `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` are
+both set (`lib/auth/google.ts`); production sets neither, so it is hidden there.
 
 ## Data rules
 

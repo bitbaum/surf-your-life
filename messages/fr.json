@@ -243,8 +243,8 @@
       "or": "ou",
       "orangecat": "Se connecter avec OrangeCat",
       "orangecatHint": "Google, GitHub ou e-mail — un seul compte pour toutes les apps OrangeCat",
-      "otherWays": "Se connecter avec e-mail et mot de passe ou Google",
-      "errorAccountExists": "Un compte existe déjà ici pour cette adresse e-mail. Connectez-vous ci-dessous avec votre mot de passe ou Google.",
+      "otherWays": "Se connecter avec e-mail et mot de passe",
+      "errorAccountExists": "Un compte existe déjà ici pour cette adresse e-mail. Connectez-vous ci-dessous avec votre mot de passe.",
       "errorOAuth": "La connexion n’a pas abouti. Veuillez réessayer.",
       "errorInvalid": "E-mail ou mot de passe invalide",
       "errorGeneric": "Une erreur s'est produite"
@@ -1557,5 +1557,104 @@
     "working": "Un instant…",
     "undo": "Annuler",
     "changedFields": "{count, plural, one {# champ mis à jour} other {# champs mis à jour}}"
+  },
+  "privacy": {
+    "metaTitle": "Politique de confidentialité",
+    "metaDescription": "Comment Surf Your Life collecte, traite et protège vos données personnelles et de santé, et quels prestataires les reçoivent.",
+    "title": "Politique de confidentialité",
+    "updated": "Dernière mise à jour : octobre 2026 · S’applique à surf-your-life.orangecat.ch et au portail client Surf Your Life",
+    "controller": {
+      "heading": "1. Responsable du traitement",
+      "intro": "Le responsable du traitement de vos données personnelles est :",
+      "director": "Dr Manu (direction médicale)",
+      "country": "Suisse"
+    },
+    "collected": {
+      "heading": "2. Données collectées",
+      "intro": "Nous ne collectons que ce qui est nécessaire à notre service :",
+      "items": {
+        "account": "<b>Données de compte :</b> nom, adresse e-mail et, si vous le souhaitez, une photo de profil lorsque vous vous inscrivez via OrangeCat ou avec e-mail et mot de passe.",
+        "health": "<b>Données de santé :</b> ce que vous saisissez dans le portail — check-ins (humeur, énergie, sommeil, activité, scores de symptômes, journal, réussites et difficultés), médicaments, évaluations fonctionnelles et suivi des techniques — ainsi que ce que votre praticien et le portail enregistrent à votre sujet, comme les notes de séance, les documents et les alertes cliniques.",
+        "contact": "<b>Données de contact :</b> messages envoyés via le formulaire de contact ou la messagerie du portail.",
+        "technical": "<b>Données techniques :</b> adresse IP, type de navigateur et journaux d’accès — collectés automatiquement par notre infrastructure d’hébergement (Hetzner, Allemagne) à des fins de sécurité et de performance."
+      }
+    },
+    "purpose": {
+      "heading": "3. Finalités du traitement",
+      "items": {
+        "portal": "Fournir et personnaliser le portail client et les fonctions de suivi de santé.",
+        "practitioners": "Permettre aux praticiens de suivre vos progrès et de vous accompagner cliniquement.",
+        "communication": "Communiquer avec vous au sujet de votre programme et de vos rendez-vous.",
+        "analytics": "Améliorer notre service grâce à des analyses anonymisées et agrégées.",
+        "legal": "Respecter nos obligations légales selon le droit suisse et européen."
+      },
+      "basis": "La base légale du traitement des données de santé est votre consentement explicite (art. 6, par. 1, let. a et art. 9, par. 2, let. a RGPD ; art. 31 nLPD). Vous pouvez retirer votre consentement à tout moment — voir la section 7."
+    },
+    "retention": {
+      "heading": "4. Conservation des données",
+      "body": "Nous conservons vos données tant que votre compte est actif et au maximum 5 ans après sa clôture, sauf si le droit applicable impose une durée plus longue (p. ex. obligations suisses de conservation des dossiers médicaux). Les données de check-in et les dossiers de santé peuvent être soumis à une conservation minimale de 10 ans selon la législation sanitaire suisse."
+    },
+    "processors": {
+      "heading": "5. Sous-traitants",
+      "intro": "Ces prestataires traitent des données pour notre compte :",
+      "hetzner": "<b>Hetzner Online GmbH</b> (Allemagne, UE) — hébergement de l’application et de la base de données (PostgreSQL auto-hébergé). L’hébergement reste dans l’UE/EEE.",
+      "orangecat": "<b>OrangeCat</b> — connexion, si vous choisissez « Se connecter avec OrangeCat ». OrangeCat fournit aussi le bouton de feedback de nos pages publiques (jamais dans le portail) et reçoit ce que vous envoyez par ce biais.",
+      "resend": "<b>Resend</b> (États-Unis) — envoi de tous les e-mails du portail : e-mails de compte, de réservation et de rappel, ainsi que des e-mails contenant des données de santé — votre rapport hebdomadaire (moyennes des check-ins, un extrait de votre journal et le dernier résumé IA), les notes de votre praticien sur vos check-ins, le texte des messages du portail et les alertes cliniques vous concernant envoyées à votre praticien."
+    },
+    "ai": {
+      "heading": "6. Prestataires d’IA aux États-Unis",
+      "intro": "Certaines fonctions du portail utilisent des modèles de langage d’IA exploités par des prestataires aux États-Unis. Ces requêtes contiennent des données de santé. Pour chaque prestataire : ce qui est envoyé, dans quel but et sur quelle base.",
+      "basis": "<b>Base légale :</b> votre consentement explicite (section 3), qui couvre aussi le transfert vers les États-Unis. Nous n’indiquons aucune autre garantie pour ce transfert, comme des clauses contractuelles types.",
+      "groq": {
+        "name": "Groq (États-Unis)",
+        "role": "<b>Rôle :</b> exécute le modèle de langage d’IA derrière les fonctions ci-dessous. Chaque requête est d’abord envoyée à Groq.",
+        "data": "<b>Données envoyées</b>, uniquement lorsqu’une de ces fonctions est utilisée :",
+        "chat": "<b>Assistant IA</b> (lancé par vous) : votre question et jusqu’aux 10 derniers messages de la conversation ; vos 10 derniers check-ins (date, humeur, énergie, durée et qualité du sommeil, activité, malaise post-effort (PEM) et sa gravité, fatigue, brouillard cérébral, douleur, stress, vertiges en position debout, et les 100 premiers caractères de votre journal) ; vos médicaments actuels (nom, dose, fréquence) ; les scores de votre dernière évaluation fonctionnelle ; les techniques qui vous sont attribuées avec leur suivi sur 14 jours ; ainsi que votre programme, la semaine et la phase.",
+        "form": "<b>Aide IA du formulaire de check-in</b> (lancée par vous) : ce que vous y saisissez, vos messages précédents dans cet échange et les réponses déjà présentes dans le formulaire.",
+        "summaries": "<b>Résumés pour votre praticien</b> — préparation de séance et synthèse hebdomadaire (lancées par votre praticien) : votre nom ; votre préoccupation principale et vos objectifs ; vos médicaments actuels ; votre dernière évaluation fonctionnelle avec ses notes ; programme, semaine et phase ; techniques attribuées et leur suivi ; vos check-ins récents, y compris votre journal (abrégé), vos réussites, difficultés et notes ; les alertes cliniques ouvertes ; et des extraits des notes de séance récentes.",
+        "notSent": "Votre adresse e-mail n’est pas envoyée. Aucune tâche planifiée n’envoie quoi que ce soit à Groq ou à OpenRouter.",
+        "purpose": "<b>Finalité :</b> rédiger la réponse de l’assistant, remplir le formulaire de check-in ou rédiger le résumé. Les résumés sont enregistrés dans le portail ; la synthèse hebdomadaire apparaît aussi sur votre tableau de bord et dans votre rapport hebdomadaire par e-mail."
+      },
+      "openrouter": {
+        "name": "OpenRouter (États-Unis)",
+        "role": "<b>Rôle :</b> solution de repli. Une requête n’est envoyée à OpenRouter que si Groq ne peut pas y répondre. OpenRouter transmet chaque requête à l’entreprise qui héberge le modèle qu’il choisit, laquelle peut se trouver hors des États-Unis.",
+        "data": "<b>Données envoyées :</b> les mêmes que pour Groq ci-dessus, pour les mêmes fonctions.",
+        "purpose": "<b>Finalité :</b> la même que pour Groq."
+      },
+      "openai": {
+        "name": "OpenAI (États-Unis) — uniquement si la recherche sémantique est activée",
+        "role": "<b>Rôle :</b> recherche sémantique, qui permet à l’assistant IA de trouver les check-ins les plus pertinents pour votre question. Elle ne fonctionne que si le cabinet a configuré une clé OpenAI ; sans clé, rien n’est envoyé à OpenAI et l’assistant utilise vos check-ins les plus récents.",
+        "data": "<b>Données envoyées :</b> le texte de chaque check-in lorsque vous l’enregistrez ou le modifiez — ou par une tâche quotidienne s’il n’a pas encore été indexé — avec tous ses scores ainsi que votre journal, vos réussites, difficultés et notes ; le titre et le texte des documents que votre praticien ajoute à votre dossier ; et chaque question que vous posez à l’assistant IA.",
+        "purpose": "<b>Finalité :</b> calculer un index numérique de ce texte (un « embedding »), enregistré dans notre base de données et utilisé uniquement pour la recherche."
+      },
+      "choice": "Vous décidez d’utiliser ou non l’assistant IA et l’aide IA du formulaire de check-in. Les résumés sont lancés par votre praticien ; si vous n’en voulez pas, dites-le-lui ou écrivez-nous via le <contact>formulaire de contact</contact>.",
+      "noSale": "Nous ne vendons pas vos données. Au-delà des prestataires des sections 5 et 6, nous ne communiquons pas vos données de santé à des tiers, sauf obligation légale ou consentement explicite de votre part."
+    },
+    "rights": {
+      "heading": "7. Vos droits",
+      "intro": "Selon la nLPD suisse et le RGPD, vous avez le droit :",
+      "items": {
+        "access": "<b>d’accès</b> à une copie de toutes les données personnelles que nous détenons sur vous ;",
+        "rectification": "<b>de rectification</b> des données inexactes ou incomplètes ;",
+        "erasure": "<b>à l’effacement</b> (« droit à l’oubli ») — suppression de votre compte et de toutes les données associées, sous réserve des obligations légales de conservation ;",
+        "portability": "<b>à la portabilité</b> — recevoir vos données de check-in et de profil dans un format structuré et lisible par machine (JSON ou CSV) ;",
+        "restriction": "<b>à la limitation</b> du traitement pendant l’examen d’un litige ;",
+        "withdraw": "<b>de retirer votre consentement</b> à tout moment, sans effet sur les traitements antérieurs ;",
+        "complaint": "<b>de déposer une plainte</b> auprès du Préposé fédéral à la protection des données et à la transparence (PFPDT) ou, pour les résidents de l’UE, auprès de votre autorité de contrôle."
+      },
+      "exercise": "Pour exercer l’un de ces droits, écrivez-nous via le <contact>formulaire de contact</contact>. Nous répondons dans un délai de 30 jours."
+    },
+    "cookies": {
+      "heading": "8. Cookies",
+      "body": "Nous n’utilisons que des cookies fonctionnels : pour vous garder connecté, pour sécuriser la connexion et pour mémoriser votre langue. Aucun cookie de suivi ou publicitaire n’est déposé. Nous n’utilisons ni Google Analytics ni outil de suivi similaire."
+    },
+    "compliance": {
+      "heading": "9. Conformité légale",
+      "body": "Cette politique est conforme à la <b>loi fédérale sur la protection des données (nLPD)</b>, en vigueur depuis le 1er septembre 2023, et au <b>règlement général sur la protection des données de l’UE (RGPD)</b> lorsqu’il s’applique aux résidents de l’UE. En tant que portail de santé traitant des données sensibles, nous appliquons le plus haut niveau de protection."
+    },
+    "changes": {
+      "heading": "10. Modifications de cette politique",
+      "body": "Nous pouvons mettre à jour cette politique lorsque nos services ou les exigences légales évoluent. Les modifications importantes sont communiquées par e-mail aux utilisateurs inscrits au moins 14 jours avant leur entrée en vigueur. La version actuelle est toujours disponible à cette adresse."
+    }
   }
 }

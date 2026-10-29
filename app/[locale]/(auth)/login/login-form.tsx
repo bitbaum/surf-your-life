@@ -24,7 +24,13 @@ function OAuthError() {
   );
 }
 
-export function LoginForm({ orangecatEnabled }: { orangecatEnabled: boolean }) {
+export function LoginForm({
+  orangecatEnabled,
+  googleEnabled,
+}: {
+  orangecatEnabled: boolean;
+  googleEnabled: boolean;
+}) {
   const t = useTranslations("auth.login");
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -88,7 +94,7 @@ export function LoginForm({ orangecatEnabled }: { orangecatEnabled: boolean }) {
               {loading ? t("loading") : t("submit")}
             </Button>
           </form>
-          <GoogleButton />
+          {googleEnabled && <GoogleButton />}
         </OtherWaysDisclosure>
 
         <p className="text-center text-sm text-slate-500">

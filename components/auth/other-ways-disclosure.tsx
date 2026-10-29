@@ -6,8 +6,8 @@ interface OtherWaysDisclosureProps {
 }
 
 /**
- * Email/password and the app's own Google button, kept reachable for existing
- * accounts but secondary to "Sign in with OrangeCat".
+ * Email/password (and the app's own Google button, only when GOOGLE_CLIENT_ID/
+ * _SECRET are set), kept reachable for existing accounts but secondary to "Sign in with OrangeCat".
  */
 export function OtherWaysDisclosure({ summary, defaultOpen, children }: OtherWaysDisclosureProps) {
   return (
