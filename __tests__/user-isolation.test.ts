@@ -5,7 +5,7 @@ import type { SQL, Table } from "drizzle-orm";
 //
 // The portal has no RLS: isolation lives entirely in the application layer —
 // every query touching user-owned clinical rows MUST scope by the session
-// user's id (CLAUDE.md: "Never expose a user's data to another user").
+// user's id (AGENTS.md: "Never expose a user's data to another user").
 //
 // These tests exercise the real route handlers with a mocked session (user A)
 // against an in-memory fake db seeded with user B's clinical rows. The fake db
