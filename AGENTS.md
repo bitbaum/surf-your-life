@@ -32,6 +32,16 @@ into this file.
 
 
 This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
+<!-- END:nextjs-agent-rules -->
+
+## What this is
+
+Surf Your Life is a psychiatry-led clinic in Zürich helping people recover from
+burnout and Long COVID. The portal gives clients a structured way to track
+their recovery (daily check-ins, symptoms, sleep, techniques) and gives
+practitioners the visibility to intervene early, run evidence-based programmes
+and analyse progress. Success means practitioners spend less time chasing
+status, and clients feel accompanied and can see their own progress.
 
 ## Commands & Ops
 
@@ -50,8 +60,94 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 **Drizzle migrations:** SQL files live in `drizzle/`. Generate with `pnpm db:generate`, apply with `pnpm db:migrate`. `pnpm db:push` is dev-only — never in production.
 
-**Deploy:** `main` deploys to the Hetzner box (bitbaum, behind Caddy) as a standalone Node process. Production URL: `https://surf-your-life.orangecat.ch`. Never commit `.env.local` / `.env.selfhost.local`.
-<!-- END:nextjs-agent-rules -->
+**Deploy:** `main` deploys to the Hetzner box (bitbaum, behind Caddy) as a standalone Node process, through `.github/workflows/deploy.yml` (loki's reusable selfhost-deploy workflow). The database is the box's PostgreSQL, database `surf_your_life`; Neon was decommissioned 2026-06-12, so a laptop `.env.local` naming `neon.tech` is leftover, not production. Production URL: `https://surf-your-life.orangecat.ch`. Never commit `.env.local` / `.env.selfhost.local`.
+
+## Architecture
+
+```
+app/
+  [locale]/        → next-intl segment — every page lives under it
+    (auth)/        → login, register, forgot-password (signed-out only)
+    (portal)/      → clients: dashboard, check-in, profile, documents, AI chat, …
+    (admin)/admin/ → practitioners and admins: clients, documents, insights
+  api/             → thin HTTP layer, NOT localized: validate, call domain, respond
+lib/
+  db/schema.ts     → SSOT for every data shape; types via $inferSelect / $inferInsert
+  db/index.ts      → the one Drizzle client
+  domain/          → business logic and the Zod schemas API routes and forms share
+  auth/            → Auth.js config, session helpers
+  constants.ts     → option lists, scale bounds, limits — no magic numbers elsewhere
+  utils.ts         → cn, formatDate, formatEnumValue
+components/
+  ui/              → primitives (PageHeader, StatCard, EmptyState, Button, …)
+  portal/ admin/ auth/ → composed components per audience
+proxy.ts           → route protection only
+```
+
+- Enum values (roles, moods, document types) are `schema.ts` enums, reused by
+  Zod schemas, display config and components. Option arrays come from
+  `lib/constants.ts`, never inline in a component.
+- Roles and the staff test (`STAFF_ROLES`, `isStaff`, `resolveRole`) are
+  defined once in `lib/domain/auth.ts`.
+- Use the primitives rather than re-implementing them: `PageHeader`,
+  `StatCard`, `EmptyState`, `GoogleButton`; and `formatEnumValue` (`very_low` →
+  `Very low`), `cn`, `formatDate`.
+- API routes authenticate, validate with a Zod schema from `lib/domain/`, call
+  domain logic and answer `{ success: true, data? }` or
+  `{ success: false, error }`.
+- A page over 200 lines or a component over 150 lines gets split; a form with
+  three or more sections is one component per section.
+- Server components by default; `"use client"` only for browser APIs or
+  interactivity. Every list query is paginated (default 20, `limit` +
+  `offset`), relations load with Drizzle's `with:`, and frequently filtered
+  columns and queried foreign keys are indexed.
+- **Do not ship UI for a feature with no backend**, and no sidebar link to a
+  page that does not exist. No `TODO` comments in committed code.
+- Progressive disclosure: clients see the required fields first and optional
+  ones collapsed (a check-in is mood + energy, reflection optional); admins see
+  aggregates first and client detail on click.
+- Accessibility: 44×44px targets, `alt` text, a `<label>` per input, a visible
+  focus ring, and never colour alone to signal state.
+
+## Auth
+
+"Sign in with OrangeCat" (OIDC) is the primary path. Users are keyed on
+`users.orangecat_sub`, never matched by email (`lib/auth/orangecat-store.ts`).
+Email/password and the app's own Google button sit behind a disclosure for
+existing accounts.
+
+## Data rules
+
+- Migrations are SQL files in `drizzle/`; `db:push` is development only.
+- **RLS is not used.** Authorization is in the application: every query for
+  user-owned data filters on `session.user.id`
+  (`__tests__/user-isolation.test.ts`). Never expose one user's data to another.
+- pgvector `embedding vector(1536)` columns sit on `profiles`, `check_ins` and
+  `documents`. Embeddings are OpenAI's (the model is set in
+  `lib/domain/embeddings.ts`), generated on check-in create/update, document
+  upload and the `embed-backfill` cron.
+- Client AI chat is `lib/domain/ai-chat.ts` on ai-kit's chain with a
+  rule-based fallback.
+
+## Scheduled jobs
+
+`/api/cron/*` routes are hit by systemd timers / cron on the box.
+
+| Path | Cron | When |
+| --- | --- | --- |
+| `/api/cron/reminders` | `0 18 * * *` | daily 18:00 |
+| `/api/cron/weekly-report` | `0 17 * * 0` | Sundays 17:00 |
+| `/api/cron/embed-backfill` | `0 3 * * *` | daily 03:00 |
+
+**No scheduled job may call a model on the free tier.** The free AI keys are
+one pool shared by the box's apps, and an unattended job drains it. The weekly
+AI digest is therefore the on-demand "Generate this week's digest" action on
+the admin client page (`POST /api/admin/clients/[id]/digest`, staff only,
+rate-limited), not a cron. `__tests__/cron-no-llm.test.ts` fails if any
+`app/api/cron/**` route reaches `lib/domain/llm` or ai-kit's
+`complete`/`freeChain`. `embed-backfill` is allowed only because it needs a
+paid `OPENAI_API_KEY`; never point it at a free-tier provider.
+
 
 ## Design System
 
