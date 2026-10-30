@@ -1,0 +1,87 @@
+name: Browser smoke
+
+# A client's way in, in real Chrome, against the production (standalone)
+# server and an isolated PostgreSQL with pgvector: the portal sends a stranger
+# to sign-in, sign-in offers only the configured providers, an account is made
+# through the register form, the signed-in portal shows, sign-out ends the
+# session, a wrong password is refused and the right one signs back in. The
+# fleet rollout gate requires this workflow before a shared-package change
+# ships here. Synthetic people only; no mail is sent (no transport is set).
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+concurrency:
+  group: browser-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  account:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: pgvector/pgvector:pg17
+        env:
+          POSTGRES_USER: app
+          POSTGRES_PASSWORD: app
+          POSTGRES_DB: surf_smoke
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U app -d surf_smoke"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DATABASE_URL: postgres://app:app@127.0.0.1:5432/surf_smoke
+      AUTH_SECRET: synthetic-browser-smoke-secret-at-least-32-chars
+      AUTH_TRUST_HOST: "true"
+      AUTH_URL: http://localhost:3000
+      BASE_URL: http://localhost:3000
+      BROWSER_EXECUTABLE: /usr/bin/google-chrome
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      # The committed migration chain does not build today's schema on an empty
+      # database (ten profiles columns, gender among them, are in
+      # lib/db/schema.ts but in no drizzle/*.sql file), so this throwaway database takes the schema
+      # straight from the Drizzle definitions, which are what the app queries.
+      # Never do this to a shared database: production is migrated by the deploy.
+      - name: Schema from the Drizzle definitions
+        run: |
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -q -c "CREATE EXTENSION IF NOT EXISTS vector"
+          pnpm exec drizzle-kit push --force
+
+      - run: pnpm build
+      - name: Assemble the standalone server
+        run: |
+          cp -r .next/static .next/standalone/.next/static
+          cp -r public .next/standalone/public
+
+      - name: Account journey
+        run: |
+          (cd .next/standalone && PORT=3000 HOSTNAME=127.0.0.1 node server.js > ../../server.log 2>&1 &)
+          for i in $(seq 60); do curl -sf -o /dev/null http://localhost:3000/de/login && break; sleep 1; done
+          pnpm run smoke:browser
+
+      - name: Keep screenshots and the server log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surf-browser-smoke
+          path: |
+            browser-smoke-artifacts/
+            server.log
+          retention-days: 14
+          if-no-files-found: warn

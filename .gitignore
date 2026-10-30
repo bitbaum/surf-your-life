@@ -44,3 +44,6 @@ next-env.d.ts
 
 # Per-session agent worktrees — scratch, never part of the repo.
 .claude/worktrees/
+
+# Browser smoke screenshots (scripts/browser-smoke.mjs)
+browser-smoke-artifacts/
