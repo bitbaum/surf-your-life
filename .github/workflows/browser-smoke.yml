@@ -1,12 +1,13 @@
 name: Browser smoke
 
 # A client's way in, in real Chrome, against the production (standalone)
-# server and an isolated PostgreSQL with pgvector: the portal sends a stranger
-# to sign-in, sign-in offers only the configured providers, an account is made
-# through the register form, the signed-in portal shows, sign-out ends the
-# session, a wrong password is refused and the right one signs back in. The
-# fleet rollout gate requires this workflow before a shared-package change
-# ships here. Synthetic people only; no mail is sent (no transport is set).
+# server and an isolated PostgreSQL with pgvector, built from drizzle/*.sql.
+# The portal sends a stranger to sign-in, sign-in offers only the configured
+# providers, an account is made through the register form, the signed-in
+# portal shows, sign-out ends the session, a wrong password is refused and the
+# right one signs back in. The fleet rollout gate requires this workflow before
+# a shared-package change ships here. Synthetic people only; no mail is sent
+# (no transport is set).
 on:
   pull_request:
     branches: [main]
@@ -53,15 +54,15 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
 
-      # The committed migration chain does not build today's schema on an empty
-      # database (ten profiles columns, gender among them, are in
-      # lib/db/schema.ts but in no drizzle/*.sql file), so this throwaway database takes the schema
-      # straight from the Drizzle definitions, which are what the app queries.
-      # Never do this to a shared database: production is migrated by the deploy.
-      - name: Schema from the Drizzle definitions
+      # The journey's database is built from the committed migrations, as a
+      # new box would be. A second, scratch database is pushed from
+      # lib/db/schema.ts, and the two must agree: a column, index, enum or
+      # constraint behaviour the schema declares without a migration fails here
+      # (scripts/db/check-migration-drift.sh).
+      - name: Migrations replay to the Drizzle schema
         run: |
-          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -q -c "CREATE EXTENSION IF NOT EXISTS vector"
-          pnpm exec drizzle-kit push --force
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -q -c "CREATE DATABASE surf_pushed"
+          scripts/db/check-migration-drift.sh "$DATABASE_URL" "${DATABASE_URL%/*}/surf_pushed"
 
       - run: pnpm build
       - name: Assemble the standalone server

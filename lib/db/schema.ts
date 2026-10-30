@@ -216,7 +216,10 @@ export const checkIns = pgTable(
     practitionerNoteAt: timestamp("practitioner_note_at", { mode: "date" }),
     createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
   },
-  (table) => [index("check_ins_user_idx").on(table.userId)],
+  (table) => [
+    index("check_ins_user_idx").on(table.userId),
+    index("check_ins_created_at_idx").on(table.createdAt),
+  ],
 );
 
 // ─── Documents (assessments, session notes, reports) ─────────────────────────
@@ -274,7 +277,11 @@ export const leads = pgTable(
     status: leadStatusEnum("status").notNull().default("new"),
     createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
   },
-  (table) => [index("leads_email_idx").on(table.email)],
+  (table) => [
+    index("leads_email_idx").on(table.email),
+    index("leads_status_idx").on(table.status),
+    index("leads_created_at_idx").on(table.createdAt),
+  ],
 );
 
 // ─── Services & Bookings ──────────────────────────────────────────────────────

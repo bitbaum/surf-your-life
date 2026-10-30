@@ -197,6 +197,13 @@
       "when": 1776013742025,
       "tag": "0026_ai_consent",
       "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "7",
+      "when": 1776013742026,
+      "tag": "0027_schema_drift",
+      "breakpoints": true
     }
   ]
 }
