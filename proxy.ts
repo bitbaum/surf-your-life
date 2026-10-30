@@ -43,7 +43,13 @@ const authPaths = ["/login", "/register", "/forgot-password", "/reset-password"]
  * intlMiddleware entirely rather than just the auth check.
  */
 const localizedMetadataPaths = ["/opengraph-image", "/twitter-image", "/icon", "/apple-icon"];
-const rootMetadataPaths = ["/robots.txt", "/sitemap.xml"];
+const rootMetadataPaths = [
+  "/robots.txt",
+  "/sitemap.xml",
+  "/manifest.webmanifest",
+  "/app-icons/",
+  "/icon.svg",
+];
 
 function stripLocale(pathname: string): string {
   return pathname.replace(/^\/(de|en|fr)/, "") || "/";
