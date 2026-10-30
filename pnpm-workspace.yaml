@@ -6,6 +6,9 @@
 # patch short, which is exactly how two critical RCEs shipped elsewhere in the
 # fleet unnoticed. Raise the floor, then re-resolve.
 overrides:
+  # Security floors (2026-10-30 dev-toolchain sweep): stay inside the
+  # major the parents already allow; pnpm does not re-resolve these on update.
+  "source-map-js@1": "^1.2.2"
   # critical: email normalizer validates before normalizing; plus an uncaught
   # getToken() exception. Reached via @auth/drizzle-adapter.
   "@auth/core": ">=0.41.3"
