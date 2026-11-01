@@ -1,95 +1,13 @@
-"use client";
+import { redirect } from "next/navigation";
 
-import { useEffect, useState, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
-import { useTranslations } from "next-intl";
-import { Link } from "@/i18n/navigation";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+type Props = { params: Promise<{ locale: string }> };
 
-function VerifyContent() {
-  const t = useTranslations("auth.verifyEmail");
-  const searchParams = useSearchParams();
-  const token = searchParams.get("token") ?? "";
-  const email = searchParams.get("email") ?? "";
-  const hasParams = Boolean(token && email);
-
-  const [status, setStatus] = useState<"loading" | "success" | "error">(
-    hasParams ? "loading" : "error",
-  );
-  const [errorMsg, setErrorMsg] = useState(hasParams ? "" : t("invalid"));
-
-  useEffect(() => {
-    if (!hasParams) return;
-
-    fetch("/api/auth/verify-email", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token, email }),
-    })
-      .then(async (res) => {
-        if (res.ok) {
-          setStatus("success");
-        } else {
-          const data = await res.json().catch(() => ({}));
-          setErrorMsg(data.error ?? t("invalid"));
-          setStatus("error");
-        }
-      })
-      .catch(() => {
-        setErrorMsg(t("invalid"));
-        setStatus("error");
-      });
-  }, [hasParams, token, email, t]);
-
-  if (status === "loading") {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("title")}</CardTitle>
-          <CardDescription>{t("body")}</CardDescription>
-        </CardHeader>
-      </Card>
-    );
-  }
-
-  if (status === "success") {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("success")}</CardTitle>
-          <CardDescription>{t("successBody")}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Link href="/dashboard">
-            <Button className="w-full">{t("goToDashboard")}</Button>
-          </Link>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t("title")}</CardTitle>
-        <CardDescription>{errorMsg || t("invalid")}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Link href="/dashboard">
-          <Button variant="outline" className="w-full">
-            {t("goToDashboard")}
-          </Button>
-        </Link>
-      </CardContent>
-    </Card>
-  );
-}
-
-export default function VerifyEmailPage() {
-  return (
-    <Suspense>
-      <VerifyContent />
-    </Suspense>
-  );
+/**
+ * An address is confirmed by AccountKit's own link now
+ * (/api/auth/verify-email). A confirmation link from before the move lands on
+ * the sign-in page; the banner in the portal sends a new one.
+ */
+export default async function Page({ params }: Props) {
+  const { locale } = await params;
+  redirect(`/${locale}/login`);
 }

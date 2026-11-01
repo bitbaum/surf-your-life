@@ -25,6 +25,7 @@ import {
   computeInsight,
 } from "@/lib/domain/check-in";
 import { EmailVerificationBanner } from "@/components/portal/EmailVerificationBanner";
+import { isDeliverable } from "@bitbaum/accountkit/auth";
 import { PageHeader } from "@/components/ui/page-header";
 import { DashboardBanners } from "./dashboard-banners";
 import { DashboardCharts } from "./dashboard-charts";
@@ -78,7 +79,7 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
     db.select({ value: count() }).from(checkIns).where(eq(checkIns.userId, session.user.id)),
     db.query.users.findFirst({
       where: eq(users.id, session.user.id),
-      columns: { emailVerified: true },
+      columns: { emailVerified: true, email: true },
     }),
     db.query.programEnrollments.findFirst({
       where: and(
@@ -164,7 +165,9 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
     <div className="max-w-4xl mx-auto">
       <PageHeader title={t(greetingKey, { name: firstName })} description={t("subtitle")} />
 
-      {!dbUser?.emailVerified && <EmailVerificationBanner />}
+      {!dbUser?.emailVerified && dbUser?.email && isDeliverable(dbUser.email) && (
+        <EmailVerificationBanner email={dbUser.email} locale={locale} />
+      )}
 
       <DashboardBanners
         milestone={milestone}

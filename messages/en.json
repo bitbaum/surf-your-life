@@ -270,7 +270,9 @@
       "backToSignIn": "Back to sign in",
       "successTitle": "Check your email",
       "successBody": "If an account exists for that address, you'll receive a reset link shortly.",
-      "successBack": "Back to sign in"
+      "successBack": "Back to sign in",
+      "unavailable": "Reset links cannot be sent right now. Sign in another way, or try again later.",
+      "otherWays": "Other ways to sign in"
     },
     "resetPassword": {
       "title": "Set new password",

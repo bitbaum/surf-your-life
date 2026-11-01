@@ -25,9 +25,8 @@
     "db:rehearse-import": "accountkit-rehearse-import scripts/db/accountkit-import.sql"
   },
   "dependencies": {
-    "@auth/drizzle-adapter": "^1.11.3",
     "@better-auth/passkey": "^1.7.14",
-    "@bitbaum/accountkit": "^0.19.0",
+    "@bitbaum/accountkit": "^0.20.0",
     "@bitbaum/ai-kit": "^1.22.0",
     "@bitbaum/chatkit": "^0.22.0",
     "@bitbaum/mail-kit": "^0.2.0",

@@ -1,11 +1,9 @@
 import createMiddleware from "next-intl/middleware";
-import { authJsProxy } from "@/lib/auth";
-import { sharedRuntimeEnabled } from "@bitbaum/accountkit/auth/switch";
 import { compat } from "@/lib/auth/shared/compat";
 import type { Session } from "next-auth";
 import { isStaff } from "@/lib/domain/auth";
 import { routing } from "./i18n/routing";
-import { NextResponse, type NextFetchEvent, type NextRequest } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 
 const intlMiddleware = createMiddleware(routing);
 
@@ -92,19 +90,10 @@ function route(req: NextRequest, session: Session | null) {
   return intlMiddleware(req);
 }
 
-// As a proxy, Auth.js calls this with (request, event); its overloads only
-// describe the route-handler form.
-const authJs = authJsProxy((req) => route(req, req.auth)) as unknown as (
-  req: NextRequest,
-  ev: NextFetchEvent,
-) => Promise<Response>;
-
-// With AUTH_RUNTIME=accountkit the session is a database row read through
-// AccountKit (docs/ACCOUNTKIT-MIGRATION.md); otherwise the Auth.js JWT.
-export default async function proxy(req: NextRequest, ev: NextFetchEvent) {
-  return sharedRuntimeEnabled()
-    ? route(req, await compat.sessionFor(req.headers))
-    : authJs(req, ev);
+// The session is a database row read through AccountKit
+// (docs/ACCOUNTKIT-MIGRATION.md).
+export default async function proxy(req: NextRequest) {
+  return route(req, await compat.sessionFor(req.headers));
 }
 
 export const config = {

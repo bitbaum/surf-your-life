@@ -55,7 +55,7 @@ status, and clients feel accompanied and can see their own progress.
 
 ## Commands & Ops
 
-**Stack:** Next.js 16 (App Router, `output: "standalone"`) · TypeScript strict · self-hosted PostgreSQL (`pg` driver) · Drizzle ORM · pgvector · Auth.js v5 · Tailwind v4 (`@theme inline`, no config file). Package manager: **pnpm** (`pnpm install --frozen-lockfile`).
+**Stack:** Next.js 16 (App Router, `output: "standalone"`) · TypeScript strict · self-hosted PostgreSQL (`pg` driver) · Drizzle ORM · pgvector · `@bitbaum/accountkit` (accounts) · Tailwind v4 (`@theme inline`, no config file). Package manager: **pnpm** (`pnpm install --frozen-lockfile`).
 
 | Task | Command |
 |------|---------|
@@ -77,7 +77,7 @@ status, and clients feel accompanied and can see their own progress.
 ```
 app/
   [locale]/        → next-intl segment — every page lives under it
-    (auth)/        → login, register, forgot-password (signed-out only)
+    (auth)/        → login, register, forgot-password: AccountKit's screens (signed-out only)
     (portal)/      → clients: dashboard, check-in, profile, documents, AI chat, …
     (admin)/admin/ → practitioners and admins: clients, documents, insights
   api/             → thin HTTP layer, NOT localized: validate, call domain, respond
@@ -85,7 +85,7 @@ lib/
   db/schema.ts     → SSOT for every data shape; types via $inferSelect / $inferInsert
   db/index.ts      → the one Drizzle client
   domain/          → business logic and the Zod schemas API routes and forms share
-  auth/            → Auth.js config, session helpers; `shared/` is AccountKit, which answers sign-in since 2026-11-01 (`AUTH_RUNTIME=accountkit`; `docs/ACCOUNTKIT-MIGRATION.md`)
+  auth/            → `auth()`, the sign-in methods, the browser client; `shared/` is the AccountKit runtime (`docs/ACCOUNTKIT-MIGRATION.md`)
   constants.ts     → option lists, scale bounds, limits — no magic numbers elsewhere
   utils.ts         → cn, formatDate, formatEnumValue
 components/
@@ -121,11 +121,15 @@ proxy.ts           → route protection only
 
 ## Auth
 
-"Sign in with OrangeCat" (OIDC) is the primary path. Users are keyed on
-`users.orangecat_sub`, never matched by email (`lib/auth/orangecat-store.ts`).
-Email/password sits behind a disclosure for existing accounts, with the app's
-own Google button only when `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` are
-both set (`lib/auth/google.ts`); production sets neither, so it is hidden there.
+Accounts are `@bitbaum/accountkit` (`lib/auth/shared/runtime.ts`), and the
+sign-in, sign-up, recovery and account screens are its own
+(`components/auth/auth-forms.tsx`): email and password, an email sign-in link,
+passkeys, two-factor, recovery, "Continue with OrangeCat" and the shared bitbaum
+sign-in, each offered when its env is set (`lib/auth/methods.ts`; mail needs
+`RESEND_*`, OrangeCat `ORANGECAT_OAUTH_*`, the shared sign-in `SIGNIN_*`).
+AccountKit is the only writer of credentials. An OrangeCat person is keyed on
+the OIDC subject, never matched by email. The account panel (password,
+passkeys, second factor, deleting the account) is on `/profile`.
 
 ## Data rules
 

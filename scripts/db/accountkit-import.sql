@@ -65,10 +65,14 @@ DO $$ BEGIN
 END $$;
 
 -- From here on every writer of either table keeps the other in step
--- (functions in migration 0029). Rolled back with everything else in a rehearsal.
+-- (functions in migrations 0029 and 0030). Rolled back with everything else in a rehearsal.
 DROP TRIGGER IF EXISTS surf_accountkit_from_users ON users;
 CREATE TRIGGER surf_accountkit_from_users AFTER INSERT OR UPDATE OR DELETE ON users
   FOR EACH ROW EXECUTE FUNCTION surf_accountkit_from_users();
 DROP TRIGGER IF EXISTS surf_accountkit_to_users ON auth_users;
 CREATE TRIGGER surf_accountkit_to_users AFTER UPDATE ON auth_users
   FOR EACH ROW EXECUTE FUNCTION surf_accountkit_to_users();
+-- AccountKit's own account deletion removes the Surf Your Life account (migration 0030).
+DROP TRIGGER IF EXISTS surf_accountkit_delete_users ON auth_users;
+CREATE TRIGGER surf_accountkit_delete_users AFTER DELETE ON auth_users
+  FOR EACH ROW EXECUTE FUNCTION surf_accountkit_delete_users();
