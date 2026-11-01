@@ -97,5 +97,20 @@ To roll back, run the same workflow with `rollback`. It unsets `AUTH_RUNTIME`,
 restarts on Auth.js, drops the mirrors and empties the shared tables.
 Every hash stays bcrypt in `users.password`, so nothing needs a reset.
 
-Still to prove with an approved test identity on the deployed artifact:
-recovery, a role change and revocation, and an OrangeCat sign-in through to its callback.
+Proven live on 2026-11-01 by Loki's `accountkit-switch.yml` `prove` action,
+using throwaway accounts that it deleted again:
+
+- two sessions at once;
+- a change to the person's row, read on the next request (the path a role,
+  staff or company change takes);
+- a password write, which is what a reset and a password change do. It ended
+  both sessions, the old password was refused and the new one signed in;
+- sign-out, and deleting the person ending their session;
+- a real browser sign-in with a throwaway OrangeCat account: the product's
+  OrangeCat button, OrangeCat's sign-in and consent, and back in, signed in.
+  Its first run found that the first such sign-in failed
+  (`unable_to_create_user`); AccountKit 0.19.0 fixed it
+  (bitbaum/accountkit#56).
+
+Not proven by a machine: a reset mail arriving in a real inbox. The reset
+code is the product's own and did not change in the switch.
