@@ -1,8 +1,11 @@
 import createMiddleware from "next-intl/middleware";
-import { auth } from "@/lib/auth";
+import { authJsProxy } from "@/lib/auth";
+import { sharedAuthEnabled } from "@/lib/auth/shared/runtime";
+import { sharedSessionFor } from "@/lib/auth/shared/session";
+import type { Session } from "next-auth";
 import { isStaff } from "@/lib/domain/auth";
 import { routing } from "./i18n/routing";
-import { NextResponse } from "next/server";
+import { NextResponse, type NextFetchEvent, type NextRequest } from "next/server";
 
 const intlMiddleware = createMiddleware(routing);
 
@@ -59,9 +62,9 @@ function getLocale(pathname: string): string {
   return pathname.match(/^\/(de|en|fr)/)?.[1] ?? routing.defaultLocale;
 }
 
-export default auth((req) => {
+/** The routing for one request, given who (if anyone) is signed in. */
+function route(req: NextRequest, session: Session | null) {
   const { pathname } = req.nextUrl;
-  const session = req.auth;
   const path = stripLocale(pathname);
   const locale = getLocale(pathname);
 
@@ -87,7 +90,20 @@ export default auth((req) => {
   }
 
   return intlMiddleware(req);
-});
+}
+
+// As a proxy, Auth.js calls this with (request, event); its overloads only
+// describe the route-handler form.
+const authJs = authJsProxy((req) => route(req, req.auth)) as unknown as (
+  req: NextRequest,
+  ev: NextFetchEvent,
+) => Promise<Response>;
+
+// With AUTH_RUNTIME=accountkit the session is a database row read through
+// AccountKit (docs/ACCOUNTKIT-MIGRATION.md); otherwise the Auth.js JWT.
+export default async function proxy(req: NextRequest, ev: NextFetchEvent) {
+  return sharedAuthEnabled() ? route(req, await sharedSessionFor(req.headers)) : authJs(req, ev);
+}
 
 export const config = {
   // The public build receipt must bypass both authentication and locale redirects.

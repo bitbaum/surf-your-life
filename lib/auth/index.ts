@@ -6,22 +6,27 @@ import bcrypt from "bcryptjs";
 import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { users } from "@/lib/db/schema";
-import { loginSchema, resolveRole, CLIENT_ROLE, type AppRole } from "@/lib/domain/auth";
+import { loginSchema, CLIENT_ROLE, type AppRole } from "@/lib/domain/auth";
 import {
-  emailEarnsPromotion,
   orangecatClient,
   orangecatProvider,
   withOrangecatIdentity,
 } from "@bitbaum/accountkit/orangecat";
 import { googleClient } from "./google";
 import { orangecatUserStore } from "./orangecat-store";
+import type { Session } from "next-auth";
+import type { NextRequest } from "next/server";
+import { roleAfterSignIn } from "./claims";
+import { sharedAuth, sharedAuthEnabled } from "./shared/runtime";
+import { sharedSession } from "./shared/session";
+import { nextAuthClientCompat } from "./shared/bridge";
 
 // Absent (not broken) until the box has ORANGECAT_OAUTH_CLIENT_ID/_SECRET.
 const orangecat = orangecatClient();
 // Absent until the box has GOOGLE_CLIENT_ID/_SECRET (it has neither today).
 const google = googleClient();
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
+const nextAuth = NextAuth({
   adapter: withOrangecatIdentity(DrizzleAdapter(db), orangecatUserStore),
   session: { strategy: "jwt" },
   pages: {
@@ -69,21 +74,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.id = user.id;
         token.emailVerified = (user as { emailVerified?: Date | null }).emailVerified ?? null;
 
-        // Resolve role — only apply ADMIN_EMAILS promotion when the env var is
-        // actually configured. If it's not set, trust the DB role as-is so that
-        // manually-assigned admin accounts don't get silently downgraded to client.
-        const existingRole = (user as { role?: string }).role ?? CLIENT_ROLE;
-        // Never for an OrangeCat sign-in (see emailEarnsPromotion).
-        const adminEmailsConfigured = (process.env.ADMIN_EMAILS ?? "").trim().length > 0;
-        if (adminEmailsConfigured && emailEarnsPromotion(account?.provider)) {
-          const correctRole = resolveRole(user.email ?? "");
-          if (correctRole !== existingRole && user.id) {
-            await db.update(users).set({ role: correctRole }).where(eq(users.id, user.id));
-          }
-          token.role = correctRole;
-        } else {
-          token.role = existingRole;
+        const existingRole = ((user as { role?: string }).role ?? CLIENT_ROLE) as AppRole;
+        const role = roleAfterSignIn(account?.provider, user.email, existingRole);
+        if (role !== existingRole && user.id) {
+          await db.update(users).set({ role }).where(eq(users.id, user.id));
         }
+        token.role = role;
       }
       return token;
     },
@@ -95,3 +91,29 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
   },
 });
+
+export const { signIn, signOut } = nextAuth;
+
+/**
+ * Who is signed in. One reader for both runtimes: AccountKit's shared session
+ * with AUTH_RUNTIME=accountkit, the Auth.js JWT otherwise. Same shape either
+ * way (docs/ACCOUNTKIT-MIGRATION.md).
+ */
+export async function auth(): Promise<Session | null> {
+  return sharedAuthEnabled() ? sharedSession() : nextAuth.auth();
+}
+
+/** The Auth.js proxy wrapper; proxy.ts uses it only with the switch off. */
+export const authJsProxy = nextAuth.auth;
+
+/** /api/auth/*: AccountKit answers when the shared runtime is on. */
+export const handlers = {
+  GET: async (request: NextRequest) =>
+    sharedAuthEnabled()
+      ? ((await nextAuthClientCompat(request)) ?? sharedAuth.GET(request))
+      : nextAuth.handlers.GET(request),
+  POST: async (request: NextRequest) =>
+    sharedAuthEnabled()
+      ? ((await nextAuthClientCompat(request)) ?? sharedAuth.POST(request))
+      : nextAuth.handlers.POST(request),
+};
