@@ -20,11 +20,11 @@ importers:
         specifier: ^1.11.3
         version: 1.11.3
       '@bitbaum/accountkit':
-        specifier: github:bitbaum/accountkit#b9d876f91f9a1b4acd875c4cfcb373c20db4288a
-        version: https://codeload.github.com/bitbaum/accountkit/tar.gz/b9d876f91f9a1b4acd875c4cfcb373c20db4288a(@bitbaum/mail-kit@0.2.0)(drizzle-orm@0.45.4(@neondatabase/serverless@1.0.2)(@opentelemetry/api@1.9.1)(@types/pg@8.23.1)(pg@8.23.1))(next@16.4.3(@babel/core@7.29.7)(@opentelemetry/api@1.9.1)(@types/node@26.6.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react@19.3.1)
+        specifier: ^0.16.0
+        version: 0.16.0(@bitbaum/mail-kit@0.2.0)(drizzle-orm@0.45.4(@neondatabase/serverless@1.0.2)(@opentelemetry/api@1.9.1)(@types/pg@8.23.1)(pg@8.23.1))(next@16.4.3(@babel/core@7.29.7)(@opentelemetry/api@1.9.1)(@types/node@26.6.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react@19.3.1)
       '@bitbaum/ai-kit':
-        specifier: ^1.21.5
-        version: 1.21.5(react@19.3.1)
+        specifier: ^1.22.0
+        version: 1.22.0(react@19.3.1)
       '@bitbaum/chatkit':
         specifier: ^0.21.5
         version: 0.21.5(react@19.3.1)
@@ -245,9 +245,8 @@ packages:
     resolution: {integrity: sha512-6zABk/ECA/QYSCQ1NGiVwwbQerUCZ+TQbp64Q3AgmfNvurHH0j8TtXa1qbShXA6qqkpAj4V5W8pP6mLe1mcMqA==}
     engines: {node: '>=18'}
 
-  '@bitbaum/accountkit@https://codeload.github.com/bitbaum/accountkit/tar.gz/b9d876f91f9a1b4acd875c4cfcb373c20db4288a':
-    resolution: {gitHosted: true, integrity: sha512-31QuIGaDHoDW6Nlm4PQOAI0gWszrt87jmLKY3uZytVR3oSnyeivz4DKfuuoww6wxERpsRsHIwVKX/T34Y5tojQ==, tarball: https://codeload.github.com/bitbaum/accountkit/tar.gz/b9d876f91f9a1b4acd875c4cfcb373c20db4288a}
-    version: 0.15.0
+  '@bitbaum/accountkit@0.16.0':
+    resolution: {integrity: sha512-+6wSI+kS7W6Ys15omJxc4UaM3p/uSlQNdCfKbtDwvkZ9NrHtUMHNPOW54Nqkuw49H6l57iAP1bGF++4sGQ+hqw==}
     engines: {node: '>=20'}
     peerDependencies:
       '@better-auth/passkey': ^1.7.10
@@ -268,8 +267,8 @@ packages:
       next:
         optional: true
 
-  '@bitbaum/ai-kit@1.21.5':
-    resolution: {integrity: sha512-TdiPrUdzSnQWDG7XE/iUA+BozJg2+xJMYHb/6ZRtbW4692n1so+jBfb5PGHyxjwiWApbnPg9TUHKv04p87vzvQ==}
+  '@bitbaum/ai-kit@1.22.0':
+    resolution: {integrity: sha512-IfebEXcs+mbpK0jrrGpSJg2WPWq0VKMDuKYRoB5yMni+uZ4wRWfKOwS+DlUmgDfWmVWMAQzXDbQSawANbHbeYg==}
     engines: {node: '>=20'}
     peerDependencies:
       react: '>=18'
@@ -4381,7 +4380,7 @@ snapshots:
 
   '@bcoe/v8-coverage@1.0.2': {}
 
-  '@bitbaum/accountkit@https://codeload.github.com/bitbaum/accountkit/tar.gz/b9d876f91f9a1b4acd875c4cfcb373c20db4288a(@bitbaum/mail-kit@0.2.0)(drizzle-orm@0.45.4(@neondatabase/serverless@1.0.2)(@opentelemetry/api@1.9.1)(@types/pg@8.23.1)(pg@8.23.1))(next@16.4.3(@babel/core@7.29.7)(@opentelemetry/api@1.9.1)(@types/node@26.6.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react@19.3.1)':
+  '@bitbaum/accountkit@0.16.0(@bitbaum/mail-kit@0.2.0)(drizzle-orm@0.45.4(@neondatabase/serverless@1.0.2)(@opentelemetry/api@1.9.1)(@types/pg@8.23.1)(pg@8.23.1))(next@16.4.3(@babel/core@7.29.7)(@opentelemetry/api@1.9.1)(@types/node@26.6.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react@19.3.1)':
     dependencies:
       limitkit: 0.2.1
       react: 19.3.1
@@ -4391,7 +4390,7 @@ snapshots:
       drizzle-orm: 0.45.4(@neondatabase/serverless@1.0.2)(@opentelemetry/api@1.9.1)(@types/pg@8.23.1)(pg@8.23.1)
       next: 16.4.3(@babel/core@7.29.7)(@opentelemetry/api@1.9.1)(@types/node@26.6.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
 
-  '@bitbaum/ai-kit@1.21.5(react@19.3.1)':
+  '@bitbaum/ai-kit@1.22.0(react@19.3.1)':
     dependencies:
       '@mozilla/readability': 0.6.0
       ai-forms: 0.1.3(react@19.3.1)
