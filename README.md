@@ -8,7 +8,7 @@ get the visibility they need to intervene early, run evidence-based programs, an
 
 - **Next.js 16** (App Router, Server Components) · TypeScript strict
 - **PostgreSQL** (self-hosted) + **Drizzle ORM** + **pgvector**
-- **Auth.js v5** (Sign in with OrangeCat, email/password; the app's own Google OAuth only appears when `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` are set — they are not set in production)
+- **`@bitbaum/accountkit`** accounts: email and password, an email sign-in link, passkeys, two-factor, recovery, Continue with OrangeCat and the shared bitbaum sign-in, each when its env is set
 - **Tailwind v4** · **next-intl** (de / en / fr)
 - Self-hosted on Hetzner (behind Caddy)
 

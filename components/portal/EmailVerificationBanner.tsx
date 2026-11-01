@@ -3,8 +3,10 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { X } from "lucide-react";
+import { authClient } from "@/lib/auth/client";
 
-export function EmailVerificationBanner() {
+/** Resends AccountKit's confirmation link to the person's own address. */
+export function EmailVerificationBanner({ email, locale }: { email: string; locale: string }) {
   const t = useTranslations("auth");
   const [dismissed, setDismissed] = useState(false);
   const [sent, setSent] = useState(false);
@@ -15,8 +17,11 @@ export function EmailVerificationBanner() {
   async function handleResend() {
     setLoading(true);
     try {
-      await fetch("/api/auth/resend-verification", { method: "POST" });
-      setSent(true);
+      const { error } = await authClient.sendVerificationEmail({
+        email,
+        callbackURL: `/${locale}/dashboard`,
+      });
+      if (!error) setSent(true);
     } finally {
       setLoading(false);
     }

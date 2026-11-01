@@ -274,7 +274,9 @@
       "backToSignIn": "Zurück zur Anmeldung",
       "successTitle": "E-Mail prüfen",
       "successBody": "Falls ein Konto für diese Adresse existiert, erhalten Sie in Kürze einen Link zum Zurücksetzen.",
-      "successBack": "Zurück zur Anmeldung"
+      "successBack": "Zurück zur Anmeldung",
+      "unavailable": "Links zum Zurücksetzen können gerade nicht versendet werden. Melden Sie sich auf anderem Weg an oder versuchen Sie es später erneut.",
+      "otherWays": "Andere Wege zur Anmeldung"
     },
     "resetPassword": {
       "title": "Neues Passwort festlegen",

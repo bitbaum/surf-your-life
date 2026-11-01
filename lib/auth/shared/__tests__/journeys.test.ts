@@ -23,13 +23,13 @@ vi.hoisted(() => {
     Object.assign(process.env, {
       DATABASE_URL: url,
       AUTH_URL: "https://surf.example.test",
-      AUTH_RUNTIME: "accountkit",
       AUTH_SECRET: "synthetic-surf-journey-secret-at-least-32-chars",
       ADMIN_EMAILS: "boss@example.test",
     });
     delete process.env.RESEND_API_KEY;
     delete process.env.BETTER_AUTH_SECRET;
     delete process.env.ORANGECAT_OAUTH_CLIENT_ID;
+    delete process.env.SIGNIN_CLIENT_ID;
   }
 });
 
@@ -65,6 +65,7 @@ describe.skipIf(!URL_)("Surf Your Life on AccountKit (real PostgreSQL)", () => {
     browser = createCompatClient({ compat: (await import("../compat")).compat, site: SITE });
     await sql(`DROP TRIGGER IF EXISTS surf_accountkit_from_users ON users;
       DROP TRIGGER IF EXISTS surf_accountkit_to_users ON auth_users;
+      DROP TRIGGER IF EXISTS surf_accountkit_delete_users ON auth_users;
       TRUNCATE auth_users, auth_accounts, auth_sessions, auth_verifications,
         auth_passkeys, auth_two_factors, users CASCADE`);
     const hash = await bcrypt.hash(PASSWORD, 4);
@@ -104,6 +105,39 @@ describe.skipIf(!URL_)("Surf Your Life on AccountKit (real PostgreSQL)", () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const session = () => browser.session<any>();
 
+  // What AccountKit's screens send: JSON to its own endpoints, same cookie jar.
+  let hop = 0;
+  async function native(route: string, body: Record<string, unknown>) {
+    const { compat } = await import("../compat");
+    hop += 1;
+    const res = await compat.route.POST(
+      new Request(`${SITE}/api/auth${route}`, {
+        method: "POST",
+        headers: {
+          origin: SITE,
+          "content-type": "application/json",
+          "x-forwarded-for": `203.0.113.${hop % 250}`,
+          cookie: browser.cookie,
+        },
+        body: JSON.stringify(body),
+      }) as never,
+    );
+    const jar = new Map(
+      browser.cookie
+        .split("; ")
+        .filter(Boolean)
+        .map((part) => [part.slice(0, part.indexOf("=")), part.slice(part.indexOf("=") + 1)]),
+    );
+    for (const set of res.headers.getSetCookie()) {
+      const [pair] = set.split(";");
+      const name = pair.slice(0, pair.indexOf("="));
+      const value = pair.slice(pair.indexOf("=") + 1);
+      if (/max-age=0/i.test(set) || value === "") jar.delete(name);
+      else jar.set(name, value);
+    }
+    browser.cookie = [...jar].map(([name, value]) => `${name}=${value}`).join("; ");
+    return res;
+  }
   test("an imported bcrypt account signs in, in any letter case, with its role and verification", async () => {
     const result = await signIn("VET@example.test", PASSWORD);
     expect(new URL(result.url).searchParams.get("error")).toBeNull();
@@ -168,7 +202,7 @@ describe.skipIf(!URL_)("Surf Your Life on AccountKit (real PostgreSQL)", () => {
     expect(await sql("SELECT 1 FROM auth_users WHERE id = $1", [OWNER])).toHaveLength(0);
   });
 
-  test("Surf Your Life's registration writer reaches the shared row, so the new person signs in", async () => {
+  test("a password written to users (Loki's live proof) reaches the shared row", async () => {
     await sql(
       `INSERT INTO users (email, name, password) VALUES ('fresh@example.test', 'Fresh', $1)`,
       [await bcrypt.hash("a brand new password", 4)],
@@ -181,7 +215,7 @@ describe.skipIf(!URL_)("Surf Your Life on AccountKit (real PostgreSQL)", () => {
     });
   });
 
-  test("changing your own password keeps your session and ends every other one", async () => {
+  test("a password written to users keeps the session it names and ends every other one", async () => {
     await signIn("owner@example.test", PASSWORD);
     const mine = browser.cookie;
     browser.cookie = "";
@@ -215,7 +249,7 @@ describe.skipIf(!URL_)("Surf Your Life on AccountKit (real PostgreSQL)", () => {
     expect(new URL(fresh.url).searchParams.get("error")).toBeNull();
   });
 
-  test("a reset through Surf Your Life's link ends every session", async () => {
+  test("a password written to users with no session named ends every session", async () => {
     await signIn("owner@example.test", PASSWORD);
     await sql("UPDATE users SET password = $1 WHERE id = $2", [
       await bcrypt.hash("reset password", 4),
@@ -265,11 +299,100 @@ describe.skipIf(!URL_)("Surf Your Life on AccountKit (real PostgreSQL)", () => {
     }
   });
 
-  test("AccountKit's own credential writers stay closed until Surf Your Life adopts its screens", async () => {
-    for (const route of ["/sign-up/email", "/change-password", "/request-password-reset"]) {
-      const res = await answer(request(route, { form: { email: "x@example.test" } }));
-      expect(res.status, route).toBe(404);
-    }
+  test("a sign-up through AccountKit makes a Surf Your Life client, profile included", async () => {
+    const res = await native("/sign-up/email", {
+      name: "",
+      email: "Fresh@Example.test",
+      password: "a brand new password",
+    });
+    expect(res.status).toBe(200);
+    const { user } = await res.json();
+    const [row] = await sql("SELECT email, role, password FROM users WHERE id = $1", [user.id]);
+    expect(row).toMatchObject({ email: "fresh@example.test", role: "client", password: null });
+    expect(await sql("SELECT 1 FROM profiles WHERE user_id = $1", [user.id])).toHaveLength(1);
+    expect((await session()).user).toMatchObject({ id: user.id, role: "client" });
+    browser.cookie = "";
+    const again = await native("/sign-in/email", {
+      email: "fresh@example.test",
+      password: "a brand new password",
+    });
+    expect(again.status).toBe(200);
+  });
+
+  test("an imported bcrypt account signs in through AccountKit's form, wrong password refused", async () => {
+    expect(
+      (await native("/sign-in/email", { email: "owner@example.test", password: "nope" })).status,
+    ).toBe(401);
+    expect(await session()).toBeNull();
+    const res = await native("/sign-in/email", { email: "VET@example.test", password: PASSWORD });
+    expect(res.status).toBe(200);
+    expect((await session()).user).toMatchObject({ id: VET, role: "practitioner" });
+  });
+
+  test("ADMIN_EMAILS promotes at AccountKit's password sign-in too", async () => {
+    await native("/sign-in/email", { email: "boss@example.test", password: PASSWORD });
+    expect((await session()).user.role).toBe("admin");
+  });
+
+  test("a password change through AccountKit replaces the imported hash", async () => {
+    await native("/sign-in/email", { email: "owner@example.test", password: PASSWORD });
+    const res = await native("/change-password", {
+      currentPassword: PASSWORD,
+      newPassword: "the new password",
+      revokeOtherSessions: true,
+    });
+    expect(res.status).toBe(200);
+    browser.cookie = "";
+    expect(
+      (await native("/sign-in/email", { email: "owner@example.test", password: PASSWORD })).status,
+    ).toBe(401);
+    expect(
+      (
+        await native("/sign-in/email", {
+          email: "owner@example.test",
+          password: "the new password",
+        })
+      ).status,
+    ).toBe(200);
+  });
+
+  test("a rename through AccountKit's panel reaches Surf Your Life's row", async () => {
+    await native("/sign-in/email", { email: "owner@example.test", password: PASSWORD });
+    expect((await native("/update-user", { name: "Panel Name" })).status).toBe(200);
+    expect((await session()).user.name).toBe("Panel Name");
+  });
+
+  test("deleting the account through AccountKit deletes the Surf Your Life account", async () => {
+    await sql("INSERT INTO profiles (user_id) VALUES ($1)", [OWNER]);
+    await native("/sign-in/email", { email: "owner@example.test", password: PASSWORD });
+    const res = await native("/delete-user", { password: PASSWORD });
+    expect(res.status).toBe(200);
+    expect(await sql("SELECT 1 FROM users WHERE id = $1", [OWNER])).toHaveLength(0);
+    expect(await sql("SELECT 1 FROM profiles WHERE user_id = $1", [OWNER])).toHaveLength(0);
+    expect(await session()).toBeNull();
+  });
+
+  test("a practitioner's reset link is AccountKit's own reset token", async () => {
+    const { sharedAuth } = await import("../runtime");
+    const context = await sharedAuth.getAuth().$context;
+    await context.internalAdapter.createVerificationValue({
+      identifier: "reset-password:staff-made-token",
+      value: OWNER,
+      expiresAt: new Date(Date.now() + 60 * 60 * 1000),
+    });
+    const res = await native("/reset-password", {
+      token: "staff-made-token",
+      newPassword: "set from the staff link",
+    });
+    expect(res.status).toBe(200);
+    expect(
+      (
+        await native("/sign-in/email", {
+          email: "owner@example.test",
+          password: "set from the staff link",
+        })
+      ).status,
+    ).toBe(200);
   });
 
   test("the import is a no-op for the same snapshot and refuses drift", async () => {

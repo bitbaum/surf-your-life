@@ -1,17 +1,17 @@
 name: Browser smoke
 
-# A client's way in, in real Chrome, against the production (standalone)
-# server and an isolated PostgreSQL with pgvector, built from drizzle/*.sql.
-# The portal sends a stranger to sign-in, sign-in offers only the configured
-# providers, an account is made through the register form, the signed-in
-# portal shows, sign-out ends the session, a wrong password is refused and the
-# right one signs back in. The fleet rollout gate requires this workflow before
-# a shared-package change ships here. Synthetic people only; no mail is sent
-# (no transport is set).
-#
-# The account job runs twice: on Auth.js (what production runs) and on the
-# staged AccountKit runtime (AUTH_RUNTIME=accountkit, off in production until
-# the switch; docs/ACCOUNTKIT-MIGRATION.md), after the cutover import.
+# Every way into a Surf Your Life account, in a real Chromium against the
+# production standalone server and a throwaway PostgreSQL built from the
+# committed migrations plus the cutover import (scripts/browser-smoke.mjs):
+# the method set on /login, /register and /forgot-password at 320px and 390px;
+# sign up, sign out, a wrong password refused, sign in; an account imported
+# from Auth.js (bcrypt, seeded before the import) signing in with its old
+# password and role; a password reset through the mailed link; an email
+# sign-in link; and the passkey and two-factor settings. Mail is AccountKit's
+# real mail, caught by scripts/ci/mail-sink.cjs instead of being sent. No
+# GOOGLE_* pair is set, and no Google-only button may appear. Synthetic people
+# only; the OrangeCat and bitbaum sign-in client values below exist only so
+# their buttons render, and are never used to sign in.
 on:
   pull_request:
     branches: [main]
@@ -28,13 +28,9 @@ permissions:
 
 jobs:
   account:
-    name: account (${{ matrix.runtime }})
-    strategy:
-      fail-fast: false
-      matrix:
-        runtime: [authjs, accountkit]
+    name: account (AccountKit)
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     services:
       postgres:
         image: pgvector/pgvector:pg17
@@ -51,10 +47,20 @@ jobs:
       AUTH_SECRET: synthetic-browser-smoke-secret-at-least-32-chars
       AUTH_TRUST_HOST: "true"
       AUTH_URL: http://localhost:3000
-      AUTH_RUNTIME: ${{ matrix.runtime == 'accountkit' && 'accountkit' || '' }}
       BASE_URL: http://localhost:3000
       BROWSER_EXECUTABLE: /usr/bin/google-chrome
       NEXT_TELEMETRY_DISABLED: "1"
+      LEGACY_EMAIL: legacy-smoke@example.test
+      LEGACY_PASSWORD: synthetic legacy smoke password
+      # Outside the uploaded artifacts: it holds (synthetic) reset tokens.
+      MAIL_SINK: /tmp/surf-ci-mail.jsonl
+      RESEND_API_KEY: re_ci_sink_only
+      RESEND_FROM: Surf Your Life <hello@surf-your-life.orangecat.ch>
+      ORANGECAT_OAUTH_CLIENT_ID: surf-ci
+      ORANGECAT_OAUTH_CLIENT_SECRET: ci-only
+      SIGNIN_ISSUER: https://morulia.orangecat.ch
+      SIGNIN_CLIENT_ID: surf-ci
+      SIGNIN_CLIENT_SECRET: ci-only
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6
@@ -64,26 +70,23 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
 
-      # The journey's database is built from the committed migrations, as a
-      # new box would be. A second, scratch database is pushed from
-      # lib/db/schema.ts, and the two must agree: a column, index, enum or
-      # constraint behaviour the schema declares without a migration fails here
-      # (scripts/db/check-migration-drift.sh).
       - name: Migrations replay to the Drizzle schema
         run: |
           psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -q -c "CREATE DATABASE surf_pushed"
           scripts/db/check-migration-drift.sh "$DATABASE_URL" "${DATABASE_URL%/*}/surf_pushed"
 
       # The rehearsal must pass on the chain, then the real-database journeys
-      # (they leave the tables empty), then the import for the browser journey.
+      # (they leave the tables empty), then one Auth.js-era account and the
+      # import, for the browser journey.
       - name: AccountKit import and journeys on the chain
-        if: matrix.runtime == 'accountkit'
         env:
           SURF_JOURNEY_DATABASE_URL: postgres://app:app@127.0.0.1:5432/surf_smoke
         run: |
           pnpm run db:rehearse-import
           pnpm exec vitest run lib/auth/shared
           psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -q -X -c "TRUNCATE users, auth_users CASCADE"
+          node scripts/ci/seed-legacy-account.mjs
+          pnpm run db:rehearse-import
           psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -q -X -1 -f scripts/db/accountkit-import.sql
 
       - run: pnpm build
@@ -94,7 +97,7 @@ jobs:
 
       - name: Account journey
         run: |
-          (cd .next/standalone && PORT=3000 HOSTNAME=127.0.0.1 node server.js > ../../server.log 2>&1 &)
+          (cd .next/standalone && NODE_OPTIONS="--require $GITHUB_WORKSPACE/scripts/ci/mail-sink.cjs" PORT=3000 HOSTNAME=127.0.0.1 node server.js > ../../server.log 2>&1 &)
           for i in $(seq 60); do curl -sf -o /dev/null http://localhost:3000/de/login && break; sleep 1; done
           pnpm run smoke:browser
 
@@ -102,7 +105,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: surf-browser-smoke-${{ matrix.runtime }}
+          name: surf-browser-smoke
           path: |
             browser-smoke-artifacts/
             server.log

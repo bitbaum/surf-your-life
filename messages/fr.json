@@ -274,7 +274,9 @@
       "backToSignIn": "Retour à la connexion",
       "successTitle": "Vérifiez votre e-mail",
       "successBody": "Si un compte existe pour cette adresse, vous recevrez bientôt un lien de réinitialisation.",
-      "successBack": "Retour à la connexion"
+      "successBack": "Retour à la connexion",
+      "unavailable": "Les liens de réinitialisation ne peuvent pas être envoyés pour le moment. Connectez-vous autrement ou réessayez plus tard.",
+      "otherWays": "Autres façons de se connecter"
     },
     "resetPassword": {
       "title": "Définir un nouveau mot de passe",

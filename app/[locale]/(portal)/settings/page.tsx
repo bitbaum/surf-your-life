@@ -4,7 +4,7 @@ import { setRequestLocale, getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ExportButton } from "./export-button";
-import { DeleteAccountForm } from "./delete-account-form";
+import { Link } from "@/i18n/navigation";
 import { ReminderToggle } from "./reminder-toggle";
 import { db } from "@/lib/db";
 import { profiles } from "@/lib/db/schema";
@@ -62,8 +62,23 @@ export default async function SettingsPage({ params }: { params: Promise<{ local
         </CardContent>
       </Card>
 
-      {/* Delete account */}
-      <DeleteAccountForm />
+      {/* Delete account: done in the account panel on the profile, with the
+          other sign-in settings (AccountKit). */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-red-600">{t("deleteTitle")}</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-4">
+          <p className="text-sm text-slate-600">{t("deleteBody")}</p>
+          <p className="text-sm font-medium text-red-700">{t("deleteWarning")}</p>
+          <Link
+            href="/profile#account"
+            className="inline-flex min-h-10 items-center justify-center self-start rounded-element border border-red-300 px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-50"
+          >
+            {t("deleteButton")}
+          </Link>
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -1,7 +1,10 @@
 # AccountKit migration
 
-Surf Your Life signs in through AccountKit since 2026-11-01 (`AUTH_RUNTIME=accountkit`).
-Auth.js (`lib/auth/index.ts`) stays in the tree for a rollback. Migration
+Surf Your Life signs in through AccountKit since 2026-11-01, and since the same
+day on AccountKit's own screens with every method: email and password, an
+email sign-in link, passkeys, two-factor codes, password recovery, Continue
+with OrangeCat and the shared bitbaum sign-in (each shown when its env is set;
+`lib/auth/methods.ts`). Auth.js is gone from the tree, Google with it. Migration
 `drizzle/0029_accountkit_staging.sql` adds AccountKit's tables beside it under
 the `auth_` prefix (`createAuthTables("auth_")` in `lib/db/accountkit.ts`),
 because Auth.js already owns `users`, `accounts` and `sessions`. The migration was written by hand: this repository's
@@ -40,10 +43,11 @@ other shared session; `/api/auth/change-password` names its own session in
 `surf.keep_session`, so the person changing it stays signed in. A reset
 ends every session.
 
-## Shared runtime (on since 2026-11-01)
+## Shared runtime (on since 2026-11-01; the first step)
 
-With `AUTH_RUNTIME=accountkit` the runtime in `lib/auth/shared/` answers every
-sign-in; unset, Auth.js answers as today. The secret is `BETTER_AUTH_SECRET`,
+The runtime in `lib/auth/shared/` answers every sign-in. It first ran behind
+`AUTH_RUNTIME=accountkit`; since the screens step it no longer reads that
+switch, and Auth.js is gone. The secret is `BETTER_AUTH_SECRET`,
 or the `AUTH_SECRET` the box already holds. Absolute URLs use `AUTH_URL`, which
 production already sets.
 
@@ -59,10 +63,10 @@ production already sets.
   (`@bitbaum/accountkit/auth/nextauth-compat`, configured in
   `lib/auth/shared/compat.ts`) answers its calls from the shared runtime:
   `session` GET and POST, `csrf`, `providers`, `signout`,
-  `callback/credentials` and `signin/orangecat`. Of AccountKit's own endpoints
-  only the session, sign-in, sign-out and the OAuth callback are open. Its
-  sign-up, reset and password endpoints stay closed until Surf Your Life adopts its
-  screens, so there is no second credential writer.
+  `callback/credentials` and `signin/orangecat`. In the first step only the
+  session, sign-in, sign-out and the OAuth callback of AccountKit's own
+  endpoints were open, so there was no second credential writer; the screens
+  step opened the rest (below).
 - A person AccountKit creates itself (a first OrangeCat sign-in) gets a
   Surf Your Life row under the same id (`lib/auth/shared/accounts.ts`), as a client
   with an unverified address.
@@ -71,6 +75,54 @@ production already sets.
 handlers on the replayed migration chain and the real import. CI's
 `browser-smoke.yml` account job runs the rehearsal and those journeys, then the
 whole browser account journey once per runtime. That is not deployed evidence.
+
+## AccountKit's screens (2026-11-01; the second step)
+
+`/[locale]/login` renders AccountKit's `SignInForm`, `/register` its
+`SignUpForm`, `/forgot-password` its recovery form, and `/profile` its
+`AccountPanel` (password, passkeys, two-factor, linked sign-ins, deleting the
+account), in German, English or French (`authLabelsFor`).
+`lib/auth/shared/compat.ts` passes `screens: "accountkit"` (AccountKit 0.20.0),
+so all of AccountKit's endpoints are open; `useSession` and `signOut` on the
+other pages keep the `next-auth/react` protocol and Surf Your Life's session
+shape.
+
+- **AccountKit is the only credential writer.** Surf Your Life's own
+  `/api/auth/register`, `forgot-password`, `reset-password`, `change-password`,
+  `verify-email` and `resend-verification` are removed (they would have
+  shadowed AccountKit's endpoints of the same names), and so is
+  `/api/account/delete`. New passwords are AccountKit's scrypt in
+  `auth_accounts`; `users.password` keeps each imported bcrypt hash but is no
+  longer read.
+- **Kept working:** the same user ids, every imported bcrypt hash
+  (`legacyBcrypt`), every OrangeCat link, roles on `users`, `ADMIN_EMAILS`
+  promotion at a password or email-link sign-in (`surf-plugin.ts`). A
+  password sign-up still gets its profile row, the welcome mail and the alert
+  to staff (`lib/auth/shared/accounts.ts`); AccountKit sends the address
+  confirmation, and the dashboard banner resends it.
+- **A practitioner's reset link** (`/api/admin/reset-link`) is now an
+  AccountKit reset token, so it runs through AccountKit's own reset.
+- **Migration 0030** makes the panel's rename and deletion reach `users`. The
+  deletion removes the person's rows in the order the old delete route used.
+  It replaces the mirror function in place and attaches the delete trigger
+  where the mirror is attached.
+- **An email sign-in link proves the address.** When it signs in a person
+  whose address was not yet confirmed, better-auth drops any password set
+  before that proof (`revokeUnprovenAccountAccess`). That person sets a
+  password again through "Passwort vergessen?".
+
+CI (`browser-smoke.yml`) runs every way in against the production build and a
+migrated, imported PostgreSQL, with an Auth.js-era bcrypt account seeded
+before the import and AccountKit's mail caught by `scripts/ci/mail-sink.cjs`.
+
+### Rolling back the screens
+
+Revert the pull request that adopted them. That restores Surf Your Life's
+pages and writers on the same shared runtime, which still verifies every
+password set since (scrypt) and every imported one. Do **not** run Loki's
+`accountkit-switch.yml rollback` any more: it empties the shared tables, and
+since this step they hold the only copy of every password set, every passkey
+and every second factor.
 
 ## Switched (2026-11-01)
 
@@ -93,9 +145,10 @@ OrangeCat's authorize page with the redirect `/api/auth/callback/orangecat`,
 which client `surf-your-life` accepts. AccountKit 0.18.1 made that work; 0.18.0
 started it through an endpoint better-auth 1.7 removed (bitbaum/accountkit#55).
 
-To roll back, run the same workflow with `rollback`. It unsets `AUTH_RUNTIME`,
-restarts on Auth.js, drops the mirrors and empties the shared tables.
-Every hash stays bcrypt in `users.password`, so nothing needs a reset.
+Until AccountKit's screens were adopted, the rollback was the same workflow
+with `rollback` (unset `AUTH_RUNTIME`, restart on Auth.js, drop the mirrors,
+empty the shared tables). Since then it would lose data; see "Rolling back the
+screens" above.
 
 Still to prove with an approved test identity on the deployed artifact:
 recovery, a role change and revocation, and an OrangeCat sign-in through to its callback.
