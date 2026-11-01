@@ -85,7 +85,7 @@ lib/
   db/schema.ts     → SSOT for every data shape; types via $inferSelect / $inferInsert
   db/index.ts      → the one Drizzle client
   domain/          → business logic and the Zod schemas API routes and forms share
-  auth/            → Auth.js config, session helpers; `shared/` stages AccountKit behind `AUTH_RUNTIME=accountkit`, off (`docs/ACCOUNTKIT-MIGRATION.md`)
+  auth/            → Auth.js config, session helpers; `shared/` is AccountKit, which answers sign-in since 2026-11-01 (`AUTH_RUNTIME=accountkit`; `docs/ACCOUNTKIT-MIGRATION.md`)
   constants.ts     → option lists, scale bounds, limits — no magic numbers elsewhere
   utils.ts         → cn, formatDate, formatEnumValue
 components/
