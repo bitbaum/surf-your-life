@@ -8,6 +8,10 @@ name: Browser smoke
 # right one signs back in. The fleet rollout gate requires this workflow before
 # a shared-package change ships here. Synthetic people only; no mail is sent
 # (no transport is set).
+#
+# The account job runs twice: on Auth.js (what production runs) and on the
+# staged AccountKit runtime (AUTH_RUNTIME=accountkit, off in production until
+# the switch; docs/ACCOUNTKIT-MIGRATION.md), after the cutover import.
 on:
   pull_request:
     branches: [main]
@@ -24,6 +28,11 @@ permissions:
 
 jobs:
   account:
+    name: account (${{ matrix.runtime }})
+    strategy:
+      fail-fast: false
+      matrix:
+        runtime: [authjs, accountkit]
     runs-on: ubuntu-latest
     timeout-minutes: 20
     services:
@@ -42,6 +51,7 @@ jobs:
       AUTH_SECRET: synthetic-browser-smoke-secret-at-least-32-chars
       AUTH_TRUST_HOST: "true"
       AUTH_URL: http://localhost:3000
+      AUTH_RUNTIME: ${{ matrix.runtime == 'accountkit' && 'accountkit' || '' }}
       BASE_URL: http://localhost:3000
       BROWSER_EXECUTABLE: /usr/bin/google-chrome
       NEXT_TELEMETRY_DISABLED: "1"
@@ -64,6 +74,18 @@ jobs:
           psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -q -c "CREATE DATABASE surf_pushed"
           scripts/db/check-migration-drift.sh "$DATABASE_URL" "${DATABASE_URL%/*}/surf_pushed"
 
+      # The rehearsal must pass on the chain, then the real-database journeys
+      # (they leave the tables empty), then the import for the browser journey.
+      - name: AccountKit import and journeys on the chain
+        if: matrix.runtime == 'accountkit'
+        env:
+          SURF_JOURNEY_DATABASE_URL: postgres://app:app@127.0.0.1:5432/surf_smoke
+        run: |
+          node scripts/db/accountkit-import-rehearse.mjs
+          pnpm exec vitest run lib/auth/shared
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -q -X -c "TRUNCATE users, auth_users CASCADE"
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -q -X -1 -f scripts/db/accountkit-import.sql
+
       - run: pnpm build
       - name: Assemble the standalone server
         run: |
@@ -80,7 +102,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: surf-browser-smoke
+          name: surf-browser-smoke-${{ matrix.runtime }}
           path: |
             browser-smoke-artifacts/
             server.log

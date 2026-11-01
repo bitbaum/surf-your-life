@@ -211,6 +211,13 @@
       "when": 1776013742027,
       "tag": "0028_session_preps_grant",
       "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "7",
+      "when": 1793518027276,
+      "tag": "0029_accountkit_staging",
+      "breakpoints": true
     }
   ]
 }
