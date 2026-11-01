@@ -28,7 +28,7 @@
     "@better-auth/passkey": "^1.7.14",
     "@bitbaum/accountkit": "^0.20.0",
     "@bitbaum/ai-kit": "^1.22.0",
-    "@bitbaum/chatkit": "^0.22.0",
+    "@bitbaum/chatkit": "^0.22.1",
     "@bitbaum/mail-kit": "^0.2.0",
     "@bitbaum/whenkit": "^0.3.3",
     "@fleet/ai-forms": "npm:ai-forms@^0.1.3",
