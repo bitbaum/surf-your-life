@@ -1,10 +1,10 @@
-# AccountKit migration staging
+# AccountKit migration
 
-Surf Your Life still signs in through Auth.js (`lib/auth/index.ts`). Migration
+Surf Your Life signs in through AccountKit since 2026-11-01 (`AUTH_RUNTIME=accountkit`).
+Auth.js (`lib/auth/index.ts`) stays in the tree for a rollback. Migration
 `drizzle/0029_accountkit_staging.sql` adds AccountKit's tables beside it under
 the `auth_` prefix (`createAuthTables("auth_")` in `lib/db/accountkit.ts`),
-because Auth.js already owns `users`, `accounts` and `sessions`. Nothing reads
-or writes them yet. The migration was written by hand: this repository's
+because Auth.js already owns `users`, `accounts` and `sessions`. The migration was written by hand: this repository's
 Drizzle snapshots stop at 0002, so `drizzle-kit generate` would emit the whole
 schema again. The fleet's acceptance queue is
 [Fleet's checkpoint](https://github.com/bitbaum/fleet/blob/main/docs/remediation-resume-2026-10-29.md).
@@ -40,7 +40,7 @@ other shared session; `/api/auth/change-password` names its own session in
 `surf.keep_session`, so the person changing it stays signed in. A reset
 ends every session.
 
-## Shared runtime (built, off)
+## Shared runtime (on since 2026-11-01)
 
 With `AUTH_RUNTIME=accountkit` the runtime in `lib/auth/shared/` answers every
 sign-in; unset, Auth.js answers as today. The secret is `BETTER_AUTH_SECRET`,
@@ -72,14 +72,30 @@ handlers on the replayed migration chain and the real import. CI's
 `browser-smoke.yml` account job runs the rehearsal and those journeys, then the
 whole browser account journey once per runtime. That is not deployed evidence.
 
-## Before switching
+## Switched (2026-11-01)
 
-1. **OrangeCat callback.** Done: OrangeCat accepts AccountKit's
-   `/api/auth/oauth2/callback/orangecat` for client `surf-your-life` beside the
-   Auth.js one (orangecat#1508, live).
-2. Stop Surf Your Life's credential writes, import once under locks, then set
-   `AUTH_RUNTIME=accountkit`. Everyone signed in under Auth.js signs in again
-   once. To roll back, unset `AUTH_RUNTIME` and drop the two triggers. Every
-   hash stays bcrypt in `users.password`, so nothing needs a reset.
-3. Prove sign-in, recovery, an OrangeCat sign-in, a role change and revocation
-   on the deployed artifact with an approved test identity.
+The switch ran from Loki's `accountkit-switch.yml`
+(`scripts/hetzner/accountkit-switch.sh`, see Loki's
+`docs/architecture/accountkit-migration.md`):
+
+1. A survey counted 2 accounts and nobody whose only way in would be
+   lost.
+2. The import ran once, under locks, and attached the mirror triggers.
+3. `AUTH_RUNTIME=accountkit` was set and the app restarted.
+4. A live proof ran on the public site. A throwaway account signed in through
+   the product's own sign-in route, read its session back, signed out, and
+   was deleted.
+
+Everyone signed in under Auth.js signs in again once.
+
+The OrangeCat round-trip starts on the live site: the sign-in button reaches
+OrangeCat's authorize page with the redirect `/api/auth/callback/orangecat`,
+which client `surf-your-life` accepts. AccountKit 0.18.1 made that work; 0.18.0
+started it through an endpoint better-auth 1.7 removed (bitbaum/accountkit#55).
+
+To roll back, run the same workflow with `rollback`. It unsets `AUTH_RUNTIME`,
+restarts on Auth.js, drops the mirrors and empties the shared tables.
+Every hash stays bcrypt in `users.password`, so nothing needs a reset.
+
+Still to prove with an approved test identity on the deployed artifact:
+recovery, a role change and revocation, and an OrangeCat sign-in through to its callback.
