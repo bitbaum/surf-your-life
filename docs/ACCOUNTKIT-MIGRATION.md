@@ -15,7 +15,7 @@ Against an isolated database holding an authorised snapshot, after every
 migration:
 
 ```sh
-DATABASE_URL=postgres://… node scripts/db/accountkit-import-rehearse.mjs
+DATABASE_URL=postgres://… pnpm run db:rehearse-import
 ```
 
 It runs `scripts/db/accountkit-import.sql` in one transaction, always rolls
@@ -55,12 +55,14 @@ production already sets.
   Before, with `ADMIN_EMAILS` set, every password sign-in wrote back
   `resolveRole`, which knows only admin and client, so a practitioner was
   demoted at their next sign-in.
-- The pages keep `next-auth/react`. `/api/auth` answers its calls (`session`
-  GET and POST, `csrf`, `providers`, `signout`, `callback/credentials`,
-  `signin/orangecat`) from AccountKit. Of AccountKit's own endpoints only the
-  session, sign-in, sign-out and the OAuth callback are open. Its sign-up,
-  reset and password endpoints stay closed until Surf Your Life adopts its screens,
-  so there is no second credential writer.
+- The pages keep `next-auth/react`. AccountKit's compat layer
+  (`@bitbaum/accountkit/auth/nextauth-compat`, configured in
+  `lib/auth/shared/compat.ts`) answers its calls from the shared runtime:
+  `session` GET and POST, `csrf`, `providers`, `signout`,
+  `callback/credentials` and `signin/orangecat`. Of AccountKit's own endpoints
+  only the session, sign-in, sign-out and the OAuth callback are open. Its
+  sign-up, reset and password endpoints stay closed until Surf Your Life adopts its
+  screens, so there is no second credential writer.
 - A person AccountKit creates itself (a first OrangeCat sign-in) gets a
   Surf Your Life row under the same id (`lib/auth/shared/accounts.ts`), as a client
   with an unverified address.
@@ -72,10 +74,9 @@ whole browser account journey once per runtime. That is not deployed evidence.
 
 ## Before switching
 
-1. **OrangeCat callback.** Surf Your Life's OrangeCat client (`surf-your-life`) is registered
-   for Auth.js's `/api/auth/callback/orangecat`. AccountKit returns to
-   `/api/auth/oauth2/callback/orangecat`. That URI has to be added beside the
-   old one in OrangeCat's `scripts/oauth/client-specs.ts` and be live.
+1. **OrangeCat callback.** Done: OrangeCat accepts AccountKit's
+   `/api/auth/oauth2/callback/orangecat` for client `surf-your-life` beside the
+   Auth.js one (orangecat#1508, live).
 2. Stop Surf Your Life's credential writes, import once under locks, then set
    `AUTH_RUNTIME=accountkit`. Everyone signed in under Auth.js signs in again
    once. To roll back, unset `AUTH_RUNTIME` and drop the two triggers. Every

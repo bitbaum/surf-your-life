@@ -17,9 +17,8 @@ import { orangecatUserStore } from "./orangecat-store";
 import type { Session } from "next-auth";
 import type { NextRequest } from "next/server";
 import { roleAfterSignIn } from "./claims";
-import { sharedAuth, sharedAuthEnabled } from "./shared/runtime";
-import { sharedSession } from "./shared/session";
-import { nextAuthClientCompat } from "./shared/bridge";
+import { sharedRuntimeEnabled } from "@bitbaum/accountkit/auth/switch";
+import { compat } from "./shared/compat";
 
 // Absent (not broken) until the box has ORANGECAT_OAUTH_CLIENT_ID/_SECRET.
 const orangecat = orangecatClient();
@@ -100,7 +99,7 @@ export const { signIn, signOut } = nextAuth;
  * way (docs/ACCOUNTKIT-MIGRATION.md).
  */
 export async function auth(): Promise<Session | null> {
-  return sharedAuthEnabled() ? sharedSession() : nextAuth.auth();
+  return sharedRuntimeEnabled() ? compat.currentSession() : nextAuth.auth();
 }
 
 /** The Auth.js proxy wrapper; proxy.ts uses it only with the switch off. */
@@ -109,11 +108,7 @@ export const authJsProxy = nextAuth.auth;
 /** /api/auth/*: AccountKit answers when the shared runtime is on. */
 export const handlers = {
   GET: async (request: NextRequest) =>
-    sharedAuthEnabled()
-      ? ((await nextAuthClientCompat(request)) ?? sharedAuth.GET(request))
-      : nextAuth.handlers.GET(request),
+    sharedRuntimeEnabled() ? compat.route.GET(request) : nextAuth.handlers.GET(request),
   POST: async (request: NextRequest) =>
-    sharedAuthEnabled()
-      ? ((await nextAuthClientCompat(request)) ?? sharedAuth.POST(request))
-      : nextAuth.handlers.POST(request),
+    sharedRuntimeEnabled() ? compat.route.POST(request) : nextAuth.handlers.POST(request),
 };

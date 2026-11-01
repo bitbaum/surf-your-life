@@ -4,17 +4,13 @@
  * switch (docs/ACCOUNTKIT-MIGRATION.md).
  */
 import bcrypt from "bcryptjs";
+import { sharedRuntimeEnabled } from "@bitbaum/accountkit/auth/switch";
 import { createAuthRuntime } from "@bitbaum/accountkit/auth/next";
 import { createAuthMailer } from "@bitbaum/accountkit/auth/mail";
 import { SITE_URL } from "@/lib/constants";
 import { db } from "@/lib/db";
 import { authTables } from "@/lib/db/accountkit";
 import { ensureSurfUser } from "./accounts";
-
-/** Whether the shared runtime answers. Auth.js answers otherwise. */
-export function sharedAuthEnabled(env: NodeJS.ProcessEnv = process.env): boolean {
-  return env.AUTH_RUNTIME === "accountkit";
-}
 
 /** The public origin every redirect and every AccountKit origin check uses. */
 export function siteUrl(env: NodeJS.ProcessEnv = process.env): string {
@@ -28,7 +24,7 @@ export const sharedAuth = createAuthRuntime({
   site,
   // Account mail through the fleet transport (RESEND_*), as Surf Your Life's own is.
   mail: createAuthMailer({ site }),
-  isDatabaseConfigured: (env) => sharedAuthEnabled(env) && Boolean(env.DATABASE_URL),
+  isDatabaseConfigured: (env) => sharedRuntimeEnabled(env) && Boolean(env.DATABASE_URL),
   getDatabase: () => db,
   schema: authTables,
   // Imported bcrypt hashes (users.password) keep working, and Surf Your Life's own
