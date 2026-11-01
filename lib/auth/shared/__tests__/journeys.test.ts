@@ -12,12 +12,12 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import bcrypt from "bcryptjs";
-import { NextRequest } from "next/server";
+import { createCompatClient } from "@bitbaum/accountkit/auth/compat-testing";
 import { afterAll, beforeEach, describe, expect, test, vi } from "vitest";
 
 const URL_ = process.env.SURF_JOURNEY_DATABASE_URL;
 const SITE = "https://surf.example.test";
-const state = vi.hoisted(() => {
+vi.hoisted(() => {
   const url = process.env.SURF_JOURNEY_DATABASE_URL;
   if (url) {
     Object.assign(process.env, {
@@ -31,11 +31,10 @@ const state = vi.hoisted(() => {
     delete process.env.BETTER_AUTH_SECRET;
     delete process.env.ORANGECAT_OAUTH_CLIENT_ID;
   }
-  return { cookie: "" };
 });
 
 vi.mock("next/headers", () => ({
-  headers: async () => new Headers({ cookie: state.cookie }),
+  headers: async () => new Headers(),
   cookies: async () => ({ get: () => undefined, delete: () => undefined }),
 }));
 
@@ -45,14 +44,9 @@ const OWNER = "00000000-0000-4000-8000-000000000002";
 const BOSS = "00000000-0000-4000-8000-000000000003";
 const OC_ONLY = "00000000-0000-4000-8000-000000000004";
 const IMPORT_SQL = path.resolve(__dirname, "../../../../scripts/db/accountkit-import.sql");
-let ip = 0;
 
 describe.skipIf(!URL_)("Surf Your Life on AccountKit (real PostgreSQL)", () => {
-  const load = async () => ({
-    ...(await import("../bridge")),
-    ...(await import("../runtime")),
-    ...(await import("../session")),
-  });
+  let browser: ReturnType<typeof createCompatClient>;
 
   async function pool() {
     const { db } = await import("@/lib/db");
@@ -68,7 +62,7 @@ describe.skipIf(!URL_)("Surf Your Life on AccountKit (real PostgreSQL)", () => {
   });
 
   beforeEach(async () => {
-    state.cookie = "";
+    browser = createCompatClient({ compat: (await import("../compat")).compat, site: SITE });
     await sql(`DROP TRIGGER IF EXISTS surf_accountkit_from_users ON users;
       DROP TRIGGER IF EXISTS surf_accountkit_to_users ON auth_users;
       TRUNCATE auth_users, auth_accounts, auth_sessions, auth_verifications,
@@ -99,53 +93,16 @@ describe.skipIf(!URL_)("Surf Your Life on AccountKit (real PostgreSQL)", () => {
     }
   }
 
-  function request(route: string, init: { form?: Record<string, string>; get?: boolean } = {}) {
-    ip += 1;
-    const headers = new Headers({
-      origin: SITE,
-      "x-forwarded-for": `198.51.100.${ip % 250}`,
-      cookie: state.cookie,
-    });
-    if (init.form) headers.set("content-type", "application/x-www-form-urlencoded");
-    return new NextRequest(`${SITE}/api/auth${route}`, {
-      method: init.get ? "GET" : "POST",
-      headers,
-      body: init.form ? new URLSearchParams(init.form) : undefined,
-    });
-  }
-
-  async function answer(req: NextRequest) {
-    const { nextAuthClientCompat, sharedAuth } = await load();
-    const res =
-      (await nextAuthClientCompat(req)) ??
-      (await (req.method === "GET" ? sharedAuth.GET(req) : sharedAuth.POST(req)));
-    const jar = new Map(
-      state.cookie
-        .split("; ")
-        .filter(Boolean)
-        .map((c) => {
-          const [name, ...value] = c.split("=");
-          return [name, value.join("=")] as [string, string];
-        }),
-    );
-    for (const cookie of res.headers.getSetCookie()) {
-      const [pair] = cookie.split(";");
-      const [name, ...value] = pair.split("=");
-      if (/max-age=0/i.test(cookie) || value.join("=") === "") jar.delete(name);
-      else jar.set(name, value.join("="));
-    }
-    state.cookie = [...jar].map(([k, v]) => `${k}=${v}`).join("; ");
-    return res;
-  }
-
-  const signIn = async (email: string, password: string) =>
-    (await answer(
-      request("/callback/credentials", {
-        form: { email, password, csrfToken: "x", callbackUrl: `${SITE}/dashboard` },
-      }),
-    ).then((r) => r.json())) as { url: string };
-
-  const session = async () => (await answer(request("/session", { get: true }))).json();
+  // The shared test client, in this file's request/answer shape.
+  const request = (route: string, init: { form?: Record<string, string>; get?: boolean } = {}) => ({
+    route,
+    form: init.form,
+  });
+  const answer = (req: ReturnType<typeof request>) => browser.call(req.route, req.form);
+  const signIn = (email: string, password: string) =>
+    browser.signIn("credentials", { email, password }, `${SITE}/dashboard`);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const session = () => browser.session<any>();
 
   test("an imported bcrypt account signs in, in any letter case, with its role and verification", async () => {
     const result = await signIn("VET@example.test", PASSWORD);
@@ -175,7 +132,7 @@ describe.skipIf(!URL_)("Surf Your Life on AccountKit (real PostgreSQL)", () => {
   test("ADMIN_EMAILS promotes at a password sign-in and never demotes", async () => {
     await signIn("boss@example.test", PASSWORD);
     expect((await session()).user.role).toBe("admin");
-    state.cookie = "";
+    browser.cookie = "";
     await signIn("vet@example.test", PASSWORD);
     expect((await session()).user.role, "a practitioner stays a practitioner (no demotion)").toBe(
       "practitioner",
@@ -226,13 +183,13 @@ describe.skipIf(!URL_)("Surf Your Life on AccountKit (real PostgreSQL)", () => {
 
   test("changing your own password keeps your session and ends every other one", async () => {
     await signIn("owner@example.test", PASSWORD);
-    const mine = state.cookie;
-    state.cookie = "";
+    const mine = browser.cookie;
+    browser.cookie = "";
     await signIn("owner@example.test", PASSWORD);
-    const other = state.cookie;
+    const other = browser.cookie;
 
-    const { sharedSessionId } = await load();
-    const keep = await sharedSessionId(new Headers({ cookie: mine }));
+    const { compat } = await import("../compat");
+    const keep = await compat.sessionIdFor(new Headers({ cookie: mine }));
     expect(keep).toBeTruthy();
     const client = await (await pool()).connect();
     try {
@@ -247,11 +204,11 @@ describe.skipIf(!URL_)("Surf Your Life on AccountKit (real PostgreSQL)", () => {
       client.release();
     }
 
-    state.cookie = mine;
+    browser.cookie = mine;
     expect((await session())?.user?.id, "the changing session stays").toBe(OWNER);
-    state.cookie = other;
+    browser.cookie = other;
     expect(await session(), "every other session ends").toBeNull();
-    state.cookie = "";
+    browser.cookie = "";
     const old = await signIn("owner@example.test", PASSWORD);
     expect(new URL(old.url).searchParams.get("error")).toBe("CredentialsSignin");
     const fresh = await signIn("owner@example.test", "the new password");
@@ -294,16 +251,18 @@ describe.skipIf(!URL_)("Surf Your Life on AccountKit (real PostgreSQL)", () => {
   });
 
   test("OrangeCat is offered only with its client configured", async () => {
-    const { providers } = await load();
-    expect(Object.keys(providers({}))).toEqual(["credentials"]);
-    expect(
-      Object.keys(
-        providers({
-          ORANGECAT_OAUTH_CLIENT_ID: "surf-your-life",
-          ORANGECAT_OAUTH_CLIENT_SECRET: "s",
-        }),
-      ),
-    ).toEqual(["orangecat", "credentials"]);
+    const { compat } = await import("../compat");
+    expect(Object.keys(compat.providers())).toEqual(["credentials"]);
+    Object.assign(process.env, {
+      ORANGECAT_OAUTH_CLIENT_ID: "surf-your-life",
+      ORANGECAT_OAUTH_CLIENT_SECRET: "s",
+    });
+    try {
+      expect(Object.keys(compat.providers())).toEqual(["orangecat", "credentials"]);
+    } finally {
+      delete process.env.ORANGECAT_OAUTH_CLIENT_ID;
+      delete process.env.ORANGECAT_OAUTH_CLIENT_SECRET;
+    }
   });
 
   test("AccountKit's own credential writers stay closed until Surf Your Life adopts its screens", async () => {

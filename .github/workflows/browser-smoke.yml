@@ -81,7 +81,7 @@ jobs:
         env:
           SURF_JOURNEY_DATABASE_URL: postgres://app:app@127.0.0.1:5432/surf_smoke
         run: |
-          node scripts/db/accountkit-import-rehearse.mjs
+          pnpm run db:rehearse-import
           pnpm exec vitest run lib/auth/shared
           psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -q -X -c "TRUNCATE users, auth_users CASCADE"
           psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -q -X -1 -f scripts/db/accountkit-import.sql

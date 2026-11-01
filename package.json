@@ -21,7 +21,8 @@
     "db:studio": "drizzle-kit studio",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "smoke:browser": "node scripts/browser-smoke.mjs"
+    "smoke:browser": "node scripts/browser-smoke.mjs",
+    "db:rehearse-import": "accountkit-rehearse-import scripts/db/accountkit-import.sql"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.11.3",

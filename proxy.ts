@@ -1,7 +1,7 @@
 import createMiddleware from "next-intl/middleware";
 import { authJsProxy } from "@/lib/auth";
-import { sharedAuthEnabled } from "@/lib/auth/shared/runtime";
-import { sharedSessionFor } from "@/lib/auth/shared/session";
+import { sharedRuntimeEnabled } from "@bitbaum/accountkit/auth/switch";
+import { compat } from "@/lib/auth/shared/compat";
 import type { Session } from "next-auth";
 import { isStaff } from "@/lib/domain/auth";
 import { routing } from "./i18n/routing";
@@ -102,7 +102,9 @@ const authJs = authJsProxy((req) => route(req, req.auth)) as unknown as (
 // With AUTH_RUNTIME=accountkit the session is a database row read through
 // AccountKit (docs/ACCOUNTKIT-MIGRATION.md); otherwise the Auth.js JWT.
 export default async function proxy(req: NextRequest, ev: NextFetchEvent) {
-  return sharedAuthEnabled() ? route(req, await sharedSessionFor(req.headers)) : authJs(req, ev);
+  return sharedRuntimeEnabled()
+    ? route(req, await compat.sessionFor(req.headers))
+    : authJs(req, ev);
 }
 
 export const config = {
