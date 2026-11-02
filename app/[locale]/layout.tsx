@@ -2,12 +2,13 @@ import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { setRequestLocale, getMessages } from "next-intl/server";
 import { routing } from "@/i18n/routing";
-import { Geist } from "next/font/google";
 import type { Metadata } from "next";
 import { Toaster } from "sonner";
 import "../globals.css";
 import { SITE_URL, BRAND_NAME } from "@/lib/constants";
 import { FeedbackWidget } from "@/components/feedback-widget";
+// Geist ships in @bitbaum/design-tokens; ./fonts is generated from it.
+import { geist } from "./fonts";
 
 const BRAND_TITLE = `${BRAND_NAME} — Medical Performance Space Zürich`;
 
@@ -32,8 +33,6 @@ export const metadata: Metadata = {
   },
   metadataBase: new URL(SITE_URL),
 };
-
-const geist = Geist({ subsets: ["latin"] });
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
