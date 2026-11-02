@@ -18,20 +18,22 @@ export default async function LoginPage({ params, searchParams }: Props) {
   setRequestLocale(locale);
   const t = await getTranslations("auth.login");
   const { error } = await searchParams;
+  // Title and the link to sign-up are AccountKit's words, as on every fleet app.
+  const labels = authLabelsFor(locale);
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{t("title")}</CardTitle>
+        <CardTitle>{labels.signIn}</CardTitle>
         <CardDescription>{t("subtitle")}</CardDescription>
       </CardHeader>
       <CardContent>
         <SignInForm
-          labels={authLabelsFor(locale)}
+          labels={labels}
           methods={surfMethods()}
           next={`/${locale}/dashboard`}
           signInPath={`/${locale}/login`}
           initialError={Boolean(error)}
-          signUp={t("getStarted")}
+          signUp={labels.createAccount}
         />
       </CardContent>
     </Card>
