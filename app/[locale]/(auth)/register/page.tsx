@@ -16,20 +16,22 @@ export default async function RegisterPage({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("auth.register");
+  // Title and the link to sign-in are AccountKit's words, as on every fleet app.
+  const labels = authLabelsFor(locale);
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{t("title")}</CardTitle>
+        <CardTitle>{labels.createAccount}</CardTitle>
         <CardDescription>{t("subtitle")}</CardDescription>
       </CardHeader>
       <CardContent>
         <SignUpForm
-          labels={authLabelsFor(locale)}
+          labels={labels}
           methods={surfMethods()}
           next={`/${locale}/profile`}
           signInPath={`/${locale}/login`}
           signUpPath={`/${locale}/register`}
-          signIn={t("signIn")}
+          signIn={labels.signIn}
         />
       </CardContent>
     </Card>
