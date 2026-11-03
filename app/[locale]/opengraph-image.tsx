@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { ogFonts } from "@bitbaum/design-tokens/og";
 import { BRAND_NAME } from "@/lib/constants";
 
 /**
@@ -23,7 +24,7 @@ const INK = "#0F172A";
 const MUTED = "#475569";
 const MIST = "#F0FDFA";
 
-export default function OGImage() {
+export default async function OGImage() {
   return new ImageResponse(
     <div
       style={{
@@ -79,6 +80,6 @@ export default function OGImage() {
         <div style={{ fontSize: 24, color: MUTED }}>surf-your-life.orangecat.ch</div>
       </div>
     </div>,
-    { ...size },
+    { ...size, fonts: await ogFonts() },
   );
 }
