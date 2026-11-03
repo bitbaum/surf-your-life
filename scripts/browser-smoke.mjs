@@ -43,7 +43,14 @@ const TIMEOUT = 30_000;
 
 const EXPECT = {
   orangecat: Boolean(process.env.ORANGECAT_OAUTH_CLIENT_ID),
-  signin: Boolean(process.env.SIGNIN_CLIENT_ID),
+  // AccountKit 0.24+ shows the shared sign-in only once its service publishes
+  // a provider, and names those providers: ask the service, as the app does.
+  signin:
+    Boolean(process.env.SIGNIN_CLIENT_ID) &&
+    (await fetch(`${process.env.SIGNIN_ISSUER}/api/providers`)
+      .then((r) => r.json())
+      .then((b) => Array.isArray(b?.providers) && b.providers.length > 0)
+      .catch(() => false)),
   mail: Boolean(SINK),
 };
 
@@ -157,14 +164,14 @@ try {
     [L.withLink, EXPECT.mail],
     [L.recovery.forgot, EXPECT.mail],
     [L.withOrangecat, EXPECT.orangecat],
-    [L.withSignin, EXPECT.signin],
+    [/^Weiter mit (Google|Apple|GitHub|X|Facebook|Microsoft)/, EXPECT.signin],
   ]);
   await shot(page, "login-methods");
   await offered("/register", [
     [L.createAccount, true],
     [L.signUpWithLink, EXPECT.mail],
     [L.withOrangecat, EXPECT.orangecat],
-    [L.withSignin, EXPECT.signin],
+    [/^Weiter mit (Google|Apple|GitHub|X|Facebook|Microsoft)/, EXPECT.signin],
   ]);
 
   // ── Sign up through AccountKit's form ──────────────────────────────────
